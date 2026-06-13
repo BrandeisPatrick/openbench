@@ -6,9 +6,6 @@
 <p>
 <a href="#"><img src="https://img.shields.io/badge/python-3.12+-blue.svg" alt="Python 3.12+"></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License"></a>
-<a href="#development"><img src="https://img.shields.io/badge/tests-140%20passing-brightgreen.svg" alt="Tests"></a>
-<a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff"></a>
-<a href="docs/EXPERIMENTS.md"><img src="https://img.shields.io/badge/experiments-pre--registered-orange.svg" alt="Pre-registered"></a>
 <a href="#status"><img src="https://img.shields.io/badge/status-research%20preview-yellow.svg" alt="Status"></a>
 </p>
 
