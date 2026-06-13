@@ -89,16 +89,45 @@ across difficulty*, not any single number.
 ## Installation
 
 ```bash
-git clone https://github.com/<your-org>/openbench.git
+git clone https://github.com/BrandeisPatrick/openbench.git
 cd openbench
-uv sync
-cp .env.example .env          # add GITHUB_TOKEN + at least one model key
+make install      # == uv sync
 ```
 
-Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/). Docker (or colima) is needed only for
-the live `build-env` / `run` / `grade` steps; all analysis runs offline.
+That's the whole install. Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/)
+(`curl -LsSf https://astral.sh/uv/install.sh | sh`). **No keys or Docker needed** for the demo and
+the test suite below — those are only required to run *new* live agents (see
+[Run your own experiments](#run-your-own-experiments)).
 
-## Quick start
+## Try it in 60 seconds — no credentials
+
+The whole analysis layer runs offline on stored traces, so you can see real per-model reward
+fingerprints immediately, against a bundled example corpus (33 runs across 11 models):
+
+```bash
+make demo         # == uv run openbench demo   → writes examples/report.md
+make test         # == uv run pytest           → 140 offline tests, no Docker/network
+```
+
+`make demo` produces a full cross-model reward-fingerprint report — composition weights, z-scored
+signatures, hypothesis labels, figures — with **zero setup**. Re-run the analysis on the same
+traces yourself:
+
+```bash
+OPENBENCH_ROOT=examples uv run openbench analyze   # recompute metrics from the example transcripts
+```
+
+| What you have | What you can run |
+|---|---|
+| **nothing** | `make demo`, `make test`, `openbench analyze` on the example corpus |
+| **+ Docker** | the `golden` / `null` fixtures — the full grade pipeline on a real task, no model key |
+| **+ one model key** | run a real agent end-to-end (`openbench run … --model …`) |
+| **+ GitHub token** | mine and build your own tasks from any repo |
+
+## Run your own experiments
+
+Add credentials only for the step you need (`cp .env.example .env`, then fill in what you have —
+a GitHub token to mine, and/or one model API key to run an agent):
 
 ```bash
 uv run openbench mine                                           # → candidates, hardness tiers
@@ -220,7 +249,7 @@ offline on stored traces.
   title  = {OpenBench: Inferring RL Reward Composition from Black-Box Agent Behavior},
   author = {OpenBench contributors},
   year   = {2026},
-  url    = {https://github.com/<your-org>/openbench}
+  url    = {https://github.com/BrandeisPatrick/openbench}
 }
 ```
 

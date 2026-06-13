@@ -1,0 +1,9 @@
+{
+  "run_id": "sympy__sympy-23534--mini-swe--gpt-5--20260612-181716-706516",
+  "task_id": "sympy__sympy-23534",
+  "harness": "mini-swe",
+  "model": "gpt-5",
+  "started_at": "2026-06-12T18:00:00Z",
+  "exit_reason": "crash",
+  "note": "orchestrator exited; container orphaned with runaway in-container pytest/regex; host exec timeout did not propagate kill"
+}

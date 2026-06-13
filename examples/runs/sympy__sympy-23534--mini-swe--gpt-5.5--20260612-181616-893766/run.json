@@ -1,0 +1,16 @@
+{
+  "run_id": "sympy__sympy-23534--mini-swe--gpt-5.5--20260612-181616-893766",
+  "task_id": "sympy__sympy-23534",
+  "harness": "mini-swe",
+  "model": "gpt-5.5",
+  "started_at": "2026-06-12T18:16:16.893766Z",
+  "finished_at": "2026-06-12T18:17:16.703662Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.20718899999999998,
+  "total_tokens_in": 56983,
+  "total_tokens_out": 2416,
+  "total_thinking_tokens": 1598,
+  "num_turns": 10
+}

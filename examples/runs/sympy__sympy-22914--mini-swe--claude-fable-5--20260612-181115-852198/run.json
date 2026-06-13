@@ -1,0 +1,16 @@
+{
+  "run_id": "sympy__sympy-22914--mini-swe--claude-fable-5--20260612-181115-852198",
+  "task_id": "sympy__sympy-22914",
+  "harness": "mini-swe",
+  "model": "claude-fable-5",
+  "started_at": "2026-06-12T18:11:15.852198Z",
+  "finished_at": "2026-06-12T18:11:51.929478Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.34224999999999994,
+  "total_tokens_in": 10502,
+  "total_tokens_out": 797,
+  "total_thinking_tokens": 0,
+  "num_turns": 7
+}

@@ -1,0 +1,2 @@
+{"type": "meta", "model": "openrouter/moonshotai/kimi-k2-0905", "task_id": "sympy__sympy-23534"}
+{"type": "final", "exit_reason": "crash", "turns": 0, "usage_totals": {"cost_usd": 0.0, "tokens_in": 0, "tokens_out": 0, "tokens_thinking": 0, "num_turns": 0}}

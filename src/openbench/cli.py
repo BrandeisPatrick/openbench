@@ -167,6 +167,32 @@ def report(
     console.print(f"[green]Report written:[/green] {path}")
 
 
+@app.command()
+def demo() -> None:
+    """Zero-credential demo: build a reward-fingerprint report from bundled example
+    traces (examples/runs/). No API keys, no Docker, no GitHub token required."""
+    from openbench import paths
+    from openbench.report.generate import generate_report
+
+    examples = paths.ROOT / "examples" / "runs"
+    if not examples.exists():
+        console.print(
+            "[red]examples/runs not found[/red] — run from a repo checkout "
+            "(the example traces ship with the source tree)."
+        )
+        raise typer.Exit(1)
+    # Point the analysis loaders at the bundled traces (read dynamically).
+    paths.RUNS = examples
+    out = paths.ROOT / "examples" / "report.md"
+    path = generate_report(out)
+    n = sum(1 for d in examples.iterdir() if (d / "metrics.json").exists())
+    console.print(f"[green]Demo report written:[/green] {path}  ({n} example runs)")
+    console.print(
+        "Per-model reward fingerprints, computed offline — no keys or Docker. "
+        "Open the file, or run [bold]openbench analyze[/bold] on the same traces."
+    )
+
+
 @app.command("import-swebench")
 def import_swebench(
     repo: Optional[str] = typer.Option("sympy/sympy", help="Limit to one repo (proven env)"),
