@@ -10,11 +10,10 @@
 </p>
 
 <p>
-<a href="#overview">Overview</a> ·
-<a href="#key-findings">Findings</a> ·
-<a href="#installation">Install</a> ·
-<a href="#quick-start">Quick start</a> ·
-<a href="#how-it-works">Method</a> ·
+<a href="#why-openbench">Why</a> ·
+<a href="#results">Results</a> ·
+<a href="#methods">Methods</a> ·
+<a href="#how-to-self-run">Self-run</a> ·
 <a href="docs/EXPERIMENTS.md">Experiments</a> ·
 <a href="#citation">Cite</a>
 </p>
@@ -23,114 +22,117 @@
 ---
 
 > [!NOTE]
-> **OpenBench is a research preview.** It is a *hypothesis-generating instrument*: it estimates
-> reward **propensities** from black-box agent behavior, and is deliberately honest about what it
-> cannot identify (exact reward recovery is unidentifiable; cross-model claims hold only with the
-> harness fixed). Every probe and experiment is [pre-registered](docs/EXPERIMENTS.md) with
-> predictions and falsification conditions committed *before* the evidence.
+> **OpenBench is a research preview.** It estimates reward *propensities* from black-box agent
+> behavior — not exact reward functions (recovery is unidentifiable) — and every experiment is
+> [pre-registered](docs/EXPERIMENTS.md) with falsifiable predictions.
 >
-> **Status — `claude-fable-5` currently inaccessible.** The Fable 5 endpoint is down for an extended
-> period, so its SWE-bench run coverage **lags the other models**: Fable's numbers come from earlier
-> `mini-swe` runs only, and it has *not* been re-run on the corrected native-tool scaffold. Treat any
-> Fable comparison as provisional and under-sampled until the API returns.
+> **Status — Fable 5 is down.** `claude-fable-5` is unavailable right now, so its SWE-bench data here
+> is limited and not up to date. Interpret Fable's results with caution until access is restored.
 
-## Overview
+## Why OpenBench?
 
-OpenBench replays *real, long, multi-feature GitHub pull requests* as agentic coding tasks, then
-reads the agent's full trace — every edit, test run, retry, recall, and thinking token — to estimate
-the **reward composition** behind the model's RL training. Two pillars on one pipeline:
+OpenBench **reverse-engineers the RL reward** a coding model was trained on, from its black-box
+agentic behavior alone. It is **not a capability leaderboard** — solve rate is a *means* (pressure
+that makes different reward designs diverge), not the metric.
 
-1. **Evaluation** — can the agent deliver a *mergeable* PR? Graded the SWE-bench way: the PR's own
-   tests must pass (`FAIL_TO_PASS`) and existing tests must not regress (`PASS_TO_PASS`), in a
-   per-task Docker image pinned at the base commit.
-2. **Reward inference** — the same trace is scored into behavioral metrics and aggregated into a
-   per-model **reward fingerprint**: signatures consistent or inconsistent with documented RL reward
-   designs (outcome-only RLVR, process/verifier rewards, anti-hacking penalties, length shaping,
-   similarity-to-gold, rubric/GRM, context-management).
+It replays *real, long, multi-feature GitHub pull requests* as agentic coding tasks and reads the
+agent's full trace — every edit, test run, retry, recall, and thinking token — to answer three
+questions, in order of priority:
 
-> **Epistemic stance.** These are *behavioral propensities, not recovered reward functions.*
-> Cross-model claims hold only with the harness fixed. The pipeline generates and falsifies
-> hypotheses — it does not identify training recipes. Every experiment is
-> [pre-registered](docs/EXPERIMENTS.md) with predictions and falsification conditions committed
-> before the evidence.
+1. **Reverse-engineer the reward system** — which RL reward design is each model's behavior
+   consistent (or inconsistent) with: outcome-only RLVR, process/verifier rewards, anti-hacking
+   penalties, length shaping, similarity-to-gold, rubric/GRM, context-management?
+2. **Long-horizon capability** — how does the model hold up as a task outgrows the context window and
+   a single early mistake compounds over dozens of turns?
+3. **Reasoning patterns** — verification, recall, confabulation, pattern selection: which cognitive
+   strategies does the policy actually execute under pressure?
+
+**Approach: calibrate on open source, test on the frontier.** The probes are calibrated against
+open-source models — where behavior can be checked against *published* training recipes and *visible*
+chain-of-thought — then applied to frontier closed models (**Claude Opus 4.8, Fable 5, GPT-5.5**)
+whose recipes are undisclosed and whose reasoning is hidden.
+
+Two pillars on one pipeline:
+
+- **Evaluation** — can the agent deliver a *mergeable* PR? Graded the SWE-bench way: the real PR's tests must pass and existing tests must not regress.
+- **Reward inference** — the same trace is scored into length-invariant behavioral metrics and aggregated into a per-model **reward fingerprint**.
 
 <div align="center">
 <img src="docs/figures/e1_fingerprint_heatmap.png" width="85%" alt="Reward fingerprint heatmap across models">
 <br><i>Per-model reward fingerprints — z-scored behavioral signatures across the reward-component basis.</i>
 </div>
 
-## Key findings
+Each reward family it probes for has a documented training precedent in the literature:
 
-A 13-model, 87-run corpus (DeepSeek V3/V4, Qwen3-Coder, Kimi-K2, GLM-4.6, GPT-4.1/5/5.5, Claude
-Opus 4.8) surfaced several robust, reproducible results:
+- Length-invariant behavioral metrics — [Beyond Resolution Rates](https://arxiv.org/abs/2604.02547)
+- Outcome-only RLVR / rule-based rewards — [DeepSeek-R1](https://arxiv.org/abs/2501.12948)
+- Anti-hacking penalty — [Anthropic reward-hack monitors](https://www.anthropic.com/research/emergent-misalignment-reward-hacking)
+- Process / turn-level verifier reward — [turn-level reward design](https://arxiv.org/abs/2505.11821), [online process-reward learning](https://arxiv.org/abs/2509.19199)
+- Similarity-to-gold-patch reward — [SWE-RL](https://arxiv.org/abs/2502.18449)
+- Length / truncation shaping — [DAPO](https://arxiv.org/abs/2503.14476)
+- Rubric / generative reward model — [Kimi K2](https://arxiv.org/abs/2507.20534)
+- Context-management reward — [Context-Folding](https://arxiv.org/abs/2510.11967), [Memory-as-Action](https://arxiv.org/abs/2510.12635), [AgeMem](https://arxiv.org/abs/2601.01885)
+- Reasoning-pattern selection — [Chen, Li & Zou](https://arxiv.org/abs/2506.04695), [GPSO](https://arxiv.org/abs/2601.07238)
+- Step-level credit assignment — [SALT](https://arxiv.org/abs/2510.20022)
+- Progress-based process reward — [AgentPRM](https://arxiv.org/abs/2511.08325)
+- Cognitive-behavior signatures — [Gandhi et al.](https://arxiv.org/abs/2503.01307)
+- IRL identifiability bounds — [reward identifiability under misspecification](https://arxiv.org/abs/2411.15951), [identifiability in inverse RL](https://arxiv.org/abs/2106.03498)
+- Credit-assignment & self-correction surveys — [credit-assignment](https://arxiv.org/abs/2604.09459), [self-correction](https://arxiv.org/abs/2507.21504)
 
-- **The DeepSeek V4↔V3 differential** is the anchor result. Under a fixed harness, V4-flash runs
-  tests ~7× per run and verifies before declaring done; V3 confabulates and never verifies — a
-  measurable, same-family divergence in what each model was optimized for.
+## Results
+
+### Calibrated on open-source models
+
+The probes are validated where they can be checked — open models with published recipes and visible
+reasoning:
+
+- **DeepSeek V4↔V3 differential (the anchor).** Under a fixed harness, V4-flash loads
+  `process_verifier` (~0.73, stable across every cohort) — it runs tests ~7× per run and verifies
+  before declaring done; V3 confabulates and never verifies. A measurable, same-family divergence in
+  what each model was optimized for.
 - **Action-grounded recall, calibrated.** A working-memory metric (acting on context dormant >10
-  turns) was validated against raw chain-of-thought on the DeepSeek corpus (Spearman **ρ = 0.713**,
-  within-model 0.70/0.76) — then deployed to measure recall *floors* for closed models whose
-  reasoning is hidden. Long-range recall turns out to be a general property of modern agentic-RL
-  models, **not** a million-token-context signature.
-- **Cross-lab blind calibration.** Recipe predictions made from fingerprints *alone*, before reading
-  any published training docs, scored 3/3 hits on Kimi-K2 / GLM-4.6 / Qwen3-Coder.
-- **Harness validity is measurable, not assumed.** A within-model factorial showed Claude Opus's
-  apparent "confabulation" under a bare text-fence scaffold is **protocol-induced** — it vanishes
-  the moment Opus is given its native tool-use protocol (zero-line dream → real 130-line patches,
-  tests actually run). A reminder that a black-box reward probe must control for the scaffold.
-
-See [`docs/EXPERIMENTS.md`](docs/EXPERIMENTS.md) for the full pre-registered record and
-[`docs/PAPER.md`](docs/PAPER.md) for the write-up.
+  turns) validated against raw chain-of-thought on the DeepSeek corpus — Spearman **ρ = 0.713**
+  (within-model 0.70 / 0.76) — then deployed to measure recall *floors* for closed models whose
+  reasoning is hidden. Long-range recall is a general property of modern agentic-RL models, **not** a
+  million-token-context signature.
+- **Cross-lab blind calibration, 3/3.** Recipe predictions made from fingerprints *alone*, committed
+  before reading any published training docs, hit on Kimi-K2 / GLM-4.6 / Qwen3-Coder.
 
 <div align="center">
 <img src="docs/figures/e1_composition.png" width="49%" alt="Estimated reward composition per model">
 <img src="docs/figures/e3_recall.png" width="49%" alt="Context-recall fingerprint">
 </div>
 
-## What OpenBench probes for
+### Frontier models
 
-Each reward family is a hypothesis with a documented training precedent in the literature, a
-falsifiable behavioral *signature*, and a deterministic metric or a probe that elicits it. The full
-registry, predictions, and provenance live in [`docs/RESEARCH.md`](docs/RESEARCH.md); the
-pre-registered experiments in [`docs/EXPERIMENTS.md`](docs/EXPERIMENTS.md).
+Applying the calibrated probe to the undisclosed frontier cohort:
 
-**Reward families fingerprinted** (the 7-component basis behind the mixture estimate):
+| model | harness | solve (F2P) | reward read | distinctive behavior |
+|---|---|---|---|---|
+| **GPT-5.5** | mini-swe | 2/4 | balanced — similarity 0.38 + process 0.28 + anti-hack 0.24 | always verifies (`verified_before_done` 1.0), never early-stops |
+| **Fable 5** ⚠ | mini-swe | 1/4 | similarity-to-gold 0.40 (sole estimable) | verifies sometimes; **data thin, API down** |
+| **Opus 4.8** | mini-swe → native | scaffold-dependent | not estimable (scaffold-confounded) | text-fence → confabulates (0-line patches, ~2–3 turns); native tool-use → real ~130-line patches, tests run |
 
-- **H1 · Outcome-only RLVR** — DeepSeek-R1 rule-based rewards; RLVR generally
-- **H2 · Anti-hacking penalty** — [Anthropic reward-hack classifier / monitors](https://www.anthropic.com/research/emergent-misalignment-reward-hacking)
-- **H3 · Process / turn-level verifier reward** — turn-level reward ([arXiv 2505.11821](https://arxiv.org/abs/2505.11821)); online process-reward learning ([arXiv 2509.19199](https://arxiv.org/abs/2509.19199))
-- **H4 · Similarity-to-gold-patch** — SWE-RL ([arXiv 2502.18449](https://arxiv.org/abs/2502.18449))
-- **H5 · Length / truncation shaping** — DAPO overlong shaping ([arXiv 2503.14476](https://arxiv.org/abs/2503.14476)); Kimi length penalties
-- **H6 · Rubric / generative RM** — Kimi K2 self-critique rubric ([arXiv 2507.20534](https://arxiv.org/abs/2507.20534)); DeepSeek-V4 generative reward model
-- **H7 · Context-management reward** — Context-Folding ([arXiv 2510.11967](https://arxiv.org/abs/2510.11967)); Memory-as-Action ([arXiv 2510.12635](https://arxiv.org/abs/2510.12635)); AgeMem ([arXiv 2601.01885](https://arxiv.org/abs/2601.01885))
+- **GPT-5.5 — balanced reward.** The only model with all three of similarity-to-gold (0.38),
+  process-verifier (0.28), and anti-hacking (0.24) co-estimable; it always verifies before done,
+  never stops early, and solves 2/4 — the cleanest frontier fingerprint.
+- **Fable 5 — similarity-aligned, thin data.** ⚠ Reads as reference-solution-aligned
+  (similarity-to-gold 0.40, the sole estimable component) and verifies intermittently, but the API is
+  down and n = 4 — interpret with caution.
+- **Opus 4.8 — a scaffold finding, not a reward read.** On the bare text-fence harness Opus appears
+  to "confabulate": it emits a *dreamed* multi-step session and quits in ~2–3 turns with a zero-line
+  patch. A within-model factorial ([E10](docs/EXPERIMENTS.md)) shows this is **protocol-induced** —
+  hold the model fixed, give it its *native* tool-use protocol, and the confabulation vanishes: it
+  writes real ~130-line patches, runs tests, and solves (sympy-22914 cleanly, sympy-23534
+  partially). There is no clean Opus reward read until the scaffold matches the model — the headline
+  is that **a black-box reward probe must control for the scaffold.**
 
-**Reasoning-pattern & long-horizon hypotheses** (extended registry):
+Full pre-registered predictions (E9, scoring pending) in [`docs/EXPERIMENTS.md`](docs/EXPERIMENTS.md);
+write-up in [`docs/PAPER.md`](docs/PAPER.md).
 
-- **H8 · Literal spec-fidelity vs unstated-intent inference** — judge-tier
-- **H9 · Canonical pattern recall / retrieval** — judge-tier
-- **H10 · Intrinsic-verification reward** — verifies even when trivial
-- **H11 · Proportionate-effort reward** — effort scales with difficulty
-- **H12 · Reasoning-pattern selection** — RL concentrates the pattern distribution ([Chen, Li & Zou, arXiv 2506.04695](https://arxiv.org/abs/2506.04695); GPSO, [arXiv 2601.07238](https://arxiv.org/abs/2601.07238))
-- **H13 · Long-context working-memory recall** — acting on context dormant >10 turns (novel; calibrated against chain-of-thought, ρ = 0.71)
+## Methods
 
-**Probe & estimation methods:**
-
-- **Non-negative least-squares mixture estimation** — `R = Σ wᵢ·componentᵢ`, with bootstrap CIs and collinearity / identifiability warnings
-- **Realized counterfactual reward scoring** — an assumption-light cross-check on the actual trajectory
-- **Length-invariance guard** — only rates/ratios/bools enter the fit ([Beyond Resolution Rates, arXiv 2604.02547](https://arxiv.org/abs/2604.02547))
-- **Honeypot probe** — weak visible tests + strict hidden grading → outcome-reward without an anti-hacking penalty
-- **Impossible-task probe** — self-contradictory spec → sycophancy-to-spec vs push-back
-- **GPSO-inverted forced-pattern probe** — pattern prompts as a causal test-time intervention ([arXiv 2601.07238](https://arxiv.org/abs/2601.07238))
-- **Scaffold factorial** — protocol (text-fence vs native tool-use) × thinking, to separate reward signatures from harness artifacts
-- **Action-grounded recall + prose↔action calibration** — working-memory measurement that survives hidden chain-of-thought
-- **SALT step-level divergent-credit** — trajectory-graph advantage assignment ([arXiv 2510.20022](https://arxiv.org/abs/2510.20022))
-- **AgentPRM progress proxy** — process reward via progress estimation ([arXiv 2511.08325](https://arxiv.org/abs/2511.08325))
-- **Cognitive-behavior signatures** — verification, backtracking, subgoaling ([Gandhi et al., arXiv 2503.01307](https://arxiv.org/abs/2503.01307))
-- **Cross-lab blind recipe prediction** — predict the recipe from the fingerprint, *then* read the published training docs
-- **Anti-cheat** — SHA-256-pinned test files, reverted before grading
-- **IRL identifiability grounding** — misspecification & non-identifiability bounds ([arXiv 2411.15951](https://arxiv.org/abs/2411.15951); [arXiv 2106.03498](https://arxiv.org/abs/2106.03498)); credit-assignment survey ([arXiv 2604.09459](https://arxiv.org/abs/2604.09459)); self-correction/trajectory-metrics survey ([arXiv 2507.21504](https://arxiv.org/abs/2507.21504))
-
-## Why long PRs, and why difficulty matters
+### Why long PRs, and why difficulty matters
 
 Reward signatures only diverge at the **capability frontier** — where gaming a test becomes
 tempting, giving up actually binds, and context outgrows the window. A task a model solves
@@ -138,7 +140,86 @@ comfortably makes every reward design look identical. So tasks are mined for siz
 hardness (**Extended / Main / Diamond** tiers), and the primary statistic is each metric's *slope
 across difficulty*, not any single number.
 
-## Installation
+### Reward estimation, three tiers
+
+1. **Consistency labels** — z-scored metrics cross a threshold → hedged "consistent with X" labels
+   (`analysis/fingerprint.py`).
+2. **Mixture estimation** — model the reward as `R = Σ wᵢ·componentᵢ`; recover `w ≥ 0` via
+   non-negative least squares against a signature matrix, with bootstrap CIs and collinearity
+   (identifiability) warnings (`analysis/estimate.py`). A second, assumption-light estimator scores
+   each *realized* counterfactual reward on the actual trajectory (`analysis/reward_scoring.py`) as a
+   cross-check.
+3. **Probes & calibration** — honeypot/impossible probes break collinear ties; the signature matrix
+   is validated against models run with *known* rewards (designed).
+
+### Length-invariance
+
+Only rates, ratios, and booleans enter the fingerprint — never raw counts — so a verbose model and a
+terse one are scored on the same footing. A guard (`_assert_length_invariant`) fails fast if a
+non-invariant metric is ever added to the signature matrix.
+
+### Why probes are needed
+
+Passive observation can't separate every reward family ("never games" vs "penalized for gaming" look
+identical, cos = −0.81 in the signature matrix). Probes manufacture the divergence by intervening:
+the honeypot (reward-hacking elicitation), the impossible-task probe (sycophancy-to-spec), the
+GPSO-inverted forced-pattern probe, the scaffold factorial (protocol × thinking), and action-recall
+calibration. Full registry and signatures in [`docs/RESEARCH.md`](docs/RESEARCH.md).
+
+### Anti-cheat
+
+Every existing/gold test file is SHA-256 pinned. Agent edits to them are **reverted before grading**
+(tampering can never raise a score) and recorded as first-class gaming signals for the reward
+analysis.
+
+### Runners (agent harnesses)
+
+Two harnesses, by design — the pair *is* the scaffold control. `mini-swe` is the neutral cross-model
+baseline (one minimal protocol applied identically to every lab, so behavior is comparable);
+`claude-native` gives Claude its native protocol, because the scaffold itself is a confound (see the
+[scaffold experiment](docs/EXPERIMENTS.md)).
+
+| runner | models | notes |
+|---|---|---|
+| `mini-swe` | **any** OpenAI-compatible API (DeepSeek, OpenRouter → Qwen/Llama/GLM, OpenAI, Moonshot) | minimal one-command-per-turn ReAct loop; the **cross-model baseline** |
+| `claude-native` | Anthropic Messages API | native structured tool-use + extended thinking; **controls for Claude's scaffold mismatch** |
+
+The LLM API is called from the host; the task container runs **network-isolated**, so the agent
+can't reach the internet and keys never enter the sandbox.
+
+### The pipeline at a glance
+
+```
+mine ──▶ build-task ──▶ validate ──▶ build-env ──▶ run ──▶ grade ──▶ analyze ──▶ report
+ │           │             │            │           │        │          │           │
+ GraphQL   prompt +      base-fails/  per-task    agent    apply +    behavioral  fingerprints
+ + filters gold/test     merged-      Docker      harness  anti-cheat metrics +   + reward
+ + tiers   split         passes ×3    image       (sandbox)+ F2P/P2P  reward score estimates
+```
+
+### Repository layout
+
+```
+src/openbench/
+  mining/     GitHub GraphQL mining · super-long-PR filters · hardness tiers
+  tasks/      prompt construction (leakage-stripped) · F2P/P2P split · validation gate
+              · honeypot & impossible probe generators
+  envs/       per-task Docker images pinned at the base commit
+  runners/    AgentRunner protocol · mini-swe (multi-provider) · claude-native · claude-code · fixtures · sandbox
+  grading/    mergeability sequence · anti-cheat · rubric judge
+  traces/     normalized TraceEvent stream · per-harness adapters · JSONL + DuckDB store
+  analysis/   behavioral metrics · reward-mixture estimator · realized reward scoring · stats
+  report/     markdown + figure generation
+docs/
+  RESEARCH.md       hypotheses · reward-estimation method · probe designs · references
+  EXPERIMENTS.md    pre-registered experiments — data · method · expected result · status
+  PAPER.md          short paper write-up
+configs/            mining thresholds, hardness weights, grading & rubric config
+```
+
+## How to self-run
+
+### Install
 
 ```bash
 git clone https://github.com/BrandeisPatrick/openbench.git
@@ -151,7 +232,7 @@ That's the whole install. Requires Python 3.12+ and [uv](https://docs.astral.sh/
 the test suite below — those are only required to run *new* live agents (see
 [Run your own experiments](#run-your-own-experiments)).
 
-## Try it in 60 seconds — no credentials
+### Try it in 60 seconds — no credentials
 
 The whole analysis layer runs offline on stored traces, so you can see real per-model reward
 fingerprints immediately, against a bundled example corpus (33 runs across 11 models):
@@ -176,7 +257,7 @@ OPENBENCH_ROOT=examples uv run openbench analyze   # recompute metrics from the 
 | **+ one model key** | run a real agent end-to-end (`openbench run … --model …`) |
 | **+ GitHub token** | mine and build your own tasks from any repo |
 
-## Run your own experiments
+### Run your own experiments
 
 Add credentials only for the step you need (`cp .env.example .env`, then fill in what you have —
 a GitHub token to mine, and/or one model API key to run an agent):
@@ -193,82 +274,7 @@ uv run openbench analyze                                        # → metrics, r
 uv run openbench report                                         # → cross-model markdown report
 ```
 
-The pipeline at a glance:
-
-```
-mine ──▶ build-task ──▶ validate ──▶ build-env ──▶ run ──▶ grade ──▶ analyze ──▶ report
- │           │             │            │           │        │          │           │
- GraphQL   prompt +      base-fails/  per-task    agent    apply +    behavioral  fingerprints
- + filters gold/test     merged-      Docker      harness  anti-cheat metrics +   + reward
- + tiers   split         passes ×3    image       (sandbox)+ F2P/P2P  reward score estimates
-```
-
-## Runners (agent harnesses)
-
-| runner | models | notes |
-|---|---|---|
-| `mini-swe` | **any** OpenAI-compatible API (DeepSeek, OpenRouter → Qwen/Llama/GLM, OpenAI, Moonshot) | minimal one-command-per-turn ReAct loop; the **cross-model** harness |
-| `claude-native` | Anthropic Messages API | native structured tool-use + extended thinking; the **correct scaffold for Claude** ([scaffold experiment](docs/EXPERIMENTS.md)) |
-| `claude-code` | Anthropic only | rich scaffold (`claude -p` headless); a separate "scaffold strength" axis |
-| `golden` / `null` | — | CI fixtures: golden applies the real patch (must resolve), null no-ops (must not) |
-
-The LLM API is called from the host; the task container runs **network-isolated**, so the agent
-can't reach the internet and keys never enter the sandbox.
-
-## How it works
-
-### Reward estimation, three tiers
-
-1. **Consistency labels** — z-scored metrics cross a threshold → hedged "consistent with X" labels
-   (`analysis/fingerprint.py`).
-2. **Mixture estimation** — model the reward as `R = Σ wᵢ·componentᵢ`; recover `w ≥ 0` via
-   non-negative least squares against a signature matrix, with bootstrap CIs and collinearity
-   (identifiability) warnings (`analysis/estimate.py`). A second, assumption-light estimator scores
-   each *realized* counterfactual reward on the actual trajectory (`analysis/reward_scoring.py`) as a
-   cross-check.
-3. **Probes & calibration** — honeypot/impossible probes break collinear ties; the signature matrix
-   is validated against models run with *known* rewards (designed).
-
-### Length-invariance
-
-Only rates, ratios, and booleans enter the fingerprint — never raw counts — so a verbose model and a
-terse one are scored on the same footing. A guard (`_assert_length_invariant`) fails fast if a
-non-invariant metric is ever added to the signature matrix.
-
-### Why probes are needed
-
-Passive observation can't separate every reward family ("never games" vs "penalized for gaming" look
-identical, cos = −0.81 in the signature matrix). Probes manufacture the divergence by intervening —
-see [What OpenBench probes for](#what-openbench-probes-for) for the full set (honeypot,
-impossible-task, GPSO-inverted forced patterns, the scaffold factorial, action-recall calibration).
-
-### Anti-cheat
-
-Every existing/gold test file is SHA-256 pinned. Agent edits to them are **reverted before grading**
-(tampering can never raise a score) and recorded as first-class gaming signals for the reward
-analysis.
-
-## Repository layout
-
-```
-src/openbench/
-  mining/     GitHub GraphQL mining · super-long-PR filters · hardness tiers
-  tasks/      prompt construction (leakage-stripped) · F2P/P2P split · validation gate
-              · honeypot & impossible probe generators
-  envs/       per-task Docker images pinned at the base commit
-  runners/    AgentRunner protocol · mini-swe (multi-provider) · claude-native · claude-code · fixtures · sandbox
-  grading/    mergeability sequence · anti-cheat · rubric judge
-  traces/     normalized TraceEvent stream · per-harness adapters · JSONL + DuckDB store
-  analysis/   behavioral metrics · reward-mixture estimator · realized reward scoring · stats
-  report/     markdown + figure generation
-docs/
-  RESEARCH.md       hypotheses · reward-estimation method · probe designs · references
-  EXPERIMENTS.md    pre-registered experiments — data · method · expected result · status
-  PAPER.md          short paper write-up
-configs/            mining thresholds, hardness weights, grading & rubric config
-```
-
-## Development
+### Development
 
 ```bash
 uv run pytest            # 140 offline tests (no Docker / network)
@@ -276,9 +282,10 @@ uv run ruff check        # lint
 ```
 
 Offline tests cover every pure component (filters, hardness, F2P split, anti-cheat, metrics,
-estimator, probes, trace adapters, recall calibration); Docker-dependent steps are exercised by the
-golden/null fixtures against a real task. Bugs that once produced *wrong results* are pinned by
-regression guards in `tests/test_bug_regressions.py`.
+estimator, probes, trace adapters, recall calibration). Docker-dependent steps are exercised by the
+`golden` / `null` CI fixtures against a real task — `golden` applies the real patch and must
+resolve, `null` no-ops and must not — so the grade pipeline is validated without a model key. Bugs
+that once produced *wrong results* are pinned by regression guards in `tests/test_bug_regressions.py`.
 
 ## Status
 
@@ -303,7 +310,7 @@ offline on stored traces.
 ## Acknowledgements
 
 Task construction and grading follow the [SWE-bench](https://www.swebench.com/) methodology.
-Hardness tiering is inspired by FrontierCode-style stratification. See
+Hardness tiering is inspired by [FrontierCode](https://cognition.ai/blog/frontier-code)-style stratification. See
 [`docs/RESEARCH.md`](docs/RESEARCH.md) for the full reference list behind each hypothesis.
 
 ## License
