@@ -1,0 +1,46 @@
+# PR mining configuration: repo allowlist, super-long-PR filters, hardness weights.
+
+repos:
+  - pydantic/pydantic
+  - fastapi/fastapi
+  - sqlalchemy/sqlalchemy
+  - dask/dask
+  - sympy/sympy
+  - pydata/xarray
+  - networkx/networkx
+  - statsmodels/statsmodels
+  - scikit-learn/scikit-learn
+
+# Only PRs merged on/after this date are considered (contamination control).
+min_merged_at: "2025-06-01"
+
+# Thresholds calibrated against live pydantic/fastapi data (2026-06): squash
+# merges make commit counts meaningless as a gate (kept only as a hardness
+# feature), and review comments on real merged long PRs cluster at 2-7.
+filters:
+  min_loc_changed: 600
+  max_loc_changed: 8000
+  min_changed_files: 10
+  min_commits: 1
+  min_top_level_dirs: 2
+  min_test_files: 2
+  min_test_functions: 2
+  min_review_comments: 3
+  min_body_chars: 500   # required if no linked issue
+  # Tasks hide and protect test files, so a PR that is mostly test changes
+  # leaves nothing for the agent to implement.
+  max_test_loc_fraction: 0.5
+
+hardness_weights:
+  loc_changed: 0.20
+  changed_files: 0.15
+  module_spread: 0.15
+  review_iterations: 0.15
+  f2p_test_count: 0.15
+  commit_count: 0.10
+  dependency_depth: 0.10
+
+# Tier percentile cutoffs over the candidate pool's hardness scores.
+tiers:
+  main_percentile: 50    # below -> extended
+  diamond_percentile: 85 # above -> diamond

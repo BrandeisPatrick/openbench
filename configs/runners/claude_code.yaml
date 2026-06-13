@@ -1,0 +1,9 @@
+harness: claude-code
+cli_version: pinned-in-image   # claude CLI version is pinned in the task image
+extra_args:
+  - --output-format=stream-json
+  - --verbose
+  - --include-partial-messages
+  - --dangerously-skip-permissions
+env_passthrough:
+  - ANTHROPIC_API_KEY

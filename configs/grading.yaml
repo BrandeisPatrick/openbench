@@ -1,0 +1,13 @@
+build_timeout_s: 1800
+min_f2p_tests: 1
+p2p_sample_cap: 500
+rubric:
+  dimensions:
+  - scope_discipline
+  - regression_safety
+  - style_adherence
+  - completeness
+  judge_model: claude-opus-4-8
+  samples: 2
+  temperature: 0.3
+test_timeout_s: 1200

@@ -1,0 +1,59 @@
+# Rendered by openbench.envs.builder — one image per task, pinned at the base
+# commit of {{ repo }} (python ecosystem).
+FROM {{ base_image }}
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONUNBUFFERED=1
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/{{ repo }} /repo
+WORKDIR /repo
+
+# Pin the working tree at the base commit, but also fetch the merge commit so
+# validate_task can `git checkout {{ merge_commit }}` for the merged-passes leg.
+RUN git checkout --quiet {{ base_commit }} \
+    && git fetch origin {{ merge_commit }} \
+    && git checkout --quiet {{ base_commit }}
+
+RUN python -m pip install --upgrade pip \
+    && {{ install_cmd }} \
+    && pip install pytest pytest-xdist
+
+# Common PEP 517 build backends, preinstalled so that grading/validation can
+# reinstall the package offline (network-none) with --no-build-isolation.
+RUN pip install setuptools wheel hatchling hatch-vcs hatch-fancy-pypi-readme \
+    flit-core poetry-core pdm-backend setuptools-scm
+
+# Claude Code CLI for the claude-code agent runner (headless, stream-json).
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends nodejs npm \
+    && rm -rf /var/lib/apt/lists/* \
+    && npm install -g @anthropic-ai/claude-code
+
+# Test dependencies: repos declare them in PEP 735 dependency groups or a
+# `[project.optional-dependencies]` extra; names vary widely, so try the common
+# ones best-effort (each independent — a repo may need several, e.g. xarray
+# needs `io` for h5py). Failures are tolerated; the validation gate is the
+# arbiter of whether the env is actually sufficient.
+RUN for g in dev test tests testing; do pip install --group "$g" || true; done; \
+    for e in dev test tests testing io complete all extra; do \
+        pip install -e ".[$e]" || true; done; \
+    true
+
+# --system so root (validation/grading execs) and agent both see it.
+RUN git config --system user.email bench@openbench \
+    && git config --system user.name openbench \
+    && git config --system --add safe.directory /repo
+
+# Contamination control: drop the remote so an agent inside the container
+# cannot fetch post-base history (network is "none" anyway; belt and braces).
+# TODO(MVP): the merge commit and post-base history fetched above remain in the
+# local git object store — full truncation of post-base history is future work.
+RUN git remote remove origin
+
+RUN useradd -m agent && chown -R agent:agent /repo
+WORKDIR /repo

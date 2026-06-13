@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Environments & secrets
+.venv/
+.env
+.env.local
+
+# Generated data — all reproducible from the pipeline, never committed:
+#   datasets/ : mined PRs, constructed tasks (incl. gold patches → contamination
+#               risk if public), the GitHub cache, the DuckDB warehouse.
+#   runs/     : per-run transcripts, grades, metrics.
+datasets/
+runs/
+
+# Editor / tooling state
+.claude/
+.DS_Store
