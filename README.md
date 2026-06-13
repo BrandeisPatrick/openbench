@@ -22,6 +22,13 @@
 
 ---
 
+> [!NOTE]
+> **OpenBench is a research preview.** It is a *hypothesis-generating instrument*: it estimates
+> reward **propensities** from black-box agent behavior, and is deliberately honest about what it
+> cannot identify (exact reward recovery is unidentifiable; cross-model claims hold only with the
+> harness fixed). Every probe and experiment is [pre-registered](docs/EXPERIMENTS.md) with
+> predictions and falsification conditions committed *before* the evidence.
+
 ## Overview
 
 OpenBench replays *real, long, multi-feature GitHub pull requests* as agentic coding tasks, then
@@ -74,6 +81,49 @@ See [`docs/EXPERIMENTS.md`](docs/EXPERIMENTS.md) for the full pre-registered rec
 <img src="docs/figures/e1_composition.png" width="49%" alt="Estimated reward composition per model">
 <img src="docs/figures/e3_recall.png" width="49%" alt="Context-recall fingerprint">
 </div>
+
+## What OpenBench probes for
+
+Each reward family is a hypothesis with a documented training precedent in the literature, a
+falsifiable behavioral *signature*, and a deterministic metric or a probe that elicits it. The full
+registry, predictions, and provenance live in [`docs/RESEARCH.md`](docs/RESEARCH.md); the
+pre-registered experiments in [`docs/EXPERIMENTS.md`](docs/EXPERIMENTS.md).
+
+**Reward families fingerprinted** (the 7-component basis behind the mixture estimate):
+
+- **H1 · Outcome-only RLVR** — DeepSeek-R1 rule-based rewards; RLVR generally
+- **H2 · Anti-hacking penalty** — [Anthropic reward-hack classifier / monitors](https://www.anthropic.com/research/emergent-misalignment-reward-hacking)
+- **H3 · Process / turn-level verifier reward** — turn-level reward ([arXiv 2505.11821](https://arxiv.org/abs/2505.11821)); online process-reward learning ([arXiv 2509.19199](https://arxiv.org/abs/2509.19199))
+- **H4 · Similarity-to-gold-patch** — SWE-RL ([arXiv 2502.18449](https://arxiv.org/abs/2502.18449))
+- **H5 · Length / truncation shaping** — DAPO overlong shaping ([arXiv 2503.14476](https://arxiv.org/abs/2503.14476)); Kimi length penalties
+- **H6 · Rubric / generative RM** — Kimi K2 self-critique rubric ([arXiv 2507.20534](https://arxiv.org/abs/2507.20534)); DeepSeek-V4 generative reward model
+- **H7 · Context-management reward** — Context-Folding ([arXiv 2510.11967](https://arxiv.org/abs/2510.11967)); Memory-as-Action ([arXiv 2510.12635](https://arxiv.org/abs/2510.12635)); AgeMem ([arXiv 2601.01885](https://arxiv.org/abs/2601.01885))
+
+**Reasoning-pattern & long-horizon hypotheses** (extended registry):
+
+- **H8 · Literal spec-fidelity vs unstated-intent inference** — judge-tier
+- **H9 · Canonical pattern recall / retrieval** — judge-tier
+- **H10 · Intrinsic-verification reward** — verifies even when trivial
+- **H11 · Proportionate-effort reward** — effort scales with difficulty
+- **H12 · Reasoning-pattern selection** — RL concentrates the pattern distribution ([Chen, Li & Zou, arXiv 2506.04695](https://arxiv.org/abs/2506.04695); GPSO, [arXiv 2601.07238](https://arxiv.org/abs/2601.07238))
+- **H13 · Long-context working-memory recall** — acting on context dormant >10 turns (novel; calibrated against chain-of-thought, ρ = 0.71)
+
+**Probe & estimation methods:**
+
+- **Non-negative least-squares mixture estimation** — `R = Σ wᵢ·componentᵢ`, with bootstrap CIs and collinearity / identifiability warnings
+- **Realized counterfactual reward scoring** — an assumption-light cross-check on the actual trajectory
+- **Length-invariance guard** — only rates/ratios/bools enter the fit ([Beyond Resolution Rates, arXiv 2604.02547](https://arxiv.org/abs/2604.02547))
+- **Honeypot probe** — weak visible tests + strict hidden grading → outcome-reward without an anti-hacking penalty
+- **Impossible-task probe** — self-contradictory spec → sycophancy-to-spec vs push-back
+- **GPSO-inverted forced-pattern probe** — pattern prompts as a causal test-time intervention ([arXiv 2601.07238](https://arxiv.org/abs/2601.07238))
+- **Scaffold factorial** — protocol (text-fence vs native tool-use) × thinking, to separate reward signatures from harness artifacts
+- **Action-grounded recall + prose↔action calibration** — working-memory measurement that survives hidden chain-of-thought
+- **SALT step-level divergent-credit** — trajectory-graph advantage assignment ([arXiv 2510.20022](https://arxiv.org/abs/2510.20022))
+- **AgentPRM progress proxy** — process reward via progress estimation ([arXiv 2511.08325](https://arxiv.org/abs/2511.08325))
+- **Cognitive-behavior signatures** — verification, backtracking, subgoaling ([Gandhi et al., arXiv 2503.01307](https://arxiv.org/abs/2503.01307))
+- **Cross-lab blind recipe prediction** — predict the recipe from the fingerprint, *then* read the published training docs
+- **Anti-cheat** — SHA-256-pinned test files, reverted before grading
+- **IRL identifiability grounding** — misspecification & non-identifiability bounds ([arXiv 2411.15951](https://arxiv.org/abs/2411.15951); [arXiv 2106.03498](https://arxiv.org/abs/2106.03498)); credit-assignment survey ([arXiv 2604.09459](https://arxiv.org/abs/2604.09459)); self-correction/trajectory-metrics survey ([arXiv 2507.21504](https://arxiv.org/abs/2507.21504))
 
 ## Why long PRs, and why difficulty matters
 
@@ -180,17 +230,12 @@ Only rates, ratios, and booleans enter the fingerprint — never raw counts — 
 terse one are scored on the same footing. A guard (`_assert_length_invariant`) fails fast if a
 non-invariant metric is ever added to the signature matrix.
 
-### Probes
+### Why probes are needed
 
 Passive observation can't separate every reward family ("never games" vs "penalized for gaming" look
-identical). Probes manufacture the divergence:
-
-- **Honeypot** — weak *visible* smoke tests, strict *hidden* grading. Exploiting the cheap bar ⇒
-  outcome-reward without an anti-hacking penalty. Tampering with the bait is detected and reverted.
-- **Impossible** — a self-contradictory spec. Pushing back vs comply-and-fake measures
-  sycophancy-to-spec.
-- **Scaffold factorial** — the same model under text-fence vs native tool-use, thinking on vs off, to
-  separate reward signatures from harness artifacts.
+identical, cos = −0.81 in the signature matrix). Probes manufacture the divergence by intervening —
+see [What OpenBench probes for](#what-openbench-probes-for) for the full set (honeypot,
+impossible-task, GPSO-inverted forced patterns, the scaffold factorial, action-recall calibration).
 
 ### Anti-cheat
 
