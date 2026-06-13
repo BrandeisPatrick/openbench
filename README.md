@@ -28,6 +28,11 @@
 > cannot identify (exact reward recovery is unidentifiable; cross-model claims hold only with the
 > harness fixed). Every probe and experiment is [pre-registered](docs/EXPERIMENTS.md) with
 > predictions and falsification conditions committed *before* the evidence.
+>
+> **Status — `claude-fable-5` currently inaccessible.** The Fable 5 endpoint is down for an extended
+> period, so its SWE-bench run coverage **lags the other models**: Fable's numbers come from earlier
+> `mini-swe` runs only, and it has *not* been re-run on the corrected native-tool scaffold. Treat any
+> Fable comparison as provisional and under-sampled until the API returns.
 
 ## Overview
 
