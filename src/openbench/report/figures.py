@@ -26,6 +26,26 @@ from openbench.models import RunMetrics, RunResult, TraceEvent
 
 _PALETTE = ["#378ADD", "#7F77DD", "#888780", "#1D9E75", "#D85A30", "#D4537E"]
 
+_COMP_SHORT = {
+    "outcome_only": "outcome",
+    "anti_hack_penalty": "anti-hack",
+    "process_verifier": "process",
+    "similarity_to_gold": "similarity",
+    "length_penalty": "length",
+    "rubric_grm": "rubric",
+    "context_mgmt": "context",
+}
+_MODEL_ALIAS = {
+    "openrouter/deepseek/deepseek-chat-v3-0324": "deepseek-v3",
+    "openrouter/moonshotai/kimi-k2-0905": "kimi-k2",
+    "openrouter/qwen/qwen3-coder": "qwen3-coder",
+    "openrouter/z-ai/glm-4.6": "glm-4.6",
+}
+
+
+def _short_model(m: str) -> str:
+    return _MODEL_ALIAS.get(m, m.split("/")[-1])
+
 
 def _model_colors(models: list[str]) -> dict[str, str]:
     return {m: _PALETTE[i % len(_PALETTE)] for i, m in enumerate(sorted(models))}
@@ -96,6 +116,50 @@ def fig_composition(all_metrics: list[RunMetrics], out: Path) -> Path | None:
         )
     axes[-1].set_xlabel("mixture weight (grey = not estimable, CI∋0)", fontsize=8)
     fig.suptitle("E1 — estimated reward composition", fontsize=11)
+    fig.tight_layout()
+    fig.savefig(out, dpi=150)
+    plt.close(fig)
+    return out
+
+
+def fig_fingerprint_grid(all_metrics: list[RunMetrics], out: Path) -> Path | None:
+    """The reward fingerprint, clean: models × 7 reward components, cells = the
+    estimated NNLS mixture weight. Not-identifiable cells (CI∋0) are greyed —
+    that sparsity is the identifiability story, not missing data."""
+    estimates = {m: e for m, e in estimate_mixture(all_metrics).items() if m != "none"}
+    if not estimates:
+        return None
+    models = sorted(estimates, key=_short_model)
+    w = np.full((len(models), len(COMPONENTS)), np.nan)
+    for i, m in enumerate(models):
+        e = estimates[m]
+        for j, comp in enumerate(COMPONENTS):
+            if e.estimable(comp):
+                w[i, j] = e.weights[comp]
+    fig, ax = plt.subplots(figsize=(1.0 * len(COMPONENTS) + 3.0, 0.46 * len(models) + 1.8))
+    cmap = plt.cm.Blues.copy()
+    cmap.set_bad("#ECEAE3")
+    vmax = float(np.nanmax(w)) if np.isfinite(w).any() else 1.0
+    im = ax.imshow(np.ma.masked_invalid(w), cmap=cmap, vmin=0, vmax=vmax, aspect="auto")
+    ax.set_xticks(
+        range(len(COMPONENTS)), [_COMP_SHORT[c] for c in COMPONENTS],
+        rotation=30, ha="right", fontsize=10,
+    )
+    ax.set_yticks(range(len(models)), [_short_model(m) for m in models], fontsize=10)
+    for i in range(len(models)):
+        for j in range(len(COMPONENTS)):
+            if np.isfinite(w[i, j]):
+                ax.text(
+                    j, i, f"{w[i, j]:.2f}", ha="center", va="center", fontsize=8.5,
+                    color="white" if w[i, j] > 0.45 * vmax else "#0C447C",
+                )
+    ax.set_xticks(np.arange(-0.5, len(COMPONENTS)), minor=True)
+    ax.set_yticks(np.arange(-0.5, len(models)), minor=True)
+    ax.grid(which="minor", color="white", linewidth=2)
+    ax.tick_params(which="minor", length=0)
+    fig.colorbar(im, ax=ax, label="mixture weight", shrink=0.7)
+    ax.set_title("Reward fingerprint — estimated mixture weights  (grey = not identifiable)",
+                 fontsize=11)
     fig.tight_layout()
     fig.savefig(out, dpi=150)
     plt.close(fig)
@@ -292,7 +356,8 @@ def generate_figures(report_out: Path) -> list[Path]:
     written: list[Path] = []
     if all_metrics:
         for fn, name in (
-            (fig_composition, "e1_composition.png"),
+            (fig_fingerprint_grid, "fingerprint.png"),          # the clean hero
+            (fig_composition, "e1_composition.png"),            # per-model detail
             (fig_fingerprint_heatmap, "e1_fingerprint_heatmap.png"),
         ):
             p = fn(all_metrics, fig_dir / name)

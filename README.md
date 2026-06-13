@@ -58,8 +58,8 @@ Two pillars on one pipeline:
 - **Reward inference** — the same trace is scored into length-invariant behavioral metrics and aggregated into a per-model **reward fingerprint**.
 
 <div align="center">
-<img src="docs/figures/e1_fingerprint_heatmap.png" width="85%" alt="Reward fingerprint heatmap across models">
-<br><i>Per-model reward fingerprints — z-scored behavioral signatures across the reward-component basis.</i>
+<img src="docs/figures/fingerprint.png" width="88%" alt="Reward fingerprint — estimated mixture weights per model">
+<br><i>The reward fingerprint — each model's estimated reward mixture across the 7-component basis. Grey = not identifiable from behavior alone.</i>
 </div>
 
 Each reward family it probes for has a documented training precedent in the literature:
@@ -98,11 +98,6 @@ reasoning:
 - **Cross-lab blind calibration, 3/3.** Recipe predictions made from fingerprints *alone*, committed
   before reading any published training docs, hit on Kimi-K2 / GLM-4.6 / Qwen3-Coder.
 
-<div align="center">
-<img src="docs/figures/e1_composition.png" width="49%" alt="Estimated reward composition per model">
-<img src="docs/figures/e3_recall.png" width="49%" alt="Context-recall fingerprint">
-</div>
-
 ### Frontier models
 
 Applying the calibrated probe to the undisclosed frontier cohort:
@@ -111,7 +106,7 @@ Applying the calibrated probe to the undisclosed frontier cohort:
 |---|---|---|---|---|
 | **GPT-5.5** | mini-swe | 2/4 | balanced — similarity 0.38 + process 0.28 + anti-hack 0.24 | always verifies (`verified_before_done` 1.0), never early-stops |
 | **Fable 5** ⚠ | mini-swe | 1/4 | similarity-to-gold 0.40 (sole estimable) | verifies sometimes; **data thin, API down** |
-| **Opus 4.8** | mini-swe → native | scaffold-dependent | not estimable (scaffold-confounded) | text-fence → confabulates (0-line patches, ~2–3 turns); native tool-use → real ~130-line patches, tests run |
+| **Opus 4.8** | mini-swe → native | scaffold-dependent | scaffold-confounded (mini-swe + native pooled) | text-fence → confabulates (0-line patches, ~2–3 turns); native tool-use → real ~130-line patches, tests run |
 
 - **GPT-5.5 — balanced reward.** The only model with all three of similarity-to-gold (0.38),
   process-verifier (0.28), and anti-hacking (0.24) co-estimable; it always verifies before done,
