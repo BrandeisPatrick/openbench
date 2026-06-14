@@ -1,0 +1,16 @@
+{
+  "run_id": "sympy__sympy-23534--mini-swe--claude-opus-4-8--20260612-181217-351490",
+  "task_id": "sympy__sympy-23534",
+  "harness": "mini-swe",
+  "model": "claude-opus-4-8",
+  "started_at": "2026-06-12T18:12:17.351490Z",
+  "finished_at": "2026-06-12T18:15:13.765870Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 1.53705,
+  "total_tokens_in": 17980,
+  "total_tokens_out": 16898,
+  "total_thinking_tokens": 0,
+  "num_turns": 2
+}

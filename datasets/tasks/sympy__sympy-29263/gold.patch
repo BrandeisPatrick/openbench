@@ -1,0 +1,270 @@
+diff --git a/.mailmap b/.mailmap
+index 9d362bb9eec4..03c47037fff1 100644
+--- a/.mailmap
++++ b/.mailmap
+@@ -598,6 +598,8 @@ Duc-Minh Phan <alephvn@gmail.com>
+ Dustin Gadal <Dustin.Gadal@gmail.com> <dustin.gadal@gmail.com>
+ Dzhelil Rufat <drufat@caltech.edu>
+ Ebrahim Byagowi <ebrahim@gnu.org>
++Edoardo Matachione <edoardomatachione@gmail.com> <35014239+Woodman04@users.noreply.github.com>
++Edoardo Matachione <edoardomatachione@gmail.com> Woodman04 <edoardomatachione@gmail.com>
+ Edward Schembor <eschemb1@jhu.edu>
+ Edward Z. Yang <ezyang@mit.edu> Edward Z. Yang <ezyang@meta.com>
+ Eh Tan <tan2tan2@gmail.com>
+diff --git a/sympy/integrals/manualintegrate.py b/sympy/integrals/manualintegrate.py
+index 2876c839f80f..0c2cfd581b42 100644
+--- a/sympy/integrals/manualintegrate.py
++++ b/sympy/integrals/manualintegrate.py
+@@ -37,6 +37,7 @@
+ from sympy.core.power import Pow
+ from sympy.core.relational import Eq, Ne
+ from sympy.core.singleton import S
++from sympy.core.sorting import ordered
+ from sympy.core.symbol import Dummy, Symbol, Wild
+ from sympy.core.exprtools import factor_terms
+ from sympy.core.function import WildFunction
+@@ -1569,7 +1570,7 @@ def make_inverse_trig(RuleClass, a, sign_a, c, sign_c, h) -> Rule:
+     elif b.is_zero:
+         degenerate_step = ConstantRule(a ** exp, symbol)
+     else:
+-        degenerate_step = sqrt_linear_rule(IntegralInfo((a + b * symbol) ** exp, symbol))
++        degenerate_step = sqrt_fractional_linear_rule(IntegralInfo((a + b * symbol) ** exp, symbol))
+ 
+     if simplify(2*exp + 1) == 0:
+         h, k = -b/(2*c), a - b**2/(4*c)  # rewrite base to k + c*(symbol-h)**2
+@@ -1935,48 +1936,103 @@ def quadratic_denom_rule(integral):
+     return
+ 
+ 
+-def sqrt_linear_rule(integral: IntegralInfo):
++def sqrt_fractional_linear_rule(integral : IntegralInfo):
+     """
+-    Substitute common (a+b*x)**(1/n)
++    Substitute common ((a*x + b)/(c*x + d))**(1/n)
+     """
+     integrand, x = integral
+     a = Wild('a', exclude=[x])
+-    b = Wild('b', exclude=[x, 0])
+-    a0 = b0 = 0
+-    bases, qs, bs = [], [], []
+-    for pow_ in integrand.find(Pow):  # collect all (a+b*x)**(p/q)
++    b = Wild('b', exclude=[x])
++    c = Wild('c', exclude=[x])
++    d = Wild('d', exclude=[x])
++    base0 = None
++    bases, qs, ratios = [], [], []
++    constant_bases_subs = {}
++    # use ordered() to ensure a selection of the smallest base0 (eg. first sqrt(x), then cbrt(2x), x chosen)
++    for pow_ in ordered(integrand.find((Pow))): # collect all ((a*x + b)/(c*x + d))**(p/q)
+         base, exp_ = pow_.base, pow_.exp
+-        if exp_.is_Integer or x not in base.free_symbols:  # skip 1/x and sqrt(2)
++        if exp_.is_Integer or x not in base.free_symbols: # skip 1/x and sqrt(2)
+             continue
+-        if not exp_.is_Rational:  # exclude x**pi
+-            return
+-        match = base.match(a+b*x)
+-        if not match:  # skip non-linear
+-            continue  # for sqrt(x+sqrt(x)), although base is non-linear, we can still substitute sqrt(x)
+-        a1, b1 = match[a], match[b]
+-        if a0*b1 != a1*b0 or not (b0/b1).is_nonnegative:  # cannot transform sqrt(x) to sqrt(x+1) or sqrt(-x)
+-            return
+-        if b0 == 0 or (b0/b1 > 1) is S.true:  # choose the latter of sqrt(2*x) and sqrt(x) as representative
+-            a0, b0 = a1, b1
+-        bases.append(base)
+-        bs.append(b1)
+-        qs.append(exp_.q)
+-    if b0 == 0:  # no such pattern found
+-        return
++        if not exp_.is_Rational: # exclude x**pi
++            return None
++        num, den = base.as_numer_denom()
++        match_num = num.match(a*x + b)
++        match_den = den.match(c*x + d)
++        if not match_num or not match_den:
++            continue
++        aa, bb = match_num[a], match_num[b]
++        cc, dd = match_den[c], match_den[d]
++        if cc.is_zero and dd.is_zero:
++            return None
++        det = aa*dd - bb*cc
++        if det.is_zero: # constant value as sqrt((5*x + 10)/(2*x +  4))
++            const_val = (S(aa) / cc) if not cc.is_zero else (S(bb) / dd)
++            constant_bases_subs[base] = const_val
++            continue
++        if base0 is None:
++            base0 = base
++            a0, b0, c0, d0 = aa, bb, cc, dd
++            bases.append(base)
++            ratios.append(S.One)
++            qs.append(exp_.q)
++        else:
++            K = (base / base0).cancel()
++            if K.has(x): # cannot substitute both sqrt(x) and sqrt(x + 1)
++                return None
++            bases.append(base)
++            ratios.append(K)
++            qs.append(exp_.q)
++    if base0 is None and not constant_bases_subs:
++        return None
++    if constant_bases_subs:
++        integrand = integrand.subs(constant_bases_subs)
++    if base0 is None:
++        substep = integral_steps(integrand, x)
++        if not substep.contains_dont_know():
++            return RewriteRule(integral.integrand, x, integrand, substep)
++        return None
+     q0: Integer = lcm_list(qs)
+-    u_x = (a0 + b0*x)**(1/q0)
+     u = Dummy("u")
+-    substituted = integrand.subs({base**(S.One/q): (b/b0)**(S.One/q)*u**(q0/q)
+-                                  for base, b, q in zip(bases, bs, qs)}).subs(x, (u**q0-a0)/b0)
+-    substep = integral_steps(substituted*u**(q0-1)*q0/b0, u)
++    u_x = base0**(S.One/q0)
++    u_pow = u**q0
++    x_u = (b0 - d0*u_pow)/(c0*u_pow - a0)
++    dx_u = (q0*(a0*d0 - b0*c0)*u**(q0 - 1))/(c0*u_pow - a0)**2
++    subs_dict = {}
++    for base_i, ratio_i, q_i in zip(bases, ratios, qs):
++        subs_dict[base_i**(S.One/q_i)] = (ratio_i)**(S.One/q_i) * u**(q0/q_i)
++    substituted = integrand.subs(subs_dict).subs(x, x_u) * dx_u
++    substep = integral_steps(substituted, u)
+     if not substep.contains_dont_know():
+         step: Rule = URule(integrand, x, u, u_x, substep)
+-        generic_cond = Ne(b0, 0)
+-        if generic_cond is not S.true:  # possible degenerate case
+-            simplified = integrand.subs(dict.fromkeys(bs, 0))
+-            degenerate_step = integral_steps(simplified, x)
+-            step = PiecewiseRule(integrand, x, [(step, generic_cond), (degenerate_step, S.true)])
+-        return step
++        # in these cases, deteminant would be 0 only if both c0 and d0 were 0 (null denom), no need of Piecewise
++        if (c0.is_zero and (a0.is_zero is False)) or (d0.is_zero and (b0.is_zero is False)):
++            if constant_bases_subs:
++                return RewriteRule(integral.integrand, x, integrand, step)
++            else:
++                return step
++        generic_cond = Ne(a0*d0 - b0*c0, 0)
++        if generic_cond is not S.true:
++            pieces: list[tuple[Rule, Boolean]] = [(step, generic_cond)]
++            cond_c0 = Ne(c0, 0)
++            if cond_c0 is not S.false:
++                const_val = a0 / c0
++                subs_a = {base_i: ratio_i * const_val for base_i, ratio_i in zip(bases, ratios)}
++                simplified_a = integrand.subs(subs_a)
++                degenerate_step_a = integral_steps(simplified_a, x)
++                pieces.append((degenerate_step_a, cond_c0))
++            if cond_c0 is not S.true:
++                const_val = b0 / d0
++                subs_b = {base_i: ratio_i * const_val for base_i, ratio_i in zip(bases, ratios)}
++                simplified_b = integrand.subs(subs_b)
++                simplified_b.subs({a0: 0, c0: 0}) # if det=0 and c0=0 and d0!=0, a0=0
++                degenerate_step_b = integral_steps(simplified_b, x)
++                pieces.append((degenerate_step_b, S.true))
++            step = PiecewiseRule(integrand, x, pieces)
++        if constant_bases_subs:
++            return RewriteRule(integral.integrand, x, integrand, step)
++        else:
++            return step
++    return None
+ 
+ 
+ def sqrt_quadratic_rule(integral: IntegralInfo, degenerate=True):
+@@ -2000,7 +2056,7 @@ def sqrt_quadratic_rule(integral: IntegralInfo, degenerate=True):
+     elif b.is_zero:
+         degenerate_step = integral_steps(f*sqrt(a)**n, x)
+     else:
+-        degenerate_step = sqrt_linear_rule(IntegralInfo(f*sqrt(a+b*x)**n, x))
++        degenerate_step = sqrt_fractional_linear_rule(IntegralInfo(f*sqrt(a+b*x)**n, x))
+ 
+     def sqrt_quadratic_denom_rule(numer_poly: Poly, integrand: Expr):
+         denom = sqrt(a+b*x+c*x**2)
+@@ -2569,16 +2625,16 @@ def _integral_is_subclass(integral):
+         null_safe(special_function_rule),
+         null_safe(switch(key, {
+             Pow: do_one(null_safe(power_rule), null_safe(inverse_trig_rule),
+-                        null_safe(sqrt_linear_rule),
+                         null_safe(quadratic_denom_rule),
+-                        null_safe(sqrt_quadratic_rule)),
++                        null_safe(sqrt_quadratic_rule),
++                        null_safe(sqrt_fractional_linear_rule)),
+             Symbol: power_rule,
+             exp: exp_rule,
+             Add: add_rule,
+             Mul: do_one(null_safe(mul_rule), null_safe(trig_product_rule),
+                         null_safe(heaviside_rule), null_safe(quadratic_denom_rule),
+-                        null_safe(sqrt_linear_rule),
+                         null_safe(sqrt_quadratic_rule),
++                        null_safe(sqrt_fractional_linear_rule),
+                         null_safe(powsimp_rule),
+                         null_safe(trig_cmplx_exp_rule)),
+             Derivative: derivative_rule,
+diff --git a/sympy/integrals/tests/test_integrals.py b/sympy/integrals/tests/test_integrals.py
+index 5f51794acd6e..f01f8bbc0c8d 100644
+--- a/sympy/integrals/tests/test_integrals.py
++++ b/sympy/integrals/tests/test_integrals.py
+@@ -2044,7 +2044,7 @@ def test_sqrt_quadratic():
+                    Piecewise((log(b + 2*sqrt(c)*sqrt(a + b*x + c*x**2) + 2*c*x)/sqrt(c), Ne(a - b**2/(4*c), 0)),
+                              ((b/(2*c) + x)*log(b/(2*c) + x)/sqrt(c*(b/(2*c) + x)**2), True)) +
+                    e*sqrt(a + b*x + c*x**2)/c, Ne(c, 0)),
+-                  ((2*d*sqrt(a + b*x) + 2*e*(-a*sqrt(a + b*x) + (a + b*x)**(S(3)/2)/3)/b)/b, Ne(b, 0)),
++                  (2*((d*sqrt(a + b*x) - e*(a*sqrt(a + b*x) - (a + b*x)**(S(3)/2)/3)/b)/b), Ne(b, 0)),
+                   ((d*x + e*x**2/2)/sqrt(a), True))
+ 
+     assert integrate((3*x**3-x**2+2*x-4)/sqrt(x**2-3*x+2)) == \
+diff --git a/sympy/integrals/tests/test_manual.py b/sympy/integrals/tests/test_manual.py
+index 6437f2546a63..a8048433c303 100644
+--- a/sympy/integrals/tests/test_manual.py
++++ b/sympy/integrals/tests/test_manual.py
+@@ -1,5 +1,4 @@
+ from __future__ import annotations
+-from sympy.core.mul import Mul
+ from sympy.core.function import (Derivative, Function, diff, expand)
+ from sympy.core.numbers import (I, Rational, pi)
+ from sympy.core.relational import Ne
+@@ -732,7 +731,7 @@ def test_manualintegrate_sqrt_linear():
+                           10*(3*x + 2)**(S(7)/2)/567 - 4*(3*x + 2)**(S(5)/2)/27 +
+                           40*(3*x + 2)**(S(3)/2)/81 + 136*sqrt(3*x + 2)/81)
+     assert manualintegrate(x/sqrt(a+b*x)**3, x) == \
+-        Piecewise((Mul(2, b**-2, a/sqrt(a + b*x) + sqrt(a + b*x)), Ne(b, 0)), (x**2/(2*a**(S(3)/2)), True))
++        Piecewise((-2*((-a/sqrt(a + b*x) - sqrt(a + b*x))/b**2), Ne(b, 0)), (x**2/(2*a**(S(3)/2)), True))
+     assert_is_integral_of((sqrt(3*x+3)+1)/((2*x+2)**(1/S(3))+1),
+                           3*sqrt(6)*(2*x + 2)**(S(7)/6)/14 - 3*sqrt(6)*(2*x + 2)**(S(5)/6)/10 -
+                           3*sqrt(6)*(2*x + 2)**(S.One/6)/2 + 3*(2*x + 2)**(S(2)/3)/4 - 3*(2*x + 2)**(S.One/3)/2 +
+@@ -745,6 +744,29 @@ def test_manualintegrate_sqrt_linear():
+                           (9*x/10 + 11*(4*x + 5)**(S(3)/2)/40 + sqrt(4*x + 5)/40 + (4*x + 5)**2/10 + S(11)/10)/2)
+ 
+ 
++def test_manualintegrate_sqrt_fractional_linear():
++    # https://github.com/sympy/sympy/issues/28945
++    f = sqrt((a - x)/(a + x))/x
++    F1 = (-4*a*(-log(sqrt((a - x)/(a + x)) - 1)/(4*a) + log(sqrt((a - x)/(a + x)) + 1)/(4*a)
++                - atan(sqrt((a - x)/(a + x)))/(2*a)))
++    F2 = I*log(x)
++    assert manualintegrate(f, x) == Piecewise((F1, Ne(a, 0)), (F2, True))
++    assert (F1.diff(x) - f).cancel().factor() == 0
++    assert F2.diff(x) == f.subs(a, 0)
++    # linear dependent bases (2*x + 2)/(x - 1) and (x + 1)/(x - 1)
++    f = ((2*x+2)/(x-1))**(S.One/4)*sqrt(((x+1)/(x-1)))
++    F = (-8*2**(S.One/4)*(-((x + 1)/(x - 1))**(S.One/4)*S(1)/8/(sqrt((x + 1)/(x - 1)) + 1)
++         + 3*log(((x + 1)/(x - 1))**(S.One/4) - 1)/16 - 3*log(((x + 1)/(x - 1))**(S.One/4) + 1)/16
++         + 3*atan(((x + 1)/(x - 1))**(S.One/4))/8 - S(1)/16/(((x + 1)/(x - 1))**(S.One/4) + 1)
++         - S(1)/16/(((x + 1)/(x - 1))**(S.One/4) - 1)))
++    assert_is_integral_of(f, F)
++    # constant values sqrt((2*x + 4)/(6*x + 12)) and ((2*a*x + 6*b) / (a*x + 3*b))**(S.One/3)
++    f = sqrt((2*x + 4)/(6*x + 12))*((2*a*x + 6*b) / (a*x + 3*b))**(S.One/3)*sqrt(((x+1)/(x-1)))
++    F = (-4*2**(S.One/3)*sqrt(3)*(log(sqrt((x + 1)/(x - 1)) - 1)/4 - log(sqrt((x + 1)/(x - 1)) + 1)/4
++        - S(1)/4/(sqrt((x + 1)/(x - 1)) + 1) - S(1)/4/(sqrt((x + 1)/(x - 1)) - 1)))/3
++    assert_is_integral_of(f, F)
++
++
+ def test_manualintegrate_sqrt_quadratic():
+     assert_is_integral_of(1/sqrt((x - I)**2-1), log(2*x + 2*sqrt(x**2 - 2*I*x - 2) - 2*I))
+     assert_is_integral_of(1/sqrt(3*x**2+4*x+5), sqrt(3)*asinh(3*sqrt(11)*(x + S(2)/3)/11)/3)
+@@ -767,7 +789,7 @@ def test_manualintegrate_sqrt_quadratic():
+                    Piecewise((log(b + 2*sqrt(c)*sqrt(a + b*x + c*x**2) + 2*c*x)/sqrt(c), Ne(a - b**2/(4*c), 0)),
+                              ((b/(2*c) + x)*log(b/(2*c) + x)/sqrt(c*(b/(2*c) + x)**2), True)) +
+                    e*sqrt(a + b*x + c*x**2)/c, Ne(c, 0)),
+-                  ((2*d*sqrt(a + b*x) + 2*e*(-a*sqrt(a + b*x) + (a + b*x)**(S(3)/2)/3)/b)/b, Ne(b, 0)),
++                  (2*((d*sqrt(a + b*x) - e*(a*sqrt(a + b*x) - (a + b*x)**(S(3)/2)/3)/b)/b), Ne(b, 0)),
+                   ((d*x + e*x**2/2)/sqrt(a), True))
+ 
+     assert manualintegrate((3*x**3-x**2+2*x-4)/sqrt(x**2-3*x+2), x) == \

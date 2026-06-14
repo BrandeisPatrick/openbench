@@ -1,0 +1,50 @@
+diff --git a/sympy/combinatorics/tests/test_free_groups.py b/sympy/combinatorics/tests/test_free_groups.py
+index 9f7055b871a9..a5c5eedded11 100644
+--- a/sympy/combinatorics/tests/test_free_groups.py
++++ b/sympy/combinatorics/tests/test_free_groups.py
+@@ -144,6 +144,9 @@ def test_FreeGroupElm__mul__pow__():
+     assert x**2 == x1*x
+ 
+     assert (x**2*y*x**-2)**4 == x**2*y**4*x**-2
++    assert (x**2*y*x**-2)**-3 == x**2*y**-3*x**-2
++    assert (x*y*x)**3 == x*y*x**2*y*x**2*y*x
++    assert (x*y*x)**-2 == x**-1*y**-1*x**-2*y**-1*x**-1
+     assert (x**2)**2 == x**4
+     assert (x**-1)**-1 == x
+     assert (x**-1)**0 == F.identity
+@@ -168,6 +171,19 @@ def test_FreeGroupElm__mul__pow__():
+         a *= x
+ 
+ 
++def test_FreeGroupElm_prod():
++    dtype = F.dtype
++    assert dtype.prod([]) == F.identity
++    assert dtype.prod([F.identity, x, y, x**-1, F.identity]) == x*y*x**-1
++    assert dtype.prod((x**k for k in [3, -1, 5, -2])) == x**5
++    words = [x**2*y*x**-2, x**2, y**-3, x**-2, y**3]
++    naive = F.identity
++    for word in words:
++        naive *= word
++    assert dtype.prod(words) == naive
++    raises(TypeError, lambda: dtype.prod([x, 1]))
++
++
+ def test_FreeGroupElm__len__():
+     assert len(x**5*y*x**2*y**-4*x) == 13
+     assert len(x**17) == 17
+diff --git a/sympy/combinatorics/tests/test_permutations.py b/sympy/combinatorics/tests/test_permutations.py
+index 8bf914a9f349..636d3827d950 100644
+--- a/sympy/combinatorics/tests/test_permutations.py
++++ b/sympy/combinatorics/tests/test_permutations.py
+@@ -370,6 +370,11 @@ def test_mul():
+     assert Permutation.rmul(a, b, c) == Permutation([1, 2, 3, 0])
+     assert Permutation.rmul(a, c) == Permutation([3, 2, 1, 0])
+     raises(TypeError, lambda: Permutation.rmul(b, c))
++    assert Permutation.prod([a, Permutation(b), Permutation(c)]) == (
++        a*Permutation(b)*Permutation(c))
++    assert Permutation.prod((p for p in [a, Permutation(b), Permutation(c)])) == (
++        a*Permutation(b)*Permutation(c))
++    assert Permutation.prod([]) == Permutation()
+ 
+     n = 6
+     m = 8

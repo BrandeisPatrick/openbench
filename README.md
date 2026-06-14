@@ -230,7 +230,7 @@ the test suite below — those are only required to run *new* live agents (see
 ### Try it in 60 seconds — no credentials
 
 The whole analysis layer runs offline on stored traces, so you can see real per-model reward
-fingerprints immediately, against a bundled example corpus (33 runs across 11 models):
+fingerprints immediately, against the full bundled run corpus (94 runs; 87 graded across 13 models):
 
 ```bash
 make demo         # == uv run openbench demo   → writes examples/report.md

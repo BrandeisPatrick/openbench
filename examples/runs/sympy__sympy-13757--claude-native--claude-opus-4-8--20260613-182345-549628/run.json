@@ -1,0 +1,16 @@
+{
+  "run_id": "sympy__sympy-13757--claude-native--claude-opus-4-8--20260613-182345-549628",
+  "task_id": "sympy__sympy-13757",
+  "harness": "claude-native",
+  "model": "claude-opus-4-8",
+  "started_at": "2026-06-13T18:23:45.549628Z",
+  "finished_at": "2026-06-13T18:25:47.486394Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 3.0650250000000003,
+  "total_tokens_in": 166385,
+  "total_tokens_out": 7590,
+  "total_thinking_tokens": 3353,
+  "num_turns": 23
+}

@@ -1,0 +1,30 @@
+{
+  "task_id": "scikit-learn__scikit-learn-32659",
+  "repo": "scikit-learn/scikit-learn",
+  "pr_number": 32659,
+  "base_commit": "ff9da6428aafc802b6d3afe8df6b5cb75b2d39b0",
+  "merge_commit": "e932688df3a6a383580a40a962182a4b77ce9731",
+  "merged_at": "2025-11-26T04:01:40Z",
+  "tier": "main",
+  "hardness_score": 0.0,
+  "prompt_path": "prompt.md",
+  "gold_patch_path": "gold.patch",
+  "test_patch_path": "test.patch",
+  "fail_to_pass": [
+    "sklearn/linear_model/tests/test_logistic.py::test_LogisticRegressionCV_no_refit",
+    "sklearn/linear_model/tests/test_logistic.py::test_elasticnet_l1_ratio_err_helpful",
+    "sklearn/linear_model/tests/test_logistic.py::test_l1_ratio_None_deprecated",
+    "sklearn/linear_model/tests/test_logistic.py::test_logistic_regression_cv_refit",
+    "sklearn/linear_model/tests/test_logistic.py::test_lr_penalty_l1ratio_incompatible",
+    "sklearn/linear_model/tests/test_logistic.py::test_penalty_deprecated",
+    "sklearn/linear_model/tests/test_logistic.py::test_saga_vs_liblinear",
+    "sklearn/linear_model/tests/test_logistic.py::test_warm_start_newton_solver"
+  ],
+  "pass_to_pass": [],
+  "image_tag": "openbench/scikit-learn__scikit-learn-32659:base",
+  "install_cmd": "pip install -e .",
+  "test_cmd": "python -m pytest",
+  "protected_test_files": {},
+  "validation": null,
+  "is_impossible": false
+}

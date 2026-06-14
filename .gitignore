@@ -14,13 +14,13 @@ wheels/
 .env
 .env.local
 
-# Generated data — all reproducible from the pipeline, never committed:
-#   datasets/ : mined PRs, constructed tasks (incl. gold patches → contamination
-#               risk if public), the GitHub cache, the DuckDB warehouse.
-#   runs/     : per-run transcripts, grades, metrics.
-# Anchored to repo root (leading /) so they do NOT also match examples/runs/,
-# which ships a curated, committed subset for the zero-credential demo.
-/datasets/
+# Generated data. The task SUITE (datasets/tasks/) IS published — it's the
+# benchmark, and its gold/test patches are public GitHub/SWE-bench data, not
+# secret. Excluded: the mining cache, the regenerable DuckDB warehouse, and the
+# live runs/ working dir (the reported corpus ships under examples/runs/).
+# Anchored to repo root (leading /) so they do NOT match examples/runs/.
+/datasets/*
+!/datasets/tasks/
 /runs/
 
 # Editor / tooling state

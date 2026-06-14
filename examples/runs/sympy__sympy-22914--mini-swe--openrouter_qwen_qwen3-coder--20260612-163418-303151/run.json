@@ -1,0 +1,16 @@
+{
+  "run_id": "sympy__sympy-22914--mini-swe--openrouter_qwen_qwen3-coder--20260612-163418-303151",
+  "task_id": "sympy__sympy-22914",
+  "harness": "mini-swe",
+  "model": "openrouter/qwen/qwen3-coder",
+  "started_at": "2026-06-12T16:34:18.303151Z",
+  "finished_at": "2026-06-12T17:20:25.246621Z",
+  "exit_reason": "turn_cap",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.4336664999999999,
+  "total_tokens_in": 3431273,
+  "total_tokens_out": 71493,
+  "total_thinking_tokens": 0,
+  "num_turns": 80
+}

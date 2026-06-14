@@ -1,0 +1,2848 @@
+diff --git a/doc/src/modules/polys/series.rst b/doc/src/modules/polys/series.rst
+index f15c12a41318..0fbcda4e76e4 100644
+--- a/doc/src/modules/polys/series.rst
++++ b/doc/src/modules/polys/series.rst
+@@ -25,48 +25,79 @@ The architecture includes two backends: a pure Python implementation and a
+ high-performance backend using the ``FLINT`` library. The system automatically
+ selects the ``FLINT`` backend if it is available, falling back to the Python
+ implementation otherwise. The primary factory function,
+-:func:`~sympy.polys.series.power_series_ring`, handles this selection
++:func:`~sympy.polys.series.ring.power_series_ring`, handles this selection
+ transparently.
+ 
+-To create a power series ring, use the :func:`~sympy.polys.series.power_series_ring`
+-function, specifying a domain and the desired precision. Ring elements can then be
+-created by passing a list of coefficients.
++To create a power series ring, use the :func:`~sympy.polys.series.ring.power_series_ring`
++function by specifying the domain, generator, and desired precision. This function
++returns a tuple containing a new instance of the
++:class:`~sympy.polys.series.ring.PowerSeriesRingRing` or
++:class:`~sympy.polys.series.ring.PowerSeriesRingField`
++class over the given domain with the chosen generator.
+ 
+ For example, let's create a ring with precision 8 over the integers:
+ 
+     >>> from sympy.polys.series import power_series_ring
+-    >>> from sympy import ZZ
+-    >>> R = power_series_ring(ZZ, prec=8)
+-    >>> f = R([1, 2, 3])
+-    >>> g = R([4, 1])
++    >>> from sympy import ZZ, QQ
++    >>> R, x = power_series_ring('x', ZZ, 8)
++    >>> f = 1 + 2*x + 3*x**2
++    >>> g = 4 + x
+ 
+ Arithmetic operations are performed using the ring's methods. The print method
+ provides a readable string representation.
+ 
+-    >>> R.print(R.add(f, g))
++    >>> f + g
+     5 + 3*x + 3*x**2
+-    >>> R.print(R.multiply(f, g))
++    >>> f * g
+     4 + 9*x + 14*x**2 + 3*x**3
+ 
+ As shown below, when the result of an operation is a polynomial with a degree
+ less than the ring's precision, the exact result is returned.
+ 
+-    >>> p = R([2, -3])
+-    >>> q = R([0, 7, 6, 1])
+-    >>> R.print(R.multiply(p, q))
++    >>> p = 2 - 3*x
++    >>> q = 7*x + 6*x**2 + x**3
++    >>> p * q
+     14*x - 9*x**2 - 16*x**3 - 3*x**4
+ 
+ However, if an operation produces a result that exceeds the precision threshold,
+ it is automatically truncated.
+ 
+-    >>> r = R([1, 2, 3, 4, 5, 6, 7, 8])
+-    >>> s = R([0, 1, 1])
+-    >>> R.print(R.multiply(r, s))
++    >>> r = 1 + 2*x + 3*x**2 + 4*x**3 + 5*x**4 + 6*x**5 + 7*x**6 + 8*x**7
++    >>> s = x + x**2
++    >>> r * s
+     x + 3*x**2 + 5*x**3 + 7*x**4 + 9*x**5 + 11*x**6 + 13*x**7 + O(x**8)
+ 
+-.. autofunction:: sympy.polys.series.power_series_ring
++The power series ring also supports common mathematical functions like logarithm
++and trigonometric functions:
+ 
+-.. py:class:: sympy.polys.series.ring.TSeries
++    >>> R, x = power_series_ring("x", QQ, 8)
++    >>> R.log(1 + x)
++    x - 1/2*x**2 + 1/3*x**3 - 1/4*x**4 + 1/5*x**5 - 1/6*x**6 + 1/7*x**7 + O(x**8)
++    >>> R.tan(x)
++    x + 1/3*x**3 + 2/15*x**5 + 17/315*x**7 + O(x**8)
++
++Domain for Univariate Power Series Rings
++=========================================
++
++.. autoclass:: sympy.polys.domains.powerseriesring.SeriesRingProto
++
++.. autoclass:: sympy.polys.domains.powerseriesring.PowerSeriesRing
++
++Univariate Power Series Ring
++============================
++
++.. currentmodule:: sympy.polys.series.ring
++
++.. autofunction:: power_series_ring
++
++.. autoclass:: PowerSeriesRingRing
++    :members:
++
++.. autoclass:: PowerSeriesRingField
++    :members:
++
++.. autoclass:: PowerSeriesElement
++    :members:
+ 
+ 
+ Protocols for Power Series Rings
+@@ -74,7 +105,11 @@ Protocols for Power Series Rings
+ 
+ .. autoclass:: sympy.polys.series.base.PowerSeriesRingProto
+ 
+-.. py:class:: TSeries
++.. autoclass:: sympy.polys.series.base.PowerSeriesRingFieldProto
++
++.. py:class:: sympy.polys.series.base.TSeries
++
++.. py:class:: sympy.polys.series.tring.TSeriesElement
+ 
+ 
+ Python Implementation
+diff --git a/sympy/polys/domains/domain.py b/sympy/polys/domains/domain.py
+index 3ef5d9d44a54..f676efbb8700 100644
+--- a/sympy/polys/domains/domain.py
++++ b/sympy/polys/domains/domain.py
+@@ -27,6 +27,7 @@
+     from sympy.polys.domains.realfield import RealField
+     from sympy.polys.domains.complexfield import ComplexField
+     from sympy.polys.domains.polynomialring import PolynomialRing
++    from sympy.polys.domains.powerseriesring import PowerSeriesRing
+     from sympy.polys.domains.fractionfield import FractionField
+     from sympy.polys.rings import PolyElement
+     from sympy.polys.fields import FracElement
+@@ -1055,6 +1056,20 @@ def poly_ring(self, *symbols: str | Expr, order: str | MonomialOrder = lex) -> P
+         from sympy.polys.domains.polynomialring import PolynomialRing
+         return PolynomialRing(self, symbols, order)
+ 
++    def _power_series_ring(self, *symbols: str | Expr, prec: int = 6) -> PowerSeriesRing:
++        """Returns a univariate power series ring with specified precision, i.e. `K[[X], <X^prec>]`.
++
++        Notes
++        =====
++        This method is private at the moment because the PowerSeriesRing class
++        needs to be properly integrated into SymPy's domain system.
++
++        """
++        if len(symbols) != 1:
++            raise ValueError("Power series ring supports only univariate series.")
++        from sympy.polys.domains.powerseriesring import PowerSeriesRing
++        return PowerSeriesRing(self, symbols[0], prec)
++
+     def frac_field(self, *symbols: str | Expr, order: str | MonomialOrder = lex) -> FractionField:
+         """Returns a fraction field, i.e. `K(X)`. """
+         from sympy.polys.domains.fractionfield import FractionField
+diff --git a/sympy/polys/domains/powerseriesring.py b/sympy/polys/domains/powerseriesring.py
+new file mode 100644
+index 000000000000..6a284a8a8e8d
+--- /dev/null
++++ b/sympy/polys/domains/powerseriesring.py
+@@ -0,0 +1,196 @@
++from __future__ import annotations
++
++from functools import cached_property
++
++from sympy.core.expr import Expr
++from sympy.polys.domains.ring import Ring
++from sympy.polys.domains.compositedomain import CompositeDomain
++from sympy.polys.domains.domain import Er, Domain
++from sympy.polys.series.ring import (
++    power_series_ring,
++    PowerSeriesElement,
++)
++
++from typing import TYPE_CHECKING, Protocol
++
++if TYPE_CHECKING:
++    from typing import TypeIs
++    from sympy.polys.densebasic import dup
++    from sympy.polys.series.tring import TSeriesElement
++    from sympy.polys.series.base import PowerSeriesRingProto
++
++
++class SeriesRingProto(Protocol[Er]):
++    """Generic protocol for power series rings."""
++
++    ring: PowerSeriesRingProto[TSeriesElement[Er], Er]
++    dtype: type[PowerSeriesElement[Er]]
++    domain: Domain[Er]
++    symbol: Expr
++    prec: int
++
++    one: PowerSeriesElement[Er]
++    zero: PowerSeriesElement[Er]
++    gen: PowerSeriesElement[Er]
++
++    def __init__(self, domain: Domain[Er], symbol: str | Expr = "x", prec: int = 6): ...
++
++    def __repr__(self) -> str: ...
++
++    def __eq__(self, other) -> bool: ...
++
++    def __hash__(self) -> int: ...
++
++    def is_element(self, element: object) -> TypeIs[PowerSeriesElement[Er]]: ...
++
++    def order_term(self) -> PowerSeriesElement[Er]: ...
++
++    def from_expr(self, expr: Expr) -> PowerSeriesElement[Er]: ...
++
++    def from_list(
++        self, lst: list[Er], prec: int | None = None
++    ) -> PowerSeriesElement[Er]: ...
++
++    def from_element(self, element: TSeriesElement[Er]) -> PowerSeriesElement[Er]: ...
++
++    def from_int(self, arg: int) -> PowerSeriesElement[Er]: ...
++
++    def from_ground(self, arg: Er) -> PowerSeriesElement[Er]: ...
++
++    def to_expr(self, element: PowerSeriesElement[Er]) -> Expr: ...
++
++    def to_list(self, element: PowerSeriesElement[Er]) -> list[Er]: ...
++
++    def to_dense(self, element: PowerSeriesElement[Er]) -> dup[Er]: ...
++
++    def domain_new(self, arg: Er | int) -> Er: ...
++
++    def ring_new(self, arg: Expr | Er | int) -> PowerSeriesElement[Er]: ...
++
++
++class PowerSeriesRing(Ring[PowerSeriesElement[Er]], CompositeDomain):
++    """A Domain class for representing univariate power series rings.
++
++    Notes
++    =====
++
++    This class is at experimental stage. Proper domain methods should be added to
++    integrate with SymPy's existing domain framework.
++    """
++
++    is_PowerSeriesRing = is_Series = True
++
++    has_assoc_Ring = True
++    has_assoc_Field = False
++
++    ring: SeriesRingProto[Er]
++    dtype: type[PowerSeriesElement[Er]]
++    gen: PowerSeriesElement[Er]
++    symbol: Expr
++    domain: Domain[Er]
++
++    def __init__(self, domain: Domain[Er], symbol: Expr | str = "x", prec: int = 6):
++        ring, gen = power_series_ring(str(symbol), domain, prec)
++
++        self.ring = ring
++        self.gen = gen
++
++        self.dtype = ring.dtype
++        self.domain = ring.domain
++        self.symbol = ring.symbol
++
++    def __eq__(self, other: object) -> bool:
++        if isinstance(other, PowerSeriesRing):
++            return self.ring == other.ring
++        else:
++            return NotImplemented
++
++    def __hash__(self) -> int:
++        return hash((self.__class__.__name__, self.ring, self.domain, self.symbol))
++
++    def __repr__(self) -> str:
++        return f"{self.domain}[[{self.symbol}], {self.prec}]"
++
++    def new(  # type: ignore
++        self, element: Expr | Er | int
++    ) -> PowerSeriesElement[Er]:
++        return self.ring.ring_new(element)
++
++    def of_type(self, element) -> TypeIs[PowerSeriesElement[Er]]:
++        """Check if ``a`` is of type ``dtype``."""
++        return self.ring.is_element(element)
++
++    @cached_property
++    def zero(self) -> PowerSeriesElement[Er]:  # type: ignore
++        return self.ring.zero
++
++    @cached_property
++    def one(self) -> PowerSeriesElement[Er]:  # type: ignore
++        return self.ring.one
++
++    @cached_property
++    def prec(self) -> int:
++        return self.ring.prec
++
++    def is_unit(self, a: PowerSeriesElement[Er]) -> bool:
++        """Returns ``True`` if ``constant coefficient`` of series is a unit of ``self``"""
++        if not a.is_ground:
++            return False
++        K = self.domain
++        return K.is_unit(a.constant_coefficient())
++
++    def canonical_unit(self, a: PowerSeriesElement[Er]) -> PowerSeriesElement[Er]:
++        u = self.domain.canonical_unit(a.constant_coefficient())
++        return self.ring.from_ground(u)
++
++    def to_sympy(self, a: PowerSeriesElement[Er]) -> Expr:
++        """Convert `a` to a SymPy object."""
++        return self.ring.to_expr(a)
++
++    def from_sympy(self, a: Expr) -> PowerSeriesElement[Er]:
++        """Convert SymPy's expression to `dtype`."""
++        return self.ring.from_expr(a)
++
++    def from_ZZ(K1, a, K0):
++        """Convert a Python `int` object to `dtype`."""
++        return K1.ring.from_ground(K1.domain.convert(a, K0))
++
++    def from_ZZ_python(K1, a, K0):
++        """Convert a Python `int` object to `dtype`."""
++        return K1.ring.from_ground(K1.domain.convert(a, K0))
++
++    def from_QQ(K1, a, K0):
++        """Convert a Python `Fraction` object to `dtype`."""
++        return K1.ring.from_ground(K1.domain.convert(a, K0))
++
++    def from_QQ_python(K1, a, K0):
++        """Convert a Python `Fraction` object to `dtype`."""
++        return K1.ring.from_ground(K1.domain.convert(a, K0))
++
++    def from_ZZ_gmpy(K1, a, K0):
++        """Convert a GMPY `mpz` object to `dtype`."""
++        return K1.ring.from_ground(K1.domain.convert(a, K0))
++
++    def from_QQ_gmpy(K1, a, K0):
++        """Convert a GMPY `mpq` object to `dtype`."""
++        return K1.ring.from_ground(K1.domain.convert(a, K0))
++
++    def is_positive(self, a: PowerSeriesElement[Er]) -> bool:
++        """Returns True if `constant coefficient(a)` is positive."""
++        c = a.constant_coefficient()
++        return self.domain.is_positive(c)
++
++    def is_negative(self, a: PowerSeriesElement[Er]) -> bool:
++        """Returns True if `constant coefficient(a)` is negative."""
++        c = a.constant_coefficient()
++        return self.domain.is_negative(c)
++
++    def is_nonpositive(self, a: PowerSeriesElement[Er]) -> bool:
++        """Returns True if `constant coefficient(a)` is non-positive."""
++        c = a.constant_coefficient()
++        return self.domain.is_nonpositive(c)
++
++    def is_nonnegative(self, a: PowerSeriesElement[Er]) -> bool:
++        """Returns True if `constant coefficient(a)` is non-negative."""
++        c = a.constant_coefficient()
++        return self.domain.is_nonnegative(c)
+diff --git a/sympy/polys/series/__init__.py b/sympy/polys/series/__init__.py
+index ecb648bf14c0..d55f5ee4b844 100644
+--- a/sympy/polys/series/__init__.py
++++ b/sympy/polys/series/__init__.py
+@@ -1,4 +1,14 @@
+-__all__ = ["power_series_ring", "PowerSeriesRingProto"]
++__all__ = [
++    "power_series_ring",
++    "PowerSeriesRingRing",
++    "PowerSeriesRingField",
++    "PowerSeriesRingProto",
++    "PowerSeriesRingFieldProto",
++]
+ 
+-from sympy.polys.series.ring import power_series_ring
+-from sympy.polys.series.base import PowerSeriesRingProto
++from sympy.polys.series.ring import (
++    power_series_ring,
++    PowerSeriesRingRing,
++    PowerSeriesRingField,
++)
++from sympy.polys.series.base import PowerSeriesRingProto, PowerSeriesRingFieldProto
+diff --git a/sympy/polys/series/base.py b/sympy/polys/series/base.py
+index 841ab6e4922c..81381b36c5c5 100644
+--- a/sympy/polys/series/base.py
++++ b/sympy/polys/series/base.py
+@@ -24,7 +24,7 @@ def series_pprint(
+ 
+     if not poly or poly == "0":
+         if prec is not None:
+-            return f"0 + O({sym}**{prec})"
++            return f"O({sym}**{prec})"
+         else:
+             return "0"
+ 
+@@ -37,7 +37,7 @@ class PowerSeriesRingProto(Protocol[TSeries, Er]):
+     """A protocol for a power series ring."""
+ 
+     def __init__(self, prec: int = 6, /) -> None:
+-        """Initialize a power series ring over ZZ."""
++        """Initialize a power series ring over a ring."""
+         ...
+ 
+     def __repr__(self, /) -> str:
+@@ -45,7 +45,7 @@ def __repr__(self, /) -> str:
+         ...
+ 
+     def __call__(self, coeffs: Sequence[Er | int], prec: int | None = None) -> TSeries:
+-        """Return a power series element over ZZ."""
++        """Return a power series element over a ring."""
+         ...
+ 
+     @property
+@@ -109,6 +109,14 @@ def equal_repr(self, s1: TSeries, s2: TSeries, /) -> bool:
+         """Check if two power series have the same representation."""
+         ...
+ 
++    def is_ground(self, arg: TSeries) -> bool | None:
++        """Check if a arg is a ground element of the power series ring."""
++        ...
++
++    def constant_coefficient(self, s: TSeries) -> Er:
++        """Return the constant coefficient of a power series."""
++        ...
++
+     def positive(self, s: TSeries, /) -> TSeries:
+         """Return the positive of a power series."""
+         ...
+@@ -121,10 +129,22 @@ def add(self, s1: TSeries, s2: TSeries, /) -> TSeries:
+         """Add two power series."""
+         ...
+ 
++    def add_ground(self, s: TSeries, n: Er, /) -> TSeries:
++        """Add a ground element to a power series."""
++        ...
++
+     def subtract(self, s1: TSeries, s2: TSeries, /) -> TSeries:
+         """Subtract two power series."""
+         ...
+ 
++    def subtract_ground(self, s: TSeries, n: Er, /) -> TSeries:
++        """Subtract a ground element from a power series."""
++        ...
++
++    def rsubtract_ground(self, s: TSeries, n: Er, /) -> TSeries:
++        """Subtract a power series from a ground element."""
++        ...
++
+     def multiply(self, s1: TSeries, s2: TSeries, /) -> TSeries:
+         """Multiply two power series."""
+         ...
+@@ -133,6 +153,10 @@ def multiply_ground(self, s: TSeries, n: Er, /) -> TSeries:
+         """Multiply a power series by a ground element (integer or rational)."""
+         ...
+ 
++    def divide(self, s1: TSeries, s2: TSeries, /) -> TSeries:
++        """Divide a power series by another power series."""
++        ...
++
+     def pow_int(self, s: TSeries, n: int, /) -> TSeries:
+         """Raise a power series to an integer power."""
+         ...
+@@ -162,13 +186,19 @@ def differentiate(self, s: TSeries, /) -> TSeries:
+         ...
+ 
+ 
+-class PowerSeriesRingProtoQQ(PowerSeriesRingProto[TSeries, Ef], Protocol[TSeries, Ef]):
+-    """A protocol for a power series ring over QQ."""
++class PowerSeriesRingFieldProto(
++    PowerSeriesRingProto[TSeries, Ef], Protocol[TSeries, Ef]
++):
++    """A protocol for a power series ring over a field."""
+ 
+     def __call__(
+         self, coeffs: Sequence[Ef | int | tuple[int, int]], prec: int | None = None
+     ) -> TSeries:
+-        """Return a power series element over QQ."""
++        """Return a power series element over a field."""
++        ...
++
++    def integrate(self, s: TSeries, /) -> TSeries:
++        """Return the integral of a power series."""
+         ...
+ 
+     def sqrt(self, s: TSeries, /) -> TSeries:
+diff --git a/sympy/polys/series/ring.py b/sympy/polys/series/ring.py
+index 9977a187f60d..c94e5f6951dd 100644
+--- a/sympy/polys/series/ring.py
++++ b/sympy/polys/series/ring.py
+@@ -1,109 +1,1048 @@
+ from __future__ import annotations
+ 
+-from typing import TYPE_CHECKING, Generic, cast
+-from sympy.external.gmpy import GROUND_TYPES, MPQ, MPZ
+-from sympy.polys.domains.domain import Domain, Er
++from functools import reduce
++from operator import add, mul
+ 
+-from sympy.polys.series.base import PowerSeriesRingProto
++from sympy.core.expr import Expr
++from sympy.core.symbol import Symbol
++from sympy.core.mul import Mul
++from sympy.core.add import Add
++from sympy.core.power import Pow
++from sympy.core.sympify import CantSympify, sympify
++from sympy.polys.domains.domain import Er, Ef, Domain, DomainElement
++from sympy.polys.densebasic import dup
++from sympy.polys.domains.field import Field
++from sympy.polys.polyerrors import GeneratorsError
++from sympy.polys.series.base import PowerSeriesRingProto, PowerSeriesRingFieldProto
++from sympy.polys.series.tring import TSeriesElement, _power_series_ring
++from sympy.series.order import Order
+ 
+-from sympy.polys.series.ringpython import (
+-    USeries,
+-    PythonPowerSeriesRingZZ,
+-    PythonPowerSeriesRingQQ,
+-)
+ 
+-if TYPE_CHECKING:
+-    from sympy.polys.series.ringflint import (
+-        ZZSeries,
+-        QQSeries,
+-        FlintPowerSeriesRingZZ as _FlintPowerSeriesRingZZ,
+-        FlintPowerSeriesRingQQ as _FlintPowerSeriesRingQQ,
+-    )
+-
+-    FlintPowerSeriesRingZZ: type[_FlintPowerSeriesRingZZ] | None
+-    FlintPowerSeriesRingQQ: type[_FlintPowerSeriesRingQQ] | None
+-
+-
+-if GROUND_TYPES == "flint":
+-    from sympy.polys.series.ringflint import (
+-        FlintPowerSeriesRingZZ,
+-        FlintPowerSeriesRingQQ,
+-    )
+-else:
+-    FlintPowerSeriesRingZZ = None
+-    FlintPowerSeriesRingQQ = None
+-
+-
+-class TSeries(Generic[Er]):
+-    """
+-    Dummy type for power series elements, used only for static type checking.
+-    Actual series elements are implementation-dependent and should be
+-    used via :class:`PowerSeriesRing`.
+-    """
++from typing import Generic, overload, TYPE_CHECKING
+ 
+-    # Dummy method to ensure that TSeries is invariant in Er.
+-    def __invalid__(self, other: Er) -> Er:
+-        raise NotImplementedError
++if TYPE_CHECKING:
++    from typing import TypeIs
+ 
+ 
+-PowerSeriesRing = PowerSeriesRingProto[TSeries[Er], Er]
++@overload
++def power_series_ring(
++    symbol: str, K: Field[Ef], prec: int = 6
++) -> tuple[PowerSeriesRingField[Ef], PowerSeriesElement[Ef]]: ...
+ 
+ 
+-def PowerSeriesRingZZ(prec: int = 6) -> PowerSeriesRing[MPZ]:
+-    if FlintPowerSeriesRingZZ is None:
+-        R_python: PowerSeriesRingProto[USeries[MPZ], MPZ] = PythonPowerSeriesRingZZ(
+-            prec
+-        )
+-        return cast("PowerSeriesRing[MPZ]", R_python)
+-    else:
+-        R_flint: PowerSeriesRingProto[ZZSeries, MPZ] = FlintPowerSeriesRingZZ(prec)
+-        return cast("PowerSeriesRing[MPZ]", R_flint)
+-
+-
+-def PowerSeriesRingQQ(prec: int = 6) -> PowerSeriesRing[MPQ]:
+-    if FlintPowerSeriesRingQQ is None:
+-        R_python: PowerSeriesRingProto[USeries[MPQ], MPQ] = PythonPowerSeriesRingQQ(
+-            prec
+-        )
+-        return cast("PowerSeriesRing[MPQ]", R_python)
+-    else:
+-        R_flint: PowerSeriesRingProto[QQSeries, MPQ] = FlintPowerSeriesRingQQ(prec)
+-        return cast("PowerSeriesRing[MPQ]", R_flint)
++@overload
++def power_series_ring(
++    symbol: str, K: Domain[Er], prec: int = 6
++) -> tuple[PowerSeriesRingRing[Er], PowerSeriesElement[Er]]: ...
+ 
+ 
+-def power_series_ring(K: Domain[Er], prec: int = 6) -> PowerSeriesRing[Er]:
++def power_series_ring(
++    symbol: str, K: Domain, prec: int = 6
++) -> tuple[PowerSeriesRingRing | PowerSeriesRingField, PowerSeriesElement]:
+     """
+     Create a power series ring over the given domain.
+ 
+     Parameters
+     ==========
+ 
+-    domain : Domain
++    symbol : str
++        The symbol to use for the power series variable.
++
++    K : Domain
+         The ground domain for the power series ring. Must be ZZ or QQ.
++
+     prec : int, optional
+         The default precision for power series operations. Default is 6.
+ 
+     Returns
+     =======
+ 
+-    PowerSeriesRingZZ | PowerSeriesRingQQ
+-        A power series ring instance. The actual implementation (Flint or Python)
+-        depends on whether python-flint is available.
++    ring : PowerSeriesRing
++        The power series ring.
++
++    generator : PowerSeriesElement
++        The generator of the power series ring.
+ 
+     Examples
+     ========
+ 
+     >>> from sympy import QQ
+     >>> from sympy.polys.series import power_series_ring
+-    >>> R_QQ = power_series_ring(QQ, 5)
+-    >>> inv = R_QQ.inverse(R_QQ([1, 2, (3, 4), (5, 6)]))
+-    >>> R_QQ.print(inv)
+-    1 - 2*x + 13/4*x**2 - 35/6*x**3 + 523/48*x**4 + O(x**5)
++    >>> R, x = power_series_ring("x", QQ)
++    >>> R.sin(x + x**2)
++    x + x**2 - 1/6*x**3 - 1/2*x**4 - 59/120*x**5 + O(x**6)
++    >>> R.log(1 + 7*x**2)
++    7*x**2 - 49/2*x**4 + O(x**6)
++
++    See Also
++    ========
++
++    sympy.polys.series.ring.PowerSeriesRingRing
++    sympy.polys.series.ring.PowerSeriesRingField
++    sympy.polys.series.ring.PowerSeriesElement
++
+     """
+ 
+     if K.is_ZZ:
+-        return cast("PowerSeriesRing[Er]", PowerSeriesRingZZ(prec))
++        ring = PowerSeriesRingRing(K, symbol, prec)
++        return ring, ring.gen
+     elif K.is_QQ:
+-        return cast("PowerSeriesRing[Er]", PowerSeriesRingQQ(prec))
++        ring = PowerSeriesRingField(K, symbol, prec)
++        return ring, ring.gen
+     else:
+         raise ValueError(f"Unsupported ground domain: {K}")
++
++
++class PowerSeriesRingRing(Generic[Er]):
++    """A class for representing Univariate Power Series Rings over a Ring."""
++
++    ring: PowerSeriesRingProto[TSeriesElement[Er], Er]
++    dtype: type[PowerSeriesElement[Er]]
++    domain: Domain[Er]
++    symbol: Expr
++    prec: int
++
++    def __init__(self, domain: Domain[Er], symbol: str | Expr = "x", prec: int = 6):
++        if not isinstance(symbol, (str, Expr)):
++            raise GeneratorsError("Symbol must be a string or a SymPy expression.")
++
++        if isinstance(symbol, str):
++            symbol = Symbol(symbol)
++
++        self.ring = _power_series_ring(domain, prec)
++
++        self.dtype = PowerSeriesElement
++        self.domain = domain
++        self.symbol = symbol
++        self.prec = prec
++
++        self.one = self.from_ground(self.domain.one)
++        self.zero = self.from_ground(self.domain.zero)
++        self.gen = self.from_element(self.ring.gen)
++
++    def __repr__(self) -> str:
++        return (
++            f"Power Series Ring in {self.symbol} over {self.domain} of size {self.prec}"
++        )
++
++    def __eq__(self, other: object) -> bool:
++        if isinstance(other, PowerSeriesRingRing):
++            return self.ring == other.ring and self.symbol == other.symbol
++        else:
++            return NotImplemented
++
++    def __hash__(self) -> int:
++        return hash((self.ring, self.domain, self.symbol, self.prec))
++
++    def is_element(self, element: object) -> TypeIs[PowerSeriesElement[Er]]:
++        """Check if element belongs to this ring."""
++        return isinstance(element, PowerSeriesElement) and element.ring == self.ring
++
++    def order_term(self):
++        """
++        Return the order term of the power series.
++
++        Examples
++        ========
++        >>> from sympy import ZZ
++        >>> from sympy.polys.series import PowerSeriesRingRing
++        >>> R = PowerSeriesRingRing(ZZ, "x")
++        >>> R.order_term()
++        O(x**6)
++        >>> R10 = PowerSeriesRingRing(ZZ, "x", 10)
++        >>> R10.order_term()
++        O(x**10)
++
++        """
++        o = self.ring([], self.prec)
++        return self.from_element(o)
++
++    def truncate(self, s: PowerSeriesElement[Er], prec: int) -> PowerSeriesElement[Er]:
++        """Truncate the power series to the given precision."""
++        R = self.ring
++        return self.from_element(R.truncate(s.series, prec))
++
++    def from_expr(self, expr: Expr) -> PowerSeriesElement[Er]:
++        """
++        Convert an expression to a power series element.
++
++        Examples
++        ========
++
++        >>> from sympy import ZZ
++        >>> from sympy.polys.series import PowerSeriesRingRing
++        >>> R = PowerSeriesRingRing(ZZ, "x", 5)
++        >>> from sympy.abc import x
++        >>> s = R.from_expr(x + x**2 + x**4 + x**7); s
++        x + x**2 + x**4 + O(x**5)
++        >>> type(s)
++        <class 'sympy.polys.series.ring.PowerSeriesElement'>
++
++        """
++        return self._rebuild_expr(expr)
++
++    def _rebuild_expr(self, expr) -> PowerSeriesElement[Er]:
++        """Rebuild the expression into a power series element."""
++        prec = None
++
++        if expr.has(Order):
++            var, p = expr.getO().expr.args
++
++            if var != self.symbol:
++                raise ValueError("Order contains different symbol than ring.")
++
++            if int(p) > self.prec:
++                prec = self.prec
++            else:
++                prec = int(p)
++
++            expr = expr.removeO()
++
++        def _rebuild(expr):
++            if expr.is_Symbol:
++                if expr == self.symbol:
++                    return self.gen
++                else:
++                    raise ValueError("Expr contains different symbol than ring.")
++            elif expr.is_Add:
++                return reduce(add, map(_rebuild, expr.args))
++            elif expr.is_Mul:
++                return reduce(mul, map(_rebuild, expr.args))
++            elif expr.is_Pow:
++                base, exp = expr.as_base_exp()
++                if exp.is_Integer:
++                    try:
++                        return _rebuild(base) ** exp
++                    except ValueError:
++                        raise ValueError("Invalid exponent in power series")
++                else:
++                    raise ValueError("Invalid exponent in power series")
++            else:
++                return self.from_ground(self.domain.convert(expr))
++
++        series = _rebuild(sympify(expr))
++
++        if prec is None:
++            return series
++        else:
++            R = self.ring
++            s = R(self.to_list(series), prec)
++            return self.from_element(s)
++
++    def from_list(
++        self, lst: list[Er], prec: int | None = None
++    ) -> PowerSeriesElement[Er]:
++        """Create a power series element from a list of coefficients."""
++        R = self.ring
++        s = R.from_list(lst, prec)
++        return self.from_element(s)
++
++    def from_element(self, element: TSeriesElement[Er]) -> PowerSeriesElement[Er]:
++        """Convert a lower power series element to a PowerSeriesElement."""
++        return PowerSeriesElement(self, element)
++
++    def from_int(self, arg: int) -> PowerSeriesElement[Er]:
++        """Convert an integer to a power series element."""
++        g = self.domain_new(arg)
++        return self.from_ground(g)
++
++    def from_ground(self, arg: Er) -> PowerSeriesElement[Er]:
++        """Convert a ground element to a power series element."""
++        R = self.ring
++        s = R.from_list([arg])
++        return self.from_element(s)
++
++    def to_expr(self, element: PowerSeriesElement[Er]) -> Expr:
++        """Convert a power series element to an expression."""
++        dom: Domain[Er] = self.domain
++        coeffs: list[Er] = self.ring.to_list(element.series)
++        prec: int | None = self.ring.series_prec(element.series)
++        result: list[Expr] = []
++        x: Expr = self.symbol
++
++        if coeffs and coeffs[0] != 0:
++            result.append(dom.to_sympy(coeffs[0]))
++
++        for i, coeff in enumerate(coeffs[1:], start=1):
++            if coeff == 0:
++                continue
++            result.append(Mul(dom.to_sympy(coeff), Pow(x, i)))
++
++        if prec is not None:
++            result.append(Order(x**prec))
++
++        return Add(*result)
++
++    def to_list(self, element: PowerSeriesElement[Er]) -> list[Er]:
++        """Returns a list of coefficients of a power series."""
++        return self.ring.to_list(element.series)
++
++    def to_dense(self, element: PowerSeriesElement[Er]) -> dup[Er]:
++        """Returns a dense list coefficients of a power series."""
++        return self.ring.to_dense(element.series)
++
++    def domain_new(self, arg: Er | int) -> Er:
++        """Convert arg to the element of ground domain of ring."""
++        return self.domain.convert(arg, self.domain)
++
++    def ring_new(self, arg: Expr | Er | int) -> PowerSeriesElement[Er]:
++        """Create a power series element from various types."""
++        if isinstance(arg, Expr):
++            return self.from_expr(arg)
++        elif isinstance(arg, int):
++            return self.from_int(arg)
++        elif self.domain.of_type(arg):
++            return self.from_ground(arg)
++        else:
++            raise TypeError(f"{arg.__class__.__name__} type not supported")
++
++    __call__ = ring_new
++
++    def square(self, s: PowerSeriesElement[Er]) -> PowerSeriesElement[Er]:
++        """
++        Compute the square of a power series.
++
++        Examples
++        ========
++
++        >>> from sympy import ZZ
++        >>> from sympy.polys.series import PowerSeriesRingRing
++        >>> R = PowerSeriesRingRing(ZZ, "x", 5)
++        >>> x = R.gen
++        >>> R.square(1 + x + x**2)
++        1 + 2*x + 3*x**2 + 2*x**3 + x**4
++
++        """
++        R = self.ring
++        series = R.square(s.series)
++        return self.from_element(series)
++
++    def compose(
++        self, s: PowerSeriesElement[Er], t: PowerSeriesElement[Er]
++    ) -> PowerSeriesElement[Er]:
++        """
++        Compute the composition of two power series.
++
++        The second series must have zero constant term for valid composition.
++
++        Examples
++        ========
++
++        >>> from sympy import ZZ
++        >>> from sympy.polys.series import PowerSeriesRingRing
++        >>> R = PowerSeriesRingRing(ZZ, "x", 5)
++        >>> x = R.gen
++
++        >>> R.compose(3 + x + 14*x**2, x**2 + x**3)
++        3 + x**2 + x**3 + 14*x**4 + O(x**5)
++
++        """
++        R = self.ring
++        series = R.compose(s.series, t.series)
++        return self.from_element(series)
++
++    def inverse(self, s: PowerSeriesElement[Er]) -> PowerSeriesElement[Er]:
++        """
++        Compute the multiplicative inverse of a power series.
++
++        The constant term must be a unit in the ground domain for
++        valid multiplicative inverse.
++
++        Examples
++        ========
++
++        >>> from sympy import ZZ
++        >>> from sympy.polys.series import PowerSeriesRingRing
++        >>> R = PowerSeriesRingRing(ZZ, "x", 5)
++        >>> x = R.gen
++        >>> R.inverse(1 + x)
++        1 - x + x**2 - x**3 + x**4 + O(x**5)
++
++        """
++        R = self.ring
++        series = R.inverse(s.series)
++        return self.from_element(series)
++
++    def reversion(self, s: PowerSeriesElement[Er]) -> PowerSeriesElement[Er]:
++        """
++        Compute the compositional inverse of a power series.
++
++        The constant term must be zero and the linear term must be a unit in the ground
++        domain for valid compositional inverse.
++
++        Examples
++        ========
++
++        >>> from sympy import ZZ
++        >>> from sympy.polys.series import PowerSeriesRingRing
++        >>> R = PowerSeriesRingRing(ZZ, "x", 5)
++        >>> x = R.gen
++        >>> R.reversion(x + 4*x**2 + 8*x**3)
++        x - 4*x**2 + 24*x**3 - 160*x**4 + O(x**5)
++
++        """
++        R = self.ring
++        series = R.reversion(s.series)
++        return self.from_element(series)
++
++    def differentiate(self, s: PowerSeriesElement[Er]) -> PowerSeriesElement[Er]:
++        """
++        Compute the derivative of a power series.
++
++        Examples
++        ========
++
++        >>> from sympy import ZZ
++        >>> from sympy.polys.series import PowerSeriesRingRing
++        >>> R = PowerSeriesRingRing(ZZ, "x", 5)
++        >>> x = R.gen
++        >>> R.differentiate(10 + x + x**2 + x**3 + x**4 + R.order_term())
++        1 + 2*x + 3*x**2 + 4*x**3 + O(x**4)
++
++        """
++
++        R = self.ring
++        series = R.differentiate(s.series)
++        return self.from_element(series)
++
++
++class PowerSeriesRingField(PowerSeriesRingRing[Ef], Generic[Ef]):
++    """A class for representing Univariate Power Series Rings over a Field."""
++
++    ring: PowerSeriesRingFieldProto[TSeriesElement[Ef], Ef]
++    dtype: type[PowerSeriesElement[Ef]]
++    domain: Domain[Ef]
++    prec: int
++    symbol: Expr
++
++    def __init__(self, domain: Domain[Ef], symbol: str | Expr = "x", prec: int = 6):
++        if not isinstance(symbol, (str, Expr)):
++            raise GeneratorsError("Symbol must be a string or a SymPy expression.")
++
++        if isinstance(symbol, str):
++            symbol = Symbol(symbol)
++
++        # The type checker thinks `ring` overrides with an incompatible type
++        # because it cannot infer that this attribute is effectively read-only.
++        # Safe to ignore here in the future, stricter immutability checks may resolve this.
++        self.ring = _power_series_ring(domain, prec)  # type: ignore
++        self.dtype = PowerSeriesElement
++        self.domain = domain
++        self.symbol = symbol
++        self.prec = prec
++
++        self.one = self.from_ground(self.domain.one)
++        self.zero = self.from_ground(self.domain.zero)
++        self.gen = self.from_element(self.ring.gen)
++
++    def sqrt(self, s: PowerSeriesElement[Ef]) -> PowerSeriesElement[Ef]:
++        """
++        Compute the square root of a power series.
++
++        Examples
++        ========
++
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.sqrt(1 + 2*x + 4*x**2 + 8*x**3)
++        1 + x + 3/2*x**2 + 5/2*x**3 - 29/8*x**4 - 1/8*x**5 + O(x**6)
++
++        """
++        R = self.ring
++        series = R.sqrt(s.series)
++        return self.from_element(series)
++
++    def integrate(self, s: PowerSeriesElement[Ef]) -> PowerSeriesElement[Ef]:
++        """
++        Compute the integral of a power series.
++
++        Examples
++        ========
++
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.integrate(1 + x + x**2 + x**3 + x**4 + x**5 + R.order_term())
++        x + 1/2*x**2 + 1/3*x**3 + 1/4*x**4 + 1/5*x**5 + O(x**6)
++
++        """
++        R = self.ring
++        series = R.integrate(s.series)
++        return self.from_element(series)
++
++    def log(self, s: PowerSeriesElement[Ef]) -> PowerSeriesElement[Ef]:
++        """
++        Compute the logarithm of a power series.
++
++        The constant term should be one for proper expansion in the Rational Field.
++
++        Examples
++        ========
++
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.log(1 + x)
++        x - 1/2*x**2 + 1/3*x**3 - 1/4*x**4 + 1/5*x**5 + O(x**6)
++
++        """
++        R = self.ring
++        series = R.log(s.series)
++        return self.from_element(series)
++
++    def log1p(self, s: PowerSeriesElement[Ef]) -> PowerSeriesElement[Ef]:
++        """
++        Compute the logarithm of a power series plus one.
++
++        The constant term should be zero for proper expansion in the Rational Field.
++
++        Examples
++        ========
++
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.log1p(x)
++        x - 1/2*x**2 + 1/3*x**3 - 1/4*x**4 + 1/5*x**5 + O(x**6)
++
++        """
++
++        R = self.ring
++        series = R.log1p(s.series)
++        return self.from_element(series)
++
++    def exp(self, s: PowerSeriesElement[Ef]) -> PowerSeriesElement[Ef]:
++        """
++        Compute the exponential of a power series.
++
++        The constant term should be zero for proper expansion in the Rational Field.
++
++        Examples
++        ========
++
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.exp(x)
++        1 + x + 1/2*x**2 + 1/6*x**3 + 1/24*x**4 + 1/120*x**5 + O(x**6)
++
++        """
++        R = self.ring
++        series = R.exp(s.series)
++        return self.from_element(series)
++
++    def expm1(self, s: PowerSeriesElement[Ef]) -> PowerSeriesElement[Ef]:
++        """
++        Compute the exponential of a power series minus one.
++
++        The constant term should be zero for proper expansion in the Rational Field.
++
++        Examples
++        ========
++
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.expm1(x)
++        x + 1/2*x**2 + 1/6*x**3 + 1/24*x**4 + 1/120*x**5 + O(x**6)
++
++        """
++        R = self.ring
++        series = R.expm1(s.series)
++        return self.from_element(series)
++
++    def atan(self, s: PowerSeriesElement[Ef]) -> PowerSeriesElement[Ef]:
++        """
++        Compute the arctangent of a power series.
++
++        The constant term should be zero for proper expansion in the Rational Field.
++
++        Examples
++        ========
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.atan(x)
++        x - 1/3*x**3 + 1/5*x**5 + O(x**6)
++
++        """
++        R = self.ring
++        series = R.atan(s.series)
++        return self.from_element(series)
++
++    def atanh(self, s: PowerSeriesElement[Ef]) -> PowerSeriesElement[Ef]:
++        """
++        Compute the hyperbolic arctangent of a power series.
++
++        The constant term should be zero for proper expansion in the Rational Field.
++
++        Examples
++        ========
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.atanh(x)
++        x + 1/3*x**3 + 1/5*x**5 + O(x**6)
++
++        """
++        R = self.ring
++        series = R.atanh(s.series)
++        return self.from_element(series)
++
++    def asin(self, s: PowerSeriesElement[Ef]) -> PowerSeriesElement[Ef]:
++        """
++        Compute the arcsine of a power series.
++
++        The constant term should be zero for proper expansion in the Rational Field.
++
++        Examples
++        ========
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.asin(x)
++        x + 1/6*x**3 + 3/40*x**5 + O(x**6)
++
++        """
++        R = self.ring
++        series = R.asin(s.series)
++        return self.from_element(series)
++
++    def asinh(self, s: PowerSeriesElement[Ef]) -> PowerSeriesElement[Ef]:
++        """
++        Compute the hyperbolic arcsine of a power series.
++
++        The constant term should be zero for proper expansion in the Rational Field.
++
++        Examples
++        ========
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.asinh(x)
++        x - 1/6*x**3 + 3/40*x**5 + O(x**6)
++
++        """
++        R = self.ring
++        series = R.asinh(s.series)
++        return self.from_element(series)
++
++    def tan(self, s: PowerSeriesElement[Ef]) -> PowerSeriesElement[Ef]:
++        """
++        Compute the tangent of a power series.
++
++        The constant term should be zero for proper expansion in the Rational Field.
++
++        Examples
++        ========
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.tan(x)
++        x + 1/3*x**3 + 2/15*x**5 + O(x**6)
++
++        """
++        R = self.ring
++        series = R.tan(s.series)
++        return self.from_element(series)
++
++    def tanh(self, s: PowerSeriesElement[Ef]) -> PowerSeriesElement[Ef]:
++        """
++        Compute the hyperbolic tangent of a power series.
++
++        The constant term should be zero for proper expansion in the Rational Field.
++
++        Examples
++        ========
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.tanh(x)
++        x - 1/3*x**3 + 2/15*x**5 + O(x**6)
++
++        """
++        R = self.ring
++        series = R.tanh(s.series)
++        return self.from_element(series)
++
++    def sin(self, s: PowerSeriesElement[Ef]) -> PowerSeriesElement[Ef]:
++        """
++        Compute the sine of a power series.
++
++        The constant term should be zero for proper expansion in the Rational Field.
++
++        Examples
++        ========
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.sin(x)
++        x - 1/6*x**3 + 1/120*x**5 + O(x**6)
++
++        """
++        R = self.ring
++        series = R.sin(s.series)
++        return self.from_element(series)
++
++    def sinh(self, s: PowerSeriesElement[Ef]) -> PowerSeriesElement[Ef]:
++        """
++        Compute the hyperbolic sine of a power series.
++
++        The constant term should be zero for proper expansion in the Rational Field.
++
++        Examples
++        ========
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.sinh(x)
++        x + 1/6*x**3 + 1/120*x**5 + O(x**6)
++
++        """
++        R = self.ring
++        series = R.sinh(s.series)
++        return self.from_element(series)
++
++    def cos(self, s: PowerSeriesElement[Ef]) -> PowerSeriesElement[Ef]:
++        """
++        Compute the cosine of a power series.
++
++        The constant term should be zero for proper expansion in the Rational Field.
++
++        Examples
++        ========
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.cos(x)
++        1 - 1/2*x**2 + 1/24*x**4 + O(x**6)
++
++        """
++        R = self.ring
++        series = R.cos(s.series)
++        return self.from_element(series)
++
++    def cosh(self, s: PowerSeriesElement[Ef]) -> PowerSeriesElement[Ef]:
++        """
++        Compute the hyperbolic cosine of a power series.
++
++        The constant term should be zero for proper expansion in the Rational Field.
++
++        Examples
++        ========
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.cosh(x)
++        1 + 1/2*x**2 + 1/24*x**4 + O(x**6)
++
++        """
++        R = self.ring
++        series = R.cosh(s.series)
++        return self.from_element(series)
++
++
++class PowerSeriesElement(DomainElement, CantSympify, Generic[Er]):
++    """A class for representing elements of a Power Series."""
++
++    def __init__(self, ring: PowerSeriesRingRing[Er], series: TSeriesElement[Er]):
++        self.series = series
++        self._parent_ring = ring
++        self.ring = ring.ring
++
++    def __repr__(self) -> str:
++        R = self.ring
++        return R.pretty(self.series, symbol=str(self._parent_ring.symbol))
++
++    def __eq__(self, other: object) -> bool:
++        if not isinstance(other, PowerSeriesElement):
++            return False
++
++        R = self.ring
++        return R.equal_repr(self.series, other.series)
++
++    def __hash__(self) -> int:
++        return hash((self._parent_ring, self.ring, self.series))
++
++    def __pos__(self) -> PowerSeriesElement[Er]:
++        R = self.ring
++        s = R.positive(self.series)
++        return self._new(s)
++
++    def __neg__(self) -> PowerSeriesElement[Er]:
++        R = self.ring
++        s = R.negative(self.series)
++        return self._new(s)
++
++    def _new(self, series: TSeriesElement[Er]) -> PowerSeriesElement[Er]:
++        return self.__class__(self._parent_ring, series)
++
++    def __add__(
++        self, other: PowerSeriesElement[Er] | Er | int
++    ) -> PowerSeriesElement[Er]:
++        """
++        Add two power Series.
++
++        Examples
++        ========
++
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.sin(x) + R.cos(x)
++        1 + x - 1/2*x**2 - 1/6*x**3 + 1/24*x**4 + 1/120*x**5 + O(x**6)
++
++        """
++        if isinstance(other, PowerSeriesElement):
++            if self._parent_ring == other._parent_ring:
++                return self._add(other)
++            raise ValueError("Cannot add power series with different rings.")
++
++        domain = self._parent_ring.domain
++        if isinstance(other, int):
++            return self._add_ground(domain.convert(other, domain))
++        elif domain.of_type(other):
++            return self._add_ground(other)
++        else:
++            return NotImplemented
++
++    def __radd__(self, other: Er | int) -> PowerSeriesElement[Er]:
++        domain = self._parent_ring.domain
++        if isinstance(other, int):
++            return self._add_ground(self._parent_ring.domain_new(other))
++        elif domain.of_type(other):
++            return self._add_ground(other)
++        else:
++            return NotImplemented
++
++    def __sub__(
++        self, other: PowerSeriesElement[Er] | Er | int
++    ) -> PowerSeriesElement[Er]:
++        """
++        Subtract two power Series.
++
++        Examples
++        ========
++
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.sin(x) - R.cos(x)
++        -1 + x + 1/2*x**2 - 1/6*x**3 - 1/24*x**4 + 1/120*x**5 + O(x**6)
++
++        """
++        if isinstance(other, PowerSeriesElement):
++            if self._parent_ring == other._parent_ring:
++                return self._sub(other)
++            raise ValueError("Cannot subtract power series with different rings.")
++
++        domain = self._parent_ring.domain
++        if isinstance(other, int):
++            return self._sub_ground(self._parent_ring.domain_new(other))
++        elif domain.of_type(other):
++            return self._sub_ground(other)
++        else:
++            return NotImplemented
++
++    def __rsub__(self, other: Er | int) -> PowerSeriesElement[Er]:
++        domain = self._parent_ring.domain
++        if isinstance(other, int):
++            return self._rsub_ground(self._parent_ring.domain_new(other))
++        elif domain.of_type(other):
++            return self._rsub_ground(other)
++        else:
++            return NotImplemented
++
++    def __mul__(
++        self, other: PowerSeriesElement[Er] | Er | int
++    ) -> PowerSeriesElement[Er]:
++        """
++        Multiply two power Series.
++
++        Examples
++        ========
++
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> R.sin(x) * R.cos(x)
++        x - 2/3*x**3 + 2/15*x**5 + O(x**6)
++
++        """
++        if isinstance(other, PowerSeriesElement):
++            if self._parent_ring == other._parent_ring:
++                return self._mul(other)
++            raise ValueError("Cannot multiply power series with different rings.")
++
++        domain = self._parent_ring.domain
++        if isinstance(other, int):
++            return self._mul_ground(self._parent_ring.domain_new(other))
++        elif domain.of_type(other):
++            return self._mul_ground(other)
++        else:
++            return NotImplemented
++
++    def __rmul__(self, other: Er | int) -> PowerSeriesElement[Er]:
++        domain = self._parent_ring.domain
++        if isinstance(other, int):
++            return self._mul_ground(domain.convert(other, domain))
++        elif domain.of_type(other):
++            return self._mul_ground(other)
++        else:
++            return NotImplemented
++
++    def __pow__(self, n: int) -> PowerSeriesElement[Er]:
++        """
++        Raise a power Series to a integer power.
++
++        Examples
++        ========
++
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> (1 + x)**3
++        1 + 3*x + 3*x**2 + x**3
++
++        """
++        if n == 0:
++            return self._parent_ring.one
++        if n == 1:
++            return self
++        else:
++            return self._pow_int(n)
++
++    def __truediv__(
++        self, other: PowerSeriesElement[Er] | Er | int
++    ) -> PowerSeriesElement[Er]:
++        """
++        Divide two power Series.
++
++        Examples
++        ========
++
++        >>> from sympy import QQ
++        >>> from sympy.polys.series import PowerSeriesRingField
++        >>> R = PowerSeriesRingField(QQ, "x")
++        >>> x = R.gen
++        >>> t = R.sin(x) / R.cos(x); t
++        x + 1/3*x**3 + 2/15*x**5 + O(x**6)
++        >>> R.tan(x) == t
++        True
++        """
++        if isinstance(other, PowerSeriesElement):
++            if self._parent_ring == other._parent_ring:
++                return self._div(other)
++            raise ValueError("Cannot add power series with different rings.")
++
++        domain = self._parent_ring.domain
++        if isinstance(other, int):
++            return self._div_ground(domain.convert(other, domain))
++        elif domain.of_type(other):
++            return self._div_ground(other)
++        else:
++            return NotImplemented
++
++    def __rtruediv__(self, other: Er | int) -> PowerSeriesElement[Er]:
++        domain = self._parent_ring.domain
++        if isinstance(other, int):
++            return self._rdiv_ground(domain.convert(other, domain))
++        elif domain.of_type(other):
++            return self._rdiv_ground(other)
++        else:
++            return NotImplemented
++
++    def _add(self, other: PowerSeriesElement[Er]) -> PowerSeriesElement[Er]:
++        R = self.ring
++        series = R.add(self.series, other.series)
++        return self._new(series)
++
++    def _add_ground(self, other: Er) -> PowerSeriesElement[Er]:
++        R = self.ring
++        series = R.add_ground(self.series, other)
++        return self._new(series)
++
++    def _sub(self, other: PowerSeriesElement[Er]) -> PowerSeriesElement[Er]:
++        R = self.ring
++        series = R.subtract(self.series, other.series)
++        return self._new(series)
++
++    def _sub_ground(self, other: Er) -> PowerSeriesElement[Er]:
++        R = self.ring
++        series = R.subtract_ground(self.series, other)
++        return self._new(series)
++
++    def _rsub_ground(self, other: Er) -> PowerSeriesElement[Er]:
++        R = self.ring
++        series = R.rsubtract_ground(self.series, other)
++        return self._new(series)
++
++    def _mul(self, other: PowerSeriesElement[Er]) -> PowerSeriesElement[Er]:
++        R = self.ring
++        series = R.multiply(self.series, other.series)
++        return self._new(series)
++
++    def _mul_ground(self, other: Er) -> PowerSeriesElement[Er]:
++        R = self.ring
++        series = R.multiply_ground(self.series, other)
++        return self._new(series)
++
++    def _pow_int(self, n: int) -> PowerSeriesElement[Er]:
++        R = self.ring
++        series = R.pow_int(self.series, n)
++        return self._new(series)
++
++    def _div(self, other: PowerSeriesElement[Er]) -> PowerSeriesElement[Er]:
++        R = self.ring
++        series = R.divide(self.series, other.series)
++        return self._new(series)
++
++    def _div_ground(self, other: Er) -> PowerSeriesElement[Er]:
++        s2 = self._parent_ring.from_ground(other)
++        return self._div(s2)
++
++    def _rdiv_ground(self, other: Er) -> PowerSeriesElement[Er]:
++        s2 = self._parent_ring.from_ground(other)
++        return s2._div(self)
++
++    def as_expr(self) -> Expr:
++        return self._parent_ring.to_expr(self)
++
++    def constant_coefficient(self) -> Er:
++        """Return the constant coefficient of the series."""
++        R = self.ring
++        return R.constant_coefficient(self.series)
++
++    def removeO(self) -> PowerSeriesElement[Er]:
++        """Remove the big O notation from the series."""
++        R = self.ring
++        coeffs = R.to_list(self.series)
++        series = R.from_list(coeffs)
++        return self._new(series)
++
++    @property
++    def is_ground(self) -> bool | None:
++        """Check if the series is a ground element."""
++        R = self.ring
++        return R.is_ground(self.series)
+diff --git a/sympy/polys/series/ringflint.py b/sympy/polys/series/ringflint.py
+index 96de86772008..de0c47325d67 100644
+--- a/sympy/polys/series/ringflint.py
++++ b/sympy/polys/series/ringflint.py
+@@ -30,8 +30,14 @@ def _get_series_precision(s: fmpz_series | fmpq_series) -> int:
+     """Helper function to get the precision of a series. By using the
+     representation of the ring"""
+ 
+-    # XXX: This approach is inefficient, but as of python-flint 0.7.1, there is
++    prec = getattr(s, "prec", None)
++    if prec is not None:
++        return prec
++
++    # XXX: This approach is inefficient, but for python-flint <= 0.7.1, there is
+     # no alternative method to extract the precision from a series element.
++    # This function could be removed when python-flint 0.8 becomes the
++    # minimum supported version.
+     rep = s.repr()
+     prec = int(rep.split("prec=")[1].split(")")[0].strip())
+     return prec
+@@ -82,11 +88,17 @@ class FlintPowerSeriesRingZZ:
+     Note
+     ====
+ 
+-    The recommended way to create a power series ring is using the factory function:
++    The recommended way to create a power series ring is using the factory function
++    which returns a new instance of the higher level PowerSeriesRing class with
++    the ring generator:
+ 
+     >>> from sympy.polys.series import power_series_ring
+     >>> from sympy.polys.domains import ZZ
+-    >>> R = power_series_ring(ZZ, prec=6)
++    >>> R, x = power_series_ring("x", ZZ, 6)
++    >>> R
++    Power Series Ring in x over ZZ of size 6
++    >>> type(x)
++    <class 'sympy.polys.series.ring.PowerSeriesElement'>
+ 
+     This function automatically uses the Flint implementation if available for better
+     performance, falling back to the Python implementation otherwise.
+@@ -94,9 +106,12 @@ class FlintPowerSeriesRingZZ:
+     See Also
+     ========
+ 
+-    FlintPowerSeriesRingQQ
+-    PythonPowerSeriesRingZZ
+-    power_series_ring
++    sympy.polys.series.ringflint.FlintPowerSeriesRingQQ
++    sympy.polys.series.ringpython.PythonPowerSeriesRingZZ
++    sympy.polys.series.ring.power_series_ring
++    sympy.polys.series.ring.PowerSeriesRingRing
++    sympy.polys.series.ring.PowerSeriesRingField
++    sympy.polys.series.ring.PowerSeriesElement
+     """
+ 
+     _domain = ZZ
+@@ -236,6 +251,17 @@ def equal_repr(self, s1: ZZSeries, s2: ZZSeries) -> bool:
+         else:
+             return False
+ 
++    def is_ground(self, arg: ZZSeries) -> bool | None:
++        """Check if a arg is a ground element of the power series ring."""
++        if self.prec == 0:
++            return None
++
++        return len(arg) <= 1
++
++    def constant_coefficient(self, s: ZZSeries) -> MPZ:
++        """Return the constant coefficient of a power series."""
++        return s[0]
++
+     def positive(self, s: ZZSeries) -> ZZSeries:
+         """Return the unary positive of a power series, adjusted to the ring's precision."""
+         ring_prec = self._prec
+@@ -266,6 +292,11 @@ def add(self, s1: ZZSeries, s2: ZZSeries) -> ZZSeries:
+         with _global_cap(ring_prec):
+             return s1 + s2
+ 
++    def add_ground(self, s: ZZSeries, n: MPZ) -> ZZSeries:
++        """Add a ground element to a power series."""
++        with _global_cap(self._prec):
++            return s + n
++
+     def subtract(self, s1: ZZSeries, s2: ZZSeries) -> ZZSeries:
+         """Subtract two power series."""
+         ring_prec = self._prec
+@@ -278,6 +309,16 @@ def subtract(self, s1: ZZSeries, s2: ZZSeries) -> ZZSeries:
+         with _global_cap(ring_prec):
+             return s1 - s2
+ 
++    def subtract_ground(self, s: ZZSeries, n: MPZ) -> ZZSeries:
++        """Subtract a ground element from a power series."""
++        with _global_cap(self._prec):
++            return s - n
++
++    def rsubtract_ground(self, s: ZZSeries, n: MPZ) -> ZZSeries:
++        """Subtract a power series from a ground element."""
++        with _global_cap(self._prec):
++            return n - s
++
+     def multiply(self, s1: ZZSeries, s2: ZZSeries) -> ZZSeries:
+         """Multiply two power series."""
+         ring_prec = self._prec
+@@ -327,10 +368,16 @@ def divide(self, s1: ZZSeries, s2: ZZSeries) -> ZZSeries:
+             return s1 / s2
+ 
+     def pow_int(self, s: ZZSeries, n: int) -> ZZSeries:
+-        """Raise a power series to a non-negative integer power."""
++        """Raise a power series to a integer power."""
+         ring_prec = self._prec
+         if n < 0:
+-            raise ValueError("Power must be non-negative")
++            n = -n
++            s = self.pow_int(s, n)
++            try:
++                inv = self.inverse(s)
++                return inv
++            except NotReversible:
++                raise ValueError("Result would not be a power series")
+ 
+         if isinstance(s, fmpz_poly):
+             if s.degree() * n < ring_prec:
+@@ -486,11 +533,17 @@ class FlintPowerSeriesRingQQ:
+     Note
+     ====
+ 
+-    The recommended way to create a power series ring is using the factory function:
++    The recommended way to create a power series ring is using the factory function
++    which returns a new instance of the higher level PowerSeriesRing class with
++    the ring generator:
+ 
+     >>> from sympy.polys.series import power_series_ring
+     >>> from sympy.polys.domains import QQ
+-    >>> R = power_series_ring(QQ, prec=6)
++    >>> R, x = power_series_ring("x", QQ, 6)
++    >>> R
++    Power Series Ring in x over QQ of size 6
++    >>> type(x)
++    <class 'sympy.polys.series.ring.PowerSeriesElement'>
+ 
+     This function automatically uses the Flint implementation if available for better
+     performance, falling back to the Python implementation otherwise.
+@@ -498,9 +551,12 @@ class FlintPowerSeriesRingQQ:
+     See Also
+     ========
+ 
+-    FlintPowerSeriesRingZZ
+-    PythonPowerSeriesRingQQ
+-    power_series_ring
++    sympy.polys.series.ringflint.FlintPowerSeriesRingZZ
++    sympy.polys.series.ringpython.PythonPowerSeriesRingQQ
++    sympy.polys.series.ring.power_series_ring
++    sympy.polys.series.ring.PowerSeriesRingRing
++    sympy.polys.series.ring.PowerSeriesRingField
++    sympy.polys.series.ring.PowerSeriesElement
+     """
+ 
+     _domain = QQ
+@@ -642,6 +698,17 @@ def equal_repr(self, s1: QQSeries, s2: QQSeries) -> bool:
+         else:
+             return False
+ 
++    def is_ground(self, arg: QQSeries) -> bool | None:
++        """Check if a arg is a ground element of the power series ring."""
++        if self.prec == 0:
++            return None
++
++        return len(arg) <= 1
++
++    def constant_coefficient(self, s: QQSeries) -> MPQ:
++        """Return the constant coefficient of a power series."""
++        return s[0]
++
+     def positive(self, s: QQSeries) -> QQSeries:
+         """Return the unary positive of a power series, adjusted to the ring's precision."""
+         ring_prec = self._prec
+@@ -672,6 +739,11 @@ def add(self, s1: QQSeries, s2: QQSeries) -> QQSeries:
+         with _global_cap(ring_prec):
+             return s1 + s2
+ 
++    def add_ground(self, s: QQSeries, n: MPQ) -> QQSeries:
++        """Add a ground element to a power series."""
++        with _global_cap(self._prec):
++            return s + n
++
+     def subtract(self, s1: QQSeries, s2: QQSeries) -> QQSeries:
+         """Subtract two power series."""
+         ring_prec = self._prec
+@@ -684,6 +756,16 @@ def subtract(self, s1: QQSeries, s2: QQSeries) -> QQSeries:
+         with _global_cap(ring_prec):
+             return s1 - s2
+ 
++    def subtract_ground(self, s: QQSeries, n: MPQ) -> QQSeries:
++        """Subtract a ground element from a power series."""
++        with _global_cap(self._prec):
++            return s - n
++
++    def rsubtract_ground(self, s: QQSeries, n: MPQ) -> QQSeries:
++        """Subtract a power series from a ground element."""
++        with _global_cap(self._prec):
++            return n - s
++
+     def multiply(self, s1: QQSeries, s2: QQSeries) -> QQSeries:
+         """Multiply two power series."""
+         ring_prec = self._prec
+@@ -733,10 +815,16 @@ def divide(self, s1: QQSeries, s2: QQSeries) -> QQSeries:
+             return s1 / s2
+ 
+     def pow_int(self, s: QQSeries, n: int) -> QQSeries:
+-        """Raise a power series to a non-negative integer power."""
++        """Raise a power series to a integer power."""
+         ring_prec = self._prec
+         if n < 0:
+-            raise ValueError("Power must be non-negative")
++            n = -n
++            s = self.pow_int(s, n)
++            try:
++                inv = self.inverse(s)
++                return inv
++            except NotReversible:
++                raise ValueError("Result would not be a power series")
+ 
+         if isinstance(s, fmpq_poly):
+             if s.degree() * n < ring_prec:
+diff --git a/sympy/polys/series/ringpython.py b/sympy/polys/series/ringpython.py
+index c7f20da5b5de..329fd8f15229 100644
+--- a/sympy/polys/series/ringpython.py
++++ b/sympy/polys/series/ringpython.py
+@@ -13,6 +13,7 @@
+     dup_mul_ground,
+     dup_neg,
+     dup_sub,
++    dup_sub_ground,
+     dup_exquo,
+     dup_series_mul,
+     dup_series_sqr,
+@@ -36,7 +37,7 @@
+ from sympy.polys.ring_series import _giant_steps
+ 
+ 
+-USeries: TypeAlias = "tuple[dup[Er], Union[int, None]]"
++USeries: TypeAlias = "tuple[list[Er], Union[int, None]]"
+ 
+ 
+ def _useries(
+@@ -204,6 +205,18 @@ def _useries_sub(
+     return dup_sub(coeffs1, coeffs2, dom), min_prec
+ 
+ 
++def _useries_sub_ground(
++    s: USeries[Er], n: Er, dom: Domain[Er], ring_prec: int
++) -> USeries[Er]:
++    coeffs, prec = s
++
++    if n == 0:
++        return s
++
++    coeffs = dup_sub_ground(coeffs, n, dom)
++    return _useries(coeffs, prec, dom, ring_prec)
++
++
+ def _useries_rsub_ground(
+     s: USeries[Er], n: Er, dom: Domain[Er], ring_prec: int
+ ) -> USeries[Er]:
+@@ -405,9 +418,15 @@ def _useries_div_ground(
+ def _useries_pow_int(
+     s: USeries[Er], n: int, dom: Domain[Er], ring_prec: int
+ ) -> USeries[Er]:
+-    """Raise a power series to a non-negative integer power with truncation."""
++    """Raise a power series to a integer power with truncation."""
+     if n < 0:
+-        raise ValueError("Power must be a non-negative integer")
++        n = -n
++        s = _useries_pow_int(s, n, dom, ring_prec)
++        try:
++            inv = _useries_inverse(s, dom, ring_prec)
++            return inv
++        except NotReversible:
++            raise ValueError("Result would not be a power series")
+ 
+     coeffs, prec = s
+ 
+@@ -1057,11 +1076,17 @@ class PythonPowerSeriesRingZZ:
+     Note
+     ====
+ 
+-    The recommended way to create a power series ring is using the factory function:
++    The recommended way to create a power series ring is using the factory function
++    which returns a new instance of the higher level PowerSeriesRing class with
++    the ring generator:
+ 
+     >>> from sympy.polys.series import power_series_ring
+     >>> from sympy import ZZ
+-    >>> R = power_series_ring(ZZ, prec=6)
++    >>> R, x = power_series_ring("x", ZZ, 6)
++    >>> R
++    Power Series Ring in x over ZZ of size 6
++    >>> type(x)
++    <class 'sympy.polys.series.ring.PowerSeriesElement'>
+ 
+     This function automatically uses the Flint implementation if available for better
+     performance, falling back to the Python implementation otherwise.
+@@ -1069,9 +1094,12 @@ class PythonPowerSeriesRingZZ:
+     See Also
+     ========
+ 
+-    PythonPowerSeriesRingQQ
+-    FlintPowerSeriesRingZZ
+-    power_series_ring
++    sympy.polys.series.ringpython.PythonPowerSeriesRingQQ
++    sympy.polys.series.ringflint.FlintPowerSeriesRingZZ
++    sympy.polys.series.ring.power_series_ring
++    sympy.polys.series.ring.PowerSeriesRingRing
++    sympy.polys.series.ring.PowerSeriesRingField
++    sympy.polys.series.ring.PowerSeriesElement
+     """
+ 
+     _domain = ZZ
+@@ -1196,6 +1224,20 @@ def equal_repr(self, s1: USeries[MPZ], s2: USeries[MPZ]) -> bool:
+         """Check if two power series have the same representation."""
+         return _useries_equal_repr(s1, s2)
+ 
++    def is_ground(self, arg: USeries[MPZ]) -> bool | None:
++        """Check if a arg is a ground element of the power series ring."""
++        if self.prec == 0:
++            return None
++
++        return len(self.to_list(arg)) <= 1
++
++    def constant_coefficient(self, s: USeries[MPZ]) -> MPZ:
++        """Return the constant coefficient of a power series."""
++        coeffs, _ = s
++        if len(coeffs) > 0:
++            return coeffs[-1]
++        return self._domain.zero
++
+     def positive(self, s: USeries[MPZ]) -> USeries[MPZ]:
+         """Return the unary positive of a power series, adjusted to the ring's precision."""
+         return _useries_pos(s, self._domain, self._prec)
+@@ -1208,10 +1250,22 @@ def add(self, s1: USeries[MPZ], s2: USeries[MPZ]) -> USeries[MPZ]:
+         """Add two power series."""
+         return _useries_add(s1, s2, self._domain, self._prec)
+ 
++    def add_ground(self, s: USeries[MPZ], n: MPZ) -> USeries[MPZ]:
++        """Add a ground element to a power series."""
++        return _useries_add_ground(s, n, self._domain, self._prec)
++
+     def subtract(self, s1: USeries[MPZ], s2: USeries[MPZ]) -> USeries[MPZ]:
+         """Subtract two power series."""
+         return _useries_sub(s1, s2, self._domain, self._prec)
+ 
++    def subtract_ground(self, s: USeries[MPZ], n: MPZ) -> USeries[MPZ]:
++        """Subtract a ground element from a power series."""
++        return _useries_sub_ground(s, n, self._domain, self._prec)
++
++    def rsubtract_ground(self, s: USeries[MPZ], n: MPZ) -> USeries[MPZ]:
++        """Subtract a power series from a ground element."""
++        return _useries_rsub_ground(s, n, self._domain, self._prec)
++
+     def multiply(self, s1: USeries[MPZ], s2: USeries[MPZ]) -> USeries[MPZ]:
+         """Multiply two power series."""
+         return _useries_mul(s1, s2, self._domain, self._prec)
+@@ -1225,7 +1279,7 @@ def divide(self, s1: USeries[MPZ], s2: USeries[MPZ]) -> USeries[MPZ]:
+         return _useries_div(s1, s2, self._domain, self._prec)
+ 
+     def pow_int(self, s: USeries[MPZ], n: int) -> USeries[MPZ]:
+-        """Raise a power series to a non-negative integer power."""
++        """Raise a power series to a integer power."""
+         return _useries_pow_int(s, n, self._domain, self._prec)
+ 
+     def square(self, s: USeries[MPZ]) -> USeries[MPZ]:
+@@ -1288,11 +1342,17 @@ class PythonPowerSeriesRingQQ:
+     Note
+     ====
+ 
+-    The recommended way to create a power series ring is using the factory function:
++    The recommended way to create a power series ring is using the factory function
++    which returns a new instance of the higher level PowerSeriesRing class with
++    the ring generator:
+ 
+     >>> from sympy.polys.series import power_series_ring
+     >>> from sympy import QQ
+-    >>> R = power_series_ring(QQ, prec=6)
++    >>> R, x = power_series_ring("x", QQ, 6)
++    >>> R
++    Power Series Ring in x over QQ of size 6
++    >>> type(x)
++    <class 'sympy.polys.series.ring.PowerSeriesElement'>
+ 
+     This function automatically uses the Flint implementation if available for better
+     performance, falling back to the Python implementation otherwise.
+@@ -1300,9 +1360,12 @@ class PythonPowerSeriesRingQQ:
+     See Also
+     ========
+ 
+-    PythonPowerSeriesRingZZ
+-    FlintPowerSeriesRingQQ
+-    power_series_ring
++    sympy.polys.series.ringpython.PythonPowerSeriesRingZZ
++    sympy.polys.series.ringflint.FlintPowerSeriesRingQQ
++    sympy.polys.series.ring.power_series_ring
++    sympy.polys.series.ring.PowerSeriesRingRing
++    sympy.polys.series.ring.PowerSeriesRingField
++    sympy.polys.series.ring.PowerSeriesElement
+     """
+ 
+     _domain = QQ
+@@ -1429,6 +1492,20 @@ def equal_repr(self, s1: USeries[MPQ], s2: USeries[MPQ]) -> bool:
+         """Check if two power series have the same representation."""
+         return _useries_equal_repr(s1, s2)
+ 
++    def is_ground(self, arg: USeries[MPQ]) -> bool | None:
++        """Check if a arg is a ground element of the power series ring."""
++        if self.prec == 0:
++            return None
++
++        return len(self.to_list(arg)) <= 1
++
++    def constant_coefficient(self, s: USeries[MPQ]) -> MPQ:
++        """Return the constant coefficient of a power series."""
++        coeffs, _ = s
++        if len(coeffs) > 0:
++            return coeffs[-1]
++        return self._domain.zero
++
+     def positive(self, s: USeries[MPQ]) -> USeries[MPQ]:
+         """Return the unary positive of a power series, adjusted to the ring's precision."""
+         return _useries_pos(s, self._domain, self._prec)
+@@ -1441,10 +1518,22 @@ def add(self, s1: USeries[MPQ], s2: USeries[MPQ]) -> USeries[MPQ]:
+         """Add two power series."""
+         return _useries_add(s1, s2, self._domain, self._prec)
+ 
++    def add_ground(self, s: USeries[MPQ], n: MPQ) -> USeries[MPQ]:
++        """Add a ground element to a power series."""
++        return _useries_add_ground(s, n, self._domain, self._prec)
++
+     def subtract(self, s1: USeries[MPQ], s2: USeries[MPQ]) -> USeries[MPQ]:
+         """Subtract two power series."""
+         return _useries_sub(s1, s2, self._domain, self._prec)
+ 
++    def subtract_ground(self, s: USeries[MPQ], n: MPQ) -> USeries[MPQ]:
++        """Subtract a ground element from a power series."""
++        return _useries_sub_ground(s, n, self._domain, self._prec)
++
++    def rsubtract_ground(self, s: USeries[MPQ], n: MPQ) -> USeries[MPQ]:
++        """Subtract a power series from a ground element."""
++        return _useries_rsub_ground(s, n, self._domain, self._prec)
++
+     def multiply(self, s1: USeries[MPQ], s2: USeries[MPQ]) -> USeries[MPQ]:
+         """Multiply two power series."""
+         return _useries_mul(s1, s2, self._domain, self._prec)
+@@ -1458,7 +1547,7 @@ def divide(self, s1: USeries[MPQ], s2: USeries[MPQ]) -> USeries[MPQ]:
+         return _useries_div(s1, s2, self._domain, self._prec)
+ 
+     def pow_int(self, s: USeries[MPQ], n: int) -> USeries[MPQ]:
+-        """Raise a power series to a non-negative integer power."""
++        """Raise a power series to a integer power."""
+         return _useries_pow_int(s, n, self._domain, self._prec)
+ 
+     def square(self, s: USeries[MPQ]) -> USeries[MPQ]:
+diff --git a/sympy/polys/series/tests/test_hypothesis.py b/sympy/polys/series/tests/test_hypothesis.py
+index 87c6b7dbcfdf..33520bc77fa4 100644
+--- a/sympy/polys/series/tests/test_hypothesis.py
++++ b/sympy/polys/series/tests/test_hypothesis.py
+@@ -4,8 +4,6 @@
+ 
+ from sympy import ring, QQ
+ from sympy.abc import x
+-from sympy.core import Add, Mul, Pow
+-from sympy.series.order import Order
+ from sympy.external.gmpy import GROUND_TYPES
+ from sympy.functions.elementary.trigonometric import atan, asin, sin, cos, tan
+ from sympy.functions.elementary.hyperbolic import atanh, asinh, sinh, cosh, tanh
+@@ -35,32 +33,6 @@
+     flint = True
+ 
+ 
+-def as_expr(s, ring):
+-    """Helper function to convert a series to an expression."""
+-    if flint:
+-        coeffs = s.coeffs()
+-        prec = ring.series_prec(s)
+-    else:
+-        coeffs, prec = s
+-        coeffs = coeffs[::-1]
+-
+-    dom = ring.domain
+-    result = []
+-
+-    if coeffs and coeffs[0] != 0:
+-        result.append(dom.to_sympy(coeffs[0]))
+-
+-    for i, coeff in enumerate(coeffs[1:], start=1):
+-        if coeff == 0:
+-            continue
+-        result.append(Mul(dom.to_sympy(coeff), Pow(x, i)))
+-
+-    if prec is not None:
+-        result.append(Order(x**prec))
+-
+-    return Add(*result)
+-
+-
+ def _dup_QQ():
+     """This is a strategy of creating random dup_QQ elements."""
+     elems = st.tuples(
+@@ -93,65 +65,65 @@ def dup_one_const(draw, min_size=3, max_size=25):
+ 
+ @given(f=dup_zero_const())
+ def test_rs_series_zero(f):
+-    Rs = power_series_ring(QQ, 25)
++    Rs, _ = power_series_ring("x", QQ, 25)
+     Rp, x = ring("x", QQ)
+ 
+-    s = Rs(f[::-1])
++    s = Rs.from_list(f[::-1])
+     p = Rp.from_list(f)
+ 
+-    assert Rs.to_dense(Rs.exp(s)) == (rs_exp(p, x, 25)).to_dense()
++    assert Rs.to_dense((Rs.exp(s))) == (rs_exp(p, x, 25)).to_dense()
+ 
+-    assert Rs.to_dense(Rs.atan(s)) == (rs_atan(p, x, 25)).to_dense()
+-    assert Rs.to_dense(Rs.atanh(s)) == (rs_atanh(p, x, 25)).to_dense()
+-    assert Rs.to_dense(Rs.asin(s)) == (rs_asin(p, x, 25)).to_dense()
+-    assert Rs.to_dense(Rs.asinh(s)) == (rs_asinh(p, x, 25)).to_dense()
++    assert Rs.to_dense((Rs.atan(s))) == (rs_atan(p, x, 25)).to_dense()
++    assert Rs.to_dense((Rs.atanh(s))) == (rs_atanh(p, x, 25)).to_dense()
++    assert Rs.to_dense((Rs.asin(s))) == (rs_asin(p, x, 25)).to_dense()
++    assert Rs.to_dense((Rs.asinh(s))) == (rs_asinh(p, x, 25)).to_dense()
+ 
+-    assert Rs.to_dense(Rs.tan(s)) == (rs_tan(p, x, 25)).to_dense()
+-    assert Rs.to_dense(Rs.tanh(s)) == (rs_tanh(p, x, 25)).to_dense()
+-    assert Rs.to_dense(Rs.sin(s)) == (rs_sin(p, x, 25)).to_dense()
+-    assert Rs.to_dense(Rs.sinh(s)) == (rs_sinh(p, x, 25)).to_dense()
+-    assert Rs.to_dense(Rs.cos(s)) == (rs_cos(p, x, 25)).to_dense()
+-    assert Rs.to_dense(Rs.cosh(s)) == (rs_cosh(p, x, 25)).to_dense()
++    assert Rs.to_dense((Rs.tan(s))) == (rs_tan(p, x, 25)).to_dense()
++    assert Rs.to_dense((Rs.tanh(s))) == (rs_tanh(p, x, 25)).to_dense()
++    assert Rs.to_dense((Rs.sin(s))) == (rs_sin(p, x, 25)).to_dense()
++    assert Rs.to_dense((Rs.sinh(s))) == (rs_sinh(p, x, 25)).to_dense()
++    assert Rs.to_dense((Rs.cos(s))) == (rs_cos(p, x, 25)).to_dense()
++    assert Rs.to_dense((Rs.cosh(s))) == (rs_cosh(p, x, 25)).to_dense()
+ 
+ 
+ @given(f=dup_one_const())
+ def test_rs_series_one(f):
+-    Rs = power_series_ring(QQ, 25)
++    Rs, _ = power_series_ring("x", QQ, 25)
+     Rp, x = ring("x", QQ)
+ 
+-    s = Rs(f[::-1])
++    s = Rs.from_list(f[::-1])
+     p = Rp.from_list(f)
+ 
+-    assert Rs.to_dense(Rs.log(s)) == (rs_log(p, x, 25)).to_dense()
++    assert Rs.to_dense((Rs.log(s))) == (rs_log(p, x, 25)).to_dense()
+ 
+ 
+ @slow
+ @given(f=dup_zero_const(max_size=5))
+ def test_global_series_zero(f):
+-    Rs = power_series_ring(QQ, 5)
++    Rs, _ = power_series_ring("x", QQ, 5)
+ 
+-    s = Rs(f[::-1])
++    s = Rs.from_list(f[::-1])
+     e = expr_from_dict(dup_to_dict(f, QQ), x)
+-    assert as_expr(Rs.exp(s), Rs) == exp(e).series(x, 0, 5)
++    assert Rs.to_expr((Rs.exp(s))) == exp(e).series(x, 0, 5)
+ 
+-    assert as_expr(Rs.atan(s), Rs) == atan(e).series(x, 0, 5)
+-    assert as_expr(Rs.atanh(s), Rs) == atanh(e).series(x, 0, 5)
+-    assert as_expr(Rs.asin(s), Rs) == asin(e).series(x, 0, 5)
+-    assert as_expr(Rs.asinh(s), Rs) == asinh(e).series(x, 0, 5)
++    assert Rs.to_expr((Rs.atan(s))) == atan(e).series(x, 0, 5)
++    assert Rs.to_expr((Rs.atanh(s))) == atanh(e).series(x, 0, 5)
++    assert Rs.to_expr((Rs.asin(s))) == asin(e).series(x, 0, 5)
++    assert Rs.to_expr((Rs.asinh(s))) == asinh(e).series(x, 0, 5)
+ 
+-    assert as_expr(Rs.tan(s), Rs) == tan(e).series(x, 0, 5)
+-    assert as_expr(Rs.tanh(s), Rs) == tanh(e).series(x, 0, 5)
+-    assert as_expr(Rs.sin(s), Rs) == sin(e).series(x, 0, 5)
+-    assert as_expr(Rs.sinh(s), Rs) == sinh(e).series(x, 0, 5)
+-    assert as_expr(Rs.cos(s), Rs) == cos(e).series(x, 0, 5)
+-    assert as_expr(Rs.cosh(s), Rs) == cosh(e).series(x, 0, 5)
++    assert Rs.to_expr((Rs.tan(s))) == tan(e).series(x, 0, 5)
++    assert Rs.to_expr((Rs.tanh(s))) == tanh(e).series(x, 0, 5)
++    assert Rs.to_expr((Rs.sin(s))) == sin(e).series(x, 0, 5)
++    assert Rs.to_expr((Rs.sinh(s))) == sinh(e).series(x, 0, 5)
++    assert Rs.to_expr((Rs.cos(s))) == cos(e).series(x, 0, 5)
++    assert Rs.to_expr((Rs.cosh(s))) == cosh(e).series(x, 0, 5)
+ 
+ 
+ @given(f=dup_one_const(max_size=5))
+ def test_global_series_one(f):
+-    Rs = power_series_ring(QQ, 5)
++    Rs, _ = power_series_ring("x", QQ, 5)
+ 
+-    s = Rs(f[::-1])
++    s = Rs.from_list(f[::-1])
+     e = expr_from_dict(dup_to_dict(f, QQ), x)
+ 
+-    assert as_expr(Rs.log(s), Rs) == log(e).series(x, 0, 5)
++    assert Rs.to_expr((Rs.log(s))) == log(e).series(x, 0, 5)
+diff --git a/sympy/polys/series/tests/test_ring.py b/sympy/polys/series/tests/test_ring.py
+index ef44bdf3ede0..03bf77cb6eaa 100644
+--- a/sympy/polys/series/tests/test_ring.py
++++ b/sympy/polys/series/tests/test_ring.py
+@@ -1,5 +1,12 @@
++from sympy.core.symbol import symbols
++from sympy.series.order import O
+ from sympy.polys.domains import ZZ, QQ
+-from sympy.polys.series.base import PowerSeriesRingProto
++from sympy.polys.series.base import PowerSeriesRingProto, PowerSeriesRingFieldProto
++from sympy.polys.series.ring import (
++    PowerSeriesElement,
++    PowerSeriesRingRing,
++    PowerSeriesRingField,
++)
+ from sympy.polys.series.ringpython import (
+     PythonPowerSeriesRingZZ,
+     PythonPowerSeriesRingQQ,
+@@ -29,7 +36,13 @@
+ Ring_ZZ: list[type[PowerSeriesRingProto]] = [PythonPowerSeriesRingZZ]
+ Ring_QQ: list[type[PowerSeriesRingProto]] = [PythonPowerSeriesRingQQ]
+ 
++ground_int: list[type[PowerSeriesRingProto]]
++ground_rational: list[type[PowerSeriesRingFieldProto]]
++
++flint: bool = False
++
+ if GROUND_TYPES == "flint":
++    flint = True
+     from sympy.polys.series.ringflint import (
+         FlintPowerSeriesRingZZ,
+         FlintPowerSeriesRingQQ,
+@@ -38,6 +51,13 @@
+     Ring_ZZ.append(FlintPowerSeriesRingZZ)
+     Ring_QQ.append(FlintPowerSeriesRingQQ)
+ 
++    ground_int = [FlintPowerSeriesRingZZ, FlintPowerSeriesRingQQ]
++    ground_rational = [FlintPowerSeriesRingQQ]
++
++else:
++    ground_int = [PythonPowerSeriesRingZZ, PythonPowerSeriesRingQQ]
++    ground_rational = [PythonPowerSeriesRingQQ]
++
+ 
+ @pytest.fixture(params=Ring_ZZ + Ring_QQ)
+ def ring_int(request):
+@@ -49,6 +69,16 @@ def ring_rational(request):
+     return request.param
+ 
+ 
++@pytest.fixture(params=ground_int)
++def groundring_int(request):
++    return request.param
++
++
++@pytest.fixture(params=ground_rational)
++def groundring_rational(request):
++    return request.param
++
++
+ def test_equal(ring_int):
+     SeriesRing = ring_int
+     R = SeriesRing()
+@@ -345,6 +375,7 @@ def test_int_pow(ring_int):
+     assert R.equal_repr(R.pow_int(R([1, 2, 1], 5), 3), R([1, 6, 15, 20, 15], 5))
+     assert R.equal_repr(R.pow_int(R.add(R.gen, R.one), 6), R([1, 6, 15, 20, 15, 6], 6))
+     assert R.equal_repr(R.pow_int(R.gen, 10), R([], 6))
++    assert R.equal_repr(R.pow_int(R.add(R.one, R.gen), 3), R([1, 3, 3, 1], None))
+     assert R3.equal_repr(R3.pow_int(R3.add(R3.gen, R3.one), 5), R3([1, 5, 10], 3))
+     assert R3.equal_repr(R3.pow_int(R([1, 1, 1, 1, 1]), 2), R3([1, 2, 3], 3))
+     assert R3.equal_repr(
+@@ -356,6 +387,8 @@ def test_int_pow(ring_int):
+         R10([1, 12, 66, 220, 495, 792, 924, 792, 495, 220], 10),
+     )
+ 
++    raises(ValueError, lambda: R.pow_int(R.gen, -2))
++
+ 
+ def test_rational_pow(ring_rational):
+     SeriesRing = ring_rational
+@@ -1160,3 +1193,458 @@ def test_hypot(ring_rational):
+     assert R.equal_repr(
+         R.hypot(R([(1, 1), (1, 1)]), R([(0, 1)])), R([(1, 1), (1, 1)], None)
+     )
++
++
++def test_PowerSeriesRing():
++    from sympy.abc import x
++
++    RZZ = PowerSeriesRingRing(ZZ, "x")
++    RQQ = PowerSeriesRingField(QQ, "x")
++
++    assert RZZ == PowerSeriesRingRing(ZZ, "x", 6)
++    assert RQQ == PowerSeriesRingField(QQ, "x", 6)
++    assert RZZ != PowerSeriesRingRing(ZZ, "x", 10)
++    assert RQQ != PowerSeriesRingField(QQ, "x", 10)
++    assert RZZ != RQQ
++
++    assert RZZ.domain == ZZ
++    assert RQQ.domain == QQ
++    assert RZZ.gen == RZZ(x)
++    assert RQQ.gen == RQQ(x)
++    assert isinstance(RZZ.gen, PowerSeriesElement)
++    assert isinstance(RQQ.gen, PowerSeriesElement)
++    assert RZZ.prec == 6
++    assert RQQ.prec == 6
++    assert RZZ.symbol == RQQ.symbol
++
++
++def test_PowerSeriesRing_basics():
++    RZZ = PowerSeriesRingRing(ZZ, "x")
++    RQQ = PowerSeriesRingField(QQ, "x")
++    xz = RZZ.gen
++    xq = RQQ.gen
++    _x = symbols("x")
++
++    assert RZZ.is_element(xz)
++    assert not RZZ.is_element(xq)
++
++    assert RZZ.truncate(xz + xz**2 + xz**3, 3) == RZZ.from_expr(_x + _x**2 + O(_x**3))
++    assert (
++        RZZ.from_list([ZZ(1), ZZ(2), ZZ(3), ZZ(4), ZZ(2), ZZ(13), ZZ(2)])
++        == 1
++        + 2 * xz
++        + 3 * xz**2
++        + 4 * xz**3
++        + 2 * xz**4
++        + 13 * xz**5
++        + RZZ.order_term()
++    )
++    assert (
++        RQQ.from_list([QQ(1, 3), QQ(3, 2), QQ(1, 3)])
++        == QQ(1, 3) + 3 * xq / 2 + xq**2 / 3
++    )
++
++    assert RZZ.to_list(xz + 2 * xz**2 + 3 * xz**3) == [0, 1, 2, 3]
++    assert RZZ.to_dense(xz + 2 * xz**2 + 3 * xz**3) == [3, 2, 1, 0]
++
++
++def test_PowerSeriesElement_basics():
++    R = PowerSeriesRingField(QQ, "x")
++    Ry = PowerSeriesRingField(QQ, "y")
++    x = R.gen
++    y = Ry.gen
++
++    _x = symbols("x")
++
++    assert (QQ(2) + x) == x + QQ(2)
++    assert (QQ(2) - x) == 2 - x
++    assert (x - QQ(2)) == x - 2
++    assert (QQ(2) * x) == x * QQ(2)
++    assert (QQ(1) / (1 + x)) == 1 / (1 + x)
++    assert ((1 + x) / QQ(3)) == (1 + x) / QQ(3)
++
++    assert (2 + x + 3 * x**2).as_expr() == 2 + _x + 3 * _x**2
++    assert (0 + 3 * x**2).as_expr() == 3 * _x**2
++    assert (2 + x + 3 * x**2 + R.order_term()).as_expr() == 2 + _x + 3 * _x**2 + O(
++        _x**6
++    )
++    assert (2 + x + 3 * x**2).constant_coefficient() == 2
++    assert (2 + x + R.order_term()).removeO() == 2 + x
++    assert R.from_int(5).is_ground
++    assert not (1 + x + x**2).is_ground
++
++    raises(ValueError, lambda: (1 + x + y))
++    raises(ValueError, lambda: (1 + x - y))
++    raises(ValueError, lambda: (1 + x * y))
++    raises(ValueError, lambda: (1 + x / y))
++
++    raises(TypeError, lambda: (x + _x))
++    raises(TypeError, lambda: (x - _x))
++    raises(TypeError, lambda: (x * _x))
++    raises(TypeError, lambda: (x / _x))
++    raises(TypeError, lambda: (_x + x))
++    raises(TypeError, lambda: (_x - x))
++    raises(TypeError, lambda: (_x * x))
++    raises(TypeError, lambda: (_x / x))
++
++
++def test_PowerSeriesRing_from_expr():
++    R = PowerSeriesRingField(QQ, "x", 5)
++    o = R.order_term()
++
++    x = R.gen
++    _x = symbols("x")
++
++    assert R.from_expr(_x) == x
++    assert R.from_expr(1 + _x + 2 * _x**2) == 1 + x + 2 * x**2
++    assert (
++        R.from_expr(2 + 4 * _x + 6 * _x**2 + 6 * _x**3 + _x**5)
++        == 2 + 4 * x + 6 * x**2 + 6 * x**3 + o
++    )
++    assert R.from_expr(_x + O(_x**7)) == x + o
++    assert (
++        R.from_expr(1 + _x + (3 + _x**2) ** (-2) + _x**5)
++        == QQ(10, 9) + x - 2 * x**2 / 27 + x**4 / 27 + x**5 + o
++    )
++
++    raises(ValueError, lambda: R.from_expr(symbols("y") ** 4))
++    raises(ValueError, lambda: R.from_expr(O(symbols("y") ** 4)))
++    raises(ValueError, lambda: R.from_expr(_x ** (-2)))
++    raises(ValueError, lambda: R.from_expr(_x ** (1 / 2)))
++
++
++def test_PowerSeriesRing_ring_new():
++    R = PowerSeriesRingRing(QQ, "x", 5)
++
++    assert R.ring_new(QQ(7)) == R.from_ground(QQ(7))
++    assert R.ring_new(3) == R.from_int(3)
++
++
++def test_PowerSeriesRing_arith(groundring_int):
++    SeriesRing = groundring_int
++    RL = SeriesRing(5)
++    if RL.domain.is_ZZ:
++        RU = PowerSeriesRingRing(RL.domain, "x", 5)
++    else:
++        RU = PowerSeriesRingField(RL.domain, "x", 5)
++    x = RU.gen
++
++    p1 = 1 + 2 * x + 3 * x**2
++    p2 = 4 + 5 * x + 6 * x**2
++    assert RL.equal_repr((p1 + p2).series, RL([5, 7, 9]))
++    assert RL.equal_repr((p2 - p1).series, RL([3, 3, 3]))
++
++    assert RL.equal_repr((x * x).series, RL([0, 0, 1]))
++    assert RL.equal_repr(((1 + x) * (1 + x)).series, RL([1, 2, 1]))
++    assert RL.equal_repr(((1 + 2 * x) * (3 + 4 * x)).series, RL([3, 10, 8]))
++
++    assert RL.equal_repr((x**0).series, RL([1]))
++    assert RL.equal_repr((x**1).series, RL([0, 1]))
++    assert RL.equal_repr((x**3).series, RL([0, 0, 0, 1]))
++    assert RL.equal_repr(((1 + x) ** 2).series, RL([1, 2, 1]))
++    assert RL.equal_repr(((1 + x) ** 3).series, RL([1, 3, 3, 1]))
++
++    p3 = 1 - x + 2 * x**2 + x**6
++    assert RL.equal_repr(p3.series, RL([1, -1, 2, 0, 0, 0, 1]))
++    assert RL.equal_repr((-p3).series, RL([-1, 1, -2, 0, 0, 0, -1]))
++
++    p4 = 2 + 4 * x + 6 * x**2
++    assert RL.equal_repr((p4 / 2).series, RL([1, 2, 3]))
++    assert RL.equal_repr((p4 / (1 + x**2 + x**5)).series, RL([2, 4, 4, -4, -4], 5))
++
++    assert RU.square(1 + x) == (1 + x) ** 2
++    assert RL.equal_repr(RU.square(1 + x).series, RL([1, 2, 1]))
++    assert RL.equal_repr(RU.square(x**2 + 7 * x**3).series, RL([0, 0, 0, 0, 1], 5))
++
++
++def test_PowerSeriesRing_operations_int(groundring_int):
++    SeriesRing = groundring_int
++    RL = SeriesRing(5)
++    if RL.domain.is_ZZ:
++        RU = PowerSeriesRingRing(RL.domain, "x", 5)
++    else:
++        RU = PowerSeriesRingField(RL.domain, "x", 5)
++    x = RU.gen
++
++    assert RL.equal_repr(
++        RU.compose(1 + x**2 + 12 * x**3, x + 7 * x**3).series,
++        RL([1, 0, 1, 12, 14], 5),
++    )
++    assert RL.equal_repr(
++        RU.compose(3 * x**3, x + 2 * x**3 + 2 * x**4).series,
++        RL([0, 0, 0, 3], 5),
++    )
++
++    assert RL.equal_repr(
++        RU.differentiate(x**3 + 2 * x**2 + 3 * x + 4).series, RL([3, 4, 3])
++    )
++    assert RL.equal_repr(
++        RU.differentiate(x**4 + 5 * x**3 + 2 * x).series, RL([2, 0, 15, 4])
++    )
++
++    assert RL.equal_repr(RU.inverse(1 + x).series, RL([1, -1, 1, -1, 1], 5))
++    assert RL.equal_repr(RU.inverse(1 + 2 * x + x**2).series, RL([1, -2, 3, -4, 5], 5))
++
++    assert RL.equal_repr(RU.reversion(x + x**2).series, RL([0, 1, -1, 2, -5], 5))
++    assert RL.equal_repr(
++        RU.reversion(x + 2 * x**2 + x**3).series, RL([0, 1, -2, 7, -30], 5)
++    )
++
++
++def test_PowerSeriesRing_operations_rational(groundring_rational):
++    SeriesRing = groundring_rational
++    R = SeriesRing(5)
++    RU = PowerSeriesRingField(QQ, "x", 5)
++    x = RU.gen
++
++    assert R.equal_repr(
++        RU.compose(
++            QQ(1, 2) + QQ(2, 3) * x**2 + QQ(3, 4) * x**3, x + QQ(1, 5) * x**3
++        ).series,
++        R([QQ(1, 2), QQ(0, 1), QQ(2, 3), QQ(3, 4), QQ(4, 15)], 5),
++    )
++    assert R.equal_repr(
++        RU.compose(
++            QQ(3, 4) + QQ(1, 6) * x**2 + QQ(2, 7) * x**4,
++            x + QQ(3, 8) * x**2 + QQ(1, 9) * x**3,
++        ).series,
++        R([QQ(3, 4), QQ(0, 1), QQ(1, 6), QQ(1, 8), QQ(8375, 24192)], 5),
++    )
++
++    assert R.equal_repr(
++        RU.differentiate(
++            QQ(5, 6)
++            + QQ(2, 3) * x
++            + QQ(4, 7) * x**2
++            + QQ(1, 8) * x**3
++            + QQ(3, 5) * x**4
++        ).series,
++        R([QQ(2, 3), QQ(8, 7), QQ(3, 8), QQ(12, 5)]),
++    )
++    assert R.equal_repr(
++        RU.differentiate(QQ(1, 9) * x**2 + QQ(5, 11) * x**3 + QQ(2, 13) * x**4).series,
++        R([QQ(0, 1), QQ(2, 9), QQ(15, 11), QQ(8, 13)]),
++    )
++
++    p5 = QQ(2, 3) + QQ(1, 4) * x + QQ(3, 5) * x**2
++    assert R.equal_repr(
++        (p5 * RU.inverse(p5)).series,
++        R([QQ(1, 1)], 5),
++    )
++    p6 = QQ(3, 7) + QQ(2, 9) * x + QQ(1, 11) * x**2 + QQ(4, 13) * x**3
++    assert R.equal_repr(
++        (p6 * RU.inverse(p6)).series,
++        R([QQ(1, 1)], 5),
++    )
++
++    p7 = x + QQ(1, 3) * x**2 + QQ(2, 5) * x**3
++    assert R.equal_repr(
++        RU.compose(p7, RU.reversion(p7)).series,
++        R([QQ(0, 1), QQ(1, 1)], 5),
++    )
++    p8 = x + QQ(3, 7) * x**3 + QQ(1, 11) * x**4
++    assert R.equal_repr(
++        RU.compose(p8, RU.reversion(p8)).series,
++        R([QQ(0, 1), QQ(1, 1)], 5),
++    )
++
++    assert R.equal_repr(
++        RU.integrate(
++            QQ(1, 2) + QQ(3, 4) * x + QQ(2, 3) * x**2 + QQ(5, 6) * x**3
++        ).series,
++        R([QQ(0, 1), QQ(1, 2), QQ(3, 8), QQ(2, 9), QQ(5, 24)]),
++    )
++    assert R.equal_repr(
++        RU.integrate(QQ(2, 3) * x**2 + QQ(4, 5) * x**3 + QQ(1, 7) * x**4).series,
++        R([QQ(0, 1), QQ(0, 1), QQ(0, 1), QQ(2, 9), QQ(1, 5), QQ(1, 35)]),
++    )
++
++    assert R.equal_repr(RU.sqrt(x**2 + 2 * x + 1).series, R([1, 1]))
++    assert R.equal_repr(
++        RU.sqrt(1 + 5 * x + 2 * x**2 + 12 * x**3 + 12 * x**5).series,
++        R([QQ(1, 1), QQ(5, 2), QQ(-17, 8), QQ(181, 16), QQ(-3909, 128)], 5),
++    )
++
++
++def test_PowerSeriesRing_series():
++    R = PowerSeriesRingField(QQ, "x", 10)
++    x = R.gen
++    o = R.order_term()
++
++    p1 = x + 2 * x + 3 * x**4
++
++    assert (
++        R.log(1 + p1)
++        == 3 * x
++        - 9 * x**2 / 2
++        + 9 * x**3
++        - 69 * x**4 / 4
++        + 198 * x**5 / 5
++        - 189 * x**6 / 2
++        + 1620 * x**7 / 7
++        - 4653 * x**8 / 8
++        + 1485 * x**9
++        + o
++    )
++    assert R.log1p(p1) == R.log(1 + p1)
++    assert (
++        R.log1p(p1)
++        == 3 * x
++        - 9 * x**2 / 2
++        + 9 * x**3
++        - 69 * x**4 / 4
++        + 198 * x**5 / 5
++        - 189 * x**6 / 2
++        + 1620 * x**7 / 7
++        - 4653 * x**8 / 8
++        + 1485 * x**9
++        + o
++    )
++    assert (
++        R.exp(p1)
++        == 1
++        + 3 * x
++        + 9 * x**2 / 2
++        + 9 * x**3 / 2
++        + 51 * x**4 / 8
++        + 441 * x**5 / 40
++        + 1161 * x**6 / 80
++        + 7803 * x**7 / 560
++        + 66249 * x**8 / 4480
++        + 87939 * x**9 / 4480
++        + o
++    )
++    assert R.expm1(p1) == R.exp(p1) - 1
++    assert (
++        R.expm1(p1)
++        == 3 * x
++        + 9 * x**2 / 2
++        + 9 * x**3 / 2
++        + 51 * x**4 / 8
++        + 441 * x**5 / 40
++        + 1161 * x**6 / 80
++        + 7803 * x**7 / 560
++        + 66249 * x**8 / 4480
++        + 87939 * x**9 / 4480
++        + o
++    )
++    assert (
++        R.atan(p1)
++        == 3 * x
++        - 9 * x**3
++        + 3 * x**4
++        + 243 * x**5 / 5
++        - 27 * x**6
++        - 2187 * x**7 / 7
++        + 243 * x**8
++        + 2160 * x**9
++        + o
++    )
++    assert (
++        R.atanh(p1)
++        == 3 * x
++        + 9 * x**3
++        + 3 * x**4
++        + 243 * x**5 / 5
++        + 27 * x**6
++        + 2187 * x**7 / 7
++        + 243 * x**8
++        + 2214 * x**9
++        + o
++    )
++    assert (
++        R.asin(p1)
++        == 3 * x
++        + 9 * x**3 / 2
++        + 3 * x**4
++        + 729 * x**5 / 40
++        + 27 * x**6 / 2
++        + 10935 * x**7 / 112
++        + 729 * x**8 / 8
++        + 78273 * x**9 / 128
++        + o
++    )
++    assert (
++        R.asinh(p1)
++        == 3 * x
++        - 9 * x**3 / 2
++        + 3 * x**4
++        + 729 * x**5 / 40
++        - 27 * x**6 / 2
++        - 10935 * x**7 / 112
++        + 729 * x**8 / 8
++        + 74817 * x**9 / 128
++        + o
++    )
++    assert (
++        R.tan(p1)
++        == 3 * x
++        + 9 * x**3
++        + 3 * x**4
++        + 162 * x**5 / 5
++        + 27 * x**6
++        + 4131 * x**7 / 35
++        + 162 * x**8
++        + 16011 * x**9 / 35
++        + o
++    )
++    assert (
++        R.tanh(p1)
++        == 3 * x
++        - 9 * x**3
++        + 3 * x**4
++        + 162 * x**5 / 5
++        - 27 * x**6
++        - 4131 * x**7 / 35
++        + 162 * x**8
++        + 14121 * x**9 / 35
++        + o
++    )
++    assert (
++        R.sin(p1)
++        == 3 * x
++        - 9 * x**3 / 2
++        + 3 * x**4
++        + 81 * x**5 / 40
++        - 27 * x**6 / 2
++        - 243 * x**7 / 560
++        + 81 * x**8 / 8
++        - 60237 * x**9 / 4480
++        + o
++    )
++    assert (
++        R.sinh(p1)
++        == 3 * x
++        + 9 * x**3 / 2
++        + 3 * x**4
++        + 81 * x**5 / 40
++        + 27 * x**6 / 2
++        + 243 * x**7 / 560
++        + 81 * x**8 / 8
++        + 60723 * x**9 / 4480
++        + o
++    )
++    assert (
++        R.cos(p1)
++        == 1
++        - 9 * x**2 / 2
++        + 27 * x**4 / 8
++        - 9 * x**5
++        - 81 * x**6 / 80
++        + 27 * x**7 / 2
++        - 19431 * x**8 / 4480
++        - 243 * x**9 / 40
++        + o
++    )
++    assert (
++        R.cosh(p1)
++        == 1
++        + 9 * x**2 / 2
++        + 27 * x**4 / 8
++        + 9 * x**5
++        + 81 * x**6 / 80
++        + 27 * x**7 / 2
++        + 20889 * x**8 / 4480
++        + 243 * x**9 / 40
++        + o
++    )
+diff --git a/sympy/polys/series/tring.py b/sympy/polys/series/tring.py
+new file mode 100644
+index 000000000000..d5f64db6201f
+--- /dev/null
++++ b/sympy/polys/series/tring.py
+@@ -0,0 +1,99 @@
++from __future__ import annotations
++
++from sympy.external.gmpy import GROUND_TYPES, MPQ, MPZ
++
++from sympy.polys.domains.domain import Domain, Er
++from sympy.polys.domains.field import Field, Ef
++from sympy.polys.series.base import PowerSeriesRingProto, PowerSeriesRingFieldProto
++from sympy.polys.series.ringpython import (
++    USeries,
++    PythonPowerSeriesRingZZ,
++    PythonPowerSeriesRingQQ,
++)
++
++from typing import Generic, TYPE_CHECKING, cast, overload
++
++
++if GROUND_TYPES == "flint":
++    from sympy.polys.series.ringflint import (
++        ZZSeries,
++        QQSeries,
++        FlintPowerSeriesRingZZ,
++        FlintPowerSeriesRingQQ,
++    )
++
++    flint = True
++else:
++    if TYPE_CHECKING:
++        from sympy.polys.series.ringflint import (
++            ZZSeries,
++            QQSeries,
++            FlintPowerSeriesRingZZ,
++            FlintPowerSeriesRingQQ,
++        )
++    else:
++        ZZSeries = QQSeries = None
++        FlintPowerSeriesRingZZ = FlintPowerSeriesRingQQ = None
++    flint = False
++
++
++class TSeriesElement(Generic[Er]):
++    """Dummy type for lower power series elements, used only for static type checking."""
++
++    # Dummy method to ensure that TSeriesElement is invariant in Er.
++    def __invalid__(self, other: Er) -> Er:
++        raise NotImplementedError
++
++    flint = True
++
++
++# Types for lower ring power series ring combining different ground types.
++TSeriesRing = PowerSeriesRingProto[TSeriesElement[Er], Er]
++TSeriesRingField = PowerSeriesRingFieldProto[TSeriesElement[Ef], Ef]
++
++
++def PowerSeriesRingZZ(prec: int = 6) -> TSeriesRing[MPZ]:
++    if FlintPowerSeriesRingZZ is None:
++        R_python: PowerSeriesRingProto[USeries[MPZ], MPZ] = PythonPowerSeriesRingZZ(
++            prec
++        )
++        return cast("TSeriesRing[MPZ]", R_python)
++    else:
++        R_flint: PowerSeriesRingProto[ZZSeries, MPZ] = FlintPowerSeriesRingZZ(prec)
++        return cast("TSeriesRing[MPZ]", R_flint)
++
++
++def PowerSeriesRingQQ(prec: int = 6) -> TSeriesRingField[MPQ]:
++    if FlintPowerSeriesRingQQ is None:
++        R_python: PowerSeriesRingProto[USeries[MPQ], MPQ] = PythonPowerSeriesRingQQ(
++            prec
++        )
++        return cast("TSeriesRingField[MPQ]", R_python)
++    else:
++        R_flint: PowerSeriesRingProto[QQSeries, MPQ] = FlintPowerSeriesRingQQ(prec)
++        return cast("TSeriesRingField[MPQ]", R_flint)
++
++
++@overload
++def _power_series_ring(K: Field[Ef], prec: int = 6) -> TSeriesRingField[Ef]: ...
++
++
++@overload
++def _power_series_ring(K: Domain[Er], prec: int = 6) -> TSeriesRing[Er]: ...
++
++
++def _power_series_ring(
++    K: Domain[Er] | Field[Ef], prec: int = 6
++) -> TSeriesRing[Er] | TSeriesRingField[Ef]:
++    """
++    Helper function for the Power Series Ring classes to create a base ring from lower
++    power series rings.
++    """
++    if K.is_ZZ:
++        R_ZZ: TSeriesRing[MPZ] = PowerSeriesRingZZ(prec)
++        return cast("TSeriesRing[Er]", R_ZZ)
++    elif K.is_QQ:
++        R_QQ: TSeriesRingField[MPQ] = PowerSeriesRingQQ(prec)
++        return cast("TSeriesRingField[Ef]", R_QQ)
++    else:
++        raise ValueError(f"Unsupported ground domain: {K}")

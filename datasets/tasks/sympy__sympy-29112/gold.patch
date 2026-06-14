@@ -1,0 +1,538 @@
+diff --git a/sympy/combinatorics/fp_groups.py b/sympy/combinatorics/fp_groups.py
+index 2c30c1860e19..96e768a07b81 100644
+--- a/sympy/combinatorics/fp_groups.py
++++ b/sympy/combinatorics/fp_groups.py
+@@ -352,10 +352,11 @@ def most_frequent_generator(self):
+ 
+     def random(self):
+         import random
+-        r = self.free_group.identity
+-        for i in range(random.randint(2,3)):
+-            r = r*random.choice(self.generators)**random.choice([1,-1])
+-        return r
++        dtype = type(self.free_group.identity)
++        return dtype.prod(
++            random.choice(self.generators)**random.choice([1, -1])
++            for _ in range(random.randint(2, 3))
++        )
+ 
+     def index(self, H, strategy="relator_based"):
+         """
+@@ -1003,12 +1004,10 @@ def simplify_presentation(*args, change_gens=False):
+         identity = F.identity
+         gens = F.generators
+         subs = dict(zip(syms, gens))
++        dtype = type(identity)
+         for j, r in enumerate(rels):
+             a = r.array_form
+-            rel = identity
+-            for sym, p in a:
+-                rel = rel*subs[sym]**p
+-            rels[j] = rel
++            rels[j] = dtype.prod(subs[sym]**p for sym, p in a)
+     return gens, rels
+ 
+ def _simplify_relators(rels):
+@@ -1251,12 +1250,14 @@ def rewrite(C, alpha, w):
+     x_4*y_2*x_3*x_1*x_2*y_4*x_5
+ 
+     """
+-    v = C._schreier_free_group.identity
++    dtype = type(C._schreier_free_group.identity)
++    factors = []
+     for i in range(len(w)):
+         x_i = w[i]
+-        v = v*C.P[alpha][C.A_dict[x_i]]
+-        alpha = C.table[alpha][C.A_dict[x_i]]
+-    return v
++        j = C.A_dict[x_i]
++        factors.append(C.P[alpha][j])
++        alpha = C.table[alpha][j]
++    return dtype.prod(factors)
+ 
+ # Pg 350, section 2.5.2 from [2]
+ def elimination_technique_2(C):
+diff --git a/sympy/combinatorics/free_groups.py b/sympy/combinatorics/free_groups.py
+index b3c5885d8601..a273475d8bb3 100644
+--- a/sympy/combinatorics/free_groups.py
++++ b/sympy/combinatorics/free_groups.py
+@@ -1,5 +1,10 @@
+ from __future__ import annotations
+ 
++from typing import TYPE_CHECKING, TypeVar
++
++if TYPE_CHECKING:
++    from collections.abc import Iterable
++
+ from sympy.core import S
+ from sympy.core.expr import Expr
+ from sympy.core.symbol import Symbol, symbols as _symbols
+@@ -110,6 +115,7 @@ def _parse_symbols(symbols):
+ ##############################################################################
+ 
+ _free_group_cache: dict[int, FreeGroup] = {}
++C = TypeVar("C", bound="FreeGroupElement")
+ 
+ class FreeGroup(DefaultPrinting):
+     """
+@@ -511,22 +517,45 @@ def __str__(self):
+ 
+     def __pow__(self, n):
+         n = as_int(n)
+-        result = self.group.identity
++        group = self.group
+         if n == 0:
+-            return result
++            return group.identity
++        if n == 1:
++            return self
++        if self.is_identity:
++            return self
++        if n == -1:
++            return self.inverse()
++        if tuple.__len__(self) > 1 and not self.is_cyclically_reduced():
++            reduced, removed = self.cyclic_reduction(removed=True)
++            power = reduced**n
++            if removed.is_identity:
++                return power
++            rep = _concat_reduced_array_forms(
++                removed.array_form,
++                power.array_form,
++                removed.inverse().array_form,
++            )
++            return group.dtype._new(rep)
+         if n < 0:
+             n = -n
+             x = self.inverse()
+         else:
+             x = self
+-        while True:
+-            if n % 2:
+-                result *= x
+-            n >>= 1
+-            if not n:
+-                break
+-            x *= x
+-        return result
++        array = x.array_form
++        if len(array) == 1:
++            gen, exp = array[0]
++            return group.dtype._new(((gen, exp*n),))
++        head = array[0]
++        tail = array[-1]
++        if head[0] != tail[0]:
++            return group.dtype._new(array*n)
++        # x is cyclically reduced here, so the boundary merge has a fixed,
++        # nonzero exponent and there are no cascading cancellations.
++        bridge = ((head[0], head[1] + tail[1]),)
++        middle = array[1:-1]
++        rep = (head,) + (middle + bridge)*(n - 1) + middle + (tail,)
++        return group.dtype._new(rep)
+ 
+     def __mul__(self, other):
+         """Returns the product of elements belonging to the same ``FreeGroup``.
+@@ -555,6 +584,29 @@ def __mul__(self, other):
+         r = self.array_form + other.array_form
+         return group.dtype._new_reduce_at_boundary(r, len(self.array_form) - 1)
+ 
++    @classmethod
++    def prod(cls: type[C], words: Iterable[C]) -> C:
++        """Return the product of an iterable of words from the same free group.
++
++        Examples
++        ========
++
++        >>> from sympy.combinatorics import free_group
++        >>> F, x, y = free_group("x y")
++        >>> F.dtype.prod([x, y, x**-1])
++        x*y*x**-1
++        """
++        parts = []
++        for word in words:
++            if not isinstance(word, cls):
++                raise TypeError("only FreeGroup elements of same FreeGroup can "
++                        "be multiplied")
++            if word:
++                parts.append(word.array_form)
++        if not parts:
++            return cls._new(())
++        return cls._new(_concat_reduced_array_forms(*parts))
++
+     def __truediv__(self, other):
+         group = self.group
+         if not isinstance(other, group.dtype):
+@@ -1368,3 +1420,31 @@ def _reduce_array_form(array_form, boundary_index=None):
+         else:
+             reduced.append((gen, exp))
+     return tuple(reduced)
++
++
++def _concat_reduced_array_forms(*parts):
++    """Concatenate reduced array forms, reducing only at part boundaries."""
++    out = []
++    for part in parts:
++        if not part:
++            continue
++        if not out:
++            out.extend(part)
++            continue
++        if out[-1][0] != part[0][0]:
++            out.extend(part)
++            continue
++
++        j = 0
++        while j < len(part) and out and out[-1][0] == part[j][0]:
++            exp = out[-1][1] + part[j][1]
++            gen = out[-1][0]
++            if exp:
++                out[-1] = (gen, exp)
++                j += 1
++                break
++            out.pop()
++            j += 1
++        if j < len(part):
++            out.extend(part[j:])
++    return tuple(out)
+diff --git a/sympy/combinatorics/homomorphisms.py b/sympy/combinatorics/homomorphisms.py
+index 1b96580c3009..0b5a3084c772 100644
+--- a/sympy/combinatorics/homomorphisms.py
++++ b/sympy/combinatorics/homomorphisms.py
+@@ -48,19 +48,18 @@ def _invs(self):
+             gens = image.strong_gens
+         else:
+             gens = image.generators
++        dtype = type(self.domain.identity)
+         for g in gens:
+             if g in inverses or g.is_identity:
+                 continue
+-            w = self.domain.identity
+             if isinstance(self.codomain, PermutationGroup):
+                 parts = image._strong_gens_slp[g][::-1]
+             else:
+                 parts = g
+-            for s in parts:
+-                if s in inverses:
+-                    w = w*inverses[s]
+-                else:
+-                    w = w*inverses[s**-1]**-1
++            w = dtype.prod(
++                inverses[s] if s in inverses else inverses[s**-1]**-1
++                for s in parts
++            )
+             inverses[g] = w
+ 
+         return inverses
+@@ -93,21 +92,19 @@ def invert(self, g):
+                 if g not in image:
+                     raise ValueError("Given element is not in the image of the homomorphism.")
+                 gens = image.generator_product(g)[::-1]
+-                for i in range(len(gens)):
+-                    s = gens[i]
+-                    if s.is_identity:
+-                        continue
+-                    if s in self._inverses:
+-                        w = w*self._inverses[s]
+-                    else:
+-                        w = w*self._inverses[s**-1]**-1
+-                return w
++                dtype = type(w)
++                return dtype.prod(
++                    self._inverses[s] if s in self._inverses
++                    else self._inverses[s**-1]**-1
++                    for s in gens if not s.is_identity
++                )
+ 
+             else:
+                 current_coset = 0
+                 im_gens = list(self._inverses)
+                 C = modified_coset_enumeration_r(self.codomain, im_gens)
+-                total_word = w
++                dtype = type(w)
++                factors = []
+                 preimages = list(self._inverses.values())
+                 temp_symbols = [gen.array_form[0][0] for gen in C._grp.generators]
+                 transl_map = dict(zip(temp_symbols, preimages))
+@@ -121,12 +118,14 @@ def invert(self, g):
+                     for _ in range(abs(exp)):
+                         word_intermediate = C.P[current_coset][j]
+                         if word_intermediate is not None:
+-                            for s,exp in word_intermediate.array_form:
+-                                total_word = total_word * transl_map[s]**exp
++                            factors.extend(
++                                transl_map[s]**exp
++                                for s, exp in word_intermediate.array_form
++                            )
+                         current_coset = C.table[current_coset][j]
+                 if current_coset != 0:
+                     raise ValueError("Given element is not in the image of the homomorphism.")
+-                return total_word
++                return dtype.prod(factors)
+ 
+         elif isinstance(g, list):
+             return [self.invert(e) for e in g]
+@@ -145,6 +144,8 @@ def _compute_kernel(self):
+         H = self.codomain
+         Ginf = G.order() is S.Infinity
+         if Ginf and isinstance(H, (FpGroup, FreeGroup)):
++            # TODO: Make this work for PermutationGroup codomain by replacing it
++            # with FpGroup using PermutationGroup.presentation()
+             if isinstance(H, FreeGroup):
+                 H = FpGroup(H, [])
+             preimages = self._is_surjective_cert()
+@@ -154,10 +155,11 @@ def _compute_kernel(self):
+                 }
+ 
+                 def _lift_to_domain(word):
+-                    lifted = G.identity
+-                    for symbol, power in word.array_form:
+-                        lifted = lifted * symbol_to_preimage[symbol]**power
+-                    return lifted
++                    dtype = type(G.identity)
++                    return dtype.prod(
++                        symbol_to_preimage[symbol]**power
++                        for symbol, power in word.array_form
++                    )
+ 
+                 kernel_gens = []
+                 for relator in H.relators:
+@@ -171,10 +173,6 @@ def _lift_to_domain(word):
+                     if not word.is_identity:
+                         kernel_gens.append(word)
+ 
+-                if isinstance(G, PermutationGroup):
+-                    if not kernel_gens:
+-                        return PermutationGroup([G.identity])
+-                    return G.normal_closure(kernel_gens)
+                 return FpSubgroup(G, kernel_gens, normal=True)
+             else:
+                 return self.factor()[0].kernel()
+@@ -470,13 +468,13 @@ def _check_homomorphism(domain, codomain, images):
+     symbols = [g.ext_rep[0] for g in gens]
+     symbols_to_domain_generators = dict(zip(symbols, domain.generators))
+     identity = codomain.identity
++    dtype = type(identity)
+ 
+     def _image(r):
+-        w = identity
+-        for symbol, power in r.array_form:
+-            g = symbols_to_domain_generators[symbol]
+-            w *= images[g]**power
+-        return w
++        return dtype.prod(
++            images[symbols_to_domain_generators[symbol]]**power
++            for symbol, power in r.array_form
++        )
+ 
+     for r in rels:
+         if isinstance(codomain, FpGroup):
+diff --git a/sympy/combinatorics/pc_groups.py b/sympy/combinatorics/pc_groups.py
+index 076b33751675..f848ef830843 100644
+--- a/sympy/combinatorics/pc_groups.py
++++ b/sympy/combinatorics/pc_groups.py
+@@ -456,6 +456,7 @@ def pc_relators(self):
+         pc_relators = {}
+         perm_to_free = {}
+         pcgs = self.pcgs
++        dtype = type(free_group.identity)
+ 
+         for gen, s in zip(pcgs, free_group.generators):
+             perm_to_free[gen**-1] = s**-1
+@@ -474,9 +475,7 @@ def pc_relators(self):
+             l = G.generator_product(gen**re, original = True)
+             l.reverse()
+ 
+-            word = free_group.identity
+-            for g in l:
+-                word = word*perm_to_free[g]
++            word = dtype.prod(perm_to_free[g] for g in l)
+ 
+             word = self.collected_word(word)
+             pc_relators[relation] = word if word else ()
+@@ -495,9 +494,7 @@ def pc_relators(self):
+ 
+                     l = G.generator_product(gens, original = True)
+                     l.reverse()
+-                    word = free_group.identity
+-                    for g in l:
+-                        word = word*perm_to_free[g]
++                    word = dtype.prod(perm_to_free[g] for g in l)
+ 
+                     word = self.collected_word(word)
+                     pc_relators[relation] = word if word else ()
+@@ -561,9 +558,8 @@ def exponent_vector(self, element):
+         for sym, g in zip(free_group.generators, self.pcgs):
+             perm_to_free[g**-1] = sym**-1
+             perm_to_free[g] = sym
+-        w = free_group.identity
+-        for g in gens:
+-            w = w*perm_to_free[g]
++        dtype = type(free_group.identity)
++        w = dtype.prod(perm_to_free[g] for g in gens)
+ 
+         word = self.collected_word(w)
+ 
+diff --git a/sympy/combinatorics/perm_groups.py b/sympy/combinatorics/perm_groups.py
+index 5a56cb0b95de..8a06e30d1ade 100644
+--- a/sympy/combinatorics/perm_groups.py
++++ b/sympy/combinatorics/perm_groups.py
+@@ -4728,31 +4728,40 @@ def _verify(H, K, phi, z, alpha):
+         for b in betas:
+             k_gens = K.stabilizer(b).generators
+             for y in k_gens:
+-                new_rel = transversal[b]
+                 gens = K.generator_product(y, original=True)
+-                for g in gens[::-1]:
+-                    new_rel = new_rel*phi.invert(g)
+-                new_rel = new_rel*transversal[b]**-1
++                dtype = type(transversal[b])
++                new_rel = dtype.prod(chain(
++                    (transversal[b],),
++                    (phi.invert(g) for g in gens[::-1]),
++                    (transversal[b]**-1,),
++                ))
+ 
+                 perm = phi(new_rel)
+                 try:
+                     gens = K.generator_product(perm, original=True)
+                 except ValueError:
+                     return False, perm
+-                for g in gens:
+-                    new_rel = new_rel*phi.invert(g)**-1
++                new_rel = dtype.prod(chain(
++                    (new_rel,),
++                    (phi.invert(g)**-1 for g in gens),
++                ))
+                 if new_rel not in rels:
+                     rels.append(new_rel)
+ 
+         for gamma in gammas:
+-            new_rel = transversal[gamma]*phi.invert(z)*transversal[gamma^z]**-1
++            dtype = type(transversal[gamma])
++            new_rel = dtype.prod((
++                transversal[gamma], phi.invert(z), transversal[gamma^z]**-1,
++            ))
+             perm = phi(new_rel)
+             try:
+                 gens = K.generator_product(perm, original=True)
+             except ValueError:
+                 return False, perm
+-            for g in gens:
+-                new_rel = new_rel*phi.invert(g)**-1
++            new_rel = dtype.prod(chain(
++                (new_rel,),
++                (phi.invert(g)**-1 for g in gens),
++            ))
+             if new_rel not in rels:
+                 rels.append(new_rel)
+ 
+@@ -4828,8 +4837,12 @@ def strong_presentation(self):
+                         t = K.orbit_rep(alpha, alpha^z)
+                         rel = phi.invert(z)*phi.invert(t)**-1
+                         perm = z*t**-1
+-                    for g in K.generator_product(perm, original=True):
+-                        rel = rel*phi.invert(g)**-1
++                    dtype = type(rel)
++                    rel = dtype.prod(chain(
++                        (rel,),
++                        (phi.invert(g)**-1 for g in
++                            K.generator_product(perm, original=True)),
++                    ))
+                     new_rels = [rel]
+                 elif len(orbit_k) == 1:
+                     # `success` is always true because `strong_gens`
+@@ -4977,9 +4990,9 @@ def _factor_group_by_rels(G, rels):
+             gen = G_p.generators[x//2]**((-1)**(x % 2))
+             new_rel = transversal[beta]*gen*transversal[C[beta][x]]**-1
+             perm = T(new_rel)
+-            nxt = G_p.identity
+-            for s in H.generator_product(perm, original=True):
+-                nxt = nxt*T.invert(s)**-1
++            dtype = type(G_p.identity)
++            nxt = dtype.prod(T.invert(s)**-1 for s in
++                H.generator_product(perm, original=True))
+             new_rel = new_rel*nxt
+ 
+             # continue coset enumeration
+diff --git a/sympy/combinatorics/permutations.py b/sympy/combinatorics/permutations.py
+index 2dcf617fe892..47d1599ac89f 100644
+--- a/sympy/combinatorics/permutations.py
++++ b/sympy/combinatorics/permutations.py
+@@ -1297,6 +1297,28 @@ def rmul(*args):
+             rv = args[i]*rv
+         return rv
+ 
++    @classmethod
++    def prod(cls, perms: Iterable["Permutation"]) -> "Permutation":
++        """
++        Return the product of an iterable of permutations in multiplication
++        order.
++
++        Examples
++        ========
++
++        >>> from sympy.combinatorics import Permutation
++        >>> a = Permutation([1, 0, 2])
++        >>> b = Permutation([0, 2, 1])
++        >>> Permutation.prod([a, b]) == a*b
++        True
++        >>> Permutation.prod([])
++        ()
++        """
++        perms = list(perms)
++        if not perms:
++            return cls([])
++        return cls.rmul(*reversed(perms))
++
+     @classmethod
+     def rmul_with_af(cls, *args):
+         """
+diff --git a/sympy/combinatorics/tests/test_free_groups.py b/sympy/combinatorics/tests/test_free_groups.py
+index 9f7055b871a9..a5c5eedded11 100644
+--- a/sympy/combinatorics/tests/test_free_groups.py
++++ b/sympy/combinatorics/tests/test_free_groups.py
+@@ -144,6 +144,9 @@ def test_FreeGroupElm__mul__pow__():
+     assert x**2 == x1*x
+ 
+     assert (x**2*y*x**-2)**4 == x**2*y**4*x**-2
++    assert (x**2*y*x**-2)**-3 == x**2*y**-3*x**-2
++    assert (x*y*x)**3 == x*y*x**2*y*x**2*y*x
++    assert (x*y*x)**-2 == x**-1*y**-1*x**-2*y**-1*x**-1
+     assert (x**2)**2 == x**4
+     assert (x**-1)**-1 == x
+     assert (x**-1)**0 == F.identity
+@@ -168,6 +171,19 @@ def test_FreeGroupElm__mul__pow__():
+         a *= x
+ 
+ 
++def test_FreeGroupElm_prod():
++    dtype = F.dtype
++    assert dtype.prod([]) == F.identity
++    assert dtype.prod([F.identity, x, y, x**-1, F.identity]) == x*y*x**-1
++    assert dtype.prod((x**k for k in [3, -1, 5, -2])) == x**5
++    words = [x**2*y*x**-2, x**2, y**-3, x**-2, y**3]
++    naive = F.identity
++    for word in words:
++        naive *= word
++    assert dtype.prod(words) == naive
++    raises(TypeError, lambda: dtype.prod([x, 1]))
++
++
+ def test_FreeGroupElm__len__():
+     assert len(x**5*y*x**2*y**-4*x) == 13
+     assert len(x**17) == 17
+diff --git a/sympy/combinatorics/tests/test_permutations.py b/sympy/combinatorics/tests/test_permutations.py
+index 8bf914a9f349..636d3827d950 100644
+--- a/sympy/combinatorics/tests/test_permutations.py
++++ b/sympy/combinatorics/tests/test_permutations.py
+@@ -370,6 +370,11 @@ def test_mul():
+     assert Permutation.rmul(a, b, c) == Permutation([1, 2, 3, 0])
+     assert Permutation.rmul(a, c) == Permutation([3, 2, 1, 0])
+     raises(TypeError, lambda: Permutation.rmul(b, c))
++    assert Permutation.prod([a, Permutation(b), Permutation(c)]) == (
++        a*Permutation(b)*Permutation(c))
++    assert Permutation.prod((p for p in [a, Permutation(b), Permutation(c)])) == (
++        a*Permutation(b)*Permutation(c))
++    assert Permutation.prod([]) == Permutation()
+ 
+     n = 6
+     m = 8

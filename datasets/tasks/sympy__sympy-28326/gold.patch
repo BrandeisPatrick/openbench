@@ -1,0 +1,3101 @@
+diff --git a/doc/src/modules/physics/control/control.rst b/doc/src/modules/physics/control/control.rst
+index 49efb80543b5..d2d956c4a08c 100644
+--- a/doc/src/modules/physics/control/control.rst
++++ b/doc/src/modules/physics/control/control.rst
+@@ -10,20 +10,28 @@ z-domain; where Transfer functions are input to output representations of
+ dynamic systems. The additive property is used for transfer functions in the
+ ``Parallel`` class, and the multiplicative property is used for transfer
+ functions in the ``Series`` class.
++represent Continuous-time Transfer functions in the Laplace domain, while
++``DiscreteTransferFunction`` represent Discrete-time Transfer functions in the
++z-domain; where Transfer functions are input to output representations of
++dynamic systems. The additive property is used for transfer functions in the
++``Parallel`` class, and the multiplicative property is used for transfer
++functions in the ``Series`` class.
+ Also, there is a ``Feedback`` class which is used to represent negative feedback
+ interconnection between two input/output systems. MIMO systems are also
+ supported with ``TransferFunctionMatrix`` as the base class for representing one.
+ ``MIMOSeries``, ``MIMOParallel``  and ``MIMOFeedback`` are MIMO equivalent of
+ ``Series``, ``Parallel`` and ``Feedback`` classes.
+ 
+-Alongside Transfer functions representations, the ``StateSpace`` class can be used
+-to model state-space systems. The ``StateSpace`` class supports
+-various methods for analyzing and manipulating systems, such as controllability,
+-observability, and transformations between state-space and transfer function
+-representations. MIMO state-space systems are also supported, making this module
++Alongside transfer functions representations, the ``StateSpace``
++and ``DiscreteStateSpace`` classes can be used to model continuous and discrete
++state-space systems.
++They support various methods for analyzing and manipulating systems,
++such as controllability, observability, and transformations between state-space
++and transfer function representations.
++MIMO state-space systems are also supported, making this module
+ versatile for dealing with a wide range of control system problems.
+ 
+-The advantage of this symbolic Control system package is that the solutions obtained
+-from it are highly accurate and do not rely on numerical methods to approximate the
+-solutions. Symbolic solutions obtained are also in a compact form that can be used for
+-further analysis.
++The advantage of this symbolic Control system package is that the solutions
++obtained from it are highly accurate and do not rely on numerical methods to
++approximate the solutions. Symbolic solutions obtained are also in a compact
++form that can be used for further analysis.
+diff --git a/doc/src/modules/physics/control/lti.rst b/doc/src/modules/physics/control/lti.rst
+index 4a24b8eb812c..acb2ff54f3c4 100644
+--- a/doc/src/modules/physics/control/lti.rst
++++ b/doc/src/modules/physics/control/lti.rst
+@@ -42,9 +42,17 @@ lti
+ .. autoclass:: MIMOFeedback
+    :members:
+ 
++.. autofunction:: create_state_space
++
++.. autoclass:: StateSpaceBase
++   :members:
++
+ .. autoclass:: StateSpace
+    :members:
+ 
++.. autoclass:: DiscreteStateSpace
++   :members:
++
+ .. autofunction:: gbt
+ 
+ .. autofunction:: bilinear
+diff --git a/doc/src/tutorials/physics/control/control_problems.rst b/doc/src/tutorials/physics/control/control_problems.rst
+index f70e0362daff..ae3fdb68024b 100644
+--- a/doc/src/tutorials/physics/control/control_problems.rst
++++ b/doc/src/tutorials/physics/control/control_problems.rst
+@@ -346,8 +346,6 @@ Solution
+ 
+     .. plot:: tutorials/physics/control/generate_plots.py q5
+ 
+-
+-
+ Example 6
+ ---------
+ 
+@@ -389,7 +387,7 @@ Subpart 1
+ >>> pprint(W, use_unicode = False)
+        2
+     2*z
+-------------, sampling time: 1
++------------ [st: 1]
+    2
+ 2*z  + z - 1
+ 
+@@ -425,11 +423,75 @@ We can check that the output is asymptotically stable:
+ >>> Y = Y.doit().to_standard_form(cancel_poles_zeros = True)
+ >>> pprint(Y, use_unicode = False)
+   2*z
+--------, sampling time: 1
++------- [st: 1]
+ 2*z - 1
+ >>> Y.is_stable()
+ True
+ 
++Example 7
++---------
++
++Consider the discrete-time system described by the following input-state-output model:
++
++.. math::
++        \begin{aligned}
++        x_1(k + 1) &= u_1(k) \\
++        x_2(k + 1) &= x_1(k) + u_2(k) \\
++        x_3(k + 1) &= x_1(k) + x_2(k) \\
++        y(k) &= x_3(k)
++        \end{aligned}
++
++1. Determine the forced response in the output :math:`y_f(k)` with respect to the inputs :math:`u_1(k)=\theta(k)` and :math:`u_2(k) = 0\ \forall k`.
++(:math:`\theta(k)` represent the heaviside function).
++
++Solution
++
++>>> # Imports
++>>> from sympy import *
++>>> from sympy.abc import z
++>>> from sympy.physics.control import *
++>>> # State-space representation
++>>> A = Matrix([[0,0,0],[1,0,0],[1,1,0]])
++>>> B = Matrix([[1,0],[0,1],[0,0]])
++>>> C = Matrix([0,0,1]).T
++>>> ss = DiscreteStateSpace(A, B, C)
++
++We know that the heaviside function :math:`\theta(k)` has the following Z-transform:
++
++.. math::
++        \theta(z) = \frac{z}{z - 1}
++
++So, we can define the input as follows:
++
++>>> U1 = z / (z - 1)
++
++The forced response in the output is given by:
++
++.. math::
++        Y_f(z) = G(z) \cdot U(z)
++
++where :math:`G(z)` is the transfer function associated to the state-space representation
++``ss`` and :math:`U(z)` is :math:`[\frac{z}{z - 1}, 0]^T`.
++(Since :math:`U_2(z) = 0`, we can consider only the first column of :math:`G(z)`).
++
++>>> G = ss.rewrite(DiscreteTransferFunction)[0][0]
++>>> pprint(G, use_unicode = False)
++z + 1
++----- [st: 1]
++  3
++ z
++>>> Yf = G.to_expr() * U1
++>>> pprint(Yf, use_unicode = False)
++z*(z + 1)
++----------
++ 3
++z *(z - 1)
++
++which can be simply converted to the time domain:
++
++.. math::
++        y_f(k) = \mathcal{Z}^{-1}\{Y_f(z)\} = \theta(k-2) + \theta(k-3)
++
+ References
+ ^^^^^^^^^^
+ 1. `testbook.com <https://testbook.com/objective-questions/mcq-on-transfer-function--5eea6a1039140f30f369e952>`_
+diff --git a/doc/src/tutorials/physics/control/index.rst b/doc/src/tutorials/physics/control/index.rst
+index 1ca8bf73635a..9104f58bb8b3 100644
+--- a/doc/src/tutorials/physics/control/index.rst
++++ b/doc/src/tutorials/physics/control/index.rst
+@@ -18,7 +18,7 @@ representation is particularly useful for time-domain analysis and handling comp
+ MIMO systems.
+ 
+ This tutorial contains a brief guide on how to solve Control Problems using
+-`TransferFunction`, `DiscreteTransferFunction` and `StateSpace`.
++``TransferFunction``, ``DiscreteTransferFunction`` and ``StateSpace``.
+ 
+ .. toctree::
+    :maxdepth: 1
+diff --git a/sympy/core/tests/test_args.py b/sympy/core/tests/test_args.py
+index 8a17ed884fac..14db74ad09b1 100644
+--- a/sympy/core/tests/test_args.py
++++ b/sympy/core/tests/test_args.py
+@@ -4354,7 +4354,7 @@ def test_sympy__physics__control__lti__MIMOLinearTimeInvariant():
+     # Direct instances of MIMOLinearTimeInvariant class are not allowed.
+     pass
+ 
+-
++@SKIP("abstract class")
+ def test_sympy__physics__control__lti__TransferFunctionBase():
+     # Direct instances of TransferFunctionBase class are not allowed.
+     pass
+@@ -4369,6 +4369,7 @@ def test_sympy__physics__control__lti__DiscreteTransferFunction():
+     from sympy.physics.control.lti import DiscreteTransferFunction
+     assert _test_args(DiscreteTransferFunction(2, 3, x, 0.1))
+ 
++
+ def _test_args_PIDController(obj):
+     from sympy.physics.control.lti import PIDController
+     if isinstance(obj, PIDController):
+@@ -4441,7 +4442,7 @@ def test_sympy__physics__control__lti__TransferFunctionMatrix():
+     tf2 = TransferFunction(y - x, z + y, x)
+     assert _test_args(TransferFunctionMatrix([[tf1, tf2]]))
+ 
+-
++@SKIP("abstract class")
+ def test_sympy__physics__control__lti__StateSpaceBase():
+     # Direct instances of StateSpaceBase class are not allowed.
+     pass
+@@ -4458,8 +4459,13 @@ def test_sympy__physics__control__lti__StateSpace():
+ 
+ 
+ def test_sympy__physics__control__lti__DiscreteStateSpace():
+-    #TODO
+-    pass
++    from sympy.matrices.dense import Matrix
++    from sympy.physics.control import DiscreteStateSpace
++    A = Matrix([[-5, -1], [3, -1]])
++    B = Matrix([2, 5])
++    C = Matrix([[1, 2]])
++    D = Matrix([0])
++    assert _test_args(DiscreteStateSpace(A, B, C, D, 0.1))
+ 
+ 
+ def test_sympy__physics__units__dimensions__Dimension():
+diff --git a/sympy/physics/control/__init__.py b/sympy/physics/control/__init__.py
+index 6d43443cdf8d..5e41d432b47e 100644
+--- a/sympy/physics/control/__init__.py
++++ b/sympy/physics/control/__init__.py
+@@ -1,7 +1,8 @@
+ from .lti import (TransferFunction, DiscreteTransferFunction,
+     create_transfer_function, PIDController, Series, MIMOSeries, Parallel,
+     MIMOParallel, Feedback, MIMOFeedback, TransferFunctionMatrix, StateSpace,
+-    gbt, bilinear, forward_diff, backward_diff, phase_margin, gain_margin)
++    DiscreteStateSpace, create_state_space, gbt, bilinear, forward_diff,
++    backward_diff, phase_margin, gain_margin)
+ from .control_plots import (pole_zero_numerical_data, pole_zero_plot,
+     step_response_numerical_data, step_response_plot,
+     impulse_response_numerical_data, impulse_response_plot,
+@@ -12,11 +13,11 @@
+ from .routh_table import RouthHurwitz
+ 
+ __all__ = ['TransferFunction', 'DiscreteTransferFunction',
+-    'create_transfer_function', 'PIDController', 'Series', 'MIMOSeries',
++    'create_transfer_function','PIDController', 'Series', 'MIMOSeries',
+     'Parallel', 'MIMOParallel', 'Feedback', 'MIMOFeedback',
+-    'TransferFunctionMatrix', 'StateSpace', 'gbt',
+-    'bilinear', 'forward_diff', 'backward_diff', 'phase_margin', 'gain_margin',
+-    'pole_zero_numerical_data', 'pole_zero_plot',
++    'TransferFunctionMatrix', 'StateSpace', 'DiscreteStateSpace',
++    'create_state_space', 'gbt', 'bilinear', 'forward_diff', 'backward_diff',
++    'phase_margin', 'gain_margin', 'pole_zero_numerical_data', 'pole_zero_plot',
+     'step_response_numerical_data', 'step_response_plot',
+     'impulse_response_numerical_data', 'impulse_response_plot',
+     'ramp_response_numerical_data', 'ramp_response_plot',
+diff --git a/sympy/physics/control/lti.py b/sympy/physics/control/lti.py
+index 925d34051d38..e3111805f942 100644
+--- a/sympy/physics/control/lti.py
++++ b/sympy/physics/control/lti.py
+@@ -31,11 +31,12 @@
+ 
+ from mpmath.libmp.libmpf import prec_to_dps
+ 
+-__all__ = ['TransferFunction', 'DiscreteTransferFunction', 'PIDController', 'Series',
++__all__ = ['TransferFunction', 'DiscreteTransferFunction',
++           'create_transfer_function','PIDController', 'Series',
+            'MIMOSeries', 'Parallel', 'MIMOParallel', 'Feedback', 'MIMOFeedback',
+-           'TransferFunctionMatrix', 'StateSpace', 'gbt',
+-           'bilinear', 'forward_diff', 'backward_diff', 'phase_margin',
+-           'gain_margin']
++           'TransferFunctionMatrix', 'StateSpace', 'DiscreteStateSpace',
++           'create_state_space', 'gbt', 'bilinear', 'forward_diff',
++           'backward_diff', 'phase_margin', 'gain_margin']
+ 
+ def _roots(poly, var):
+     """ like roots, but works on higher-order polynomials. """
+@@ -414,6 +415,13 @@ def __new__(cls, *system, **kwargs):
+ 
+     @classmethod
+     def _check_args(cls, args):
++        """
++        Check if the arguments passed to the class are valid.
++        Every argument must be of the same type as the class (_clstype).
++        All arguments must have the same complex variable of the Laplace
++        transform.
++
++        """
+         if not args:
+             raise ValueError("At least 1 argument must be passed.")
+         if not all(isinstance(arg, cls._clstype) for arg in args):
+@@ -422,7 +430,7 @@ def _check_args(cls, args):
+         if len(var_set) != 1:
+             raise ValueError(filldedent(f"""
+                 All transfer functions should use the same complex variable
+-                of the Laplace transform. {len(var_set)} different
++                of the Laplace transform or z-transform. {len(var_set)} different
+                 values found."""))
+ 
+     @property
+@@ -488,8 +496,13 @@ def wrapper(*args, **kwargs):
+     return wrapper
+ 
+ 
+-def _check_compatibility(systems):
+-    """Checks compatibility between different systems"""
++def _check_time_compatibility(systems):
++    """
++    Checks compatibility between different systems
++    Every system must be either continuous-time or discrete-time and
++    must have the same sampling time if discrete-time.
++
++    """
+     if not all(isinstance(system, LinearTimeInvariant) \
+                for system in systems):
+         return
+@@ -514,11 +527,10 @@ def _compatibility_decorator(func):
+     Decorator to check compatibility of systems before performing operations.
+     """
+     def wrapper(self, *args, **kwargs):
+-        _check_compatibility([self] + list(args))
++        _check_time_compatibility([self] + list(args))
+         return func(self, *args, **kwargs)
+     return wrapper
+ 
+-
+ def create_transfer_function(num, den, var, sampling_time=0):
+     """
+     Creates a new transfer function object.
+@@ -703,15 +715,16 @@ def __new__(cls, num, den, var, *args, **kwargs):
+         den_accepted = ((isinstance(den, accepted_istances) and den.has(Symbol))
+                     or den.is_number)
+ 
+-        if num_accepted and den_accepted:
+-            cls.is_StateSpace_object = False
+-            return super(TransferFunctionBase, cls).__new__(cls, num, den, var,
+-                                                            *args, **kwargs)
+-
+-        else:
++        if not num_accepted or not den_accepted:
+             raise TypeError("""Unsupported type for numerator or denominator of
+                             TransferFunction.""")
+ 
++        obj = super(TransferFunctionBase, cls).__new__(cls, num, den, var,
++                                                        *args, **kwargs)
++        obj.is_StateSpace_object = False
++        return obj
++
++
+     @classmethod
+     def from_rational_expression(cls, expr, var=None, *args, **kwargs):
+         r"""
+@@ -2192,6 +2205,35 @@ def get_asymptotic_stability_conditions(self, cancel_poles_zeros=False,
+             function model are not implemented yet.
+             """)
+ 
++    def _eval_rewrite_as_DiscreteStateSpace(self, *args):
++        """
++        Returns the equivalent space model of the transfer function model.
++        The state space model will be returned in the controllable canonical
++        form.
++
++        Unlike the space state to transfer function model conversion, the
++        transfer function to state space model conversion is not unique.
++        There can be multiple state space representations of a given transfer function model.
++
++        Examples
++        ========
++
++        >>> from sympy.abc import z
++        >>> from sympy.physics.control import DiscreteTransferFunction, DiscreteStateSpace
++        >>> dtf = DiscreteTransferFunction(z**2 + 1, z**3 + z*2 + 10, z, 0.1)
++        >>> dtf.rewrite(DiscreteStateSpace)
++        DiscreteStateSpace(Matrix([
++        [  0,  1, 0],
++        [  0,  0, 1],
++        [-10, -2, 0]]), Matrix([
++        [0],
++        [0],
++        [1]]), Matrix([[1, 0, 1]]), Matrix([[0]]), 0.1)
++
++        """
++        A, B, C, D = self._StateSpace_matrices_equivalent()
++        return DiscreteStateSpace(A, B, C, D, self.sampling_time)
++
+     def _eval_rewrite_as_StateSpace(self, *args):
+         raise TypeError("""
+             The discrete transfer function model cannot be rewritten as a
+@@ -2343,6 +2385,31 @@ def _dummify_args(_arg, var):
+ 
+     return dummy_arg_list, dummy_dict
+ 
++def _any_state_space_systems(arg_list: tuple) -> bool:
++    """
++    Check if there are any state space objects in the argument list.
++    If there are, return True, else return False.
++
++    Systems are considered to be state space systems if they are instances of
++    StateSpaceBase or have an attribute `is_StateSpace_object` that is True.
++
++    """
++    return any(isinstance(arg, StateSpaceBase) or
++               (hasattr(arg, 'is_StateSpace_object') and
++                arg.is_StateSpace_object) for arg in arg_list)
++
++def _are_input_output_compatible(args):
++    """
++    Check if the input and output of the systems are compatible for series
++    connection. The input of the second system should match the output of the
++    first system.
++
++    """
++    for i in range(1, len(args)):
++        if args[i].num_inputs != args[i-1].num_outputs:
++            return False
++    return True
++
+ class Series(SISOLinearTimeInvariant):
+     r"""
+     A class for representing a series configuration of SISO systems.
+@@ -2439,28 +2506,29 @@ class Series(SISOLinearTimeInvariant):
+ 
+     """
+     def __new__(cls, *args, evaluate=False):
+-
+         args = _flatten_args(args, Series)
++        _check_time_compatibility(args)
++        obj = super().__new__(cls, *args)
++
+         # For StateSpace series connection
+-        if args and any(isinstance(arg, StateSpace) or (hasattr(arg, 'is_StateSpace_object')
+-                                            and arg.is_StateSpace_object)for arg in args):
++        if args and _any_state_space_systems(args):
+             # Check for SISO
+-            if (args[0].num_inputs == 1) and (args[-1].num_outputs == 1):
+-                # Check the interconnection
+-                for i in range(1, len(args)):
+-                    if args[i].num_inputs != args[i-1].num_outputs:
+-                        raise ValueError(filldedent("""Systems with incompatible inputs and outputs
+-                            cannot be connected in Series."""))
+-                cls._is_series_StateSpace = True
+-            else:
+-                raise ValueError("To use Series connection for MIMO systems use MIMOSeries instead.")
++            if any(not arg.is_SISO for arg in args):
++                raise ValueError(
++                    filldedent("""To use Series connection for MIMO systems use
++                               MIMOSeries instead."""))
++            # Check the interconnection
++            if not _are_input_output_compatible(args):
++                raise ValueError(
++                    filldedent("""
++                        Systems with incompatible inputs and outputs
++                        cannot be connected in Series.
++                        """))
++            obj._is_series_StateSpace = True
+         else:
+-            cls._is_series_StateSpace = False
+-            cls._check_args(args)
+-
+-        _check_compatibility(args)
++            obj._is_series_StateSpace = False
++            obj._check_args(args)
+ 
+-        obj = super().__new__(cls, *args)
+         obj._is_continuous = args[0].is_continuous
+ 
+         return obj.doit() if evaluate else obj
+@@ -2494,8 +2562,8 @@ def var(self):
+ 
+     def doit(self, **hints):
+         """
+-        Returns the resultant transfer function or StateSpace obtained after evaluating
+-        the series interconnection.
++        Returns the resultant transfer function or state space obtained after
++        evaluating the series interconnection.
+ 
+         Examples
+         ========
+@@ -2512,23 +2580,23 @@ def doit(self, **hints):
+         Notes
+         =====
+ 
+-        If a series connection contains only TransferFunction components, the equivalent system returned
+-        will be a TransferFunction. However, if a StateSpace object is used in any of the arguments,
+-        the output will be a StateSpace object.
++        If a series connection contains only TransferFunctionBase components,
++        the equivalent system returned will be a transfer function. However, if
++        a StateSpaceBase object is used in any of the arguments,
++        the output will be a state space object.
+ 
+         """
+         # Check if the system is a StateSpace
+         if self._is_series_StateSpace:
+             # Return the equivalent StateSpace model
++            ss_class = StateSpace if self.is_continuous else DiscreteStateSpace
++
+             res = self.args[0]
+-            if not isinstance(res, StateSpace):
+-                res = res.doit().rewrite(StateSpace)
++            if not isinstance(res, ss_class):
++                res = res.doit().rewrite(ss_class)
+             for arg in self.args[1:]:
+-                if not isinstance(arg, StateSpace):
+-                    arg = arg.doit().rewrite(StateSpace)
+-                else:
+-                    arg = arg.doit()
+-                arg = arg.doit()
++                if not isinstance(arg, ss_class):
++                    arg = arg.doit().rewrite(ss_class)
+                 res = arg * res
+             return res
+ 
+@@ -2708,11 +2776,6 @@ def is_StateSpace_object(self):
+     def sampling_time(self):
+         return self.args[0].sampling_time
+ 
+-def _mat_mul_compatible(*args):
+-    """To check whether shapes are compatible for matrix mul."""
+-    return all(args[i].num_outputs == args[i+1].num_inputs for i in range(len(args)-1))
+-
+-
+ class MIMOSeries(MIMOLinearTimeInvariant):
+     r"""
+     A class for representing a series configuration of MIMO systems.
+@@ -2842,30 +2905,26 @@ class MIMOSeries(MIMOLinearTimeInvariant):
+ 
+     """
+     def __new__(cls, *args, evaluate=False):
+-        is_StateSpace = lambda arg: isinstance(arg, StateSpace) or \
+-            (hasattr(arg, 'is_StateSpace_object') and arg.is_StateSpace_object)
+-        if args and any(is_StateSpace(arg) for arg in args):
++        args = _flatten_args(args, MIMOSeries)
++        obj = super().__new__(cls, *args)
++        if args and _any_state_space_systems(args):
+             # Check compatibility
+-            for i in range(1, len(args)):
+-                if args[i].num_inputs != args[i - 1].num_outputs:
+-                    raise ValueError(filldedent("""
+-                        Systems with incompatible inputs and outputs
+-                        cannot be connected in MIMOSeries."""))
+-            obj = super().__new__(cls, *args)
+-            cls._is_series_StateSpace = True
++            if not _are_input_output_compatible(args):
++                raise ValueError(filldedent("""
++                    Systems with incompatible inputs and outputs
++                    cannot be connected in MIMOSeries."""))
++            obj._is_series_StateSpace = True
++
+         else:
+             cls._check_args(args)
+-            cls._is_series_StateSpace = False
+-
+-            if _mat_mul_compatible(*args):
+-                obj = super().__new__(cls, *args)
++            obj._is_series_StateSpace = False
+ 
+-            else:
++            if not _are_input_output_compatible(args):
+                 raise ValueError(filldedent("""
+                     Number of input signals do not match the number
+                     of output signals of adjacent systems for some args."""))
+ 
+-        _check_compatibility(args)
++        _check_time_compatibility(args)
+         obj._is_continuous = args[0].is_continuous
+ 
+         return obj.doit() if evaluate else obj
+@@ -2913,8 +2972,9 @@ def is_StateSpace_object(self):
+     def doit(self, cancel=False, **kwargs):
+         """
+         Returns the resultant obtained after evaluating the MIMO systems arranged
+-        in a series configuration. For TransferFunction systems it returns a TransferFunctionMatrix
+-        and for StateSpace systems it returns the resultant StateSpace system.
++        in a series configuration.
++        For transfer function systems it returns a TransferFunctionMatrix
++        and for state space systems it returns the resultant state space system.
+ 
+         Examples
+         ========
+@@ -2931,14 +2991,13 @@ def doit(self, cancel=False, **kwargs):
+         """
+         if self._is_series_StateSpace:
+             # Return the equivalent StateSpace model
++            ss_class = StateSpace if self.is_continuous else DiscreteStateSpace
+             res = self.args[0]
+-            if not isinstance(res, StateSpace):
+-                res = res.doit().rewrite(StateSpace)
++            if not isinstance(res, ss_class):
++                res = res.doit().rewrite(ss_class)
+             for arg in self.args[1:]:
+-                if not isinstance(arg, StateSpace):
+-                    arg = arg.doit().rewrite(StateSpace)
+-                else:
+-                    arg = arg.doit()
++                if not isinstance(arg, ss_class):
++                    arg = arg.doit().rewrite(ss_class)
+                 res = arg * res
+             return res
+ 
+@@ -2955,8 +3014,10 @@ def doit(self, cancel=False, **kwargs):
+         return temp_tfm.subs(_dummy_dict)
+ 
+     def _eval_rewrite_as_TransferFunctionMatrix(self, *args, **kwargs):
++        tf_class = TransferFunction if self.is_continuous \
++            else DiscreteTransferFunction
+         if self._is_series_StateSpace:
+-            return self.doit().rewrite(TransferFunction)
++            return self.doit().rewrite(tf_class)
+         return self.doit()
+ 
+     @_check_other_MIMO
+@@ -3097,22 +3158,21 @@ class Parallel(SISOLinearTimeInvariant):
+     """
+ 
+     def __new__(cls, *args, evaluate=False):
+-
+         args = _flatten_args(args, Parallel)
++        obj = super().__new__(cls, *args)
+         # For StateSpace parallel connection
+-        if args and any(isinstance(arg, StateSpace) or (hasattr(arg, 'is_StateSpace_object')
+-                                                        and arg.is_StateSpace_object) for arg in args):
++        if args and _any_state_space_systems(args):
+             # Check for SISO
+-            if all(arg.is_SISO for arg in args):
+-                cls._is_parallel_StateSpace = True
+-            else:
+-                raise ValueError("To use Parallel connection for MIMO systems use MIMOParallel instead.")
++            if any(not arg.is_SISO for arg in args):
++                raise ValueError(filldedent("""
++                    To use Parallel connection for MIMO systems use
++                    MIMOParallel instead."""))
++            obj._is_parallel_StateSpace = True
+         else:
+-            cls._is_parallel_StateSpace = False
+-            cls._check_args(args)
+-        obj = super().__new__(cls, *args)
++            obj._is_parallel_StateSpace = False
++            obj._check_args(args)
+ 
+-        _check_compatibility(args)
++        _check_time_compatibility(args)
+         obj._is_continuous = args[0].is_continuous
+ 
+         return obj.doit() if evaluate else obj
+@@ -3164,12 +3224,14 @@ def doit(self, **hints):
+         """
+         if self._is_parallel_StateSpace:
+             # Return the equivalent StateSpace model
++            ss_class = StateSpace if self.is_continuous else DiscreteStateSpace
++
+             res = self.args[0].doit()
+-            if not isinstance(res, StateSpace):
+-                res = res.rewrite(StateSpace)
++            if not isinstance(res, ss_class):
++                res = res.rewrite(ss_class)
+             for arg in self.args[1:]:
+-                if not isinstance(arg, StateSpace):
+-                    arg = arg.doit().rewrite(StateSpace)
++                if not isinstance(arg, ss_class):
++                    arg = arg.doit().rewrite(ss_class)
+                 res += arg
+             return res
+ 
+@@ -3451,30 +3513,21 @@ class MIMOParallel(MIMOLinearTimeInvariant):
+     """
+ 
+     def __new__(cls, *args, evaluate=False):
+-
+         args = _flatten_args(args, MIMOParallel)
+-
++        obj = super().__new__(cls, *args)
+         # For StateSpace Parallel connection
+-        is_StateSpace = lambda arg: isinstance(arg, StateSpace) or \
+-            (hasattr(arg, 'is_StateSpace_object') and arg.is_StateSpace_object)
+-
+-        if args and any(is_StateSpace(arg) for arg in args):
+-            compatible_input = lambda arg: arg.num_inputs != args[0].num_inputs
+-            compatible_output = lambda arg: arg.num_outputs != \
+-                                                            args[0].num_outputs
+-            if any(compatible_input(arg) or compatible_output(arg)
+-                   for arg in args[1:]):
++        if args and _any_state_space_systems(args):
++            if not _are_input_output_compatible(args):
+                 raise ShapeError("Systems with incompatible inputs and outputs"
+                                  "cannot be connected in MIMOParallel.")
+-            cls._is_parallel_StateSpace = True
++            obj._is_parallel_StateSpace = True
+         else:
+-            cls._check_args(args)
++            obj._check_args(args)
+             if any(arg.shape != args[0].shape for arg in args):
+                 raise TypeError("Shape of all the args is not equal.")
+-            cls._is_parallel_StateSpace = False
+-        obj = super().__new__(cls, *args)
++            obj._is_parallel_StateSpace = False
+ 
+-        _check_compatibility(args)
++        _check_time_compatibility(args)
+         obj._is_continuous = args[0].is_continuous
+ 
+         return obj.doit() if evaluate else obj
+@@ -3603,14 +3656,14 @@ class Feedback(SISOLinearTimeInvariant):
+     system or in simple words, the dynamical model representing the process
+     to be controlled. The second argument, ``sys2``, is the feedback system
+     and controls the fed back signal to ``sys1``. Both ``sys1`` and ``sys2``
+-    can either be ``Series``, ``StateSpace`` or ``TransferFunction`` objects.
++    can either be ``Series``, state space or transfer function objects.
+ 
+     Parameters
+     ==========
+ 
+-    sys1 : Series, StateSpace, TransferFunction
++    sys1 : Series, StateSpaceBase, TransferFunctionBase
+         The feedforward path system.
+-    sys2 : Series, StateSpace, TransferFunction, optional
++    sys2 : Series, StateSpaceBase, TransferFunctionBase, optional
+         The feedback path system (often a feedback controller).
+         It is the model sitting on the feedback path.
+ 
+@@ -3626,14 +3679,14 @@ class Feedback(SISOLinearTimeInvariant):
+ 
+     ValueError
+         When ``sys1`` and ``sys2`` are not using the
+-        same complex variable of the Laplace transform.
++        same complex variable of the Laplace transform or z-transform.
+ 
+         When a combination of ``sys1`` and ``sys2`` yields
+         zero denominator.
+ 
+     TypeError
+-        When either ``sys1`` or ``sys2`` is not a ``Series``, ``StateSpace`` or
+-        ``TransferFunction`` object.
++        When either ``sys1`` or ``sys2`` is not a ``Series``, ``StateSpaceBase``
++        or ``TransferFunctionBase`` object.
+ 
+     Examples
+     ========
+@@ -3716,16 +3769,18 @@ def __new__(cls, sys1, sys2=None, sign=-1):
+         if not sys2:
+             sys2 = create_transfer_function(1, 1, sys1.var, sys1.sampling_time)
+ 
+-        if not isinstance(sys1, (TransferFunctionBase, Series, StateSpace, Feedback)):
++        if not isinstance(sys1, (TransferFunctionBase, Series, StateSpaceBase,
++                                 Feedback)):
+             raise TypeError("Unsupported type for `sys1` in Feedback.")
+ 
+-        if not isinstance(sys2, (TransferFunctionBase, Series, StateSpace, Feedback)):
++        if not isinstance(sys2, (TransferFunctionBase, Series, StateSpaceBase,
++                                 Feedback)):
+             raise TypeError("Unsupported type for `sys2` in Feedback.")
+ 
+         if not (sys1.num_inputs == sys1.num_outputs == sys2.num_inputs ==
+                 sys2.num_outputs == 1):
+-            raise ValueError("""To use Feedback connection for MIMO systems
+-                            use MIMOFeedback instead.""")
++            raise ValueError(filldedent("""To use Feedback connection for MIMO systems
++                            use MIMOFeedback instead."""))
+ 
+         if sign not in [-1, 1]:
+             raise ValueError(filldedent("""
+@@ -3733,20 +3788,23 @@ def __new__(cls, sys1, sys2=None, sign=-1):
+                 either be 1 (positive feedback loop) or -1
+                 (negative feedback loop)."""))
+ 
++        obj = super(SISOLinearTimeInvariant, cls).__new__(cls, sys1, sys2,
++                                                          _sympify(sign))
++
+         if sys1.is_StateSpace_object or sys2.is_StateSpace_object:
+-            cls.is_StateSpace_object = True
++            obj.is_StateSpace_object = True
+         else:
+             if Mul(sys1.to_expr(), sys2.to_expr()).simplify() == sign:
+-                raise ValueError("The equivalent system will have zero denominator.")
++                raise ValueError(filldedent("""The equivalent system will have zero
++                                 denominator."""))
+             if sys1.var != sys2.var:
+-                raise ValueError(filldedent("""Both `sys1` and `sys2` should be using the
+-                same complex variable."""))
+-            cls.is_StateSpace_object = False
+-
+-        _check_compatibility([sys1, sys2])
++                raise ValueError(filldedent("""Both `sys1` and `sys2` should be
++                    using the same complex variable."""))
++            obj.is_StateSpace_object = False
+ 
+-        obj = super(SISOLinearTimeInvariant, cls).__new__(cls, sys1, sys2, _sympify(sign))
++        _check_time_compatibility([sys1, sys2])
+         obj._is_continuous = sys1.is_continuous
++
+         return obj
+ 
+     def __repr__(self):
+@@ -3939,8 +3997,10 @@ def doit(self, cancel=False, expand=False, **hints):
+ 
+         """
+         if self.is_StateSpace_object:
+-            sys1_ss = self.sys1.doit().rewrite(StateSpace)
+-            sys2_ss = self.sys2.doit().rewrite(StateSpace)
++            ss_class = StateSpace if self.is_continuous else DiscreteStateSpace
++
++            sys1_ss = self.sys1.doit().rewrite(ss_class)
++            sys2_ss = self.sys2.doit().rewrite(ss_class)
+             A1, B1, C1, D1 = sys1_ss.A, sys1_ss.B, sys1_ss.C, sys1_ss.D
+             A2, B2, C2, D2 = sys2_ss.A, sys2_ss.B, sys2_ss.C, sys2_ss.D
+ 
+@@ -3964,7 +4024,7 @@ def doit(self, cancel=False, expand=False, **hints):
+             B = Matrix.vstack(B1 * T2, B2 * D1 * T2)
+             C = Matrix.hstack(T1 * C1, self.sign * D1 * E_C2)
+             D = D1 * T2
+-            return StateSpace(A, B, C, D)
++            return create_state_space(A, B, C, D, self.sampling_time)
+ 
+         arg_list = list(self.sys1.args) if isinstance(self.sys1, Series) else [self.sys1]
+         # F_n and F_d are resultant TFs of num and den of Feedback.
+@@ -4053,9 +4113,9 @@ class MIMOFeedback(MIMOLinearTimeInvariant):
+     Parameters
+     ==========
+ 
+-    sys1 : MIMOSeries, TransferFunctionMatrix, StateSpace
++    sys1 : MIMOSeries, TransferFunctionMatrix, StateSpaceBase
+         The MIMO system placed on the feedforward path.
+-    sys2 : MIMOSeries, TransferFunctionMatrix, StateSpace
++    sys2 : MIMOSeries, TransferFunctionMatrix, StateSpaceBase
+         The system placed on the feedback path
+         (often a feedback controller).
+     sign : int, optional
+@@ -4068,7 +4128,7 @@ class MIMOFeedback(MIMOLinearTimeInvariant):
+ 
+     ValueError
+         When ``sys1`` and ``sys2`` are not using the
+-        same complex variable of the Laplace transform.
++        same complex variable of the Laplace transform or z-transform.
+ 
+         Forward path model should have an equal number of inputs/outputs
+         to the feedback path outputs/inputs.
+@@ -4079,7 +4139,7 @@ class MIMOFeedback(MIMOLinearTimeInvariant):
+ 
+     TypeError
+         When either ``sys1`` or ``sys2`` is not a ``MIMOSeries``,
+-        ``TransferFunctionMatrix`` or a ``StateSpace`` object.
++        ``TransferFunctionMatrix`` or a ``StateSpaceBase`` object.
+ 
+     Examples
+     ========
+@@ -4185,11 +4245,11 @@ class MIMOFeedback(MIMOLinearTimeInvariant):
+     """
+     def __new__(cls, sys1, sys2, sign=-1):
+         if not isinstance(sys1,
+-                          (TransferFunctionMatrix, MIMOSeries, StateSpace)):
++                          (TransferFunctionMatrix, MIMOSeries, StateSpaceBase)):
+             raise TypeError("Unsupported type for `sys1` in MIMO Feedback.")
+ 
+         if not isinstance(sys2,
+-                          (TransferFunctionMatrix, MIMOSeries, StateSpace)):
++                          (TransferFunctionMatrix, MIMOSeries, StateSpaceBase)):
+             raise TypeError("Unsupported type for `sys2` in MIMO Feedback.")
+ 
+         if sys1.num_inputs != sys2.num_outputs or \
+@@ -4204,20 +4264,21 @@ def __new__(cls, sys1, sys2, sign=-1):
+                 either be 1 (positive feedback loop) or -1
+                 (negative feedback loop)."""))
+ 
++        obj = super().__new__(cls, sys1, sys2, _sympify(sign))
++
+         if sys1.is_StateSpace_object or sys2.is_StateSpace_object:
+-            cls.is_StateSpace_object = True
++            obj.is_StateSpace_object = True
+         else:
+             if not _is_invertible(sys1, sys2, sign):
+                 raise ValueError("Non-Invertible system inputted.")
+-            cls.is_StateSpace_object = False
++            obj.is_StateSpace_object = False
+ 
+-        if not cls.is_StateSpace_object and sys1.var != sys2.var:
++        if not obj.is_StateSpace_object and sys1.var != sys2.var:
+             raise ValueError(filldedent("""
+                 Both `sys1` and `sys2` should be using the
+                 same complex variable."""))
+ 
+-        _check_compatibility([sys1, sys2])
+-        obj = super().__new__(cls, sys1, sys2, _sympify(sign))
++        _check_time_compatibility([sys1, sys2])
+         obj._is_continuous = sys1.is_continuous
+ 
+         return obj
+@@ -4454,8 +4515,9 @@ def doit(self, cancel=True, expand=False, **hints):
+ 
+         """
+         if self.is_StateSpace_object:
+-            sys1_ss = self.sys1.doit().rewrite(StateSpace)
+-            sys2_ss = self.sys2.doit().rewrite(StateSpace)
++            ss_class = StateSpace if self.is_continuous else DiscreteStateSpace
++            sys1_ss = self.sys1.doit().rewrite(ss_class)
++            sys2_ss = self.sys2.doit().rewrite(ss_class)
+             A1, B1, C1, D1 = sys1_ss.A, sys1_ss.B, sys1_ss.C, sys1_ss.D
+             A2, B2, C2, D2 = sys2_ss.A, sys2_ss.B, sys2_ss.C, sys2_ss.D
+ 
+@@ -4479,7 +4541,7 @@ def doit(self, cancel=True, expand=False, **hints):
+             B = Matrix.vstack(B1 * T2, B2 * D1 * T2)
+             C = Matrix.hstack(T1 * C1, self.sign * D1 * E_C2)
+             D = D1 * T2
+-            return StateSpace(A, B, C, D)
++            return create_state_space(A, B, C, D, self.sampling_time)
+ 
+         _mat = self.sensitivity * self.sys1.doit()._expr_mat
+ 
+@@ -4900,7 +4962,7 @@ def __new__(cls, arg):
+                 temp.append(element.to_expr())
+             expr_mat_arg.append(temp)
+ 
+-        _check_compatibility([sys for row in arg for sys in row])
++        _check_time_compatibility([sys for row in arg for sys in row])
+ 
+         if isinstance(arg, (tuple, list, Tuple)):
+             # Making nested Tuple (sympy.core.containers.Tuple) from nested list or nested Python tuple
+@@ -4955,15 +5017,17 @@ def from_Matrix(cls, matrix, var, sampling_time=0):
+         >>> M_2 = Matrix([[z/(z-1), z/(z-8)], [z**2/(z**2-2+1), z]])
+         >>> M2_tf = TransferFunctionMatrix.from_Matrix(M_2, z, 0.1)
+         >>> pprint(M2_tf, use_unicode=False)
+-        [  z       z  ]
+-        [-----   -----]
+-        [z - 1   z - 8]
+-        [             ]
+-        [   2         ]
+-        [  z       z  ]
+-        [------    -  ]
+-        [ 2        1  ]
+-        [z  - 1       ]{k}, sampling time: 0.1
++          [  z       z  ]
++          [-----   -----]
++          [z - 1   z - 8]
++          [             ]
++          [   2         ]
++          [  z       z  ]
++          [------    -  ]
++          [ 2        1  ]
++          [z  - 1       ]{k}
++        [st: 0.100000000000000]
++
+ 
+ 
+         """
+@@ -5243,62 +5307,100 @@ def expand(self, **hints):
+     def sampling_time(self):
+         return self.args[0][0][0].sampling_time
+ 
+-class StateSpaceBase(LinearTimeInvariant):
++def create_state_space(A, B, C, D, sampling_time=0):
++    """
++    Creates a new state space object.
++    sampling_time == 0 means continuous time state space.
++    sampling_time > 0 means discrete time state space.
++
++    Parameters
++    ==========
++
++
++    sampling_time : Symbol, Number, optional
++        Default is 0.
++        Time interval between two consecutive sampling instants.
++        If sampling_time == 0, it is a continuous time state space,
++        else it is a discrete time state space.
++
++    Examples
++    ========
++
++    >>> from sympy import Matrix
++    >>> from sympy.abc import t
++    >>> from sympy.physics.control.lti import create_state_space
++    >>> A = Matrix([[1,0],[0,1]])
++    >>> B = Matrix([1,0])
++    >>> C = Matrix([1,0]).T
++    >>> D = Matrix([0])
++    >>> create_state_space(A, B, C, D)
++    StateSpace(Matrix([
++    [1, 0],
++    [0, 1]]), Matrix([
++    [1],
++    [0]]), Matrix([[1, 0]]), Matrix([[0]]))
++    >>> create_state_space(A, B, C, D, t)
++    DiscreteStateSpace(Matrix([
++    [1, 0],
++    [0, 1]]), Matrix([
++    [1],
++    [0]]), Matrix([[1, 0]]), Matrix([[0]]), t)
++
++    See Also
++    ========
++
++    StateSpace, DiscreteStateSpace
++
++    """
++    if sampling_time == 0:
++        return StateSpace(A, B, C, D)
++
++    return DiscreteStateSpace(A, B, C, D, sampling_time)
++
++class StateSpaceBase(LinearTimeInvariant, ABC):
+     r"""
++    Base class for state space objects.
++    This class is not meant to be used directly.
++
++    Explanation
++    ===========
++
+     State space model (ssm) of a linear, time invariant control system.
+ 
+-    Represents the standard state-space model with A, B, C, D as state-space matrices.
+-    This makes the linear control system:
++    Represents the standard state-space model with A, B, C, D as state-space
++    matrices. This makes the linear control system:
+ 
++    For continuous-time systems:
+         (1) x'(t) = A * x(t) + B * u(t);    x in R^n , u in R^k
+         (2) y(t)  = C * x(t) + D * u(t);    y in R^m
+ 
+-    where u(t) is any input signal, y(t) the corresponding output, and x(t) the system's state.
++    For discrete-time systems:
++        (1) x[k+1] = A * x[k] + B * u[k];    x in R^n , u in R^k
++        (2) y[k]   = C * x[k] + D * u[k];    y in R^m
++
++    where u(t) or u[k] is any input signal, y(t) or y[k] the corresponding
++    output, and x(t) or x[k] the system's state.
+ 
+     Parameters
+     ==========
+ 
+-    A : Matrix
++    A : Matrix, optional
+         The State matrix of the state space model.
+-    B : Matrix
++    B : Matrix, optional
+         The Input-to-State matrix of the state space model.
+-    C : Matrix
++    C : Matrix, optional
+         The State-to-Output matrix of the state space model.
+-    D : Matrix
++    D : Matrix, optional
+         The Feedthrough matrix of the state space model.
+-
+-    Examples
+-    ========
+-
+-    >>> from sympy import Matrix
+-    >>> from sympy.physics.control import StateSpace
+-
+-    The easiest way to create a StateSpaceModel is via four matrices:
+-
+-    >>> A = Matrix([[1, 2], [1, 0]])
+-    >>> B = Matrix([1, 1])
+-    >>> C = Matrix([[0, 1]])
+-    >>> D = Matrix([0])
+-    >>> StateSpace(A, B, C, D)
+-    StateSpace(Matrix([
+-    [1, 2],
+-    [1, 0]]), Matrix([
+-    [1],
+-    [1]]), Matrix([[0, 1]]), Matrix([[0]]))
+-
+-    One can use less matrices. The rest will be filled with a minimum of zeros:
+-
+-    >>> StateSpace(A, B)
+-    StateSpace(Matrix([
+-    [1, 2],
+-    [1, 0]]), Matrix([
+-    [1],
+-    [1]]), Matrix([[0, 0]]), Matrix([[0]]))
++    *args, **kwargs:
++        Additional arguments and keyword arguments that are passed to the
++        parent class such as sampling time for discrete-time systems.
+ 
+     See Also
+     ========
+ 
+-    TransferFunction, TransferFunctionMatrix
++    StateSpace, DiscreteStateSpace, TransferFunction, DiscreteTransferFunction,
++    TransferFunctionMatrix
+ 
+     References
+     ==========
+@@ -5308,6 +5410,11 @@ class StateSpaceBase(LinearTimeInvariant):
+ 
+     """
+     def __new__(cls, A=None, B=None, C=None, D=None, *args, **kwargs):
++        if cls is StateSpaceBase:
++            raise NotImplementedError(
++                """
++                The StateSpaceBase class is not meant to be used directly.
++                """)
+         if A is None:
+             A = zeros(1)
+         if B is None:
+@@ -5478,7 +5585,7 @@ def num_states(self):
+         2
+ 
+         """
+-        return self._A.rows
++        return self.A.rows
+ 
+     @property
+     def num_inputs(self):
+@@ -5499,7 +5606,7 @@ def num_inputs(self):
+         1
+ 
+         """
+-        return self._D.cols
++        return self.D.cols
+ 
+     @property
+     def num_outputs(self):
+@@ -5520,7 +5627,7 @@ def num_outputs(self):
+         1
+ 
+         """
+-        return self._D.rows
++        return self.D.rows
+ 
+ 
+     @property
+@@ -5528,113 +5635,17 @@ def shape(self):
+         """Returns the shape of the equivalent StateSpace system."""
+         return self.num_outputs, self.num_inputs
+ 
+-    def dsolve(self, initial_conditions=None, input_vector=None, var=Symbol('t')):
+-        r"""
+-        Returns `y(t)` or output of StateSpace given by the solution of equations:
+-            x'(t) = A * x(t) + B * u(t)
+-            y(t)  = C * x(t) + D * u(t)
+-
+-        Parameters
+-        ============
+-
+-        initial_conditions : Matrix
+-            The initial conditions of `x` state vector. If not provided, it defaults to a zero vector.
+-        input_vector : Matrix
+-            The input vector for state space. If not provided, it defaults to a zero vector.
+-        var : Symbol
+-            The symbol representing time. If not provided, it defaults to `t`.
+-
+-        Examples
+-        ==========
+-
+-        >>> from sympy import Matrix
+-        >>> from sympy.physics.control import StateSpace
+-        >>> A = Matrix([[-2, 0], [1, -1]])
+-        >>> B = Matrix([[1], [0]])
+-        >>> C = Matrix([[2, 1]])
+-        >>> ip = Matrix([5])
+-        >>> i = Matrix([0, 0])
+-        >>> ss = StateSpace(A, B, C)
+-        >>> ss.dsolve(input_vector=ip, initial_conditions=i).simplify()
+-        Matrix([[15/2 - 5*exp(-t) - 5*exp(-2*t)/2]])
+-
+-        If no input is provided it defaults to solving the system with zero initial conditions and zero input.
+-
+-        >>> ss.dsolve()
+-        Matrix([[0]])
+-
+-        References
+-        ==========
+-        .. [1] https://web.mit.edu/2.14/www/Handouts/StateSpaceResponse.pdf
+-        .. [2] https://docs.sympy.org/latest/modules/solvers/ode.html#sympy.solvers.ode.systems.linodesolve
+-
+-        """
+-
+-        if not isinstance(var, Symbol):
+-            raise ValueError("Variable for representing time must be a Symbol.")
+-        if not initial_conditions:
+-            initial_conditions = zeros(self._A.shape[0], 1)
+-        elif initial_conditions.shape != (self._A.shape[0], 1):
+-            raise ShapeError("Initial condition vector should have the same number of "
+-                             "rows as the state matrix.")
+-        if not input_vector:
+-            input_vector = zeros(self._B.shape[1], 1)
+-        elif input_vector.shape != (self._B.shape[1], 1):
+-            raise ShapeError("Input vector should have the same number of "
+-                             "columns as the input matrix.")
+-        sol = linodesolve(A=self._A, t=var, b=self._B*input_vector, type='type2', doit=True)
+-        mat1 = Matrix(sol)
+-        mat2 = mat1.replace(var, 0)
+-        free1 = self._A.free_symbols | self._B.free_symbols | input_vector.free_symbols
+-        free2 = mat2.free_symbols
+-        # Get all the free symbols form the matrix
+-        dummy_symbols = list(free2-free1)
+-        # Convert the matrix to a Coefficient matrix
+-        r1, r2 = linear_eq_to_matrix(mat2, dummy_symbols)
+-        s = linsolve((r1, initial_conditions+r2))
+-        res_tuple = next(iter(s))
+-        for ind, v in enumerate(res_tuple):
+-            mat1 = mat1.replace(dummy_symbols[ind], v)
+-        res = self._C*mat1 + self._D*input_vector
+-        return res
+-
+     def _eval_evalf(self, prec):
+         """
+         Returns state space model where numerical expressions are evaluated into floating point numbers.
+         """
+         dps = prec_to_dps(prec)
+-        return StateSpace(
++        return create_state_space(
+             self._A.evalf(n = dps),
+             self._B.evalf(n = dps),
+             self._C.evalf(n = dps),
+-            self._D.evalf(n = dps))
+-
+-    def _eval_rewrite_as_TransferFunction(self, *args):
+-        """
+-        Returns the equivalent Transfer Function of the state space model.
+-
+-        Examples
+-        ========
+-
+-        >>> from sympy import Matrix
+-        >>> from sympy.physics.control import TransferFunction, StateSpace
+-        >>> A = Matrix([[-5, -1], [3, -1]])
+-        >>> B = Matrix([2, 5])
+-        >>> C = Matrix([[1, 2]])
+-        >>> D = Matrix([0])
+-        >>> ss = StateSpace(A, B, C, D)
+-        >>> ss.rewrite(TransferFunction)
+-        [[TransferFunction(12*s + 59, s**2 + 6*s + 8, s)]]
+-
+-        """
+-        s = Symbol('s')
+-        n = self._A.shape[0]
+-        I = eye(n)
+-        G = self._C*(s*I - self._A).solve(self._B) + self._D
+-        G = G.simplify()
+-        to_tf = lambda expr: TransferFunction.from_rational_expression(expr, s)
+-        tf_mat = [[to_tf(expr) for expr in sublist] for sublist in G.tolist()]
+-        return tf_mat
++            self._D.evalf(n = dps),
++            self.sampling_time)
+ 
+     def __add__(self, other):
+         """
+@@ -5665,28 +5676,30 @@ def __add__(self, other):
+         """
+         # Check for scalars
+         if isinstance(other, (int, float, complex, Symbol)):
+-            A = self._A
+-            B = self._B
+-            C = self._C
+-            D = self._D.applyfunc(lambda element: element + other)
++            A = self.A
++            B = self.B
++            C = self.C
++            D = self.D.applyfunc(lambda element: element + other)
++            return create_state_space(A, B, C, D, self.sampling_time)
+ 
+-        else:
+-            # Check nature of system
+-            if not isinstance(other, StateSpace):
+-                raise ValueError("Addition is only supported for 2 State Space models.")
+-            # Check dimensions of system
+-            elif ((self.num_inputs != other.num_inputs) or (self.num_outputs != other.num_outputs)):
+-                raise ShapeError("Systems with incompatible inputs and outputs cannot be added.")
++        # Check nature of system
++        if not isinstance(other, StateSpaceBase):
++            raise ValueError("Addition is only supported for 2 State Space models.")
++        # Check dimensions of system
++        elif ((self.num_inputs != other.num_inputs) or (self.num_outputs != other.num_outputs)):
++            raise ShapeError("Systems with incompatible inputs and outputs cannot be added.")
+ 
+-            m1 = (self._A).row_join(zeros(self._A.shape[0], other._A.shape[-1]))
+-            m2 = zeros(other._A.shape[0], self._A.shape[-1]).row_join(other._A)
++        _check_time_compatibility([self, other])
+ 
+-            A = m1.col_join(m2)
+-            B = self._B.col_join(other._B)
+-            C = self._C.row_join(other._C)
+-            D = self._D + other._D
++        m1 = (self.A).row_join(zeros(self.A.shape[0], other.A.shape[-1]))
++        m2 = zeros(other.A.shape[0], self.A.shape[-1]).row_join(other.A)
+ 
+-        return StateSpace(A, B, C, D)
++        A = m1.col_join(m2)
++        B = self.B.col_join(other.B)
++        C = self.C.row_join(other.C)
++        D = self.D + other.D
++
++        return create_state_space(A, B, C, D, self.sampling_time)
+ 
+     def __radd__(self, other):
+         """
+@@ -5769,7 +5782,8 @@ def __neg__(self):
+         [5]]), Matrix([[-1, -2]]), Matrix([[0]]))
+ 
+         """
+-        return StateSpace(self._A, self._B, -self._C, -self._D)
++        return create_state_space(self.A, self.B, -self.C, -self.D,
++                               self.sampling_time)
+ 
+     def __mul__(self, other):
+         """
+@@ -5795,28 +5809,30 @@ def __mul__(self, other):
+         """
+         # Check for scalars
+         if isinstance(other, (int, float, complex, Symbol)):
+-            A = self._A
+-            B = self._B
+-            C = self._C.applyfunc(lambda element: element*other)
+-            D = self._D.applyfunc(lambda element: element*other)
++            A = self.A
++            B = self.B
++            C = self.C.applyfunc(lambda element: element*other)
++            D = self.D.applyfunc(lambda element: element*other)
++            return create_state_space(A, B, C, D, self.sampling_time)
+ 
+-        else:
+-            # Check nature of system
+-            if not isinstance(other, StateSpace):
+-                raise ValueError("Multiplication is only supported for 2 State Space models.")
+-            # Check dimensions of system
+-            elif self.num_inputs != other.num_outputs:
+-                raise ShapeError("Systems with incompatible inputs and outputs cannot be multiplied.")
++        # Check nature of system
++        if not isinstance(other, StateSpaceBase):
++            raise ValueError("Multiplication is only supported for 2 State Space models.")
++        # Check dimensions of system
++        elif self.num_inputs != other.num_outputs:
++            raise ShapeError("Systems with incompatible inputs and outputs cannot be multiplied.")
+ 
+-            m1 = (other._A).row_join(zeros(other._A.shape[0], self._A.shape[1]))
+-            m2 = (self._B * other._C).row_join(self._A)
++        _check_time_compatibility([self, other])
+ 
+-            A = m1.col_join(m2)
+-            B = (other._B).col_join(self._B * other._D)
+-            C = (self._D * other._C).row_join(self._C)
+-            D = self._D * other._D
++        m1 = (other.A).row_join(zeros(other.A.shape[0], self.A.shape[1]))
++        m2 = (self.B * other.C).row_join(self.A)
+ 
+-        return StateSpace(A, B, C, D)
++        A = m1.col_join(m2)
++        B = (other.B).col_join(self.B * other.D)
++        C = (self.D * other.C).row_join(self.C)
++        D = self.D * other.D
++
++        return create_state_space(A, B, C, D, self.sampling_time)
+ 
+     def __rmul__(self, other):
+         """
+@@ -5841,23 +5857,23 @@ def __rmul__(self, other):
+ 
+         """
+         if isinstance(other, (int, float, complex, Symbol)):
+-            A = self._A
+-            C = self._C
+-            B = self._B.applyfunc(lambda element: element*other)
+-            D = self._D.applyfunc(lambda element: element*other)
+-            return StateSpace(A, B, C, D)
++            A = self.A
++            C = self.C
++            B = self.B.applyfunc(lambda element: element*other)
++            D = self.D.applyfunc(lambda element: element*other)
++            return create_state_space(A, B, C, D, self.sampling_time)
+         else:
+             return self*other
+ 
+     def __repr__(self):
+-        A_str = self._A.__repr__()
+-        B_str = self._B.__repr__()
+-        C_str = self._C.__repr__()
+-        D_str = self._D.__repr__()
+-
+-        return f"StateSpace(\n{A_str},\n\n{B_str},\n\n{C_str},\n\n{D_str})"
++        A_str = self.A.__repr__()
++        B_str = self.B.__repr__()
++        C_str = self.C.__repr__()
++        D_str = self.D.__repr__()
+ 
++        return f"StateSpaceBase(\n{A_str},\n\n{B_str},\n\n{C_str},\n\n{D_str})"
+ 
++    @_compatibility_decorator
+     def append(self, other):
+         """
+         Returns the first model appended with the second model. The order is preserved.
+@@ -5898,15 +5914,15 @@ def append(self, other):
+         C = zeros(p, n)
+         D = zeros(p, m)
+ 
+-        A[:self.num_states, :self.num_states] = self._A
+-        A[self.num_states:, self.num_states:] = other._A
+-        B[:self.num_states, :self.num_inputs] = self._B
+-        B[self.num_states:, self.num_inputs:] = other._B
+-        C[:self.num_outputs, :self.num_states] = self._C
+-        C[self.num_outputs:, self.num_states:] = other._C
+-        D[:self.num_outputs, :self.num_inputs] = self._D
+-        D[self.num_outputs:, self.num_inputs:] = other._D
+-        return StateSpace(A, B, C, D)
++        A[:self.num_states, :self.num_states] = self.A
++        A[self.num_states:, self.num_states:] = other.A
++        B[:self.num_states, :self.num_inputs] = self.B
++        B[self.num_states:, self.num_inputs:] = other.B
++        C[:self.num_outputs, :self.num_states] = self.C
++        C[self.num_outputs:, self.num_states:] = other.C
++        D[:self.num_outputs, :self.num_inputs] = self.D
++        D[self.num_outputs:, self.num_inputs:] = other.D
++        return create_state_space(A, B, C, D, self.sampling_time)
+ 
+     def _calc_orthogonal_complement(self, M, dim):
+         """
+@@ -6097,7 +6113,8 @@ def to_controllable_form(self):
+     def observability_matrix(self):
+         """
+         Returns the observability matrix of the state space model:
+-            [C, C * A^1, C * A^2, .. , C * A^(n-1)]; A in R^(n x n), C in R^(m x k)
++            [C, C * A^1, C * A^2, .. , C * A^(n-1)]; A in R^(n x n),
++            C in R^(m x k)
+ 
+         Examples
+         ========
+@@ -6121,9 +6138,9 @@ def observability_matrix(self):
+ 
+         """
+         n = self.num_states
+-        ob = self._C
++        ob = self.C
+         for i in range(1,n):
+-            ob = ob.col_join(self._C * self._A**i)
++            ob = ob.col_join(self.C * self.A**i)
+ 
+         return Matrix(ob)
+ 
+@@ -6253,10 +6270,10 @@ def controllability_matrix(self):
+         .. [1] https://in.mathworks.com/help/control/ref/statespacemodel.ctrb.html
+ 
+         """
+-        co = self._B
+-        n = self._A.shape[0]
++        co = self.B
++        n = self.A.shape[0]
+         for i in range(1, n):
+-            co = co.row_join(((self._A)**i) * self._B)
++            co = co.row_join(((self.A)**i) * self.B)
+ 
+         return Matrix(co)
+ 
+@@ -6352,7 +6369,184 @@ def is_controllable(self):
+         """
+         return self.controllability_matrix().rank() == self.num_states
+ 
+-    def get_asymptotic_stability_conditions(self, fast=False):
++    @abstractmethod
++    def get_asymptotic_stability_conditions(self, fast=False) -> list[bool]:
++        pass
++
++class StateSpace(StateSpaceBase):
++    """
++    State space model of a linear, continuous-time, time invariant control
++    system.
++
++    See py:class:`~.StateSpaceBase` for more details.
++
++    Parameters
++    ==========
++
++    A : Matrix, optional
++        The State matrix of the state space model.
++    B : Matrix, optional
++        The Input-to-State matrix of the state space model.
++    C : Matrix, optional
++        The State-to-Output matrix of the state space model.
++    D : Matrix, optional
++        The Feedthrough matrix of the state space model.
++
++    Examples
++    ========
++
++    >>> from sympy import Matrix
++    >>> from sympy.physics.control import StateSpace
++
++    The easiest way to create a StateSpaceModel is via four matrices:
++
++    >>> A = Matrix([[1, 2], [1, 0]])
++    >>> B = Matrix([1, 1])
++    >>> C = Matrix([[0, 1]])
++    >>> D = Matrix([0])
++    >>> StateSpace(A, B, C, D)
++    StateSpace(Matrix([
++    [1, 2],
++    [1, 0]]), Matrix([
++    [1],
++    [1]]), Matrix([[0, 1]]), Matrix([[0]]))
++
++    One can use less matrices. The rest will be filled with a minimum of zeros:
++
++    >>> StateSpace(A, B)
++    StateSpace(Matrix([
++    [1, 2],
++    [1, 0]]), Matrix([
++    [1],
++    [1]]), Matrix([[0, 0]]), Matrix([[0]]))
++
++    See Also
++    ========
++
++    StateSpaceBase, DiscreteStateSpace, TransferFunction,
++    DiscreteTransferFunction
++
++    """
++    def __new__(cls, A=None, B=None, C=None, D=None):
++        return super(StateSpace, cls).__new__(cls, A, B, C, D)
++
++    def __repr__(self):
++        A_str = self.A.__repr__()
++        B_str = self.B.__repr__()
++        C_str = self.C.__repr__()
++        D_str = self.D.__repr__()
++
++        return f"StateSpace(\n{A_str},\n\n{B_str},\n\n{C_str},\n\n{D_str})"
++
++    def dsolve(self, initial_conditions=None, input_vector=None, var=Symbol('t')):
++        r"""
++        Returns `y(t)` or output of StateSpace given by the solution of equations:
++
++        .. math::
++            \begin{aligned}
++            \dot{x}(t) &= Ax(t) + Bu(t) \\
++            y(t) &= Cx(t) + Du(t)
++            \end{aligned}
++
++        Parameters
++        ============
++
++        initial_conditions : Matrix
++            The initial conditions of `x` state vector. If not provided, it defaults to a zero vector.
++        input_vector : Matrix
++            The input vector for state space. If not provided, it defaults to a zero vector.
++        var : Symbol
++            The symbol representing time. If not provided, it defaults to `t`.
++
++        Examples
++        ==========
++
++        >>> from sympy import Matrix
++        >>> from sympy.physics.control import StateSpace
++        >>> A = Matrix([[-2, 0], [1, -1]])
++        >>> B = Matrix([[1], [0]])
++        >>> C = Matrix([[2, 1]])
++        >>> ip = Matrix([5])
++        >>> i = Matrix([0, 0])
++        >>> ss = StateSpace(A, B, C)
++        >>> ss.dsolve(input_vector=ip, initial_conditions=i).simplify()
++        Matrix([[15/2 - 5*exp(-t) - 5*exp(-2*t)/2]])
++
++        If no input is provided it defaults to solving the system with zero initial conditions and zero input.
++
++        >>> ss.dsolve()
++        Matrix([[0]])
++
++        References
++        ==========
++        .. [1] https://web.mit.edu/2.14/www/Handouts/StateSpaceResponse.pdf
++        .. [2] https://docs.sympy.org/latest/modules/solvers/ode.html#sympy.solvers.ode.systems.linodesolve
++
++        """
++
++        if not isinstance(var, Symbol):
++            raise ValueError("Variable for representing time must be a Symbol.")
++        if not initial_conditions:
++            initial_conditions = zeros(self._A.shape[0], 1)
++        elif initial_conditions.shape != (self._A.shape[0], 1):
++            raise ShapeError("Initial condition vector should have the same number of "
++                             "rows as the state matrix.")
++        if not input_vector:
++            input_vector = zeros(self._B.shape[1], 1)
++        elif input_vector.shape != (self._B.shape[1], 1):
++            raise ShapeError("Input vector should have the same number of "
++                             "columns as the input matrix.")
++        sol = linodesolve(A=self._A, t=var, b=self._B*input_vector, type='type2', doit=True)
++        mat1 = Matrix(sol)
++        mat2 = mat1.replace(var, 0)
++        free1 = self._A.free_symbols | self._B.free_symbols | input_vector.free_symbols
++        free2 = mat2.free_symbols
++        # Get all the free symbols form the matrix
++        dummy_symbols = list(free2-free1)
++        # Convert the matrix to a Coefficient matrix
++        r1, r2 = linear_eq_to_matrix(mat2, dummy_symbols)
++        s = linsolve((r1, initial_conditions+r2))
++        res_tuple = next(iter(s))
++        for ind, v in enumerate(res_tuple):
++            mat1 = mat1.replace(dummy_symbols[ind], v)
++        res = self._C*mat1 + self._D*input_vector
++        return res
++
++    def _eval_rewrite_as_TransferFunction(self, *args):
++        """
++        Returns the equivalent :class:`~.TransferFunction` of the state space
++        model.
++
++        Examples
++        ========
++
++        >>> from sympy import Matrix
++        >>> from sympy.physics.control import TransferFunction, StateSpace
++        >>> A = Matrix([[-5, -1], [3, -1]])
++        >>> B = Matrix([2, 5])
++        >>> C = Matrix([[1, 2]])
++        >>> D = Matrix([0])
++        >>> ss = StateSpace(A, B, C, D)
++        >>> ss.rewrite(TransferFunction)
++        [[TransferFunction(12*s + 59, s**2 + 6*s + 8, s)]]
++
++        """
++        s = Symbol('s')
++        n = self.A.shape[0]
++        I = eye(n)
++        G = self.C*(s*I - self.A).solve(self.B) + self.D
++        G = G.simplify()
++        to_tf = lambda expr: TransferFunction.from_rational_expression(expr, s)
++        tf_mat = [[to_tf(expr) for expr in sublist] for sublist in G.tolist()]
++        return tf_mat
++
++    def _eval_rewrite_as_DiscreteTransferFunction(self, *args):
++        raise TypeError("""
++            The continuous state space model cannot be rewritten as a
++            discrete-time transfer function model.
++            """)
++
++    def get_asymptotic_stability_conditions(self, fast=False) -> list[bool]:
+         """
+         Returns the asymptotic stability conditions for the state space.
+ 
+@@ -6398,19 +6592,145 @@ def get_asymptotic_stability_conditions(self, fast=False):
+ 
+         domain = EXRAW if fast else None
+         # if domain is None, to_DM will find the domain automatically
+-        _A = self.A.to_DM(domain = domain)
++        _A = self.A.to_DM(domain = domain) # type: ignore
+         charpoly = _A.charpoly()
+         charpoly = Poly(charpoly, s, domain = _A.domain)
+ 
+         conditions = charpoly.hurwitz_conditions()
+         return [c > 0 for c in conditions]
+ 
+-class StateSpace(StateSpaceBase):
+-    def __new__(cls, A=None, B=None, C=None, D=None):
+-        return super(StateSpace, cls).__new__(cls, A, B, C, D)
+-
+     @property
+     def sampling_time(self):
+-        return 0
++        return S.Zero
+ 
+     _is_continuous = True
++
++class DiscreteStateSpace(StateSpaceBase):
++    """
++    State space model of a linear, discrete-time, time invariant control
++    system.
++
++    See py:class:`~.StateSpaceBase` for more details.
++
++    Parameters
++    ==========
++
++    A : Matrix, optional
++        The State matrix of the state space model.
++    B : Matrix, optional
++        The Input-to-State matrix of the state space model.
++    C : Matrix, optional
++        The State-to-Output matrix of the state space model.
++    D : Matrix, optional
++        The Feedthrough matrix of the state space model.
++    sampling_time : Symbol, Number, optional
++        Time interval between two consecutive sampling instants
++        Defaults to 1.
++
++    Examples
++    ========
++
++    >>> from sympy import Matrix
++    >>> from sympy.physics.control import DiscreteStateSpace
++
++    The easiest way to create a StateSpaceModel is via four matrices:
++
++    >>> A = Matrix([[1, 2], [1, 0]])
++    >>> B = Matrix([1, 1])
++    >>> C = Matrix([[0, 1]])
++    >>> D = Matrix([0])
++    >>> DiscreteStateSpace(A, B, C, D)
++    DiscreteStateSpace(Matrix([
++    [1, 2],
++    [1, 0]]), Matrix([
++    [1],
++    [1]]), Matrix([[0, 1]]), Matrix([[0]]), 1)
++
++    One can use less matrices. The rest will be filled with a minimum of zeros:
++
++    >>> DiscreteStateSpace(A, B, sampling_time=0.2)
++    DiscreteStateSpace(Matrix([
++    [1, 2],
++    [1, 0]]), Matrix([
++    [1],
++    [1]]), Matrix([[0, 0]]), Matrix([[0]]), 0.2)
++
++    See Also
++    ========
++
++    StateSpaceBase, StateSpace, TransferFunction,
++    DiscreteTransferFunction
++
++    """
++    def __new__(cls, A=None, B=None, C=None, D=None, sampling_time=1):
++        if sampling_time == 0:
++            raise ValueError(filldedent("""
++                The sampling time cannot be zero.
++                If you want to create a continuous state space,
++                use the StateSpace class instead."""))
++
++        sampling_time = sympify(sampling_time)
++        obj = super(DiscreteStateSpace, cls).__new__(cls, A, B, C, D, sampling_time)
++        obj._sampling_time = sampling_time
++
++        return obj
++
++    def __repr__(self):
++        A_str = self.A.__repr__()
++        B_str = self.B.__repr__()
++        C_str = self.C.__repr__()
++        D_str = self.D.__repr__()
++
++        return f"""DiscreteStateSpace(\n{A_str},
++        \n{B_str},
++        \n{C_str},
++        \n{D_str},
++        \nst: {self.sampling_time})"""
++
++    def _eval_rewrite_as_DiscreteTransferFunction(self, *args):
++        """
++        Returns the equivalent :class:`~.DiscreteTransferFunction` of the state
++        space model.
++
++        Examples
++        ========
++
++        >>> from sympy import Matrix
++        >>> from sympy.physics.control import DiscreteTransferFunction, DiscreteStateSpace
++        >>> A = Matrix([[-5, -1], [3, -1]])
++        >>> B = Matrix([2, 5])
++        >>> C = Matrix([[1, 2]])
++        >>> D = Matrix([0])
++        >>> ss = DiscreteStateSpace(A, B, C, D)
++        >>> ss.rewrite(DiscreteTransferFunction)
++        [[DiscreteTransferFunction(12*z + 59, z**2 + 6*z + 8, z, 1)]]
++
++        """
++        z = Symbol('z')
++        n = self.A.shape[0]
++        I = eye(n)
++        G = self.C*(z*I - self.A).solve(self.B) + self.D
++        G = G.simplify()
++        to_tf = lambda expr: DiscreteTransferFunction.\
++            from_rational_expression(expr, z, self.sampling_time)
++        tf_mat = [[to_tf(expr) for expr in sublist] for sublist in G.tolist()]
++        return tf_mat
++
++    def _eval_rewrite_as_TransferFunction(self, *args):
++        raise TypeError("""
++            The discrete state space model cannot be rewritten as a
++            continuous-time transfer function model.
++            """)
++
++    def get_asymptotic_stability_conditions(self, fast=False) -> list[bool]:
++        # TODO
++        raise NotImplementedError("""
++            Asymptotic stability conditions are not implemented for discrete
++            state space models yet.
++            """)
++
++    @property
++    def sampling_time(self):
++        return self._sampling_time
++
++    _is_continuous = False
+diff --git a/sympy/physics/control/tests/test_lti.py b/sympy/physics/control/tests/test_lti.py
+index de8770bc0d9c..9a16cfcae621 100644
+--- a/sympy/physics/control/tests/test_lti.py
++++ b/sympy/physics/control/tests/test_lti.py
+@@ -20,10 +20,11 @@
+ from sympy.matrices import ImmutableMatrix, Matrix, ShapeError
+ from sympy.functions.elementary.trigonometric import sin, cos
+ from sympy.physics.control.lti import (
+-    create_transfer_function,TransferFunctionBase, TransferFunction,
++    create_transfer_function, TransferFunctionBase, TransferFunction,
+     DiscreteTransferFunction, PIDController,Series, Parallel, Feedback,
+     TransferFunctionMatrix, MIMOSeries, MIMOParallel, MIMOFeedback, StateSpace,
+-    gbt, bilinear, forward_diff, backward_diff, phase_margin, gain_margin)
++    DiscreteStateSpace, create_state_space, gbt, bilinear, forward_diff,
++    backward_diff, phase_margin, gain_margin)
+ from sympy.testing.pytest import raises
+ from sympy.logic.boolalg import false, true
+ 
+@@ -38,6 +39,7 @@
+ TF2 = TransferFunction(k, 1, s)
+ TF3 = TransferFunction(a2*p - s, a2*s + p, s)
+ 
++
+ def test_create_transfer_function():
+     cont_tf1 = create_transfer_function(s+1, s**2 + 2, s)
+     assert isinstance(cont_tf1, TransferFunction)
+@@ -748,7 +750,7 @@ def test_DiscreteTransferFunction_functions():
+     assert G4.expand() == DiscreteTransferFunction(a0*s**s - b0*p**p, g, p, 2.4)
+     assert G4.expand() != DiscreteTransferFunction(a0*s**s - b0*p**p, g, p)
+ 
+-    # purely symbolic polynomials.
++    # testing that subs works.
+     p1 = a1*s + a0
+     p2 = b2*s**2 + b1*s + b0
+     SP1 = DiscreteTransferFunction(p1, p2, s)
+@@ -2989,15 +2991,20 @@ def test_TransferFunction_gbt():
+     dtf_test_bilinear1 = DiscreteTransferFunction.from_coeff_lists(numZ,
+                                                              denZ,
+                                                              z, T).expand()
+-    dtf_test_bilinear2 = \
+-        DiscreteTransferFunction.from_gbt(tf, T, 0.5, z).expand()
++    dtf_test_bilinear2 = DiscreteTransferFunction.from_gbt(tf, T,
++                                                           0.5, z).expand()
+     # corresponding tf with manually calculated coefs
+     num_manual = [T/(2*(a + b*T/2)), T/(2*(a + b*T/2))]
+     den_manual = [1, (-a + b*T/2)/(a + b*T/2)]
++    dtf_manual = DiscreteTransferFunction.\
++        from_coeff_lists(num_manual, den_manual, z, T).expand()
++    num_manual = [T/(2*(a + b*T/2)), T/(2*(a + b*T/2))]
++    den_manual = [1, (-a + b*T/2)/(a + b*T/2)]
+     dtf_manual = DiscreteTransferFunction.\
+         from_coeff_lists(num_manual, den_manual, z, T).expand()
+ 
+     assert dtf_test_bilinear1 == dtf_test_bilinear2 == dtf_manual
++    assert dtf_test_bilinear1 == dtf_test_bilinear2 == dtf_manual
+ 
+     tf = TransferFunction(1, a*s+b, s)
+     numZ, denZ = gbt(tf, T, 0)
+@@ -3129,6 +3136,23 @@ def test_TransferFunction_gain_margin():
+     raises(ValueError, lambda: gain_margin(tf3))
+     raises(ValueError, lambda: gain_margin(MIMOSeries(tf_m)))
+ 
++def test_create_state_space():
++    A = Matrix([[0, 1], [1, 0]])
++    B = Matrix([1, 0])
++    C = Matrix([[0, 1]])
++    D = Matrix([0])
++
++    cont_ss1 = create_state_space(A, B, C, D)
++    assert isinstance(cont_ss1, StateSpace)
++
++    cont_ss2 = create_state_space(A, B, C, D, sampling_time = 0)
++    assert isinstance(cont_ss2, StateSpace)
++
++    disc_ss1 = create_state_space(A, B, C, D, 0.1)
++    assert isinstance(disc_ss1, DiscreteStateSpace)
++
++    disc_ss2 = create_state_space(A, B, C, D, T)
++    assert isinstance(disc_ss2, DiscreteStateSpace)
+ 
+ def test_StateSpace_construction():
+     # using different numbers for a SISO system.
+@@ -3142,6 +3166,7 @@ def test_StateSpace_construction():
+     assert ss1.input_matrix == Matrix([1, 0])
+     assert ss1.output_matrix == Matrix([[0, 1]])
+     assert ss1.feedforward_matrix == Matrix([0])
++    assert ss1.sampling_time == 0
+     assert ss1.args == (Matrix([[0, 1], [1, 0]]), Matrix([[1], [0]]), Matrix([[0, 1]]), Matrix([[0]]))
+ 
+     # using different symbols for a SISO system.
+@@ -3238,7 +3263,8 @@ def test_StateSpace_construction():
+     raises(TypeError, lambda: StateSpace(s**2, s+1, 2*s, 1))
+     raises(TypeError, lambda: StateSpace(Matrix([2, 0.5]), Matrix([-1]),
+                                          Matrix([1]), 0))
+-def test_StateSpace_add():
++
++def test_StateSpace_add_mul():
+     A1 = Matrix([[4, 1],[2, -3]])
+     B1 = Matrix([[5, 2],[-3, -3]])
+     C1 = Matrix([[2, -4],[0, 1]])
+@@ -3342,28 +3368,60 @@ def test_SymPy_substitution_functions():
+     ss1 = StateSpace(Matrix([s]), Matrix([(s + 1)**2]), Matrix([s**2 - 1]), Matrix([2*s]))
+     ss2 = StateSpace(Matrix([s + p]), Matrix([(s + 1)*(p - 1)]), Matrix([p**3 - s**3]), Matrix([s - p]))
+ 
++    dss1 = DiscreteStateSpace(Matrix([s]), Matrix([(s + 1)**2]),
++                              Matrix([s**2 - 1]), Matrix([2*s]), 0.1)
++    dss2 = DiscreteStateSpace(Matrix([s + p]), Matrix([(s + 1)*(p - 1)]),
++                              Matrix([p**3 - s**3]), Matrix([s - p]), 0.1)
++
+     assert ss1.subs({s:5}) == StateSpace(Matrix([[5]]), Matrix([[36]]), Matrix([[24]]), Matrix([[10]]))
+     assert ss2.subs({p:1}) == StateSpace(Matrix([[s + 1]]), Matrix([[0]]), Matrix([[1 - s**3]]), Matrix([[s - 1]]))
+ 
++    assert dss1.subs({s:5}) == DiscreteStateSpace(Matrix([[5]]), Matrix([[36]]),
++                                          Matrix([[24]]), Matrix([[10]]), 0.1)
++    assert dss2.subs({p:1}) == DiscreteStateSpace(
++        Matrix([[s + 1]]), Matrix([[0]]),
++        Matrix([[1 - s**3]]), Matrix([[s - 1]]), 0.1)
++
+     # xreplace
+     assert ss1.xreplace({s:p}) == \
+         StateSpace(Matrix([[p]]), Matrix([[(p + 1)**2]]), Matrix([[p**2 - 1]]), Matrix([[2*p]]))
+     assert ss2.xreplace({s:a, p:b}) == \
+         StateSpace(Matrix([[a + b]]), Matrix([[(a + 1)*(b - 1)]]), Matrix([[-a**3 + b**3]]), Matrix([[a - b]]))
+ 
++    assert dss1.xreplace({s:p}) == \
++        DiscreteStateSpace(Matrix([[p]]), Matrix([[(p + 1)**2]]),
++                           Matrix([[p**2 - 1]]), Matrix([[2*p]]), 0.1)
++    assert dss2.xreplace({s:a, p:b}) == \
++        DiscreteStateSpace(Matrix([[a + b]]), Matrix([[(a + 1)*(b - 1)]]),
++                           Matrix([[-a**3 + b**3]]), Matrix([[a - b]]), 0.1)
++
+     # evalf
+     p1 = a1*s + a0
+     p2 = b2*s**2 + b1*s + b0
+     G = StateSpace(Matrix([p1]), Matrix([p2]))
++
++    dG = DiscreteStateSpace(Matrix([p1]), Matrix([p2]), sampling_time = 0.3)
++
+     expect = StateSpace(Matrix([[2*s + 1]]), Matrix([[5*s**2 + 4*s + 3]]), Matrix([[0]]), Matrix([[0]]))
+     expect_ = StateSpace(Matrix([[2.0*s + 1.0]]), Matrix([[5.0*s**2 + 4.0*s + 3.0]]), Matrix([[0]]), Matrix([[0]]))
++
++    dexpect = DiscreteStateSpace(Matrix([[2*s + 1]]),
++                                 Matrix([[5*s**2 + 4*s + 3]]), Matrix([[0]]),
++                                 Matrix([[0]]), 0.3)
++    dexpect_ = DiscreteStateSpace(Matrix([[2.0*s + 1.0]]),
++                                  Matrix([[5.0*s**2 + 4.0*s + 3.0]]),
++                                  Matrix([[0]]), Matrix([[0]]), 0.3)
++
+     assert G.subs({a0: 1, a1: 2, b0: 3, b1: 4, b2: 5}) == expect
+     assert G.subs({a0: 1, a1: 2, b0: 3, b1: 4, b2: 5}).evalf() == expect_
+     assert expect.evalf() == expect_
+ 
++    assert dG.subs({a0: 1, a1: 2, b0: 3, b1: 4, b2: 5}) == dexpect
++    assert dG.subs({a0: 1, a1: 2, b0: 3, b1: 4, b2: 5}).evalf() == dexpect_
++    assert dexpect.evalf() == dexpect_
++
+ def test_conversion():
+     # StateSpace to TransferFunction for SISO
+-    #TODO: DiscreteTransferFunction
+     A1 = Matrix([[-5, -1], [3, -1]])
+     B1 = Matrix([2, 5])
+     C1 = Matrix([[1, 2]])
+@@ -3371,6 +3429,7 @@ def test_conversion():
+     H1 = StateSpace(A1, B1, C1, D1)
+     H3 = StateSpace(Matrix([[a0, a1], [a2, a3]]), B = Matrix([[b1], [b2]]), C = Matrix([[c1, c2]]))
+     tm1 = H1.rewrite(TransferFunction)
++    raises(TypeError, lambda: H1.rewrite(DiscreteTransferFunction)) # H1 is not a discrete system
+     tm2 = (-H1).rewrite(TransferFunction)
+ 
+     tf1 = tm1[0][0]
+@@ -3406,28 +3465,56 @@ def test_conversion():
+     assert SS.rewrite(TransferFunction)[0][0] == TF1
+ 
+     # TransferFunction cannot be converted to DiscreteStateSpace
+-    # TODO: raises(TypeError, lambda: TF1.rewrite(DiscreteStateSpace))
++    raises(TypeError, lambda: TF1.rewrite(DiscreteStateSpace))
+ 
+     # Transfer function has to be proper
+     raises(ValueError, lambda: TransferFunction(b*s**2 + p**2 - a*p + s, b - p**2, s).rewrite(StateSpace))
+ 
++    # DiscreteStateSpace to DiscreteTransferFunction for SISO
++    DH1 = DiscreteStateSpace(A1, B1, C1, D1, 0.1)
++    DH3 = DiscreteStateSpace(Matrix([[a0, a1], [a2, a3]]),
++                             B = Matrix([[b1], [b2]]), C = Matrix([[c1, c2]]),
++                             sampling_time = T)
++    dtm1 = DH1.rewrite(DiscreteTransferFunction)
++    raises(TypeError, lambda: DH1.rewrite(TransferFunction)) # H3 is not a continuous system
++    dtm2 = (-DH1).rewrite(DiscreteTransferFunction)
++
++    dtf1 = dtm1[0][0]
++    dtf2 = dtm2[0][0]
++
++    assert dtf1 == DiscreteTransferFunction(12*z + 59, z**2 + 6*z + 8, z, 0.1)
++    assert dtf2.num == -dtf1.num
++    assert dtf2.den == dtf1.den
++    assert dtf1.sampling_time == 0.1
++    assert dtf2.sampling_time == 0.1
++
++    # DiscreteStateSpace to DiscreteTransferFunction for MIMO
++    DH2 = DiscreteStateSpace(A2, B2, C2, D2, T)
++    dtm3 = DH2.rewrite(DiscreteTransferFunction)
++
++    # outputs for input i obtained at Index i-1. Consider input 1
++    assert dtm3[0][0] == DiscreteTransferFunction(2.0*z**3 + 1.0*z**2 - 10.5*z + 4.5, 1.0*z**3 + 0.5*z**2 - 6.5*z - 2.5, z, T)
++    assert dtm3[0][1] == DiscreteTransferFunction(2.0*z**3 + 2.0*z**2 - 10.5*z - 3.5, 1.0*z**3 + 0.5*z**2 - 6.5*z - 2.5, z, T)
++    assert dtm3[0][2] == DiscreteTransferFunction(2.0*z**2 + 5.0*z - 0.5, 1.0*z**3 + 0.5*z**2 - 6.5*z - 2.5, z, T)
++    assert DH3.rewrite(DiscreteTransferFunction) == [[DiscreteTransferFunction(-c1*(a1*b2 - a3*b1 + b1*z) - c2*(-a0*b2 + a2*b1 + b2*z),
++                                                              -a0*a3 + a0*z + a1*a2 + a3*z - z**2, z, T)]]
+     # DiscreteTransferFunction to DiscreteStateSpace
+     dtf1 = DiscreteTransferFunction(z+5, z**3+2*z**2+4*z+3, z, 0.1)
+-    # TODO:
+-    # DSS = dtf1.rewrite(DiscreteStateSpace)
+-    # A = Matrix([[0, 1, 0], [0, 0, 1], [-3, -4, -2]])
+-    # B = Matrix([0, 0, 1])
+-    # C = Matrix([[5, 1, 0]])
+-    # D = Matrix([[0]])
+-    # assert DSS == DiscreteStateSpace(A, B, C, D, 0.1)
++    DSS = dtf1.rewrite(DiscreteStateSpace)
++    A = Matrix([[0, 1, 0], [0, 0, 1], [-3, -4, -2]])
++    B = Matrix([0, 0, 1])
++    C = Matrix([[5, 1, 0]])
++    D = Matrix([[0]])
++
++    assert DSS == DiscreteStateSpace(A, B, C, D, 0.1)
+ 
+-    # TODO: assert DSS.rewrite(DiscreteTransferFunction)[0][0] == dtf1
++    assert DSS.rewrite(DiscreteTransferFunction)[0][0] == dtf1
+ 
+-    # DiscreteTransferFunction cannot be converted to StateSpace
++    # DiscreteTransferFunction cannot be converted to DiscreteStateSpace
+     raises(TypeError, lambda: dtf1.rewrite(StateSpace))
+ 
+     # discrete-time Transfer function has to be proper
+-    # TODO: raises(ValueError, lambda: DiscreteTransferFunction(b2*z**2 + b1*z + b0, z + a0, z).rewrite(DiscreteStateSpace))
++    raises(ValueError, lambda: DiscreteTransferFunction(b2*z**2 + b1*z + b0, z + a0, z).rewrite(DiscreteStateSpace))
+ 
+ def test_StateSpace_dsolve():
+     # https://web.mit.edu/2.14/www/Handouts/StateSpaceResponse.pdf
+@@ -3490,7 +3577,6 @@ def test_StateSpace_dsolve():
+     expr6 = expr6.subs([(a11, 0), (a12, 1), (a21, -2), (a22, -3), (b1, 0), (b2, 1), (c1, 1), (c2, -1), (i1, 1), (i2, 2)])
+     assert expr6 == 8*exp(-t) - 9*exp(-2*t)
+ 
+-
+ def test_StateSpace_functions():
+     # https://in.mathworks.com/help/control/ref/statespacemodel.obsv.html
+ 
+@@ -3520,7 +3606,8 @@ def test_StateSpace_functions():
+     Qo = SS4.observability_matrix().subs([(a0, 0), (a1, -6), (a2, 1), (a3, -5), (c1, 0), (c2, 1)])
+     assert Qo == Matrix([[0, 1], [1, -5]])
+ 
+-    ss_obs = StateSpace(Matrix([[1, 0, 1], [0,0,0],[0,0,-2]]), Matrix([1,1,0]), Matrix([1,1,Rational(1,3)]).T).to_observable_form()
++    ss_obs = StateSpace(Matrix([[1, 0, 1], [0,0,0],[0,0,-2]]), Matrix([1,1,0]),
++                        Matrix([1,1, Rational(1,3)]).T).to_observable_form()
+     A_obs = ss_obs.A[:2, :2]
+     A_nobs = ss_obs.A[2:, 2:]
+     assert A_obs.eigenvals() == {0: 1, 1: 1}
+@@ -3574,7 +3661,6 @@ def test_StateSpace_functions():
+     assert ss4.output_matrix == Matrix([[c1, c2, 0, 0], [0, 0, 0, 1]])
+     assert ss4.feedforward_matrix == Matrix([[0, 0], [0, 0]])
+ 
+-
+ def test_StateSpace_series():
+     # For SISO Systems
+     a1 = Matrix([[0, 1], [1, 0]])
+@@ -3616,6 +3702,8 @@ def test_StateSpace_series():
+     assert ser1.num_inputs == 1
+     assert ser1.num_outputs == 1
+     assert ser1.rewrite(TransferFunction) == TransferFunction(s**2, s**3 - s**2 - s + 1, s)
++    raises(TypeError, lambda: ser1.rewrite(DiscreteTransferFunction))  # cannot convert to discrete transfer function
++
+     ser2 = Series(ss1)
+     ser3 = Series(ser2, ss2)
+     assert ser3.doit() == ser1.doit()
+@@ -3733,7 +3821,6 @@ def test_StateSpace_series():
+                         (TransferFunction(s, s + 1, s), TransferFunction(1, s, s)),
+                         (TransferFunction(1, s + 1, s), TransferFunction(s, s + 2, s)))))
+ 
+-
+ def test_StateSpace_parallel():
+     # For SISO system
+     a1 = Matrix([[0, 1], [1, 0]])
+@@ -3762,6 +3849,7 @@ def test_StateSpace_parallel():
+                         Matrix([[0, 1, 1, 0]]),
+                         Matrix([[1]]))
+     assert p1.rewrite(TransferFunction) == TransferFunction(s*(s + 2), s**2 - 1, s)
++    raises(TypeError, lambda: p1.rewrite(DiscreteTransferFunction))  # cannot convert to discrete transfer function
+ 
+     # Connecting StateSpace with TransferFunction
+     tf1 = TransferFunction(s, s+1, s)
+@@ -3853,7 +3941,6 @@ def test_StateSpace_parallel():
+                         [3, 2],
+                         [1, -1]])))
+ 
+-
+ def test_StateSpace_feedback():
+     # For SISO
+     a1 = Matrix([[0, 1], [1, 0]])
+@@ -3883,6 +3970,7 @@ def test_StateSpace_feedback():
+                             [[0, 1, 0, 0]]), Matrix(
+                             [[0]]))
+     assert fd1.rewrite(TransferFunction) == TransferFunction(s*(s - 1), s**3 - s + 1, s)
++    raises(TypeError, lambda: fd1.rewrite(DiscreteTransferFunction))  # cannot convert to discrete transfer function
+ 
+     # Positive Feedback
+     fd2 = Feedback(ss1, ss2, 1)
+@@ -4008,3 +4096,782 @@ def test_StateSpace_stability():
+     ss2 = StateSpace(A2, B, C, D)
+     ineq = ss2.get_asymptotic_stability_conditions()
+     assert ineq == [False]
++
++def test_DiscreteStateSpace_construction():
++    # using different numbers for a SISO system.
++    A1 = Matrix([[0, 1], [1, 0]])
++    B1 = Matrix([1, 0])
++    C1 = Matrix([[0, 1]])
++    D1 = Matrix([0])
++    ss1 = DiscreteStateSpace(A1, B1, C1, D1)
++
++    assert ss1.state_matrix == Matrix([[0, 1], [1, 0]])
++    assert ss1.input_matrix == Matrix([1, 0])
++    assert ss1.output_matrix == Matrix([[0, 1]])
++    assert ss1.feedforward_matrix == Matrix([0])
++    assert ss1.sampling_time == 1
++    assert ss1.args == (Matrix([[0, 1], [1, 0]]), Matrix([[1], [0]]),
++                        Matrix([[0, 1]]), Matrix([[0]]), 1)
++
++    # using different symbols for a SISO system.
++    ss2 = DiscreteStateSpace(Matrix([a0]), Matrix([a1]),
++                    Matrix([a2]), Matrix([a3]), 0.1)
++
++    assert ss2.state_matrix == Matrix([[a0]])
++    assert ss2.input_matrix == Matrix([[a1]])
++    assert ss2.output_matrix == Matrix([[a2]])
++    assert ss2.feedforward_matrix == Matrix([[a3]])
++    assert ss2.sampling_time == 0.1
++    assert isinstance(ss2.sampling_time, Number) is True # ensure it is a sympy object, not just a python float
++    assert ss2.args == (Matrix([[a0]]), Matrix([[a1]]), Matrix([[a2]]),
++                        Matrix([[a3]]), 0.1)
++
++    # using different numbers for a MIMO system.
++    ss3 = DiscreteStateSpace(Matrix([[-1.5, -2], [1, 0]]),
++                    Matrix([[0.5, 0], [0, 1]]),
++                    Matrix([[0, 1], [0, 2]]),
++                    Matrix([[2, 2], [1, 1]]), T)
++
++    assert ss3.state_matrix == Matrix([[-1.5, -2], [1,  0]])
++    assert ss3.input_matrix == Matrix([[0.5, 0], [0, 1]])
++    assert ss3.output_matrix == Matrix([[0, 1], [0, 2]])
++    assert ss3.feedforward_matrix == Matrix([[2, 2], [1, 1]])
++    assert ss3.sampling_time == T
++    assert ss3.args == (Matrix([[-1.5, -2],
++                                [1,  0]]),
++                        Matrix([[0.5, 0],
++                                [0, 1]]),
++                        Matrix([[0, 1],
++                                [0, 2]]),
++                        Matrix([[2, 2],
++                                [1, 1]]), T)
++
++    # using different symbols for a MIMO system.
++    A4 = Matrix([[a0, a1], [a2, a3]])
++    B4 = Matrix([[b0, b1], [b2, b3]])
++    C4 = Matrix([[c0, c1], [c2, c3]])
++    D4 = Matrix([[d0, d1], [d2, d3]])
++    ss4 = DiscreteStateSpace(A4, B4, C4, D4, 12)
++
++    assert ss4.state_matrix == Matrix([[a0, a1], [a2, a3]])
++    assert ss4.input_matrix == Matrix([[b0, b1], [b2, b3]])
++    assert ss4.output_matrix == Matrix([[c0, c1], [c2, c3]])
++    assert ss4.feedforward_matrix == Matrix([[d0, d1], [d2, d3]])
++    assert ss4.sampling_time == 12
++    assert ss4.args == (Matrix([[a0, a1],
++                                [a2, a3]]),
++                        Matrix([[b0, b1],
++                                [b2, b3]]),
++                        Matrix([[c0, c1],
++                                [c2, c3]]),
++                        Matrix([[d0, d1],
++                                [d2, d3]]), 12)
++
++    # using less matrices. Rest will be filled with a minimum of zeros.
++    ss5 = DiscreteStateSpace()
++    assert ss5.args == (Matrix([[0]]), Matrix([[0]]), Matrix([[0]]),
++                        Matrix([[0]]), 1)
++
++    A6 = Matrix([[0, 1], [1, 0]])
++    B6 = Matrix([1, 1])
++    ss6 = DiscreteStateSpace(A6, B6, sampling_time = 2)
++
++    assert ss6.state_matrix == Matrix([[0, 1], [1, 0]])
++    assert ss6.input_matrix ==  Matrix([1, 1])
++    assert ss6.output_matrix == Matrix([[0, 0]])
++    assert ss6.feedforward_matrix == Matrix([[0]])
++    assert ss6.sampling_time == 2
++    assert ss6.args == (Matrix([[0, 1],
++                                [1, 0]]),
++                        Matrix([[1],
++                                [1]]),
++                        Matrix([[0, 0]]),
++                        Matrix([[0]]), 2)
++
++    # Check if the system is SISO or MIMO.
++    # If system is not SISO, then it is definitely MIMO.
++
++    assert ss1.is_SISO == True
++    assert ss2.is_SISO == True
++    assert ss3.is_SISO == False
++    assert ss4.is_SISO == False
++    assert ss5.is_SISO == True
++    assert ss6.is_SISO == True
++
++    # ShapeError if matrices do not fit.
++    raises(ShapeError, lambda: StateSpace(Matrix([s, (s+1)**2]), Matrix([s+1]),
++                                          Matrix([s**2 - 1]), Matrix([2*s])))
++    raises(ShapeError, lambda: StateSpace(Matrix([s]), Matrix([s+1, s**3 + 1]),
++                                          Matrix([s**2 - 1]), Matrix([2*s])))
++    raises(ShapeError, lambda: StateSpace(Matrix([s]), Matrix([s+1]),
++                                          Matrix([[s**2 - 1], [s**2 + 2*s + 1]]), Matrix([2*s])))
++    raises(ShapeError, lambda: StateSpace(Matrix([[-s, -s], [s, 0]]),
++                                                Matrix([[s/2, 0], [0, s]]),
++                                                Matrix([[0, s]]),
++                                                Matrix([[2*s, 2*s], [s, s]])))
++
++    # TypeError if arguments are not sympy matrices.
++    raises(TypeError, lambda: StateSpace(s**2, s+1, 2*s, 1))
++    raises(TypeError, lambda: StateSpace(Matrix([2, 0.5]), Matrix([-1]),
++                                         Matrix([1]), 0))
++
++    raises(ValueError, lambda: DiscreteStateSpace(A1, B1, C1, D1, 0)) # sampling time cannot be zero
++
++def test_DiscreteStateSpace_add_mul():
++    A1 = Matrix([[4, 1],[2, -3]])
++    B1 = Matrix([[5, 2],[-3, -3]])
++    C1 = Matrix([[2, -4],[0, 1]])
++    D1 = Matrix([[3, 2],[1, -1]])
++    ss1 = DiscreteStateSpace(A1, B1, C1, D1, T)
++
++    A2 = Matrix([[-3, 4, 2],[-1, -3, 0],[2, 5, 3]])
++    B2 = Matrix([[1, 4],[-3, -3],[-2, 1]])
++    C2 = Matrix([[4, 2, -3],[1, 4, 3]])
++    D2 = Matrix([[-2, 4],[0, 1]])
++    ss2 = DiscreteStateSpace(A2, B2, C2, D2, T)
++    ss3 = DiscreteStateSpace(sampling_time = T)
++    ss4 = DiscreteStateSpace(Matrix([1]), Matrix([2]),
++                             Matrix([3]), Matrix([4]), T)
++
++    expected_add = \
++        DiscreteStateSpace(
++        Matrix([
++        [4,  1,  0,  0, 0],
++        [2, -3,  0,  0, 0],
++        [0,  0, -3,  4, 2],
++        [0,  0, -1, -3, 0],
++        [0,  0,  2,  5, 3]]),
++        Matrix([
++        [ 5,  2],
++        [-3, -3],
++        [ 1,  4],
++        [-3, -3],
++        [-2,  1]]),
++        Matrix([
++        [2, -4, 4, 2, -3],
++        [0,  1, 1, 4,  3]]),
++        Matrix([
++        [1, 6],
++        [1, 0]]), T)
++
++    expected_mul = \
++        DiscreteStateSpace(
++        Matrix([
++        [ -3,   4,  2, 0,  0],
++        [ -1,  -3,  0, 0,  0],
++        [  2,   5,  3, 0,  0],
++        [ 22,  18, -9, 4,  1],
++        [-15, -18,  0, 2, -3]]),
++        Matrix([
++        [  1,   4],
++        [ -3,  -3],
++        [ -2,   1],
++        [-10,  22],
++        [  6, -15]]),
++        Matrix([
++        [14, 14, -3, 2, -4],
++        [ 3, -2, -6, 0,  1]]),
++        Matrix([
++        [-6, 14],
++        [-2,  3]]), T)
++
++    assert ss1 + ss2 == expected_add
++    assert ss1*ss2 == expected_mul
++    assert ss3 + 1/2 == DiscreteStateSpace(Matrix([[0]]), Matrix([[0]]),
++                                           Matrix([[0]]), Matrix([[0.5]]), T)
++    assert ss4*1.5 == DiscreteStateSpace(Matrix([[1]]), Matrix([[2]]),
++                                         Matrix([[4.5]]), Matrix([[6.0]]), T)
++    assert 1.5*ss4 == DiscreteStateSpace(Matrix([[1]]), Matrix([[3.0]]),
++                                         Matrix([[3]]), Matrix([[6.0]]), T)
++
++    raises(ShapeError, lambda: ss1 + ss3)
++    raises(ShapeError, lambda: ss2*ss4)
++
++    # compatibility tests
++    ss5 = DiscreteStateSpace(A1, B1, C1, D1, 0.1)
++    cont_ss = StateSpace(A2, B2, C2, D2)
++
++    raises(TypeError, lambda: ss5 + ss2) # sum of state spaces with different sampling time
++    raises(TypeError, lambda: ss5 * ss2) # multiplication of state spaces with different sampling time
++    raises(TypeError, lambda: ss1 + cont_ss) # sum of state space and continuous state space
++    raises(TypeError, lambda: ss1 * cont_ss) # multiplication of state space and continuous state space
++
++def test_DiscreteStateSpace_negation():
++    A = Matrix([[a0, a1], [a2, a3]])
++    B = Matrix([[b0, b1], [b2, b3]])
++    C = Matrix([[c0, c1], [c1, c2], [c2, c3]])
++    D = Matrix([[d0, d1], [d1, d2], [d2, d3]])
++    SS = DiscreteStateSpace(A, B, C, D, T)
++    SS_neg = -SS
++
++    state_mat = Matrix([[-1, 1], [1, -1]])
++    input_mat = Matrix([1, -1])
++    output_mat = Matrix([[-1, 1]])
++    feedforward_mat = Matrix([1])
++    system = DiscreteStateSpace(state_mat, input_mat, output_mat,
++                                feedforward_mat, T)
++
++    assert SS_neg == \
++        DiscreteStateSpace(Matrix([[a0, a1],
++                           [a2, a3]]),
++                   Matrix([[b0, b1],
++                           [b2, b3]]),
++                   Matrix([[-c0, -c1],
++                           [-c1, -c2],
++                           [-c2, -c3]]),
++                   Matrix([[-d0, -d1],
++                           [-d1, -d2],
++                           [-d2, -d3]]), T)
++    assert -system == \
++        DiscreteStateSpace(Matrix([[-1,  1],
++                           [ 1, -1]]),
++                   Matrix([[ 1],[-1]]),
++                   Matrix([[1, -1]]),
++                   Matrix([[-1]]), T)
++    assert -SS_neg == SS
++    assert -(-(-(-system))) == system
++
++def test_DiscreteStateSpace_functions():
++    # https://in.mathworks.com/help/control/ref/statespacemodel.obsv.html
++    A_mat = Matrix([[-1.5, -2], [1, 0]])
++    B_mat = Matrix([0.5, 0])
++    C_mat = Matrix([[0, 1]])
++    D_mat = Matrix([1])
++    SS1 = DiscreteStateSpace(A_mat, B_mat, C_mat, D_mat)
++    SS2 = DiscreteStateSpace(Matrix([[1, 1], [4, -2]]),
++                             Matrix([[0, 1], [0, 2]]),
++                             Matrix([[-1, 1], [1, -1]]))
++    SS3 = DiscreteStateSpace(Matrix([[1, 1], [4, -2]]),
++                             Matrix([[1, -1], [1, -1]]))
++    SS4 = DiscreteStateSpace(Matrix([[a0, a1], [a2, a3]]),
++                             Matrix([[b1], [b2]]), Matrix([[c1, c2]]))
++
++    # Observability
++    assert SS1.is_observable() == True
++    assert SS2.is_observable() == False
++    assert SS1.observability_matrix() == Matrix([[0, 1], [1, 0]])
++    assert SS2.observability_matrix() == Matrix([[-1,  1], [ 1, -1], [ 3, -3], [-3,  3]])
++    assert SS1.observable_subspace() == [Matrix([[1], [0]]), Matrix([[0], [1]])]
++    assert SS2.observable_subspace() == [Matrix([[-1], [ 1]])]
++    raises(NotImplementedError, lambda: SS4.observable_subspace())
++    assert SS1.unobservable_subspace() == []
++    assert SS2.unobservable_subspace() == [Matrix([[1],[1]])]
++    raises(NotImplementedError, lambda: SS4.unobservable_subspace())
++
++    Qo = SS4.observability_matrix().subs([(a0, 0), (a1, -6), (a2, 1), (a3, -5), (c1, 0), (c2, 1)])
++    assert Qo == Matrix([[0, 1], [1, -5]])
++
++    ss_obs = StateSpace(Matrix([[1, 0, 1], [0,0,0],[0,0,-2]]), Matrix([1,1,0]),
++                        Matrix([1,1, Rational(1,3)]).T).to_observable_form()
++    A_obs = ss_obs.A[:2, :2]
++    A_nobs = ss_obs.A[2:, 2:]
++    assert A_obs.eigenvals() == {0: 1, 1: 1}
++    assert A_nobs.eigenvals() == {-2: 1}
++
++    # Controllability
++    assert SS1.is_controllable() == True
++    assert SS3.is_controllable() == False
++    assert SS1.controllability_matrix() ==  Matrix([[0.5, -0.75], [  0,   0.5]])
++    assert SS3.controllability_matrix() == Matrix([[1, -1, 2, -2], [1, -1, 2, -2]])
++    assert SS4.controllability_matrix() == \
++        Matrix([[b1, a0*b1 + a1*b2], [b2, a2*b1 + a3*b2]])
++    assert SS1.controllable_subspace() == [Matrix([[0.5], [  0]]), Matrix([[-0.75], [  0.5]])]
++    assert SS3.controllable_subspace() == [Matrix([[1], [1]])]
++    assert SS1.uncontrollable_subspace() == []
++    assert SS3.uncontrollable_subspace() == [Matrix([[-1], [1]])]
++    raises(NotImplementedError, lambda: SS4.uncontrollable_subspace()) # uncontrollable subspace fo symbols not implemented
++
++    Qc = SS4.controllability_matrix().subs([(a0, 0), (a1, 1), (a2, -6), (a3, -5), (b1, 0), (b2, 1)])
++    assert Qc == Matrix([[0, 1], [1, -5]])
++    ss_contr = StateSpace(Matrix([[1, 0, 1], [0,0,0],[0,0,-2]]), Matrix([1,1,0]), Matrix([1,1,0]).T).to_controllable_form()
++    A_contr = ss_contr.A[:2, :2]
++    A_ncontr = ss_contr.A[2:, 2:]
++    assert A_contr.eigenvals() == {0: 1, 1: 1}
++    assert A_ncontr.eigenvals() == {-2: 1}
++
++    # Append
++    A1 = Matrix([[0, 1], [1, 0]])
++    B1 = Matrix([[0], [1]])
++    C1 = Matrix([[0, 1]])
++    D1 = Matrix([[0]])
++    ss1 = DiscreteStateSpace(A1, B1, C1, D1)
++    ss2 = DiscreteStateSpace(Matrix([[1, 0], [0, 1]]), Matrix([[1], [0]]),
++                     Matrix([[1, 0]]), Matrix([[1]]))
++    ss3 = ss1.append(ss2)
++    ss4 = SS4.append(ss1)
++
++    assert ss3.num_states == ss1.num_states + ss2.num_states
++    assert ss3.num_inputs == ss1.num_inputs + ss2.num_inputs
++    assert ss3.num_outputs == ss1.num_outputs + ss2.num_outputs
++    assert ss3.state_matrix == Matrix([[0, 1, 0, 0], [1, 0, 0, 0],
++                                       [0, 0, 1, 0], [0, 0, 0, 1]])
++    assert ss3.input_matrix == Matrix([[0, 0], [1, 0], [0, 1], [0, 0]])
++    assert ss3.output_matrix == Matrix([[0, 1, 0, 0], [0, 0, 1, 0]])
++    assert ss3.feedforward_matrix == Matrix([[0, 0], [0, 1]])
++
++    cont_ss1 = StateSpace(A1, B1, C1, D1)
++    ss1_ = DiscreteStateSpace(A1, B1, C1, D1, sampling_time=2)
++    raises(TypeError, lambda: ss1.append(cont_ss1))  # TypeError if appending a continuous system to a discrete system
++    raises(TypeError, lambda: ss1.append(ss1_))  # TypeError if appending a discrete system with different sampling time
++
++    # Using symbolic matrices
++    assert ss4.num_states == SS4.num_states + ss1.num_states
++    assert ss4.num_inputs == SS4.num_inputs + ss1.num_inputs
++    assert ss4.num_outputs == SS4.num_outputs + ss1.num_outputs
++    assert ss4.state_matrix == Matrix([[a0, a1, 0, 0], [a2, a3, 0, 0],
++                                       [0, 0, 0, 1], [0, 0, 1, 0]])
++    assert ss4.input_matrix == Matrix([[b1, 0], [b2, 0], [0, 0], [0, 1]])
++    assert ss4.output_matrix == Matrix([[c1, c2, 0, 0], [0, 0, 0, 1]])
++    assert ss4.feedforward_matrix == Matrix([[0, 0], [0, 0]])
++
++def test_DiscreteStateSpace_series():
++    # For SISO Systems
++    a1 = Matrix([[0, 1], [1, 0]])
++    b1 = Matrix([[0], [1]])
++    c1 = Matrix([[0, 1]])
++    d1 = Matrix([[0]])
++    a2 = Matrix([[1, 0], [0, 1]])
++    b2 = Matrix([[1], [0]])
++    c2 = Matrix([[1, 0]])
++    d2 = Matrix([[1]])
++
++    ss1 = DiscreteStateSpace(a1, b1, c1, d1, T)
++    ss2 = DiscreteStateSpace(a2, b2, c2, d2, T)
++    tf1 = DiscreteTransferFunction(s, s+1, s, T)
++    ser1 = Series(ss1, ss2)
++    assert ser1 == Series(
++        DiscreteStateSpace(
++            Matrix([[0, 1], [1, 0]]), Matrix([[0], [1]]), Matrix([[0, 1]]),
++            Matrix([[0]]), T),
++        DiscreteStateSpace(
++            Matrix([[1, 0], [0, 1]]), Matrix([[1], [0]]), Matrix([[1, 0]]),
++            Matrix([[1]]), T),)
++    assert ser1.doit() == DiscreteStateSpace(
++        Matrix([[0, 1, 0, 0], [1, 0, 0, 0], [0, 1, 1, 0], [0, 0, 0, 1]]),
++        Matrix([[0], [1], [0], [0]]), Matrix([[0, 1, 1, 0]]), Matrix([[0]]), T)
++
++    assert ser1.num_inputs == 1
++    assert ser1.num_outputs == 1
++    assert ser1.rewrite(DiscreteTransferFunction) == \
++        DiscreteTransferFunction(z**2, z**3 - z**2 - z + 1, z, T)
++    raises(TypeError, lambda: ser1.rewrite(TransferFunction))  # Cannot rewrite to TransferFunction
++    ser2 = Series(ss1)
++    ser3 = Series(ser2, ss2)
++    assert ser3.doit() == ser1.doit()
++
++    # DiscreteTransferFunction interconnection with DiscreteStateSpace
++    ser_tf = Series(tf1, ss1)
++    assert ser_tf == Series(DiscreteTransferFunction(s, s + 1, s, T),
++                            DiscreteStateSpace(Matrix([
++                            [0, 1],[1, 0]]), Matrix([[0], [1]]),
++                            Matrix([[0, 1]]), Matrix([[0]]), T))
++    assert ser_tf.doit() == DiscreteStateSpace(
++                            Matrix([[-1, 0,  0], [0, 0,  1], [-1, 1, 0]]),
++                            Matrix([[1], [0], [1]]), Matrix([[0, 0, 1]]),
++                            Matrix([[0]]), T)
++    assert ser_tf.rewrite(DiscreteTransferFunction) == \
++        DiscreteTransferFunction(z**2, z**3 + z**2 - z - 1, z, T)
++
++    # For MIMO Systems
++    a3 = Matrix([[4, 1], [2, -3]])
++    b3 = Matrix([[5, 2], [-3, -3]])
++    c3 = Matrix([[2, -4], [0, 1]])
++    d3 = Matrix([[3, 2], [1, -1]])
++    a4 = Matrix([[-3, 4, 2], [-1, -3, 0], [2, 5, 3]])
++    b4 = Matrix([[1, 4], [-3, -3], [-2, 1]])
++    c4 = Matrix([[4, 2, -3], [1, 4, 3]])
++    d4 = Matrix([[-2, 4], [0, 1]])
++    ss3 = DiscreteStateSpace(a3, b3, c3, d3, T)
++    ss4 = DiscreteStateSpace(a4, b4, c4, d4, T)
++    ser4 = MIMOSeries(ss3, ss4)
++    assert ser4 == MIMOSeries(DiscreteStateSpace(Matrix([
++                    [4,  1],
++                    [2, -3]]), Matrix([
++                    [ 5,  2],
++                    [-3, -3]]), Matrix([
++                    [2, -4],
++                    [0,  1]]), Matrix([
++                    [3,  2],
++                    [1, -1]]), T), DiscreteStateSpace(Matrix([
++                    [-3,  4, 2],
++                    [-1, -3, 0],
++                    [ 2,  5, 3]]), Matrix([
++                    [ 1,  4],
++                    [-3, -3],
++                    [-2,  1]]), Matrix([
++                    [4, 2, -3],
++                    [1, 4,  3]]), Matrix([
++                    [-2, 4],
++                    [ 0, 1]]), T))
++    assert ser4.doit() == DiscreteStateSpace(
++                        Matrix([
++                        [4,   1,  0, 0,  0],
++                        [2,  -3,  0, 0,  0],
++                        [2,   0,  -3, 4,  2],
++                        [-6,  9, -1, -3,  0],
++                        [-4, 9,  2, 5, 3]]),
++                        Matrix([
++                        [5,   2],
++                        [-3,  -3],
++                        [7,   -2],
++                        [-12,  -3],
++                        [-5, -5]]),
++                        Matrix([
++                        [-4, 12, 4, 2, -3],
++                        [0, 1, 1, 4, 3]]),
++                        Matrix([
++                        [-2, -8],
++                        [1, -1]]), T)
++    assert ser4.num_inputs == ss3.num_inputs
++    assert ser4.num_outputs == ss4.num_outputs
++    ser5 = MIMOSeries(ss3)
++    ser6 = MIMOSeries(ser5, ss4)
++    assert ser6.doit() == ser4.doit()
++    assert ser6.rewrite(TransferFunctionMatrix) == \
++        ser4.rewrite(TransferFunctionMatrix)
++    tf2 = DiscreteTransferFunction(1, s, s, T)
++    tf3 = DiscreteTransferFunction(1, s+1, s, T)
++    tf4 = DiscreteTransferFunction(s, s+2, s, T)
++    tfm = TransferFunctionMatrix([[tf1, tf2], [tf3, tf4]])
++    ser6 = MIMOSeries(ss3, tfm)
++    assert ser6 == MIMOSeries(DiscreteStateSpace(Matrix([
++                        [4,  1],
++                        [2, -3]]), Matrix([
++                        [ 5,  2],
++                        [-3, -3]]), Matrix([
++                        [2, -4],
++                        [0,  1]]), Matrix([
++                        [3,  2],
++                        [1, -1]]), T), TransferFunctionMatrix((
++                        (DiscreteTransferFunction(s, s + 1, s, T),
++                         DiscreteTransferFunction(1, s, s, T)),
++                        (DiscreteTransferFunction(1, s + 1, s, T),
++                         DiscreteTransferFunction(s, s + 2, s, T)))))
++
++    # compatibility tests
++    ss5 = DiscreteStateSpace(a1, b1, c1, d1, 0.2)
++    cont_ss1 = StateSpace(a2, b2, c2, d2)
++
++    # SISO
++    raises(TypeError, lambda: Series(ss5, ss2))  # series with different sampling time
++    raises(TypeError, lambda: Series(ss1, cont_ss1))  # series with continuous state space
++
++    # MIMO
++    ss6 = DiscreteStateSpace(a3, b3, c3, d3)
++    cont_ss2 = StateSpace(a4, b4, c4, d4)
++    raises(TypeError, lambda: MIMOSeries(ss6, ss4))  # series with different sampling time
++    raises(TypeError, lambda: MIMOSeries(ss3, cont_ss2))  # series with continuous state space
++
++def test_DiscreteStateSpace_parallel():
++    # For SISO system
++    a1 = Matrix([[0, 1], [1, 0]])
++    b1 = Matrix([[0], [1]])
++    c1 = Matrix([[0, 1]])
++    d1 = Matrix([[0]])
++    a2 = Matrix([[1, 0], [0, 1]])
++    b2 = Matrix([[1], [0]])
++    c2 = Matrix([[1, 0]])
++    d2 = Matrix([[1]])
++    ss1 = DiscreteStateSpace(a1, b1, c1, d1, 0.12)
++    ss2 = DiscreteStateSpace(a2, b2, c2, d2, 0.12)
++    p1 = Parallel(ss1, ss2)
++    assert p1 == Parallel(DiscreteStateSpace(
++        Matrix([[0, 1], [1, 0]]), Matrix([[0], [1]]),
++        Matrix([[0, 1]]), Matrix([[0]]), 0.12),
++                          DiscreteStateSpace(
++        Matrix([[1, 0],[0, 1]]), Matrix([[1],[0]]),
++        Matrix([[1, 0]]), Matrix([[1]]), 0.12))
++    assert p1.doit() == DiscreteStateSpace(Matrix([
++                        [0, 1, 0, 0],
++                        [1, 0, 0, 0],
++                        [0, 0, 1, 0],
++                        [0, 0, 0, 1]]),
++                        Matrix([
++                        [0],
++                        [1],
++                        [1],
++                        [0]]),
++                        Matrix([[0, 1, 1, 0]]),
++                        Matrix([[1]]), 0.12)
++    assert p1.rewrite(DiscreteTransferFunction) == \
++        DiscreteTransferFunction(z*(z + 2), z**2 - 1, z, 0.12)
++    raises(TypeError, lambda: p1.rewrite(TransferFunction))  # cannot rewrite to TransferFunction
++
++    # Connecting DiscreteStateSpace with DiscreteTransferFunction
++    tf1 = DiscreteTransferFunction(s, s+1, s, 0.12)
++    p2 = Parallel(ss1, tf1)
++    assert p2 == Parallel(DiscreteStateSpace(Matrix([
++                        [0, 1],
++                        [1, 0]]), Matrix([
++                        [0],
++                        [1]]), Matrix([[0, 1]]), Matrix([[0]]), 0.12),
++                        DiscreteTransferFunction(s, s + 1, s, 0.12))
++    assert p2.doit() == DiscreteStateSpace(
++                        Matrix([
++                        [0, 1,  0],
++                        [1, 0,  0],
++                        [0, 0, -1]]),
++                        Matrix([
++                        [0],
++                        [1],
++                        [1]]),
++                        Matrix([[0, 1, -1]]),
++                        Matrix([[1]]), 0.12)
++    assert p2.rewrite(DiscreteTransferFunction) == \
++        DiscreteTransferFunction(z**2, z**2 - 1, z, 0.12)
++
++    # For MIMO
++    a3 = Matrix([[4, 1], [2, -3]])
++    b3 = Matrix([[5, 2], [-3, -3]])
++    c3 = Matrix([[2, -4], [0, 1]])
++    d3 = Matrix([[3, 2], [1, -1]])
++    a4 = Matrix([[-3, 4, 2], [-1, -3, 0], [2, 5, 3]])
++    b4 = Matrix([[1, 4], [-3, -3], [-2, 1]])
++    c4 = Matrix([[4, 2, -3], [1, 4, 3]])
++    d4 = Matrix([[-2, 4], [0, 1]])
++    ss3 = DiscreteStateSpace(a3, b3, c3, d3, 0.12)
++    ss4 = DiscreteStateSpace(a4, b4, c4, d4, 0.12)
++    p3 = MIMOParallel(ss3, ss4)
++    assert p3 == MIMOParallel(DiscreteStateSpace(Matrix([
++                        [4,  1],
++                        [2, -3]]), Matrix([
++                        [ 5,  2],
++                        [-3, -3]]), Matrix([
++                        [2, -4],
++                        [0,  1]]), Matrix([
++                        [3,  2],
++                        [1, -1]]), 0.12), DiscreteStateSpace(Matrix([
++                        [-3,  4, 2],
++                        [-1, -3, 0],
++                        [ 2,  5, 3]]), Matrix([
++                        [ 1,  4],
++                        [-3, -3],
++                        [-2,  1]]), Matrix([
++                        [4, 2, -3],
++                        [1, 4,  3]]), Matrix([
++                        [-2, 4],
++                        [ 0, 1]]), 0.12))
++    assert p3.doit() == DiscreteStateSpace(Matrix([
++                        [4, 1, 0, 0, 0],
++                        [2, -3, 0, 0, 0],
++                        [0, 0, -3, 4, 2],
++                        [0, 0, -1, -3, 0],
++                        [0, 0, 2, 5, 3]]),
++                        Matrix([
++                        [5, 2],
++                        [-3, -3],
++                        [1, 4],
++                        [-3, -3],
++                        [-2, 1]]),
++                        Matrix([
++                        [2, -4, 4, 2, -3],
++                        [0, 1, 1, 4, 3]]),
++                        Matrix([
++                        [1, 6],
++                        [1, 0]]), 0.12)
++
++    # Using StateSpace with MIMOParallel.
++    tf2 = DiscreteTransferFunction(1, s, s, 0.12)
++    tf3 = DiscreteTransferFunction(1, s + 1, s, 0.12)
++    tf4 = DiscreteTransferFunction(s, s + 2, s, 0.12)
++    tfm = TransferFunctionMatrix([[tf1, tf2], [tf3, tf4]])
++    p4 = MIMOParallel(tfm, ss3)
++    assert p4 == MIMOParallel(TransferFunctionMatrix((
++                        (DiscreteTransferFunction(s, s + 1, s, 00.12),
++                         DiscreteTransferFunction(1, s, s, 0.12)),
++                        (DiscreteTransferFunction(1, s + 1, s, 0.12),
++                         DiscreteTransferFunction(s, s + 2, s, 0.12)))),
++                        DiscreteStateSpace(Matrix([
++                        [4, 1],
++                        [2, -3]]), Matrix([
++                        [5, 2],
++                        [-3, -3]]), Matrix([
++                        [2, -4],
++                        [0, 1]]), Matrix([
++                        [3, 2],
++                        [1, -1]]), 0.12))
++
++    # compatibility tests
++    ss5 = DiscreteStateSpace(a1, b1, c1, d1, 0.33)
++    cont_ss1 = DiscreteStateSpace(a2, b2, c2, d2)
++
++    # SISO
++    raises(TypeError, lambda: Parallel(ss5, ss2))  # parallel with different sampling time
++    raises(TypeError, lambda: Parallel(ss1, cont_ss1))  # parallel with continuous state space
++
++    # MIMO
++    ss6 = DiscreteStateSpace(a3, b3, c3, d3, 0.33)
++    cont_ss2 = DiscreteStateSpace(a4, b4, c4, d4)
++    raises(TypeError, lambda: MIMOParallel(ss6, ss4))  # parallel with different sampling time
++    raises(TypeError, lambda: MIMOParallel(ss3, cont_ss2))  # parallel with continuous state space
++
++def test_DiscreteStateSpace_feedback():
++    # For SISO
++    a1 = Matrix([[0, 1], [1, 0]])
++    b1 = Matrix([[0], [1]])
++    c1 = Matrix([[0, 1]])
++    d1 = Matrix([[0]])
++    a2 = Matrix([[1, 0], [0, 1]])
++    b2 = Matrix([[1], [0]])
++    c2 = Matrix([[1, 0]])
++    d2 = Matrix([[1]])
++    ss1 = DiscreteStateSpace(a1, b1, c1, d1, T)
++    ss2 = DiscreteStateSpace(a2, b2, c2, d2, T)
++    fd1 = Feedback(ss1, ss2)
++
++    # Negative feedback
++    assert fd1 == Feedback(
++        DiscreteStateSpace(
++            Matrix([[0, 1], [1, 0]]), Matrix([[0], [1]]),
++            Matrix([[0, 1]]), Matrix([[0]]), T),
++        DiscreteStateSpace(
++            Matrix([[1, 0],[0, 1]]), Matrix([[1],[0]]),
++            Matrix([[1, 0]]), Matrix([[1]]), T), -1)
++    assert fd1.doit() == DiscreteStateSpace(Matrix([
++                            [0,  1,  0, 0],
++                            [1, -1, -1, 0],
++                            [0,  1,  1, 0],
++                            [0,  0,  0, 1]]), Matrix([
++                            [0],
++                            [1],
++                            [0],
++                            [0]]), Matrix(
++                            [[0, 1, 0, 0]]), Matrix(
++                            [[0]]), T)
++    assert fd1.rewrite(DiscreteTransferFunction) == \
++        DiscreteTransferFunction(z*(z - 1), z**3 - z + 1, z, T)
++    raises(TypeError, lambda: fd1.rewrite(TransferFunction))  # Cannot rewrite to TransferFunction
++
++    # Positive Feedback
++    fd2 = Feedback(ss1, ss2, 1)
++    assert fd2.doit() == DiscreteStateSpace(Matrix([
++                            [0, 1, 0, 0],
++                            [1, 1, 1, 0],
++                            [0, 1, 1, 0],
++                            [0, 0, 0, 1]]), Matrix([
++                            [0],
++                            [1],
++                            [0],
++                            [0]]), Matrix(
++                            [[0, 1, 0, 0]]), Matrix(
++                            [[0]]), T)
++    assert fd2.rewrite(DiscreteTransferFunction) == \
++        DiscreteTransferFunction(z*(z - 1), z**3 - 2*z**2 - z + 1, z, T)
++
++    # Connection with DiscreteTransferFunction
++    tf1 = DiscreteTransferFunction(s, s+1, s, T)
++    fd3 = Feedback(ss1, tf1)
++    assert fd3 == Feedback(DiscreteStateSpace(Matrix([
++                            [0, 1],
++                            [1, 0]]), Matrix([
++                            [0],
++                            [1]]), Matrix([[0, 1]]), Matrix([[0]]), T),
++                            DiscreteTransferFunction(s, s + 1, s, T), -1)
++    assert fd3.doit() == DiscreteStateSpace(Matrix([
++                            [0,  1,  0],
++                            [1, -1,  1],
++                            [0,  1, -1]]), Matrix([
++                            [0],
++                            [1],
++                            [0]]), Matrix(
++                            [[0, 1, 0]]), Matrix(
++                            [[0]]), T)
++
++    # For MIMO
++    a3 = Matrix([[4, 1], [2, -3]])
++    b3 = Matrix([[5, 2], [-3, -3]])
++    c3 = Matrix([[2, -4], [0, 1]])
++    d3 = Matrix([[3, 2], [1, -1]])
++    a4 = Matrix([[-3, 4, 2], [-1, -3, 0], [2, 5, 3]])
++    b4 = Matrix([[1, 4], [-3, -3], [-2, 1]])
++    c4 = Matrix([[4, 2, -3], [1, 4, 3]])
++    d4 = Matrix([[-2, 4], [0, 1]])
++    ss3 = DiscreteStateSpace(a3, b3, c3, d3, T)
++    ss4 = DiscreteStateSpace(a4, b4, c4, d4, T)
++
++    # Negative Feedback
++    fd4 = MIMOFeedback(ss3, ss4)
++    assert fd4 == MIMOFeedback(DiscreteStateSpace(Matrix([
++                            [4,  1],
++                            [2, -3]]), Matrix([
++                            [ 5,  2],
++                            [-3, -3]]), Matrix([
++                            [2, -4],
++                            [0,  1]]), Matrix([
++                            [3,  2],
++                            [1, -1]]), T), DiscreteStateSpace(Matrix([
++                            [-3,  4, 2],
++                            [-1, -3, 0],
++                            [ 2,  5, 3]]), Matrix([
++                            [ 1,  4],
++                            [-3, -3],
++                            [-2,  1]]), Matrix([
++                            [4, 2, -3],
++                            [1, 4,  3]]), Matrix([
++                            [-2, 4],
++                            [ 0, 1]]), T), -1)
++    assert fd4.doit() == DiscreteStateSpace(Matrix([
++                            [Rational(3), Rational(-3, 4), Rational(-15, 4),
++                            Rational(-37, 2), Rational(-15)],
++                            [Rational(7, 2), Rational(-39, 8), Rational(9, 8),
++                             Rational(39, 4), Rational(9)],
++                            [Rational(3), Rational(-41, 4), Rational(-45, 4),
++                            Rational(-51, 2), Rational(-19)],
++                            [Rational(-9, 2), Rational(129, 8), Rational(73, 8),
++                            Rational(171, 4), Rational(36)],
++                            [Rational(-3, 2), Rational(47, 8), Rational(31, 8),
++                             Rational(85, 4), Rational(18)]]), Matrix([
++                            [Rational(-1, 4), Rational(19, 4)],
++                            [Rational(3, 8), Rational(-21, 8)],
++                            [Rational(1, 4), Rational(29, 4)],
++                            [Rational(3, 8), Rational(-93, 8)],
++                            [Rational(5, 8), Rational(-35, 8)]]), Matrix([
++                            [Rational(1), Rational(-15, 4), Rational(-7, 4),
++                             Rational(-21, 2), Rational(-9)],
++                            [Rational(1, 2), Rational(-13, 8), Rational(-13, 8),
++                             Rational(-19, 4), Rational(-3)]]), Matrix([
++                            [Rational(-1, 4), Rational(11, 4)],
++                            [Rational(1, 8), Rational(9, 8)]]), T)
++
++    # Positive Feedback
++    fd5 = MIMOFeedback(ss3, ss4, 1)
++    assert fd5.doit() == DiscreteStateSpace(Matrix([
++                            [Rational(4, 7), Rational(62, 7), Rational(1),
++                             Rational(-8), Rational(-69, 7)],
++                            [Rational(32, 7), Rational(-135, 14),
++                             Rational(-3, 2), Rational(3), Rational(36, 7)],
++                            [Rational(-10, 7), Rational(41, 7), Rational(-4),
++                             Rational(-12), Rational(-97, 7)],
++                            [Rational(12, 7), Rational(-111, 14),
++                             Rational(-5, 2), Rational(18), Rational(171, 7)],
++                            [Rational(2, 7), Rational(-29, 14), Rational(-1, 2),
++                             Rational(10), Rational(81, 7)]]), Matrix([
++                            [Rational(6, 7), Rational(-17, 7)],
++                            [Rational(-9, 14), Rational(15, 14)],
++                            [Rational(6, 7), Rational(-31, 7)],
++                            [Rational(-27, 14), Rational(87, 14)],
++                            [Rational(-15, 14), Rational(25, 14)]]), Matrix([
++                            [Rational(-2, 7), Rational(11, 7), Rational(1),
++                             Rational(-4), Rational(-39, 7)],
++                            [Rational(-2, 7), Rational(15, 14), Rational(-1, 2),
++                             Rational(-3), Rational(-18, 7)]]), Matrix([
++                            [Rational(4, 7), Rational(-9, 7)],
++                            [Rational(1, 14), Rational(-11, 14)]]), T)
++
++    # compatibility tests
++    ss5 = DiscreteStateSpace(a1, b1, c1, d1, 0.12)
++    cont_ss1 = DiscreteStateSpace(a2, b2, c2, d2)
++
++    # SISO
++    raises(TypeError, lambda: Feedback(ss5, ss2))  # feedback with different sampling time
++    raises(TypeError, lambda: Feedback(ss1, cont_ss1))  # feedback with continuous state space
++
++    # MIMO
++    ss6 = DiscreteStateSpace(a3, b3, c3, d3, 0.12)
++    cont_ss2 = DiscreteStateSpace(a4, b4, c4, d4)
++    raises(TypeError, lambda: MIMOFeedback(ss6, ss4))  # feedback with different sampling time
++    raises(TypeError, lambda: MIMOFeedback(ss3, cont_ss2))  # feedback with continuous state space
++
++def test_DiscreteStateSpace_stability():
++    # TODO after implementing stability methods for DiscreteStateSpace
++    pass
+diff --git a/sympy/printing/latex.py b/sympy/printing/latex.py
+index 2e199864646c..71ad4ed2d7ab 100644
+--- a/sympy/printing/latex.py
++++ b/sympy/printing/latex.py
+@@ -2635,7 +2635,7 @@ def _print_TransferFunction(self, expr):
+     def _print_DiscreteTransferFunction(self, expr):
+         num, den = self._print(expr.num), self._print(expr.den)
+         sampling_time = self._print(expr.sampling_time)
+-        return r"\frac{%s}{%s} \text{, sampling time: } {%s}" % \
++        return r"\frac{%s}{%s} \text{ [st: } {%s} \text{]}" % \
+             (num, den, sampling_time)
+ 
+     def _print_Series(self, expr):
+@@ -2706,8 +2706,8 @@ def _print_TransferFunctionMatrix(self, expr):
+         if expr.sampling_time == 0:
+             print_mat = r"%s_\tau" % mat
+         else:
+-            print_mat = r"%s_k \text{, sampling time: } {%s}" % (mat,
+-                                                           expr.sampling_time)
++            print_mat = r"\underset{[st:\ {%s}]}{%s_k}" %\
++                        (expr.sampling_time, mat)
+         return print_mat
+ 
+     def _print_DFT(self, expr):
+diff --git a/sympy/printing/pretty/pretty.py b/sympy/printing/pretty/pretty.py
+index 9d3a14a76db8..61d281d82036 100644
+--- a/sympy/printing/pretty/pretty.py
++++ b/sympy/printing/pretty/pretty.py
+@@ -995,15 +995,16 @@ def _print_TransferFunction(self, expr):
+ 
+     def _print_DiscreteTransferFunction(self, expr):
+         if not expr.num == 1:
+-            num, den = expr.num, expr.den
+-            res = Mul(num, Pow(den, -1, evaluate=False), evaluate=False)
+-
++            res = Mul(expr.num, Pow(expr.den, -1, evaluate=False),
++                      evaluate=False)
+             result = self._print_Mul(res)
+-            result = prettyForm(\
+-                *result.right(f", sampling time: {expr.sampling_time}"))
+-            return result
+         else:
+-            return self._print(1)/self._print(expr.den)
++            result =  self._print(1)/self._print(expr.den)
++
++        result = prettyForm(\
++            *result.right(f" [st: {expr.sampling_time}]"))
++        return result
++
+ 
+     def _print_Series(self, expr):
+         args = list(expr.args)
+@@ -1122,7 +1123,7 @@ def _print_TransferFunctionMatrix(self, expr):
+         if expr.sampling_time == 0:
+             return mat
+ 
+-        return prettyForm(*mat.right(f", sampling time: {expr.sampling_time}"))
++        return prettyForm(*mat.below(f"[st: {expr.sampling_time}]"))
+ 
+     def _print_StateSpace(self, expr):
+         from sympy.matrices.expressions.blockmatrix import BlockMatrix
+@@ -1133,6 +1134,16 @@ def _print_StateSpace(self, expr):
+         mat = BlockMatrix([[A, B], [C, D]])
+         return self._print(mat.blocks)
+ 
++    def _print_DiscreteStateSpace(self, expr):
++        from sympy.matrices.expressions.blockmatrix import BlockMatrix
++        A = expr._A
++        B = expr._B
++        C = expr._C
++        D = expr._D
++        mat = BlockMatrix([[A, B], [C, D]])
++        mat: stringPict = self._print(mat)
++        return prettyForm(*mat.below(f"\n[st: {expr.sampling_time}]"))
++
+     def _print_BasisDependent(self, expr):
+         from sympy.vector import Vector
+ 
+diff --git a/sympy/printing/pretty/tests/test_pretty.py b/sympy/printing/pretty/tests/test_pretty.py
+index 4839b56a99ca..b94f6997ab7f 100644
+--- a/sympy/printing/pretty/tests/test_pretty.py
++++ b/sympy/printing/pretty/tests/test_pretty.py
+@@ -60,7 +60,8 @@
+ from sympy.physics import mechanics
+ from sympy.physics.control.lti import (
+     TransferFunction, DiscreteTransferFunction,Feedback, TransferFunctionMatrix,
+-    Series, Parallel, MIMOSeries, MIMOParallel, MIMOFeedback, StateSpace)
++    Series, Parallel, MIMOSeries, MIMOParallel, MIMOFeedback, StateSpace,
++    DiscreteStateSpace)
+ from sympy.physics.units import joule, degree
+ from sympy.printing.pretty import pprint, pretty as xpretty
+ from sympy.printing.pretty.pretty_symbology import center_accent, is_combining, center
+@@ -2464,23 +2465,23 @@ def test_pretty_DiscreteTransferFunction():
+     tf1 = DiscreteTransferFunction(s - 1, s + 1, s)
+     assert upretty(tf1) == \
+ """\
+-s - 1                  \n\
+-─────, sampling time: 1\n\
+-s + 1                  \
++s - 1        \n\
++───── [st: 1]\n\
++s + 1        \
+ """
+     tf2 = DiscreteTransferFunction(2*s + 1, 3 - p, s, Symbol('T'))
+     assert upretty(tf2) == \
+ """\
+-2⋅s + 1                  \n\
+-───────, sampling time: T\n\
+- 3 - p                   \
++2⋅s + 1        \n\
++─────── [st: T]\n\
++ 3 - p         \
+ """
+     tf3 = DiscreteTransferFunction(p, p + 1, p, 0.1)
+     assert upretty(tf3) == \
+ """\
+-  p                                    \n\
+-─────, sampling time: 0.100000000000000\n\
+-p + 1                                  \
++  p                          \n\
++───── [st: 0.100000000000000]\n\
++p + 1                        \
+ """
+ 
+ 
+@@ -2877,6 +2878,24 @@ def test_pretty_TransferFunctionMatrix():
+         expected5
+ 
+ 
++    dtf1 = DiscreteTransferFunction(x + y, x - 2*y, y, 0.1)
++    dtf2 = DiscreteTransferFunction(x - y, x + y, y, 0.1)
++
++    expected6 = \
++"""\
++     ⎡ x + y ⎤         \n\
++     ⎢───────⎥         \n\
++     ⎢x - 2⋅y⎥         \n\
++     ⎢       ⎥         \n\
++     ⎢ x - y ⎥         \n\
++     ⎢ ───── ⎥         \n\
++     ⎣ x + y ⎦{k}      \n\
++[st: 0.100000000000000]\
++"""
++
++    assert upretty(TransferFunctionMatrix([[dtf1], [dtf2]])) == expected6
++
++
+ def test_pretty_StateSpace():
+     ss1 = StateSpace(Matrix([a]), Matrix([b]), Matrix([c]), Matrix([d]))
+     A = Matrix([[0, 1], [1, 0]])
+@@ -2918,6 +2937,55 @@ def test_pretty_StateSpace():
+     assert upretty(ss2) == expected2
+     assert upretty(ss3) == expected3
+ 
++
++def test_pretty_DiscreteStateSpace():
++    ss1 = DiscreteStateSpace(Matrix([a]), Matrix([b]), Matrix([c]), Matrix([d]))
++    A = Matrix([[0, 1], [1, 0]])
++    B = Matrix([1, 0])
++    C = Matrix([[0, 1]])
++    D = Matrix([0])
++    ss2 = DiscreteStateSpace(A, B, C, D, Symbol('T'))
++    ss3 = DiscreteStateSpace(Matrix([[-1.5, -2], [1, 0]]),
++                    Matrix([[0.5, 0], [0, 1]]),
++                    Matrix([[0, 1], [0, 2]]),
++                    Matrix([[2, 2], [1, 1]]), 0.1)
++
++    expected1 = \
++"""\
++⎡[a]  [b]⎤\n\
++⎢        ⎥\n\
++⎣[c]  [d]⎦\n\
++          \n\
++ [st: 1]  \
++"""
++    expected2 = \
++"""\
++⎡⎡0  1⎤  ⎡1⎤⎤\n\
++⎢⎢    ⎥  ⎢ ⎥⎥\n\
++⎢⎣1  0⎦  ⎣0⎦⎥\n\
++⎢           ⎥\n\
++⎣[0  1]  [0]⎦\n\
++             \n\
++   [st: T]   \
++"""
++    expected3 = \
++"""\
++⎡⎡-1.5  -2⎤  ⎡0.5  0⎤⎤ \n\
++⎢⎢        ⎥  ⎢      ⎥⎥ \n\
++⎢⎣ 1    0 ⎦  ⎣ 0   1⎦⎥ \n\
++⎢                    ⎥ \n\
++⎢  ⎡0  1⎤     ⎡2  2⎤ ⎥ \n\
++⎢  ⎢    ⎥     ⎢    ⎥ ⎥ \n\
++⎣  ⎣0  2⎦     ⎣1  1⎦ ⎦ \n\
++                       \n\
++[st: 0.100000000000000]\
++"""
++
++    assert upretty(ss1) == expected1
++    assert upretty(ss2) == expected2
++    assert upretty(ss3) == expected3
++
++
+ def test_pretty_order():
+     expr = O(1)
+     ascii_str = \
+diff --git a/sympy/printing/tests/test_latex.py b/sympy/printing/tests/test_latex.py
+index 17cf3aad9b52..62d1826749f5 100644
+--- a/sympy/printing/tests/test_latex.py
++++ b/sympy/printing/tests/test_latex.py
+@@ -2630,12 +2630,12 @@ def test_TransferFunction_printing():
+ 
+ def test_DiscreteTransferFunction_printing():
+     tf1 = DiscreteTransferFunction(x - 1, x + 1, x)
+-    assert latex(tf1) == r"\frac{x - 1}{x + 1} \text{, sampling time: } {1}"
++    assert latex(tf1) == r"\frac{x - 1}{x + 1} \text{ [st: } {1} \text{]}"
+     tf2 = DiscreteTransferFunction(x + 1, 2 - y, x, Symbol('T'))
+-    assert latex(tf2) == r"\frac{x + 1}{2 - y} \text{, sampling time: } {T}"
++    assert latex(tf2) == r"\frac{x + 1}{2 - y} \text{ [st: } {T} \text{]}"
+     tf3 = DiscreteTransferFunction(y, y**2 + 2*y + 3, y, 0.1)
+     assert latex(tf3) == \
+-        r"\frac{y}{y^{2} + 2 y + 3} \text{, sampling time: } {0.1}"
++        r"\frac{y}{y^{2} + 2 y + 3} \text{ [st: } {0.1} \text{]}"
+ 
+ 
+ def test_Parallel_printing():
+@@ -2667,6 +2667,12 @@ def test_TransferFunctionMatrix_printing():
+     assert latex(TransferFunctionMatrix([[tf1, tf2], [tf3, -tf1]])) == \
+         r'\left[\begin{matrix}\frac{p}{p + x} & \frac{p - s}{p + s}\\\frac{p}{y^{2} + 2 y + 3} & \frac{\left(-1\right) p}{p + x}\end{matrix}\right]_\tau'
+ 
++    dtf1 = DiscreteTransferFunction(p, p + x, p, 0.1)
++    dtf2 = DiscreteTransferFunction(-s + p, p + s, p, 0.1)
++
++    assert latex(TransferFunctionMatrix([[dtf1], [dtf2]])) == \
++        r'\underset{[st:\ {0.100000000000000}]}{\left[\begin{matrix}\frac{p}{p + x}\\\frac{p - s}{p + s}\end{matrix}\right]_k}'
++
+ 
+ def test_Feedback_printing():
+     tf1 = TransferFunction(p, p + x, p)

@@ -1,0 +1,16 @@
+{
+  "run_id": "sympy__sympy-22914--golden--none--20260612-012530",
+  "task_id": "sympy__sympy-22914",
+  "harness": "golden",
+  "model": "none",
+  "started_at": "2026-06-12T01:25:30.849480Z",
+  "finished_at": "2026-06-12T01:25:31.618549Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.0,
+  "total_tokens_in": 0,
+  "total_tokens_out": 0,
+  "total_thinking_tokens": 0,
+  "num_turns": 0
+}

@@ -1,0 +1,16 @@
+{
+  "run_id": "sympy__sympy-29263--mini-swe--deepseek-v4-flash--20260611-213316",
+  "task_id": "sympy__sympy-29263",
+  "harness": "mini-swe",
+  "model": "deepseek-v4-flash",
+  "started_at": "2026-06-11T21:33:16.124160Z",
+  "finished_at": "2026-06-11T21:44:59.576619Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.4669428000000001,
+  "total_tokens_in": 1375648,
+  "total_tokens_out": 45207,
+  "total_thinking_tokens": 34631,
+  "num_turns": 101
+}

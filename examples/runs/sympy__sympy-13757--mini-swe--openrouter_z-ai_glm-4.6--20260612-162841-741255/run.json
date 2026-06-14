@@ -1,0 +1,16 @@
+{
+  "run_id": "sympy__sympy-13757--mini-swe--openrouter_z-ai_glm-4.6--20260612-162841-741255",
+  "task_id": "sympy__sympy-13757",
+  "harness": "mini-swe",
+  "model": "openrouter/z-ai/glm-4.6",
+  "started_at": "2026-06-12T16:28:41.741255Z",
+  "finished_at": "2026-06-12T16:39:04.612503Z",
+  "exit_reason": "turn_cap",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.10049197000000004,
+  "total_tokens_in": 866531,
+  "total_tokens_out": 10826,
+  "total_thinking_tokens": 235,
+  "num_turns": 80
+}

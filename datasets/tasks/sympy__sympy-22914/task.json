@@ -1,0 +1,41 @@
+{
+  "task_id": "sympy__sympy-22914",
+  "repo": "sympy/sympy",
+  "pr_number": 22914,
+  "base_commit": "c4e836cdf73fc6aa7bab6a86719a0f08861ffb1d",
+  "merge_commit": "c4e836cdf73fc6aa7bab6a86719a0f08861ffb1d",
+  "merged_at": "2026-06-12T01:39:09.725248Z",
+  "tier": "main",
+  "hardness_score": 0.0,
+  "prompt_path": "prompt.md",
+  "gold_patch_path": "gold.patch",
+  "test_patch_path": "test.patch",
+  "fail_to_pass": [
+    "test_PythonCodePrinter"
+  ],
+  "pass_to_pass": [
+    "test_PythonCodePrinter_standard",
+    "test_MpmathPrinter",
+    "test_NumPyPrinter",
+    "test_SciPyPrinter",
+    "test_pycode_reserved_words",
+    "test_sqrt",
+    "test_frac",
+    "test_printmethod",
+    "test_codegen_ast_nodes",
+    "test_issue_14283",
+    "test_NumPyPrinter_print_seq",
+    "test_issue_16535_16536",
+    "test_Integral",
+    "test_fresnel_integrals",
+    "test_beta",
+    "test_airy",
+    "test_airy_prime"
+  ],
+  "image_tag": "openbench/sympy__sympy-22914:base",
+  "install_cmd": "pip install -e .",
+  "test_cmd": "python -m pytest",
+  "protected_test_files": {},
+  "validation": null,
+  "is_impossible": false
+}
