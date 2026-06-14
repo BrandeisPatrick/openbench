@@ -240,6 +240,22 @@ established.
 > H10 vs H9 are deliberately in tension: H10 says Fable *empirically verifies*, H9 says it
 > *recalls patterns* — keeping both independent lets the data adjudicate rather than assume.
 
+## 5e. Causal hypotheses on the reasoning-pattern shift (H14–H15, pre-registered)
+
+Distinct from H1–H11 (which infer the *reward family* from one model's behaviour), H14/H15 ask a
+**causal** question: why did this year's frontier models (Opus, GPT) change their reasoning patterns
+(more verification, recall, adaptive depth)? Both agree RL reward *created* the patterns (o1/R1);
+they split on the **proximate** cause of the cross-model convergence. Tested by E11/E12.
+
+| ID | Hypothesis | Prediction (signature) | Falsified by | Confound / honest caveat |
+|---|---|---|---|---|
+| **H14** | Reasoning is **RL-reward-shaped** (instrumental) | behaviour scales with difficulty/payoff; estimator recovers the documented reward on RL anchors | flat-across-difficulty + no recovery on known RL recipes | "trained-in-ness" is shared by SFT/distillation — resistance probes do **not** separate reward from imitation (E11 P11b flaw) |
+| **H15** | Reasoning **spread by propagation** (distillation/SFT + the adaptive-thinking mechanism; mimetic) | convergent cross-lab fingerprints; clusters with the distillation pole (V4); shared idiosyncratic *form*; drift toward the prior leader | lab-divergent fingerprints + targets cluster with the RL pole + no shared form | convergence is also explained by *independent convergence to the same optimum*; only shared *idiosyncratic form* cleanly discriminates |
+
+Load-bearing discriminator: **idiosyncratic-form sharing** (E12 P12c) — independent reward
+optimisation converges on *function*, not on a competitor's *quirks*. The composite framing is
+**novel (openbench)**; component methods are cited in [EXPERIMENTS.md](EXPERIMENTS.md) E11/E12.
+
 ## 6. What this can never show
 
 - **Exact reward recovery is unidentifiable.** Different recipes can produce
