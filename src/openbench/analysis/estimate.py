@@ -22,6 +22,7 @@ from dataclasses import dataclass, field
 import numpy as np
 from scipy.optimize import nnls
 
+from openbench.analysis.cells import cell_is_degenerate, cohort_labels, group_cells
 from openbench.models import RunMetrics
 
 # --- The signature matrix -----------------------------------------------------
@@ -171,6 +172,7 @@ class MixtureEstimate:
     residual: float = 0.0  # ||F - S·w|| after fit; high = poorly explained
     n_runs: int = 0
     condition_number: float = 0.0  # of the active signature submatrix; high = ill-posed
+    harness: str = ""  # the cell's harness ("" for a model-only / single-harness label)
 
     def estimable(self, component: str) -> bool:
         """A weight is estimable only if its bootstrap CI excludes zero."""
@@ -209,23 +211,29 @@ def collinear_pairs(threshold: float = _COLLINEAR_COSINE) -> list[tuple[str, str
 
 
 def _cohort_stats(
-    all_metrics: list[RunMetrics],
-) -> tuple[dict[str, dict[str, list[float]]], dict[str, tuple[float, float]]]:
-    """(per-model metric value lists, per-metric cohort (mean, std) of model means)."""
-    per_model: dict[str, dict[str, list[float]]] = {}
-    for m in all_metrics:
-        bucket = per_model.setdefault(m.model, {})
-        for name in SIGNATURES:
-            value = getattr(m, name, None)
-            if value is None or not isinstance(value, (bool, int, float)):
-                continue
-            bucket.setdefault(name, []).append(float(value))
+    cells: dict[tuple[str, str], list[RunMetrics]],
+) -> tuple[dict[tuple[str, str], dict[str, list[float]]], dict[str, tuple[float, float]]]:
+    """(per-cell metric value lists, per-metric cohort (mean, std) of CELL means).
+
+    The cohort baseline is built from (model, harness) cell means, not model
+    means, so a model's behaviour under one harness is never averaged with its
+    behaviour under another before z-scoring.
+    """
+    per_cell: dict[tuple[str, str], dict[str, list[float]]] = {}
+    for key, runs in cells.items():
+        bucket = per_cell.setdefault(key, {})
+        for m in runs:
+            for name in SIGNATURES:
+                value = getattr(m, name, None)
+                if value is None or not isinstance(value, (bool, int, float)):
+                    continue
+                bucket.setdefault(name, []).append(float(value))
 
     cohort: dict[str, tuple[float, float]] = {}
     for name in SIGNATURES:
         means = [
             sum(vals[name]) / len(vals[name])
-            for vals in per_model.values()
+            for vals in per_cell.values()
             if vals.get(name)
         ]
         if not means:
@@ -233,7 +241,7 @@ def _cohort_stats(
         mu = sum(means) / len(means)
         var = sum((x - mu) ** 2 for x in means) / len(means)
         cohort[name] = (mu, math.sqrt(var) if var > 0 else 1.0)
-    return per_model, cohort
+    return per_cell, cohort
 
 
 def prune_redundant_metrics(
@@ -348,19 +356,33 @@ def _condition_number(metric_names: list[str]) -> float:
 def estimate_mixture(
     all_metrics: list[RunMetrics], bootstrap_b: int = _BOOTSTRAP_B, seed: int = 0
 ) -> dict[str, MixtureEstimate]:
-    """Estimate each model's reward composition against the run cohort.
+    """Estimate each (model, harness) CELL's reward composition against the cohort.
 
-    Bootstrap CIs resample the model's runs (cohort stats held fixed) so the
+    Runs are grouped into (model, harness) cells, never by model alone, so a
+    model's behaviour under different harnesses is not pooled. Degenerate cells
+    (dreamed trajectories that never acted — see analysis/cells.is_degenerate) are
+    excluded from estimation. Cells are labelled plain `model` when the model used
+    one harness in the cohort, else `model · harness`.
+
+    Bootstrap CIs resample the cell's runs (cohort stats held fixed) so the
     interval reflects task-to-task behavioral variance, not cohort drift.
     """
-    per_model, cohort = _cohort_stats(all_metrics)
+    all_cells = group_cells(all_metrics)
+    labels = cohort_labels(all_cells.keys())
+    # Exclude scaffold-degenerate cells from the reward read (reported separately);
+    # labels are computed over ALL observed cells so a split model still reads as
+    # `model · harness` rather than collapsing back to a bare model name.
+    cells = {k: runs for k, runs in all_cells.items() if not cell_is_degenerate(runs)}
+
+    per_cell, cohort = _cohort_stats(cells)
     # Drop dead-weight (zero-variance) and redundant (correlated) metrics so the
     # fit doesn't double-count one behavior across several rows.
-    keep, _prune_report = prune_redundant_metrics(all_metrics)
+    nondegenerate = [m for runs in cells.values() for m in runs]
+    keep, _prune_report = prune_redundant_metrics(nondegenerate)
     rng = random.Random(seed)
     estimates: dict[str, MixtureEstimate] = {}
 
-    for model, values in per_model.items():
+    for key, values in per_cell.items():
         z, names = _z_vector(values, cohort, keep)
         if not names:
             continue
@@ -388,8 +410,9 @@ def estimate_mixture(
             hi = np.percentile(arr, 97.5, axis=0)
             cis = {c: (float(lo[k]), float(hi[k])) for k, c in enumerate(COMPONENTS)}
 
-        estimates[model] = MixtureEstimate(
-            model=model,
+        estimates[labels[key]] = MixtureEstimate(
+            model=labels[key],
+            harness=key[1],
             weights={c: float(w[k]) for k, c in enumerate(COMPONENTS)},
             weight_cis=cis,
             residual=residual,

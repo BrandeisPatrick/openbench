@@ -148,3 +148,38 @@ def test_prune_drops_zero_variance_and_correlated():
     assert not ({"verified_before_done", "early_stop"} <= keep)
     assert "thinking_fraction" in report["dropped_zero_variance"]
     assert report["merged_correlated"]  # the inverse pair was merged
+
+
+def test_cells_split_by_harness_and_exclude_degenerate():
+    """A model run under two harnesses is NOT pooled into one fingerprint: the
+    degenerate (dreamed) cell is excluded, and the clean cell is labelled
+    `model · harness` — never collapsed back to the bare model name."""
+    runs: list[RunMetrics] = []
+    # opus on a text-fence harness: dreamed sessions (no tests, no edits, "done").
+    for i in range(4):
+        runs.append(RunMetrics(
+            run_id=f"opus-mini-{i}", task_id="t", harness="mini-swe", model="opus",
+            test_run_count=0, file_edit_count=0, confabulated_completion=True,
+        ))
+    # opus on native: real work (edits, tests, verifies before done).
+    for i in range(4):
+        runs.append(RunMetrics(
+            run_id=f"opus-native-{i}", task_id="t", harness="native", model="opus",
+            test_run_count=5, file_edit_count=4, test_runs_per_edit=1.25,
+            verification_loops_per_edit=1.0, verified_before_done=True,
+        ))
+    # two single-harness background models so the cohort can z-score.
+    for name in ("bg-a", "bg-b"):
+        for i in range(4):
+            runs.append(RunMetrics(
+                run_id=f"{name}-{i}", task_id="t", harness="native", model=name,
+                test_run_count=3, file_edit_count=3, test_runs_per_edit=1.0,
+            ))
+
+    est = estimate_mixture(runs, bootstrap_b=20)
+
+    assert "opus · native" in est           # clean cell kept, harness-labelled
+    assert "opus" not in est                # never pooled into a bare-model fingerprint
+    assert "opus · mini-swe" not in est     # degenerate cell excluded from estimation
+    assert est["opus · native"].harness == "native"
+    assert "bg-a" in est and "bg-b" in est  # single-harness models keep plain labels
