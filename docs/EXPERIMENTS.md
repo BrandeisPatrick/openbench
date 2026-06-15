@@ -682,6 +682,35 @@ multiple versions per lab.
 **Citations.** [arXiv 2604.00626], [arXiv 2601.18734], [arXiv 2604.03128], [arXiv 1503.02531],
 [arXiv 2501.12948], [arXiv 2512.20908], [arXiv 2510.16968], [arXiv 2602.03812], [arXiv 2506.04695].
 
+### First-cut result (2026-06-14, offline on the existing mini-swe corpus — directional, NOT conclusive)
+
+Only the offline-computable subset ran (E12 P12a/b + E11 P11c). The probe-dependent signals were
+**not runnable**: P11a needs difficulty tiers (the task set has none — all tasks `hardness 0.00 /
+main`); P12c/d and E11's forced-pattern/memory-pressure need new model runs (no live key); grading is
+broken on this env (below).
+
+- **P12a convergence** — within-lab dist 6.91 vs cross-lab 7.20, **ratio 1.04** (fingerprints barely
+  respect lab boundaries → *weak* hint toward H15). Unreliable: within-lab is inflated by base-vs-RL
+  pairs (v3 vs v4) and a degenerate Opus·mini cell; n=7 within-lab pairs.
+- **P12b pole-clustering** — targets do **not** cluster cleanly with the V4 distillation pole; the MDS
+  is dominated by outliers (v3-base, degenerate Opus·mini). Inconclusive.
+- **E11 P11c** — the estimator recovers sensible components for DeepSeek (v4-flash → process 0.45 +
+  outcome 0.17; v4-pro → **rubric_grm 0.48**, matching V4's documented Generative Reward Model) — but
+  it does **not abstain** on V4 (a distillation model), so it cannot separate "detected reward" from
+  "inherited specialists' signatures."
+- Figures: `docs/figures/e12_p12a_convergence.png`, `docs/figures/e12_p12b_mds.png`.
+
+**Env note (blocker found while validating the grade pipeline).** The Dockerfile hardcodes
+`python:3.12-slim` for every task, incompatible with old repo commits — e.g. `sympy-13757`'s base
+sympy does `from collections import Mapping` (removed in Python 3.10), so the package fails to import
+and the `golden` control scores f2p/p2p = 0%. This very likely explains why `sy-13757` was `✗` for
+**every** model in E9. Fix = per-task Python base (SWE-bench style); does **not** block P12c (form
+analysis reads the transcript, not the grade).
+
+**Conclusion: the current corpus cannot adjudicate H14 vs H15.** A real answer needs the clean
+discriminator P12c (idiosyncratic-form, needs multi-lab runs → a live key) and/or difficulty-tiered
+tasks for P11a.
+
 ---
 
 ## Out of scope (documented, not run)
