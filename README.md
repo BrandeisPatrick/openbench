@@ -223,33 +223,30 @@ make install      # == uv sync
 ```
 
 That's the whole install. Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/)
-(`curl -LsSf https://astral.sh/uv/install.sh | sh`). **No keys or Docker needed** for the demo and
-the test suite below — those are only required to run *new* live agents (see
-[Run your own experiments](#run-your-own-experiments)).
+(`curl -LsSf https://astral.sh/uv/install.sh | sh`). **No keys or Docker needed** to install or to
+run the offline test suite. The analysis layer is also fully offline — but it reads run traces you
+generate yourself first (the run corpus is no longer bundled in git; see below).
 
-### Try it in 60 seconds — no credentials
+### Offline analysis — bring your own runs
 
-The whole analysis layer runs offline on stored traces, so you can see real per-model reward
-fingerprints immediately, against the full bundled run corpus (94 runs; 87 graded across 13 models):
-
-```bash
-make demo         # == uv run openbench demo   → writes examples/report.md
-make test         # == uv run pytest           → 140 offline tests, no Docker/network
-```
-
-`make demo` produces a full cross-model reward-fingerprint report — composition weights, z-scored
-signatures, hypothesis labels, figures — with **zero setup**. Re-run the analysis on the same
-traces yourself:
+The whole analysis layer runs offline on stored traces, with no keys or Docker. Run traces live
+locally under `runs/` (gitignored); generate them with a matrix run — which needs a model key and
+Docker (see [Run your own experiments](#run-your-own-experiments)) — then build the report for free:
 
 ```bash
-OPENBENCH_ROOT=examples uv run openbench analyze   # recompute metrics from the example transcripts
+make test         # == uv run pytest         → offline test suite, no runs/keys/Docker needed
+make demo         # == uv run openbench demo → reward-fingerprint report from your local runs/
 ```
+
+Once you have runs under `runs/`, `make demo` produces a full cross-model reward-fingerprint report
+— composition weights, z-scored signatures, hypothesis labels, figures — entirely offline.
+`openbench analyze` recomputes the metrics from the same traces.
 
 | What you have | What you can run |
 |---|---|
-| **nothing** | `make demo`, `make test`, `openbench analyze` on the example corpus |
+| **nothing** | `make test` — the full offline test suite |
 | **+ Docker** | the `golden` / `null` fixtures — the full grade pipeline on a real task, no model key |
-| **+ one model key** | run a real agent end-to-end (`openbench run … --model …`) |
+| **+ one model key** | run a real agent end-to-end (`openbench run … --model …`), then `make demo` / `openbench analyze` offline |
 | **+ GitHub token** | mine and build your own tasks from any repo |
 
 ### Run your own experiments

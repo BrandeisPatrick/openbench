@@ -348,9 +348,13 @@ def fig_recall(all_metrics: list[RunMetrics], out: Path) -> Path | None:
     return out
 
 
-def generate_figures(report_out: Path) -> list[Path]:
-    """Write all available figures next to the report; return what was written."""
-    fig_dir = report_out.parent / "figures"
+def generate_figures(report_out: Path | None = None) -> list[Path]:
+    """Write all available figures into the canonical docs/figures dir (tracked),
+    so the report's auto-generated figures and the published set stay in one
+    place. `report_out` is accepted for backward compatibility and ignored."""
+    from openbench import paths
+
+    fig_dir = paths.FIGURES
     fig_dir.mkdir(parents=True, exist_ok=True)
     all_metrics = _load_metrics()
     written: list[Path] = []
