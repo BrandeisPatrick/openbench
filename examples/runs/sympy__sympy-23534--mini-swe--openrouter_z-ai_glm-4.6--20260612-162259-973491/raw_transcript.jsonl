@@ -1,2 +1,0 @@
-{"type": "meta", "model": "openrouter/z-ai/glm-4.6", "task_id": "sympy__sympy-23534"}
-{"type": "final", "exit_reason": "crash", "turns": 0, "usage_totals": {"cost_usd": 0.0, "tokens_in": 0, "tokens_out": 0, "tokens_thinking": 0, "num_turns": 0}}

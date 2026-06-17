@@ -237,9 +237,13 @@ def _figures_section(out: Path) -> list[str]:
         return [f"_Figures skipped: {exc}_", ""]
     if not written:
         return []
+    import os
+
     lines = ["## Figures", ""]
     for p in written:
-        rel = p.relative_to(out.parent)
+        # figures live in the canonical docs/figures dir, which is generally not
+        # under the report's parent — use a relative path that walks up as needed.
+        rel = os.path.relpath(p, out.parent)
         lines.append(f"![{p.stem}]({rel})")
         lines.append("")
     return lines

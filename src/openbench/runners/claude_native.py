@@ -95,7 +95,10 @@ def _default_chat(model: str, effort: str | None = _EFFORT) -> Callable[[list[di
         # lets a factorial isolate protocol from thinking. Newer Anthropic config:
         # adaptive + effort (the older enabled+budget_tokens shape is rejected).
         if effort is not None:
-            body["thinking"] = {"type": "adaptive"}
+            # display:"summarized" — Opus 4.8/4.7 omit thinking text by default
+            # ("omitted"); without this the thinking blocks come back empty (the
+            # cause of the all-empty reasoning_content in the bundled corpus).
+            body["thinking"] = {"type": "adaptive", "display": "summarized"}
             body["output_config"] = {"effort": effort}
         last_err: Exception | None = None
         for attempt in range(4):

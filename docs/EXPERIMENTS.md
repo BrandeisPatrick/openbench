@@ -599,6 +599,120 @@ difference is folded into the protocol contrast and acknowledged.
 
 ---
 
+## E11 — Are this year's reasoning patterns RL-reward-shaped? (H14, isolated)
+
+**Question.** Are the reasoning behaviours (verify / recall / recover) *instrumental* — deployed
+where they pay and traceable to a recoverable reward — i.e. caused by RL reward (H14)?
+
+**Method.** Apply three tests to the behaviour set {verify, recall, re-read, recover}:
+1. **Difficulty-graded deployment** — behaviour rate vs hardness tier (reuses H11 slope);
+   reward-shaped ⇒ rises where errors are costly.
+2. **Forced-pattern resistance** (reuses E4/GPSO) — natural / no-verify / verify-first /
+   neutral-control.
+3. **Reward recovery on RL anchors** — on DeepSeek R1/V3 (documented RLVR) the estimator must recover
+   the documented reward (positive control that the method can detect reward-shaping at all).
+Recall/re-read load `context_mgmt` (recall +, re-read −); for recall add a memory-pressure
+manipulation (tasks needing a dormant far-back artifact vs all-recent): instrumental recall rises
+under pressure and substitutes for re-reading; mimetic recall is flat.
+
+**Expected result (pre-registered).** Positive behaviour×difficulty slope; estimator recovers R1/V3's
+documented reward; recall rises under memory pressure and substitutes for re-read.
+
+**Falsified if.** Behaviour is flat across difficulty AND the estimator cannot recover known RL
+recipes → not (this-year) reward-shaped.
+
+**Plots.** P11a verification×difficulty slope; P11b forced-pattern resistance (see flaw below);
+P11c reward-recovery calibration heatmap; P11d recall×memory-pressure; P11e recall/re-read
+substitution scatter.
+
+**Backing & limitations (honest grading).** Methods are cited ([arXiv 2604.02547] difficulty-control;
+[arXiv 2601.07238] GPSO; [arXiv 2503.01307] cognitive behaviours; [arXiv 2604.09459] /
+[arXiv 2511.08325] credit; [arXiv 2411.15951] / [arXiv 2106.03498] identifiability), but the
+*discriminating interpretations* are partly inference:
+- **P11b is a weak discriminator of H14 vs H15** — resistance to "no-verify" proves the behaviour is
+  *trained in*, but SFT/distillation-installed verification is also trained in and would also resist.
+  P11b separates *disposition vs task-choice*, not reward vs imitation → demoted to context.
+- P11a's "slope ⇒ reward-shaped" reading is inference; P11c is a positive control only (signature
+  matrix uncalibrated, E8 precedent was 1 hit + 2 partials); recall (P11d/e) is the weakest axis
+  (long-range recall is a general agentic-RL property, `context_mgmt` weakly identified).
+
+**Status.** Ready — difficulty-tiered tasks + probe runs (API; agentic tasks need Docker).
+
+**Citations.** [arXiv 2604.02547], [arXiv 2601.07238], [arXiv 2503.01307], [arXiv 2604.09459],
+[arXiv 2511.08325], [arXiv 2411.15951], [arXiv 2106.03498]; recall/context = H7/H13 refs.
+
+---
+
+## E12 — Is this year's reasoning mimetic/convergent (propagation)? (H15, isolated)
+
+**Question.** Are the reasoning fingerprints convergent and form-sharing (imitation/distillation)
+rather than lab-divergent (independent reward) — i.e. spread by propagation (H15)?
+
+**Method.** Poles = RL anchor (R1/V3) and distillation control (V4).
+1. **Cross-lab convergence** — pairwise reasoning-fingerprint distance, within-lab vs across-lab.
+2. **Pole-clustering** — embed fingerprints (MDS); locate targets (Opus 4.8, GPT-5.5) vs the poles.
+3. **Idiosyncratic-form sharing** — shared reasoning tics (phrasings, tool-call/command structure,
+   narration) across lab pairs: form beyond function.
+4. **Temporal drift** — within-lab version trajectories (GPT-4.1→5→5.5; Opus 4.6→4.7→4.8); do new
+   versions move toward the prior frontier leader?
+
+**Expected result (pre-registered).** Across-lab ≈ within-lab distance (convergent); targets cluster
+nearer V4; high cross-lab form-sharing; new versions drift toward the prior leader.
+
+**Falsified if.** Fingerprints diverge across labs AND targets cluster with the RL pole AND no shared
+idiosyncratic form AND no drift toward the leader.
+
+**Plots.** P12a convergence heatmap; P12b pole-clustering map; P12c idiosyncratic-form similarity;
+P12d temporal-drift trajectory.
+
+**Backing & limitations (honest grading).** Each method is cited — on-policy distillation
+([arXiv 2604.00626] survey, [arXiv 2601.18734], [arXiv 2604.03128]) supplies the cheaper-than-RL
+economics; distillation foundations [arXiv 1503.02531]; reasoning distills [arXiv 2501.12948];
+detection/provenance ([arXiv 2512.20908] → P12b/d; behavioural+stylistic fingerprinting LLMmap / DLI /
+REEF, [arXiv 2510.16968], [arXiv 2602.03812] → P12a/c); concentration [arXiv 2506.04695].
+**Load-bearing signal = P12c only** — shared *quirks* resist the independent-reward explanation
+(caveat: needs visible output, weak for hidden-CoT). The rest are partial: P12a/P12b don't rule out
+*independent convergence to the same optimum* and the V4 pole is itself distillation-of-RL'd-teachers
+(contaminated); P12d is a novel, confounded longitudinal design. **Novel (openbench):** the composite
+— using these methods together to adjudicate reward vs propagation as the cause of the reasoning shift.
+
+**Status.** Ready — P12a/b/c on a reasoning-only API prompt set (no Docker) as a first cut; P12d needs
+multiple versions per lab.
+
+**Citations.** [arXiv 2604.00626], [arXiv 2601.18734], [arXiv 2604.03128], [arXiv 1503.02531],
+[arXiv 2501.12948], [arXiv 2512.20908], [arXiv 2510.16968], [arXiv 2602.03812], [arXiv 2506.04695].
+
+### First-cut result (2026-06-14, offline on the existing mini-swe corpus — directional, NOT conclusive)
+
+Only the offline-computable subset ran (E12 P12a/b + E11 P11c). The probe-dependent signals were
+**not runnable**: P11a needs difficulty tiers (the task set has none — all tasks `hardness 0.00 /
+main`); P12c/d and E11's forced-pattern/memory-pressure need new model runs (no live key); grading is
+broken on this env (below).
+
+- **P12a convergence** — within-lab dist 6.91 vs cross-lab 7.20, **ratio 1.04** (fingerprints barely
+  respect lab boundaries → *weak* hint toward H15). Unreliable: within-lab is inflated by base-vs-RL
+  pairs (v3 vs v4) and a degenerate Opus·mini cell; n=7 within-lab pairs.
+- **P12b pole-clustering** — targets do **not** cluster cleanly with the V4 distillation pole; the MDS
+  is dominated by outliers (v3-base, degenerate Opus·mini). Inconclusive.
+- **E11 P11c** — the estimator recovers sensible components for DeepSeek (v4-flash → process 0.45 +
+  outcome 0.17; v4-pro → **rubric_grm 0.48**, matching V4's documented Generative Reward Model) — but
+  it does **not abstain** on V4 (a distillation model), so it cannot separate "detected reward" from
+  "inherited specialists' signatures."
+- Figures: `docs/figures/e12_p12a_convergence.png`, `docs/figures/e12_p12b_mds.png`.
+
+**Env note (blocker found while validating the grade pipeline).** The Dockerfile hardcodes
+`python:3.12-slim` for every task, incompatible with old repo commits — e.g. `sympy-13757`'s base
+sympy does `from collections import Mapping` (removed in Python 3.10), so the package fails to import
+and the `golden` control scores f2p/p2p = 0%. This very likely explains why `sy-13757` was `✗` for
+**every** model in E9. Fix = per-task Python base (SWE-bench style); does **not** block P12c (form
+analysis reads the transcript, not the grade).
+
+**Conclusion: the current corpus cannot adjudicate H14 vs H15.** A real answer needs the clean
+discriminator P12c (idiosyncratic-form, needs multi-lab runs → a live key) and/or difficulty-tiered
+tasks for P11a.
+
+---
+
 ## Out of scope (documented, not run)
 
 | Idea | Why not |
@@ -620,6 +734,8 @@ difference is folded into the protocol contrast and acknowledged.
 | pass@k & consistency table; divergent-step graph | E5 | needs k-replicate runs |
 | Pattern distribution + entropy | E6 | needs judge |
 | Pattern-selection shift scatter | E7 | needs E4 + E6 + solvable band |
+| Instrumentality set (verify×difficulty, forced-pattern, reward-recovery, recall×pressure, substitution; P11a–e) | E11 | needs probe + difficulty-tier runs |
+| Propagation set (convergence heatmap, pole-clustering MDS, idiosyncratic-form similarity, temporal drift; P12a–d) | E12 | P12a–c API-only; P12d needs multi-version |
 
 ---
 
@@ -650,3 +766,12 @@ difference is folded into the protocol contrast and acknowledged.
 [arXiv 2507.20534]: https://arxiv.org/abs/2507.20534
 [arXiv 2508.06471]: https://arxiv.org/abs/2508.06471
 [arXiv 2603.00729]: https://arxiv.org/abs/2603.00729
+
+[arXiv 2604.00626]: https://arxiv.org/abs/2604.00626
+[arXiv 2601.18734]: https://arxiv.org/abs/2601.18734
+[arXiv 2604.03128]: https://arxiv.org/abs/2604.03128
+[arXiv 2512.20908]: https://arxiv.org/abs/2512.20908
+[arXiv 2510.16968]: https://arxiv.org/abs/2510.16968
+[arXiv 2602.03812]: https://arxiv.org/abs/2602.03812
+[arXiv 1503.02531]: https://arxiv.org/abs/1503.02531
+[arXiv 2501.12948]: https://arxiv.org/abs/2501.12948

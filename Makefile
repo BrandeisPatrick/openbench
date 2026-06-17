@@ -13,10 +13,10 @@ test:  ## Run the offline test suite (no Docker / network / keys)
 lint:  ## Lint with ruff
 	uv run ruff check src tests
 
-demo:  ## Zero-credential demo: reward fingerprints from bundled example traces
+demo:  ## Offline reward-fingerprint report from local run traces (runs/)
 	uv run openbench demo
-	@echo "→ open examples/report.md"
+	@echo "→ open report.md"
 
 clean:  ## Remove caches and generated demo output
-	rm -rf .pytest_cache .ruff_cache examples/report.md examples/runs/figures
+	rm -rf .pytest_cache .ruff_cache report.md
 	find . -type d -name __pycache__ -prune -exec rm -rf {} +

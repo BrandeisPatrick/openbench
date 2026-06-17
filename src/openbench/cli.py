@@ -169,24 +169,23 @@ def report(
 
 @app.command()
 def demo() -> None:
-    """Zero-credential demo: build a reward-fingerprint report from bundled example
-    traces (examples/runs/). No API keys, no Docker, no GitHub token required."""
+    """Build a reward-fingerprint report from local run traces (runs/), offline.
+    No API keys, no Docker, no GitHub token required — needs local runs present
+    (generate them with `openbench run-matrix`, or keep a corpus under runs/)."""
     from openbench import paths
     from openbench.report.generate import generate_report
 
-    examples = paths.ROOT / "examples" / "runs"
-    if not examples.exists():
+    runs = paths.RUNS
+    n = sum(1 for d in runs.iterdir() if (d / "metrics.json").exists()) if runs.exists() else 0
+    if n == 0:
         console.print(
-            "[red]examples/runs not found[/red] — run from a repo checkout "
-            "(the example traces ship with the source tree)."
+            "[yellow]No local runs found under runs/[/yellow] — run a matrix first "
+            "([bold]openbench run-matrix[/bold]) or restore a run corpus."
         )
         raise typer.Exit(1)
-    # Point the analysis loaders at the bundled traces (read dynamically).
-    paths.RUNS = examples
-    out = paths.ROOT / "examples" / "report.md"
+    out = paths.ROOT / "report.md"
     path = generate_report(out)
-    n = sum(1 for d in examples.iterdir() if (d / "metrics.json").exists())
-    console.print(f"[green]Demo report written:[/green] {path}  ({n} example runs)")
+    console.print(f"[green]Report written:[/green] {path}  ({n} local runs)")
     console.print(
         "Per-model reward fingerprints, computed offline — no keys or Docker. "
         "Open the file, or run [bold]openbench analyze[/bold] on the same traces."
