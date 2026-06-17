@@ -57,12 +57,33 @@ PRICES_PER_MTOK: dict[str, tuple[float, float]] = {
     "gpt-4.1": (2.0, 8.0),
 }
 
+# Few-shot system prompt (variant "B"). A measured prompt-A/B (Opus, n=5/task)
+# showed this SHOW-don't-tell form roughly halves the multi-step "dreaming"
+# (over-generation) vs an instruction-only prompt — 80%->40% of turns on the
+# easy task, and ~6% on harder tasks — by demonstrating the one-command-then-stop
+# pattern and an explicit WRONG example of fabricated output. It does not fully
+# eliminate the behavior (the format prior is deep); the reactive _CORRECTION
+# below catches the residual. Both are uniform across all models, so consistency
+# across the (model, harness) cells is preserved. See docs/EXPERIMENTS.md.
 SYSTEM_PROMPT = f"""You are an expert software engineer working alone in a sandboxed repository at /repo (current directory).
 
-Rules:
-- Reply with exactly ONE shell command per turn, in a ```bash fenced block. Nothing outside the block is executed.
-- The command runs with bash in /repo. You see stdout/stderr (truncated) next turn.
-- No internet access. Do not try to fetch anything.
+CRITICAL FORMAT RULE: every reply is EXACTLY one ```bash block, then you STOP. You never write a second block, never write a line starting with "system", and never write what you think the output will be. The ENVIRONMENT produces output, not you. Any output you write is a hallucination — it is discarded and you are corrected.
+
+CORRECT (do this) — one command, then nothing, then you wait:
+```bash
+grep -n "def foo" src/app.py
+```
+
+WRONG (never do this) — fabricating the result and continuing:
+```bash
+grep -n "def foo" src/app.py
+```
+system```
+42:def foo(...):   <-- FABRICATED, forbidden
+```
+
+Other rules:
+- The command runs with bash in /repo. No internet access.
 - Do not modify existing test files.
 - Edit files with heredocs (cat > file << 'EOF') or python - << 'EOF' scripts.
 - Work iteratively: explore, implement, run the relevant tests, fix, repeat.
@@ -70,6 +91,26 @@ Rules:
 ```bash
 echo {DONE_MARKER}
 ```"""
+
+# Reactive anti-confabulation correction (uniform across all models): some models
+# (esp. native-tool-trained ones on this bare text protocol) emit a whole imagined
+# session in one reply — multiple commands plus fabricated outputs — and then form
+# a false belief they have finished. We execute only the first real command; this
+# note confronts the model with reality so the dream doesn't drive control flow.
+_CORRECTION = (
+    "NOTE: your previous reply contained more than one command and/or made-up "
+    "output. Only your FIRST command was actually run. Everything you wrote after "
+    "it (including any predicted output or a premature done) is NOT real — ignore "
+    "it. The REAL output of your first command is below. Reply with exactly ONE "
+    "command next, and never predict outputs.\n\n"
+)
+
+
+def _overgenerated(content: str) -> bool:
+    """The model emitted more than one fenced block — i.e. it kept generating past
+    the first command (a dreamed continuation), instead of stopping to wait for the
+    real output. One command = one ```...``` block = two fence markers."""
+    return (content or "").count("```") > 2
 
 
 def _resolve_provider(model: str) -> tuple[str, str]:
@@ -241,9 +282,12 @@ class MiniSweRunner:
                     "exit_code": res.exit_code, "output": output,
                 }) + "\n")
                 log.flush()
+                # If the model dreamed a multi-step session, prepend a correction
+                # so the fabricated continuation can't drive the next turn.
+                prefix = _CORRECTION if _overgenerated(content) else ""
                 messages.append({
                     "role": "user",
-                    "content": f"exit_code: {res.exit_code}\n{output}",
+                    "content": f"{prefix}exit_code: {res.exit_code}\n{output}",
                 })
 
             log.write(json.dumps({
