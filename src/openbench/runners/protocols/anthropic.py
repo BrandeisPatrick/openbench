@@ -23,7 +23,11 @@ from openbench.runners.protocols.tools import BASH_TOOL
 _ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
 _ANTHROPIC_VERSION = "2023-06-01"
 _MAX_TOKENS = 16000  # output budget per turn (covers adaptive thinking + answer)
-_EFFORT = "high"     # output_config.effort — extended thinking enabled, high effort
+# output_config.effort (valid: low|medium|high|xhigh|max). Default `xhigh` — more
+# thinking budget than `high` (richer CoT on substantive steps) at lower cost than
+# `max`. Thinking is adaptive, so truly trivial steps may still skip; only `max`
+# forces a thinking block even on easy steps (at higher token cost).
+_EFFORT = "xhigh"
 
 
 def _parse_blocks(content: list[dict]) -> tuple[str, str, dict | None]:
