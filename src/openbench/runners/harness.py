@@ -5,7 +5,8 @@
 turn, sandboxed exec, the shared `meta`/`api_response`/`exec`/`final` transcript,
 and the cost/wall-clock/turn caps. The *protocol* is pluggable: how a request is
 built, how the action is parsed back out, how usage is read, and how the
-observation is fed back. See `runners/protocols.py` for the implementations.
+observation is fed back. See `runners/protocols/` for the implementations and the
+`WireProtocol` contract.
 
 The loop never touches a provider-shaped message or field — everything provider-
 specific goes through the protocol — so the only thing that differs between a
@@ -19,16 +20,14 @@ from __future__ import annotations
 import json
 import time
 from pathlib import Path
-from typing import Protocol, runtime_checkable
 
 from openbench import dockerutil, paths
 from openbench.models import ExitReason, RunLimits, Task
 from openbench.runners.base import zero_usage
+from openbench.runners.protocols.base import DONE_MARKER, WireProtocol
 
-DONE_MARKER = "OPENBENCH_DONE"
 _OUTPUT_CAP = 5000
 _EXEC_TIMEOUT_S = 600
-_API_TIMEOUT_S = 600
 
 
 def _truncate(text: str, cap: int = _OUTPUT_CAP) -> str:
@@ -36,29 +35,6 @@ def _truncate(text: str, cap: int = _OUTPUT_CAP) -> str:
         return text
     half = cap // 2
     return f"{text[:half]}\n... [{len(text) - cap} chars truncated] ...\n{text[-half:]}"
-
-
-@runtime_checkable
-class WireProtocol(Protocol):
-    """How an action is requested from and parsed back out of one model family.
-
-    The harness loop owns control flow; a `WireProtocol` owns the wire format.
-    `parse_action` returns an `Action` (see protocols.py) whose `raw_assistant`
-    is the assistant turn to append verbatim (so thinking signatures / tool_call
-    ids survive); `result_message` is the observation appended after exec.
-    """
-
-    name: str
-    needs_network: bool
-
-    def initial_messages(self, prompt: str) -> list[dict]: ...
-    def meta(self) -> dict: ...
-    def chat(self, messages: list[dict], model: str) -> dict: ...
-    def parse_action(self, resp: dict): ...  # -> Action
-    def usage(self, resp: dict, model: str) -> dict: ...  # tokens_in/out/thinking, cost_usd
-    def result_message(self, action, output: str, exit_code: int) -> dict: ...
-    def nudge(self) -> dict: ...
-
 
 class Harness:
     """An `AgentRunner` (see base.py) that drives a `WireProtocol` through the loop.
