@@ -16,7 +16,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 
 from openbench.models import RunLimits, RunResult
-from openbench.runners import get_runner
+from openbench.runners import get_runner, resolve_runner
 from openbench.runners.execute import execute_run
 
 
@@ -24,7 +24,7 @@ from openbench.runners.execute import execute_run
 class MatrixCell:
     task_id: str
     model: str
-    runner: str = "mini-swe"
+    runner: str = "native"
     result: RunResult | None = None
     error: str | None = None
 
@@ -48,7 +48,7 @@ def run_matrix(
         try:
             cell.result = execute_run(
                 task_id=cell.task_id,
-                runner=get_runner(cell.runner),
+                runner=get_runner(resolve_runner(cell.runner, cell.model)),
                 model=cell.model,
                 limits=limits,
                 cpus=cpus,

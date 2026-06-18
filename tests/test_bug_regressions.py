@@ -111,7 +111,8 @@ def test_cost_cap_fires_on_fenceless_turns(tmp_path, monkeypatch):
     check must still run (it once sat after exec only — a fence-less model
     burned 2.2x the cap on pure prompt tokens before the turn cap saved it)."""
     from openbench.models import RunLimits, Task
-    from openbench.runners.mini_swe import MiniSweRunner
+    from openbench.runners.harness import Harness
+    from openbench.runners.protocols import TextFenceProtocol
 
     monkeypatch.setattr(paths, "TASKS", tmp_path / "tasks")
     tdir = paths.task_dir("demo__repo-1")
@@ -124,7 +125,7 @@ def test_cost_cap_fires_on_fenceless_turns(tmp_path, monkeypatch):
         tier=HardnessTier.MAIN, hardness_score=1.0,
     )
     monkeypatch.setattr(
-        "openbench.runners.mini_swe.dockerutil.exec_in",
+        "openbench.runners.harness.dockerutil.exec_in",
         lambda *a, **k: (_ for _ in ()).throw(AssertionError("should not exec")),
     )
 
@@ -134,7 +135,7 @@ def test_cost_cap_fires_on_fenceless_turns(tmp_path, monkeypatch):
             "usage": {"prompt_tokens": 9, "completion_tokens": 9, "cost": 1.0},
         }
 
-    runner = MiniSweRunner(chat_fn=chat)
+    runner = Harness(TextFenceProtocol(chat_fn=chat))
     run_path = tmp_path / "run"
     run_path.mkdir()
     exit_reason, usage = runner.run(
@@ -147,7 +148,7 @@ def test_cost_cap_fires_on_fenceless_turns(tmp_path, monkeypatch):
 # --- #1: the harness must execute the FIRST action, not a hallucinated DONE ----
 
 def test_first_fence_not_hallucinated_done():
-    from openbench.runners.mini_swe import _extract_command
+    from openbench.runners.protocols import _extract_command
 
     # model hallucinates a whole trajectory ending in DONE; we take the first real act
     reply = "Let me look.\n```bash\nls src/\n```\n(fake output)\n```bash\necho OPENBENCH_DONE\n```"

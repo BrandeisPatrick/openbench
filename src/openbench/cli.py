@@ -67,7 +67,7 @@ def build_env(task_id: str = typer.Argument(...)) -> None:
 @app.command()
 def run(
     task_id: str = typer.Argument(...),
-    runner: str = typer.Option("claude-code", help="claude-code | mini-swe | golden | null"),
+    runner: str = typer.Option("native", help="native (=tooluse) | tooluse | claude-native | mini-swe | golden | null"),
     model: str = typer.Option("claude-sonnet-4-6"),
     wall_clock_s: int = typer.Option(5400),
     max_turns: int = typer.Option(200),
@@ -75,11 +75,12 @@ def run(
 ) -> None:
     """Run an agent harness against a task and capture the raw transcript."""
     from openbench.models import RunLimits
-    from openbench.runners import get_runner
+    from openbench.runners import get_runner, resolve_runner
     from openbench.runners.execute import execute_run
 
     limits = RunLimits(wall_clock_s=wall_clock_s, max_turns=max_turns, max_cost_usd=max_cost_usd)
-    result = execute_run(task_id=task_id, runner=get_runner(runner), model=model, limits=limits)
+    runner_obj = get_runner(resolve_runner(runner, model))
+    result = execute_run(task_id=task_id, runner=runner_obj, model=model, limits=limits)
     console.print(f"[green]Run finished:[/green] {result.run_id} ({result.exit_reason})")
     console.print(f"  cost: ${result.total_cost_usd:.2f}  turns: {result.num_turns}")
 
@@ -88,7 +89,7 @@ def run(
 def run_matrix_cmd(
     tasks: str = typer.Option(..., help="Comma-separated task ids"),
     models: str = typer.Option(..., help="Comma-separated model names"),
-    runner: str = typer.Option("mini-swe"),
+    runner: str = typer.Option("native"),
     concurrency: int = typer.Option(3, help="Max runs in parallel"),
     max_turns: int = typer.Option(80),
     wall_clock_s: int = typer.Option(3600),

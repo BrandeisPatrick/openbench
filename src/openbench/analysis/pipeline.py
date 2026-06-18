@@ -30,10 +30,11 @@ def _load_events(run: RunResult, rdir: Path) -> list[TraceEvent]:
     # Normalize from the raw transcript, picking the adapter by harness.
     # golden/null fixtures emit claude_code-format transcripts.
     try:
-        # claude-native writes the mini-swe transcript schema on purpose, so the
-        # same adapter normalizes it — only the model's behavior differs, not the
-        # parsing (clean scaffold-vs-scaffold comparison).
-        if run.harness in ("mini-swe", "claude-native"):
+        # All Harness protocols (mini-swe / tooluse / claude-native) write the
+        # same transcript schema on purpose, so one adapter normalizes them — only
+        # the model's behavior differs, not the parsing (clean protocol-vs-protocol
+        # comparison). golden/null fixtures emit claude_code-format transcripts.
+        if run.harness in ("mini-swe", "tooluse", "gpt-responses", "claude-native"):
             from openbench.traces.adapters.mini_swe import normalize
         else:
             from openbench.traces.adapters.claude_code import normalize
