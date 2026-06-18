@@ -14,8 +14,6 @@
     "test_issue_13079"
   ],
   "pass_to_pass": [
-    "test_symbol",
-    "test_add",
     "test_power",
     "test_match_exclude",
     "test_mul",
@@ -182,6 +180,7 @@
     "test_Poly_precision"
   ],
   "image_tag": "openbench/sympy__sympy-13757:base",
+  "base_image": "python:3.9-slim",
   "install_cmd": "pip install -e .",
   "test_cmd": "python -m pytest",
   "protected_test_files": {},

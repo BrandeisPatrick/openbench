@@ -1,7 +1,8 @@
-"""Normalize mini-swe shell-loop transcripts into TraceEvents.
+"""Normalize the standard run transcript schema into TraceEvents.
 
-Raw format is defined in runners/mini_swe.py: meta / api_response / exec /
-final records. Each api_response yields a thinking event (when the model
+This is the adapter for the `meta / api_response / exec / final` schema written
+by every standard-schema runner — `native` (`tooluse` + `claude-native`) and the
+legacy `mini-swe`. Each api_response yields a thinking event (when the model
 emitted reasoning_content), an assistant_msg, and — when a command was parsed
 — a derived tool event classified like the Claude Code adapter (test_run /
 search / shell / file_edit). Each exec yields a tool_result with pytest counts

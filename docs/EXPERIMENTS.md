@@ -713,6 +713,67 @@ tasks for P11a.
 
 ---
 
+## E13 — Does the anti-confabulation prompt fix the Opus "dream"? (mini-swe prompt A/B)
+
+**Registered 2026-06-17, predictions frozen in-session BEFORE the runs.** The few-shot
+anti-confabulation prompt (variant B + reactive `_CORRECTION`, commit 5e24d04, 2026-06-17)
+claims in its code comment to roughly halve Opus's text-fence "dreaming," but **no saved run
+data or experiment backed that claim** — every Opus·mini-swe run on disk predates the fix.
+E13 supplies the missing A/B. Distinct from E10 (which tests the *protocol* fix via
+`claude-native`); E13 tests whether the fix can keep Opus in-distribution *on the text-fence
+protocol itself* — the prerequisite for a single-harness design.
+
+**Method.** Hold model = `claude-opus-4-8`, harness = `mini-swe`, task = `sympy-23534` (the
+100%-degenerate baseline cell) fixed. Toggle only the prompt via `OPENBENCH_MINISWE_VARIANT`:
+- **OFF** — pre-fix instruction-only prompt, no `_CORRECTION` (verbatim from 5e24d04^).
+- **ON** — current few-shot prompt + reactive correction.
+
+Same settings both arms (cost cap $2.50, max_turns 40), run back-to-back in one session
+(avoids the June-12/15 config drift that makes the historical OFF baseline unusable). n=3/arm.
+Gradeless readouts from the transcript: `over_gen_rate` (turns with >1 fence — the metric the
+"80%→40%" claim is about), `confab` (declared done without running a test), `is_degenerate`
+(no tests AND no edits AND declared done).
+
+**Pre-registered predictions (frozen).**
+- Primary: `over_gen_rate(ON) ≪ over_gen_rate(OFF)` and `confab(ON) < confab(OFF)`.
+- `is_degenerate` fraction drops ON vs OFF; ON mean turns/edits rise (Opus engages).
+- **Falsified if:** ON over-generation/confab ≈ OFF → the fix is illusory and confabulation
+  must be reported as a real Opus fingerprint on this protocol (not a prompt artifact).
+
+**Honesty constraints.** Stage 1 is n=3 on ONE task → a directional **go/no-go**, not a final
+rate. `is_degenerate` is a per-run boolean, noisy at n=3; the rate metrics (over-gen, confab)
+carry the signal. Grading is irrelevant/broken here — confab uses the "declared-done-without-
+verifying" collapse valid on a 0%-solve cell. Expand to sympy-13757 + higher n only if Stage 1
+is ambiguous.
+
+**Stage 1 result (2026-06-17, sympy-23534, n=3/arm, $4.05) — directional, supports the fix.**
+
+| arm | over_gen | confab | degenerate | mean turns | mean tests |
+|---|--:|--:|--:|--:|--:|
+| OFF (pre-fix) | 50% | 3/3 | **3/3** | 2.0 | 0.0 |
+| ON (fixed) | 20% | **0/3** | **0/3** | 10.0 | 1.0 |
+
+Every OFF run reproduced the baseline dream (2-turn `completed`, 0 tests, 0 edits, confab).
+Every ON run engaged — 9–11 turns, ran a test, declared done only after acting; the cell
+flipped from **fully degenerate to fully non-degenerate**. Primary prediction holds:
+over-generation halved (50→20%) and confab eliminated (3/3→0/3). Caveats: n=3 on one task
+(go/no-go, not a final rate); ON over-generation is reduced, **not zero** (residual caught by
+`_CORRECTION`, as the code comment states); `is_degenerate` is a noisy per-run boolean but the
+3/3→0/3 separation is clean. Toggle: `OPENBENCH_MINISWE_VARIANT` in `runners/mini_swe.py`.
+
+**Status.** Stage 1 done — fix validated directionally on the worst-case cell. Stage 2 (add
+sympy-13757, raise n) only needed to firm up the rate; the go/no-go is a clear GO.
+
+**Superseded by the structural fix (2026-06-17).** The prompt fix only *halved* over-generation
+(50→20%) because nothing stops the text-fence decoder mid-stream. The common harness was therefore
+switched from text-fence to **native tool-use** (`native` dispatcher → `tooluse` / `claude-native`),
+where the API stops the turn at the tool call, so the dream is *structurally impossible*. Live smoke
+(Opus, sympy-23534): `native` 8 turns + test + edit + completed; `tooluse` 5 turns + test + edit +
+completed — both non-degenerate (vs OFF text-fence 3/3 degenerate). The mini-swe prompt A/B remains
+the evidence that the dream is protocol-induced. See [[openbench-harness-design-minimal]].
+
+---
+
 ## Out of scope (documented, not run)
 
 | Idea | Why not |

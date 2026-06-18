@@ -11,7 +11,7 @@ import pytest
 from openbench import paths
 from openbench.models import HardnessTier, RunLimits, RunResult, Task
 from openbench.runners.mini_swe import DONE_MARKER, MiniSweRunner, _extract_command
-from openbench.traces.adapters.mini_swe import normalize
+from openbench.traces.adapters.transcript import normalize
 
 
 def _scripted_chat(responses: list[dict]):

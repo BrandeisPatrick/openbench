@@ -55,17 +55,22 @@ def render_dockerfile(task: Task, base_image: str = DEFAULT_BASE_IMAGE) -> str:
     )
 
 
-def build_task_image(task_id: str, base_image: str = DEFAULT_BASE_IMAGE) -> str:
-    """Render Dockerfile.j2, build openbench/<task_id>:base, record it in task.json."""
+def build_task_image(task_id: str, base_image: str | None = None) -> str:
+    """Render Dockerfile.j2, build openbench/<task_id>:base, record it in task.json.
+
+    Base image precedence: explicit ``base_image`` arg > ``task.base_image`` (per-task
+    pin in task.json, for old commits needing an older python) > DEFAULT_BASE_IMAGE.
+    """
     task_json = paths.task_dir(task_id) / "task.json"
     task = Task.model_validate_json(task_json.read_text())
+    resolved = base_image or task.base_image or DEFAULT_BASE_IMAGE
 
     tag = image_tag_for(task_id)
     timeout = int(_grading_config().get("build_timeout_s", DEFAULT_BUILD_TIMEOUT_S))
 
     with TemporaryDirectory(prefix="openbench-env-") as ctx:
         context_dir = Path(ctx)
-        (context_dir / "Dockerfile").write_text(render_dockerfile(task, base_image=base_image))
+        (context_dir / "Dockerfile").write_text(render_dockerfile(task, base_image=resolved))
         dockerutil.build_image(context_dir, tag, timeout=timeout)
 
     task.image_tag = tag

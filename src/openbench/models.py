@@ -77,6 +77,11 @@ class Task(BaseModel):
     fail_to_pass: list[str] = Field(default_factory=list)  # pytest node ids
     pass_to_pass: list[str] = Field(default_factory=list)
     image_tag: str | None = None  # docker image, set by build-env
+    # Per-task Docker base image. None => builder default (python:3.12-slim). Set a
+    # matching python for old base_commits (e.g. python:3.9-slim for pre-3.10 code
+    # that does `from collections import Mapping`), else the lib won't import and the
+    # whole grade scores 0%. See build_task_image.
+    base_image: str | None = None
     install_cmd: str = "pip install -e ."
     test_cmd: str = "python -m pytest"
     protected_test_files: dict[str, str] = Field(default_factory=dict)  # path -> sha256 at base

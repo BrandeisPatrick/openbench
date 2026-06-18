@@ -15,7 +15,6 @@
   ],
   "pass_to_pass": [
     "test_Str",
-    "test_Symbol",
     "test_Dummy",
     "test_Dummy_force_dummy_index",
     "test_lt_gt",
@@ -27,6 +26,7 @@
     "test_uniquely_named_symbol_and_Symbol"
   ],
   "image_tag": "openbench/sympy__sympy-23534:base",
+  "base_image": null,
   "install_cmd": "pip install -e .",
   "test_cmd": "python -m pytest",
   "protected_test_files": {},

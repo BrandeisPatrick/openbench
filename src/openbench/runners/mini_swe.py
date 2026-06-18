@@ -27,35 +27,16 @@ import httpx
 from openbench import dockerutil, paths
 from openbench.models import ExitReason, RunLimits, Task
 from openbench.runners.base import zero_usage
-
-DONE_MARKER = "OPENBENCH_DONE"
-_OUTPUT_CAP = 5000
-_API_TIMEOUT_S = 600
-_EXEC_TIMEOUT_S = 600
-
-# model-name prefix -> (base_url, api-key env var). Longest prefix wins, so
-# "openrouter/" routes through OpenRouter even for deepseek-* slugs.
-PROVIDERS: dict[str, tuple[str, str]] = {
-    "openrouter/": ("https://openrouter.ai/api/v1", "OPENROUTER_API_KEY"),
-    "deepseek": ("https://api.deepseek.com", "DEEPSEEK_API_KEY"),
-    "gpt": ("https://api.openai.com/v1", "OPENAI_API_KEY"),
-    "kimi": ("https://api.moonshot.ai/v1", "MOONSHOT_API_KEY"),
-    # Anthropic's OpenAI-compatible chat endpoint (Bearer auth works there).
-    "claude": ("https://api.anthropic.com/v1", "ANTHROPIC_API_KEY"),
-}
-
-# USD per 1M tokens (prompt, completion) for the cost cap. Approximate —
-# update from provider pricing pages; token counts are always recorded exactly.
-# Where unsure, prices are set HIGH so the cap errs toward stopping early.
-PRICES_PER_MTOK: dict[str, tuple[float, float]] = {
-    "deepseek-v4-flash": (0.3, 1.2),
-    "deepseek-v4-pro": (1.2, 4.8),
-    "claude-opus-4-8": (15.0, 75.0),
-    "claude-fable-5": (25.0, 100.0),
-    "gpt-5.5": (3.0, 15.0),
-    "gpt-5": (1.25, 10.0),
-    "gpt-4.1": (2.0, 8.0),
-}
+from openbench.runners.common import (
+    API_TIMEOUT_S,
+    DONE_MARKER,
+    EXEC_TIMEOUT_S,
+    PRICES_PER_MTOK,
+    accumulate_openai_usage,
+    request_with_retries,
+    resolve_provider,
+    truncate,
+)
 
 # Few-shot system prompt (variant "B"). A measured prompt-A/B (Opus, n=5/task)
 # showed this SHOW-don't-tell form roughly halves the multi-step "dreaming"
@@ -92,6 +73,25 @@ Other rules:
 echo {DONE_MARKER}
 ```"""
 
+# Pre-fix instruction-only prompt (variant "A" / OFF). Kept verbatim from the
+# commit before the few-shot fix so an in-session A/B can be run with identical
+# settings. Selected when OPENBENCH_MINISWE_VARIANT=off; default is the ON prompt
+# above. Used only for the E13 dream-fix validation — see docs/EXPERIMENTS.md.
+_SYSTEM_PROMPT_OFF = f"""You are an expert software engineer working alone in a sandboxed repository at /repo (current directory).
+
+Rules:
+- Reply with exactly ONE shell command per turn, in a ```bash fenced block. Nothing outside the block is executed.
+- The command runs with bash in /repo. You see stdout/stderr (truncated) next turn.
+- No internet access. Do not try to fetch anything.
+- Do not modify existing test files.
+- Edit files with heredocs (cat > file << 'EOF') or python - << 'EOF' scripts.
+- Work iteratively: explore, implement, run the relevant tests, fix, repeat.
+- When the task is complete and tests pass, reply with exactly:
+```bash
+echo {DONE_MARKER}
+```"""
+
+
 # Reactive anti-confabulation correction (uniform across all models): some models
 # (esp. native-tool-trained ones on this bare text protocol) emit a whole imagined
 # session in one reply — multiple commands plus fabricated outputs — and then form
@@ -113,43 +113,16 @@ def _overgenerated(content: str) -> bool:
     return (content or "").count("```") > 2
 
 
-def _resolve_provider(model: str) -> tuple[str, str]:
-    for prefix, (base_url, env) in PROVIDERS.items():
-        if model.startswith(prefix):
-            key = os.environ.get(env, "")
-            if not key:
-                raise RuntimeError(f"{env} is not set (required for model {model})")
-            # Strip a trailing-slash routing prefix (e.g. "openrouter/"); the
-            # remainder is the provider's own model id (e.g. deepseek/deepseek-chat).
-            wire_model = model[len(prefix):] if prefix.endswith("/") else model
-            return base_url, key, wire_model
-    raise RuntimeError(f"no provider configured for model {model}")
-
-
 def _default_chat(model: str) -> Callable[[list[dict]], dict]:
-    base_url, key, wire_model = _resolve_provider(model)
+    base_url, key, wire_model = resolve_provider(model)
     client = httpx.Client(
         base_url=base_url,
         headers={"Authorization": f"Bearer {key}"},
-        timeout=_API_TIMEOUT_S,
+        timeout=API_TIMEOUT_S,
     )
 
     def chat(messages: list[dict]) -> dict:
-        last_err: Exception | None = None
-        for attempt in range(4):
-            try:
-                resp = client.post(
-                    "/chat/completions", json={"model": wire_model, "messages": messages}
-                )
-                if resp.status_code in (429, 500, 502, 503):
-                    time.sleep(2**attempt)
-                    continue
-                resp.raise_for_status()
-                return resp.json()
-            except httpx.HTTPError as exc:
-                last_err = exc
-                time.sleep(2**attempt)
-        raise RuntimeError(f"chat API failed after retries: {last_err}")
+        return request_with_retries(client, {"model": wire_model, "messages": messages})
 
     return chat
 
@@ -168,13 +141,6 @@ def _extract_command(text: str) -> str | None:
         if fence.strip():
             return fence.strip()
     return None
-
-
-def _truncate(text: str, cap: int = _OUTPUT_CAP) -> str:
-    if len(text) <= cap:
-        return text
-    half = cap // 2
-    return f"{text[:half]}\n... [{len(text) - cap} chars truncated] ...\n{text[-half:]}"
 
 
 class MiniSweRunner:
@@ -199,16 +165,21 @@ class MiniSweRunner:
         chat = self._chat_fn or _default_chat(model)
         price_in, price_out = PRICES_PER_MTOK.get(model, (0.0, 0.0))
 
+        # A/B toggle for the dream-fix validation: "on" (default) = few-shot +
+        # reactive correction; "off" = pre-fix instruction-only prompt, no correction.
+        variant = os.environ.get("OPENBENCH_MINISWE_VARIANT", "on").lower()
+        system_prompt = SYSTEM_PROMPT if variant != "off" else _SYSTEM_PROMPT_OFF
+
         usage = zero_usage()
         messages: list[dict] = [
-            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": prompt},
         ]
         exit_reason: ExitReason = "turn_cap"
         started = time.monotonic()
 
         with transcript.open("w") as log:
-            log.write(json.dumps({"type": "meta", "model": model, "task_id": task.task_id}) + "\n")
+            log.write(json.dumps({"type": "meta", "model": model, "task_id": task.task_id, "variant": variant}) + "\n")
             for turn in range(1, limits.max_turns + 1):
                 if time.monotonic() - started > limits.wall_clock_s:
                     exit_reason = "timeout"
@@ -231,20 +202,8 @@ class MiniSweRunner:
                 content = msg.get("content") or ""
                 reasoning = msg.get("reasoning_content") or ""
                 u = data.get("usage") or {}
-                usage["tokens_in"] += int(u.get("prompt_tokens") or 0)
-                usage["tokens_out"] += int(u.get("completion_tokens") or 0)
-                details = u.get("completion_tokens_details") or {}
-                usage["tokens_thinking"] += int(details.get("reasoning_tokens") or 0)
+                accumulate_openai_usage(usage, u, price_in, price_out)
                 usage["num_turns"] = turn
-                # Prefer the provider's exact per-call cost (OpenRouter reports
-                # usage.cost); fall back to the local price table otherwise.
-                if u.get("cost") is not None:
-                    usage["cost_usd"] += float(u["cost"])
-                else:
-                    usage["cost_usd"] += (
-                        int(u.get("prompt_tokens") or 0) * price_in
-                        + int(u.get("completion_tokens") or 0) * price_out
-                    ) / 1e6
                 log.write(json.dumps({
                     "type": "api_response",
                     "turn": turn,
@@ -274,9 +233,9 @@ class MiniSweRunner:
                     break
 
                 res = dockerutil.exec_in(
-                    container, command, timeout=_EXEC_TIMEOUT_S, user="agent"
+                    container, command, timeout=EXEC_TIMEOUT_S, user="agent"
                 )
-                output = _truncate((res.stdout or "") + (res.stderr or ""))
+                output = truncate((res.stdout or "") + (res.stderr or ""))
                 log.write(json.dumps({
                     "type": "exec", "turn": turn, "command": command,
                     "exit_code": res.exit_code, "output": output,
@@ -284,7 +243,7 @@ class MiniSweRunner:
                 log.flush()
                 # If the model dreamed a multi-step session, prepend a correction
                 # so the fabricated continuation can't drive the next turn.
-                prefix = _CORRECTION if _overgenerated(content) else ""
+                prefix = _CORRECTION if (variant != "off" and _overgenerated(content)) else ""
                 messages.append({
                     "role": "user",
                     "content": f"{prefix}exit_code: {res.exit_code}\n{output}",

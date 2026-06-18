@@ -98,7 +98,7 @@ def test_transcript_normalizes_via_mini_swe_adapter(tmp_path, monkeypatch):
     runner.run(task, "c", run_path, "claude-fable-5", RunLimits(max_turns=10, max_cost_usd=5.0))
 
     from openbench.models import RunResult
-    from openbench.traces.adapters.mini_swe import normalize
+    from openbench.traces.adapters.transcript import normalize
 
     run = RunResult(
         run_id="r", task_id="demo__repo-1", harness="claude-native",

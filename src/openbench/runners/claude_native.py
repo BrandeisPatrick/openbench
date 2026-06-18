@@ -32,16 +32,17 @@ import httpx
 from openbench import dockerutil, paths
 from openbench.models import ExitReason, RunLimits, Task
 from openbench.runners.base import zero_usage
-from openbench.runners.mini_swe import (
-    _EXEC_TIMEOUT_S,
+from openbench.runners.common import (
+    API_TIMEOUT_S,
     DONE_MARKER,
+    EXEC_TIMEOUT_S,
+    NATIVE_SYSTEM_PROMPT,
     PRICES_PER_MTOK,
-    _truncate,
+    truncate,
 )
 
 _ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
 _ANTHROPIC_VERSION = "2023-06-01"
-_API_TIMEOUT_S = 600
 _MAX_TOKENS = 16000  # output budget per turn (covers adaptive thinking + answer)
 _EFFORT = "high"     # output_config.effort — extended thinking enabled, high effort
 
@@ -58,16 +59,8 @@ BASH_TOOL = {
     },
 }
 
-SYSTEM_PROMPT = f"""You are an expert software engineer working alone in a sandboxed repository at /repo (current directory).
-
-Use the `bash` tool to act — one command per call. You see its stdout/stderr in the result.
-
-Rules:
-- No internet access. Do not try to fetch anything.
-- Do not modify existing test files.
-- Edit files with heredocs (cat > file << 'EOF') or python - << 'EOF' scripts.
-- Work iteratively: explore, implement, run the relevant tests, fix, repeat.
-- When the task is complete and tests pass, call bash with exactly: echo {DONE_MARKER}"""
+# Native-tool-use prompt is shared via common (also used by the tooluse runner).
+SYSTEM_PROMPT = NATIVE_SYSTEM_PROMPT
 
 
 def _default_chat(model: str, effort: str | None = _EFFORT) -> Callable[[list[dict]], dict]:
@@ -80,7 +73,7 @@ def _default_chat(model: str, effort: str | None = _EFFORT) -> Callable[[list[di
             "anthropic-version": _ANTHROPIC_VERSION,
             "content-type": "application/json",
         },
-        timeout=_API_TIMEOUT_S,
+        timeout=API_TIMEOUT_S,
     )
 
     def chat(messages: list[dict]) -> dict:
@@ -233,9 +226,9 @@ class ClaudeNativeRunner:
                     break
 
                 res = dockerutil.exec_in(
-                    container, command, timeout=_EXEC_TIMEOUT_S, user="agent"
+                    container, command, timeout=EXEC_TIMEOUT_S, user="agent"
                 )
-                output = _truncate((res.stdout or "") + (res.stderr or ""))
+                output = truncate((res.stdout or "") + (res.stderr or ""))
                 log.write(json.dumps({
                     "type": "exec", "turn": turn, "command": command,
                     "exit_code": res.exit_code, "output": output,

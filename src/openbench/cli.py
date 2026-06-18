@@ -67,7 +67,7 @@ def build_env(task_id: str = typer.Argument(...)) -> None:
 @app.command()
 def run(
     task_id: str = typer.Argument(...),
-    runner: str = typer.Option("claude-code", help="claude-code | mini-swe | golden | null"),
+    runner: str = typer.Option("native", help="native | tooluse | claude-native | mini-swe | golden | null"),
     model: str = typer.Option("claude-sonnet-4-6"),
     wall_clock_s: int = typer.Option(5400),
     max_turns: int = typer.Option(200),
@@ -88,23 +88,40 @@ def run(
 def run_matrix_cmd(
     tasks: str = typer.Option(..., help="Comma-separated task ids"),
     models: str = typer.Option(..., help="Comma-separated model names"),
-    runner: str = typer.Option("mini-swe"),
+    runner: str = typer.Option("native"),
     concurrency: int = typer.Option(3, help="Max runs in parallel"),
-    max_turns: int = typer.Option(80),
-    wall_clock_s: int = typer.Option(3600),
-    max_cost_usd: float = typer.Option(4.0),
+    limits_config: Path = typer.Option(
+        Path("configs/runners/limits.yaml"),
+        help="Per-model limits YAML (default + per-model turn/cost/wall caps)",
+    ),
+    max_turns: int = typer.Option(100, help="Fallback cap when no config / model unlisted"),
+    wall_clock_s: int = typer.Option(2400, help="Fallback cap when no config / model unlisted"),
+    max_cost_usd: float = typer.Option(4.0, help="Fallback cap when no config / model unlisted"),
 ) -> None:
-    """Run every (task × model) cell in parallel, isolated containers."""
+    """Run every (task × model) cell in parallel, isolated containers.
+
+    Caps are resolved per model from --limits-config (default + per-model
+    overrides); the --max-* flags are the fallback for models not listed there.
+    """
     from openbench.models import RunLimits
-    from openbench.runners.matrix import MatrixCell, run_matrix
+    from openbench.runners.matrix import MatrixCell, load_limits, run_matrix
+
+    fallback = RunLimits(max_turns=max_turns, wall_clock_s=wall_clock_s, max_cost_usd=max_cost_usd)
+    resolve = load_limits(limits_config if limits_config.exists() else None, fallback)
 
     cells = [
-        MatrixCell(task_id=t.strip(), model=m.strip(), runner=runner)
+        MatrixCell(task_id=t.strip(), model=m.strip(), runner=runner, limits=resolve(m.strip()))
         for t in tasks.split(",") if t.strip()
         for m in models.split(",") if m.strip()
     ]
-    limits = RunLimits(max_turns=max_turns, wall_clock_s=wall_clock_s, max_cost_usd=max_cost_usd)
-    console.print(f"[bold]running {len(cells)} cells, {concurrency} at a time[/bold]")
+    src = str(limits_config) if limits_config.exists() else "fallback flags (no config)"
+    console.print(f"[bold]running {len(cells)} cells, {concurrency} at a time[/bold]  limits: {src}")
+    # Show each model's resolved caps once, so cost is predictable before launch.
+    for m in dict.fromkeys(c.model for c in cells):
+        lim = resolve(m)
+        console.print(
+            f"  [dim]{m}[/dim]: ≤{lim.max_turns} turns, ≤${lim.max_cost_usd:.2f}, ≤{lim.wall_clock_s}s"
+        )
 
     def _done(cell) -> None:
         if cell.error:
@@ -116,7 +133,7 @@ def run_matrix_cmd(
                 f"({r.exit_reason}, {r.num_turns} turns, ${r.total_cost_usd:.2f})"
             )
 
-    run_matrix(cells, limits, max_concurrency=concurrency, on_done=_done)
+    run_matrix(cells, fallback, max_concurrency=concurrency, on_done=_done)
     console.print("[bold green]matrix done[/bold green] — grade with `openbench grade <run_id>`")
 
 

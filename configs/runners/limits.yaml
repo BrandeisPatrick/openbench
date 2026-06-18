@@ -1,0 +1,36 @@
+# Per-model run limits for `openbench run-matrix` — the cost-control lever.
+#
+# Resolution is model > default > CLI flags. `default:` applies to any model not
+# listed under `models:`; each `models:` entry overrides only the fields it sets.
+# Caps are enforced in the runner loop (mini_swe/tooluse/claude_native): a run
+# stops at whichever of max_turns / max_cost_usd / wall_clock_s it hits first.
+#
+# Why per-model: a turn costs wildly different amounts per model (context regrows
+# every turn). Empirically on sympy-23534 at 80 turns: deepseek-v4-flash ~$0.06,
+# gpt-4.1 ~$1.82. One shared cap either starves cheap models or lets pricey ones
+# run away — so cap turns generously for cheap models and $ tightly for pricey ones.
+
+default:
+  max_turns: 100
+  max_cost_usd: 4.0
+  wall_clock_s: 2400
+
+models:
+  # --- Anthropic (native tool_use + thinking; pricey output) ---
+  claude-opus-4-8:   { max_turns: 80,  max_cost_usd: 5.0 }
+  claude-fable-5:    { max_turns: 80,  max_cost_usd: 6.0 }
+  claude-sonnet-4-6: { max_turns: 120, max_cost_usd: 3.0 }
+
+  # --- OpenAI (function-calling) ---
+  gpt-5.5: { max_turns: 100, max_cost_usd: 5.0 }
+  gpt-5:   { max_turns: 100, max_cost_usd: 4.0 }
+  gpt-4.1: { max_turns: 80,  max_cost_usd: 2.5 }  # needed ~74 turns / $1.82 to finish
+
+  # --- DeepSeek (cheap → allow more turns, tight $) ---
+  deepseek-v4-flash: { max_turns: 150, max_cost_usd: 1.0 }
+  deepseek-v4-pro:   { max_turns: 120, max_cost_usd: 3.0 }
+
+  # --- OpenRouter-proxied (cheap; some loop, so bound turns) ---
+  openrouter/qwen/qwen3-coder:        { max_turns: 100, max_cost_usd: 1.0 }
+  openrouter/z-ai/glm-4.6:            { max_turns: 100, max_cost_usd: 1.0 }
+  openrouter/moonshotai/kimi-k2-0905: { max_turns: 100, max_cost_usd: 1.0 }
