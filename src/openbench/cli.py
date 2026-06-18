@@ -64,6 +64,20 @@ def build_env(task_id: str = typer.Argument(...)) -> None:
     console.print(f"[green]Built image:[/green] {tag}")
 
 
+def _enable_verbose_logging() -> None:
+    """Stream the harness's per-turn INFO logs to stderr (for `run --verbose`)."""
+    import logging
+    import sys
+
+    handler = logging.StreamHandler(sys.stderr)
+    handler.setFormatter(logging.Formatter("%(message)s"))
+    lg = logging.getLogger("openbench")
+    lg.handlers.clear()
+    lg.addHandler(handler)
+    lg.setLevel(logging.INFO)
+    lg.propagate = False
+
+
 @app.command()
 def run(
     task_id: str = typer.Argument(...),
@@ -72,12 +86,15 @@ def run(
     wall_clock_s: int = typer.Option(5400),
     max_turns: int = typer.Option(200),
     max_cost_usd: float = typer.Option(15.0),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Stream each turn (reasoning, command, result) live."),
 ) -> None:
     """Run an agent harness against a task and capture the raw transcript."""
     from openbench.models import RunLimits
     from openbench.runners import get_runner, resolve_runner
     from openbench.runners.execute import execute_run
 
+    if verbose:
+        _enable_verbose_logging()
     limits = RunLimits(wall_clock_s=wall_clock_s, max_turns=max_turns, max_cost_usd=max_cost_usd)
     runner_obj = get_runner(resolve_runner(runner, model))
     result = execute_run(task_id=task_id, runner=runner_obj, model=model, limits=limits)

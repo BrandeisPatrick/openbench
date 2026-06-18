@@ -18,6 +18,7 @@ controlled comparison and keeps `(model, protocol)` cells separable.
 from __future__ import annotations
 
 import json
+import logging
 import time
 from pathlib import Path
 
@@ -25,6 +26,10 @@ from openbench import dockerutil, paths
 from openbench.models import ExitReason, RunLimits, Task
 from openbench.runners.base import zero_usage
 from openbench.runners.protocols.base import DONE_MARKER, WireProtocol
+
+# Per-turn progress is logged here at INFO; it's silent unless a handler is
+# attached (e.g. `openbench run --verbose`), so normal runs print nothing extra.
+logger = logging.getLogger("openbench.harness")
 
 _OUTPUT_CAP = 5000
 _EXEC_TIMEOUT_S = 600
@@ -35,6 +40,13 @@ def _truncate(text: str, cap: int = _OUTPUT_CAP) -> str:
         return text
     half = cap // 2
     return f"{text[:half]}\n... [{len(text) - cap} chars truncated] ...\n{text[-half:]}"
+
+
+def _snippet(text: str, n: int = 140) -> str:
+    """Collapse to one line and cap length — for --verbose progress lines."""
+    s = " ".join((text or "").split())
+    return s if len(s) <= n else s[: n - 1] + "…"
+
 
 class Harness:
     """An `AgentRunner` (see base.py) that drives a `WireProtocol` through the loop.
@@ -70,6 +82,7 @@ class Harness:
                 json.dumps({"type": "meta", "model": model, "task_id": task.task_id, **proto.meta()})
                 + "\n"
             )
+            logger.info("▶ %s · %s · %s (max_turns=%d)", model, task.task_id, proto.name, limits.max_turns)
             for turn in range(1, limits.max_turns + 1):
                 # Caps BEFORE the next API call: every loop path reaches this
                 # (a not-well-formed reply `continue`s past any later check —
@@ -104,6 +117,8 @@ class Harness:
                     + "\n"
                 )
                 log.flush()
+                if action.reasoning:
+                    logger.info("  %d 💭 %s", turn, _snippet(action.reasoning))
 
                 # Append the assistant turn verbatim (protocol-shaped): plain
                 # string for text-fence, raw content blocks for Anthropic, the
@@ -113,6 +128,7 @@ class Harness:
                 if not action.well_formed:
                     # `well_formed=False` is the out-of-distribution / confab
                     # signal (no usable action in protocol). Nudge and retry.
+                    logger.info("  %d ⚠ no action in protocol — nudging", turn)
                     messages.append(proto.nudge())
                     continue
 
@@ -123,9 +139,11 @@ class Harness:
                                     "exit_code": 0, "output": DONE_MARKER})
                         + "\n"
                     )
+                    logger.info("  %d ✓ done", turn)
                     exit_reason = "completed"
                     break
 
+                logger.info("  %d $ %s", turn, _snippet(command, 200))
                 res = dockerutil.exec_in(container, command, timeout=_EXEC_TIMEOUT_S, user="agent")
                 output = _truncate((res.stdout or "") + (res.stderr or ""))
                 log.write(
@@ -134,6 +152,7 @@ class Harness:
                     + "\n"
                 )
                 log.flush()
+                logger.info("  %d → exit %d | %s", turn, res.exit_code, _snippet(output, 200))
                 messages.append(proto.result_message(action, output, res.exit_code))
 
             log.write(
@@ -142,4 +161,5 @@ class Harness:
                 + "\n"
             )
 
+        logger.info("■ %s · turns=%d · cost=$%.2f", exit_reason, usage["num_turns"], usage["cost_usd"])
         return exit_reason, usage
