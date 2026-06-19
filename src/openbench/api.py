@@ -86,7 +86,7 @@ def impossible(task: Task | str) -> Task:
 def run(
     task: Task | str,
     model: str,
-    runner: str | AgentRunner = "mini-swe",
+    runner: str | AgentRunner = "native",
     *,
     max_turns: int = 150,
     wall_clock_s: int = 5400,
@@ -94,13 +94,13 @@ def run(
 ) -> RunResult:
     """Drive an agent harness against a task; returns the RunResult.
 
-    `runner` is a registry name ("mini-swe", "claude-code", "golden", "null")
-    or an AgentRunner instance.
+    `runner` is a registry name ("native", "tooluse", "claude-native",
+    "mini-swe", "golden", "null") or an AgentRunner instance.
     """
-    from openbench.runners import get_runner
+    from openbench.runners import get_runner, resolve_runner
     from openbench.runners.execute import execute_run
 
-    agent = get_runner(runner) if isinstance(runner, str) else runner
+    agent = get_runner(resolve_runner(runner, model)) if isinstance(runner, str) else runner
     limits = RunLimits(
         max_turns=max_turns, wall_clock_s=wall_clock_s, max_cost_usd=max_cost_usd
     )

@@ -12,7 +12,8 @@ from datetime import UTC, datetime
 
 from openbench import paths
 from openbench.models import HardnessTier, RunLimits, Task
-from openbench.runners.claude_native import ClaudeNativeRunner
+from openbench.runners.harness import Harness
+from openbench.runners.protocols import AnthropicToolUseProtocol
 
 
 def _task(tmp) -> Task:
@@ -48,7 +49,7 @@ def _tool_use(cmd: str, tid="t1") -> dict:
 def test_tooluse_loop_executes_and_completes(tmp_path, monkeypatch):
     monkeypatch.setattr(paths, "TASKS", tmp_path / "tasks")
     monkeypatch.setattr(
-        "openbench.runners.claude_native.dockerutil.exec_in",
+        "openbench.runners.harness.dockerutil.exec_in",
         lambda *a, **k: type("R", (), {"exit_code": 0, "stdout": "ok", "stderr": ""})(),
     )
     task = _task(tmp_path)
@@ -60,7 +61,7 @@ def test_tooluse_loop_executes_and_completes(tmp_path, monkeypatch):
         ]),
         _assistant([_tool_use("echo OPENBENCH_DONE")]),
     ])
-    runner = ClaudeNativeRunner(chat_fn=lambda messages: next(replies))
+    runner = Harness(AnthropicToolUseProtocol(chat_fn=lambda messages: next(replies)))
     run_path = tmp_path / "run"
     run_path.mkdir()
     exit_reason, usage = runner.run(
@@ -84,7 +85,7 @@ def test_transcript_normalizes_via_mini_swe_adapter(tmp_path, monkeypatch):
     and the standard metrics with zero special-casing."""
     monkeypatch.setattr(paths, "TASKS", tmp_path / "tasks")
     monkeypatch.setattr(
-        "openbench.runners.claude_native.dockerutil.exec_in",
+        "openbench.runners.harness.dockerutil.exec_in",
         lambda *a, **k: type("R", (), {"exit_code": 1, "stdout": "", "stderr": "boom"})(),
     )
     task = _task(tmp_path)
@@ -92,7 +93,7 @@ def test_transcript_normalizes_via_mini_swe_adapter(tmp_path, monkeypatch):
         _assistant([{"type": "text", "text": "run tests"}, _tool_use("pytest tests/")]),
         _assistant([_tool_use("echo OPENBENCH_DONE")]),
     ])
-    runner = ClaudeNativeRunner(chat_fn=lambda m: next(replies))
+    runner = Harness(AnthropicToolUseProtocol(chat_fn=lambda m: next(replies)))
     run_path = tmp_path / "run"
     run_path.mkdir()
     runner.run(task, "c", run_path, "claude-fable-5", RunLimits(max_turns=10, max_cost_usd=5.0))
@@ -117,10 +118,10 @@ def test_cost_cap_binds(tmp_path, monkeypatch):
     # opus price 15/75 per Mtok; 1M out tokens/turn => $75/turn, cap 5.0 -> stop fast
     big = _assistant([_tool_use("ls")], in_tok=0, out_tok=1_000_000)
     monkeypatch.setattr(
-        "openbench.runners.claude_native.dockerutil.exec_in",
+        "openbench.runners.harness.dockerutil.exec_in",
         lambda *a, **k: type("R", (), {"exit_code": 0, "stdout": "", "stderr": ""})(),
     )
-    runner = ClaudeNativeRunner(chat_fn=lambda m: big)
+    runner = Harness(AnthropicToolUseProtocol(chat_fn=lambda m: big))
     run_path = tmp_path / "run"
     run_path.mkdir()
     exit_reason, usage = runner.run(

@@ -1,7 +1,7 @@
 """Normalize mini-swe shell-loop transcripts into TraceEvents.
 
-Raw format is defined in runners/mini_swe.py: meta / api_response / exec /
-final records. Each api_response yields a thinking event (when the model
+Raw format is the shared Harness transcript (runners/harness.py): meta /
+api_response / exec / final records — written by every protocol. Each api_response yields a thinking event (when the model
 emitted reasoning_content), an assistant_msg, and — when a command was parsed
 — a derived tool event classified like the Claude Code adapter (test_run /
 search / shell / file_edit). Each exec yields a tool_result with pytest counts
@@ -11,18 +11,29 @@ parsed into `derived`.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from openbench.models import RunResult, TraceEvent
 from openbench.traces.schema import classify_bash, parse_pytest_counts
 
-# Heredoc / inline-python writes are this scaffold's file edits.
-_EDIT_HINTS = ("cat >", "cat >>", "tee ", "> /repo", "applypatch", "git apply")
+# Heredoc / redirect / vcs writes are this scaffold's file edits.
+_EDIT_HINTS = ("cat >", "cat >>", "tee ", "> /repo", "applypatch", "git apply", "sed -i")
+
+# Python-driven writes — the form tool-use models (e.g. Opus) actually use:
+#   python - << 'EOF' ... open(f, 'w').write(s) ... EOF
+#   pathlib Path(f).write_text(...) / .write_bytes(...) / .writelines(...)
+# `open(...)` only counts with a write/append/exclusive/update mode (w/a/x/+),
+# so a plain `open(f).read()` stays a read, not an edit.
+_PY_WRITE_RE = re.compile(
+    r"""open\s*\([^)]*,\s*['"][^'"]*[wax+][^'"]*['"]"""
+    r"""|\.write_text\s*\(|\.write_bytes\s*\(|\.writelines\s*\("""
+)
 
 
 def _classify(command: str) -> str:
     lowered = command.lower()
-    if any(h in lowered for h in _EDIT_HINTS):
+    if any(h in lowered for h in _EDIT_HINTS) or _PY_WRITE_RE.search(command):
         return "file_edit"
     return classify_bash(command)
 

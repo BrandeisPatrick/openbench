@@ -1,24 +1,66 @@
-"""Agent harness adapters: claude-code, mini-swe, plus CI fixtures."""
+"""Agent harnesses: one loop (Harness) + pluggable protocols, plus CI fixtures.
+
+One ``Harness`` loop (harness.py); the `native` router (resolve_runner) sends each
+model to its CoT-exposing protocol (protocols.py): `claude-native` (Anthropic
+Messages, thinking), `gpt-responses` (OpenAI Responses, reasoning summary),
+`tooluse` (OpenAI-compatible reasoning_content). `mini-swe` is the text-fence
+scaffold probe. `golden` / `null` are grade-pipeline fixtures.
+"""
 
 from __future__ import annotations
 
 from openbench.runners.base import AgentRunner
 
 
-def get_runner(name: str) -> AgentRunner:
-    from openbench.runners.claude_code import ClaudeCodeRunner
-    from openbench.runners.claude_native import ClaudeNativeRunner
-    from openbench.runners.fixtures import GoldenRunner, NullRunner
-    from openbench.runners.mini_swe import MiniSweRunner
+def resolve_runner(name: str, model: str) -> str:
+    """Resolve the ``native`` selector to each model's CoT-exposing protocol.
 
-    registry: dict[str, type] = {
-        "claude-code": ClaudeCodeRunner,
-        "claude-native": ClaudeNativeRunner,
-        "mini-swe": MiniSweRunner,
-        "golden": GoldenRunner,
-        "null": NullRunner,
-    }
-    try:
-        return registry[name]()
-    except KeyError:
-        raise ValueError(f"unknown runner {name!r}; expected one of {sorted(registry)}") from None
+    One harness, one router: ``native`` routes every model to the protocol that
+    makes its reasoning visible, so chain-of-thought is captured for ALL models
+    (logged uniformly into the transcript's ``reasoning_content``):
+    - ``claude*``  -> ``claude-native``  (Anthropic Messages, summarized thinking)
+    - ``gpt*``     -> ``gpt-responses``  (OpenAI Responses API, reasoning.summary;
+                       the /chat/completions path hides GPT CoT entirely)
+    - everything else (deepseek / qwen / glm / kimi / openrouter) -> ``tooluse``
+                       (captures ``reasoning_content`` / ``reasoning``).
+    ``mini-swe`` (text-fence scaffold probe) stays available by explicit name. The
+    Opus gate (2026-06-18) confirmed Claude does not dream on tool-use, so this
+    routing is about CoT visibility, not confab avoidance. Any other name passes
+    through unchanged.
+    """
+    if name == "native":
+        if model.startswith("claude"):
+            return "claude-native"
+        if model.startswith("gpt"):
+            return "gpt-responses"
+        return "tooluse"
+    return name
+
+
+def get_runner(name: str) -> AgentRunner:
+    from openbench.runners.fixtures import GoldenRunner, NullRunner
+    from openbench.runners.harness import Harness
+    from openbench.runners.protocols import (
+        AnthropicToolUseProtocol,
+        OpenAIResponsesProtocol,
+        OpenAIToolUseProtocol,
+        TextFenceProtocol,
+    )
+
+    if name in ("mini-swe", "text-fence"):
+        return Harness(TextFenceProtocol())
+    if name == "tooluse":
+        return Harness(OpenAIToolUseProtocol())
+    if name == "gpt-responses":
+        return Harness(OpenAIResponsesProtocol())
+    if name == "claude-native":
+        return Harness(AnthropicToolUseProtocol())
+    if name == "golden":
+        return GoldenRunner()
+    if name == "null":
+        return NullRunner()
+    raise ValueError(
+        f"unknown runner {name!r}; expected one of "
+        "['claude-native', 'golden', 'gpt-responses', 'mini-swe', 'null', 'tooluse'] "
+        "(or 'native' to route each model to its CoT-exposing protocol)"
+    )
