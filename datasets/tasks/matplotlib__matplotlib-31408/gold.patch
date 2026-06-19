@@ -1,0 +1,4578 @@
+diff --git a/.circleci/config.yml b/.circleci/config.yml
+index 2810d542c2af..85622ffa7013 100644
+--- a/.circleci/config.yml
++++ b/.circleci/config.yml
+@@ -103,10 +103,10 @@ commands:
+       - run:
+           name: Install Python dependencies
+           command: |
+-            python -m pip install --user -r requirements/dev/build-requirements.txt
++            python -m pip install --user --group build
+             python -m pip install --user \
+                 numpy<< parameters.numpy_version >> \
+-                -r requirements/doc/doc-requirements.txt
++                --group doc
+             python -m pip install --no-deps --user \
+                 git+https://github.com/matplotlib/mpl-sphinx-theme.git
+ 
+diff --git a/.github/dependabot.yml b/.github/dependabot.yml
+index 34902e5236df..ba29818c46de 100644
+--- a/.github/dependabot.yml
++++ b/.github/dependabot.yml
+@@ -9,3 +9,9 @@ updates:
+       actions:
+         patterns:
+           - "*"
++  - package-ecosystem: "pip"
++    directory: "/"
++    schedule:
++      interval: "weekly"
++    exclude-paths:
++      - "ci/minver-requirements.txt"
+diff --git a/.github/labeler.yml b/.github/labeler.yml
+index 75adfed57f43..77b79146b47f 100644
+--- a/.github/labeler.yml
++++ b/.github/labeler.yml
+@@ -1,7 +1,9 @@
+ ---
+ "CI: Run cibuildwheel":
+   - changed-files:
+-      - any-glob-to-any-file: ['.github/workflows/cibuildwheel.yml']
++      - any-glob-to-any-file:
++          - '.github/workflows/cibuildwheel.yml'
++          - '.github/workflows/wasm.yml'
+ "CI: Run cygwin":
+   - changed-files:
+       - any-glob-to-any-file: ['.github/workflows/cygwin.yml']
+diff --git a/.github/workflows/autoclose_comment.yml b/.github/workflows/autoclose_comment.yml
+new file mode 100644
+index 000000000000..4d18d82a801f
+--- /dev/null
++++ b/.github/workflows/autoclose_comment.yml
+@@ -0,0 +1,80 @@
++---
++name: autoclose comment
++# Post comment on PRs when labeled with "status: autoclose candidate".
++# Based on scikit-learn's autoclose bot at
++# https://github.com/scikit-learn/scikit-learn/blob/main/.github/workflows/autoclose-comment.yml
++
++permissions:
++  contents: read
++  pull-requests: write
++
++on:
++  pull_request_target:
++    types:
++      - labeled
++
++env:
++  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
++  GH_REPO: ${{ github.repository }}
++  PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
++
++jobs:
++  post_comment:
++    name: post_comment
++    if: "${{ contains(github.event.label.name, 'status: autoclose candidate') }}"
++    runs-on: ubuntu-latest
++
++    steps:
++
++      - name: comment on potential autoclose
++        run: |
++          gh api \
++          --method POST \
++          -H "Accept: application/vnd.github+json" \
++          -H "X-GitHub-Api-Version: 2022-11-28" \
++          /repos/$GH_REPO/issues/$PULL_REQUEST_NUMBER/comments \
++          -f "body=$BODY"
++        env:
++          BODY: >
++            ⏰ This pull request might be automatically closed in two weeks from now.
++
++
++            Thank you for your contribution to Matplotlib and for the effort you
++            have put into this PR. This pull request does not yet meet the
++            quality and clarity standards needed for an effective review.
++            Project maintainers have limited time for code reviews, and our goal
++            is to prioritize well-prepared contributions to keep Matplotlib
++            maintainable.
++
++
++            Matplotlib maintainers cannot provide one-to-one guidance on this PR.
++            However, if you ask focused, well-researched questions, a community
++            member may be willing to help. 💬
++
++
++            To increase the chance of a productive review:
++
++            - Use [the template provided in the PR
++            description](https://github.com/matplotlib/matplotlib/blob/main/.github/PULL_REQUEST_TEMPLATE.md)
++            and fill it out as completely as possible, especially the summary and AI Disclosure sections.
++
++            - Make sure your PR conforms to our [PR
++            checklist](https://matplotlib.org/devdocs/devel/pr_guide.html#summary-for-pull-request-authors).
++
++
++            As the author, you are responsible for driving this PR, which entails doing
++            necessary background research as well as presenting its context and your
++            thought process. If you are a new contributor, or do not know how to
++            fulfill these requirements, we recommend that you familiarize
++            yourself with Matplotlib's
++            [development conventions](https://matplotlib.org/devdocs/devel/index.html)
++            or engage with the community via our [Discourse](https://discourse.matplotlib.org/)
++            or one of our [meetings](https://scientific-python.org/calendars/)
++            before submitting code.
++
++
++            If you substantially improve this PR within two weeks, leave a comment
++            and a team member may remove the `status: autoclose candidate` label and the
++            PR stays open. Cosmetic changes or incomplete fixes will not be
++            sufficient. Maintainers will assess improvements on their own
++            schedule. Please do not ping (`@`) maintainers.
+diff --git a/.github/workflows/autoclose_schedule.yml b/.github/workflows/autoclose_schedule.yml
+new file mode 100644
+index 000000000000..7e0fbd2055e9
+--- /dev/null
++++ b/.github/workflows/autoclose_schedule.yml
+@@ -0,0 +1,37 @@
++---
++name: autoclose schedule
++# Autoclose PRs labeled with "status: autoclose candidate" after 2 weeks.
++# Based on scikit-learn's implementation at
++# https://github.com/scikit-learn/scikit-learn/blob/main/.github/workflows/autoclose-schedule.yml
++
++permissions:
++  contents: read
++  pull-requests: write
++
++on:
++  schedule:
++    - cron: '0 2 * * *'  # runs daily at 02:00 UTC
++  workflow_dispatch:
++
++env:
++  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
++
++jobs:
++
++  autoclose:
++    name: autoclose labeled PRs
++    runs-on: ubuntu-latest
++    steps:
++      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
++      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
++        with:
++          python-version: '3.13'
++      - name: Install PyGithub
++        run: pip install -Uq PyGithub
++
++      - name: Checkout repository
++        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
++
++      - name: Close PRs labeled more than 14 days ago
++        run: |
++          python tools/autoclose_prs.py
+diff --git a/.github/workflows/cibuildwheel.yml b/.github/workflows/cibuildwheel.yml
+index a83f7a063ada..499a26e35f91 100644
+--- a/.github/workflows/cibuildwheel.yml
++++ b/.github/workflows/cibuildwheel.yml
+@@ -140,7 +140,7 @@ jobs:
+ 
+     steps:
+       - name: Download sdist
+-        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3  # v8.0.0
++        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
+         with:
+           name: cibw-sdist
+           path: dist/
+diff --git a/.github/workflows/codeql-analysis.yml b/.github/workflows/codeql-analysis.yml
+index 93eefd6ca27f..83f47a0e27bf 100644
+--- a/.github/workflows/codeql-analysis.yml
++++ b/.github/workflows/codeql-analysis.yml
+@@ -34,7 +34,7 @@ jobs:
+           persist-credentials: false
+ 
+       - name: Initialize CodeQL
+-        uses: github/codeql-action/init@0d579ffd059c29b07949a3cce3983f0780820c98  # v4.32.6
++        uses: github/codeql-action/init@c10b8064de6f491fea524254123dbe5e09572f13  # v4.35.1
+         with:
+           languages: ${{ matrix.language }}
+ 
+@@ -45,4 +45,4 @@ jobs:
+           pip install --user -v .
+ 
+       - name: Perform CodeQL Analysis
+-        uses: github/codeql-action/analyze@0d579ffd059c29b07949a3cce3983f0780820c98  # v4.32.6
++        uses: github/codeql-action/analyze@c10b8064de6f491fea524254123dbe5e09572f13  # v4.35.1
+diff --git a/.github/workflows/cygwin.yml b/.github/workflows/cygwin.yml
+index 39fcedcd3862..bd9ec07de39f 100644
+--- a/.github/workflows/cygwin.yml
++++ b/.github/workflows/cygwin.yml
+@@ -141,21 +141,21 @@ jobs:
+         # FreeType build fails with bash, succeeds with dash
+ 
+       - name: Cache pip
+-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306  # v5.0.3
++        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7  # v5.0.4
+         with:
+           path: C:\cygwin\home\runneradmin\.cache\pip
+-          key: Cygwin-py3.${{ matrix.python-minor-version }}-pip-${{ hashFiles('requirements/*/*.txt') }}
++          key: Cygwin-py3.${{ matrix.python-minor-version }}-pip-${{ hashFiles('pyproject.toml') }}
+           restore-keys: ${{ matrix.os }}-py3.${{ matrix.python-minor-version }}-pip-
+ 
+       - name: Cache ccache
+-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306  # v5.0.3
++        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7  # v5.0.4
+         with:
+           path: C:\cygwin\home\runneradmin\.ccache
+           key: Cygwin-py3.${{ matrix.python-minor-version }}-ccache-${{ hashFiles('src/*') }}
+           restore-keys: Cygwin-py3.${{ matrix.python-minor-version }}-ccache-
+ 
+       - name: Cache Matplotlib
+-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306  # v5.0.3
++        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7  # v5.0.4
+         with:
+           path: |
+             C:\cygwin\home\runneradmin\.cache\matplotlib
+@@ -175,15 +175,9 @@ jobs:
+       - name: Install Python dependencies
+         shell: bash.exe -eo pipefail -o igncr "{0}"
+         run: |
+-          python -m pip install --upgrade pip setuptools wheel
+-          python -m pip install kiwisolver 'numpy>=1.22,<1.26' pillow importlib_resources
+-          grep -v -F -e psutil requirements/testing/all.txt >requirements_test.txt
+-          python -m pip install meson-python pybind11
++          python -m pip install --group build 'numpy>=1.25,<1.26'
+           export PATH="/usr/local/bin:$PATH"
+-          python -m pip install --no-build-isolation 'contourpy>=1.0.1'
+-          python -m pip install --upgrade cycler fonttools \
+-              packaging pyparsing python-dateutil 'setuptools-scm<10' \
+-              -r requirements_test.txt sphinx ipython
++          python -m pip install --upgrade --group test sphinx ipython
+           python -m pip install --upgrade pycairo 'cairocffi>=0.8' PyGObject &&
+              python -c 'import gi; gi.require_version("Gtk", "3.0"); from gi.repository import Gtk' &&
+              echo 'PyGObject is available' ||
+diff --git a/.github/workflows/linting.yml b/.github/workflows/linting.yml
+index 048b78f24761..daa380e80759 100644
+--- a/.github/workflows/linting.yml
++++ b/.github/workflows/linting.yml
+@@ -18,7 +18,7 @@ jobs:
+       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+         with:
+           python-version: "3.x"
+-      - uses: j178/prek-action@0bb87d7f00b0c99306c8bcb8b8beba1eb581c037  # v1.1.1
++      - uses: j178/prek-action@79f765515bd648eb4d6bb1b17277b7cb22cb6468  # v2.0.0
+         with:
+           extra_args: --hook-stage manual --all-files
+ 
+@@ -69,7 +69,7 @@ jobs:
+           python-version: '3.11'
+ 
+       - name: Install mypy
+-        run: pip3 install -r requirements/testing/mypy.txt -r requirements/testing/all.txt
++        run: pip3 install --group build --group typing
+ 
+       - name: Set up reviewdog
+         uses: reviewdog/action-setup@d8a7baabd7f3e8544ee4dbde3ee41d0011c3a93f  # v1.5.0
+diff --git a/.github/workflows/nightlies.yml b/.github/workflows/nightlies.yml
+index 4cb58bdbf02d..661234c3e16f 100644
+--- a/.github/workflows/nightlies.yml
++++ b/.github/workflows/nightlies.yml
+@@ -32,28 +32,28 @@ jobs:
+         run: |
+           PROJECT_REPO="matplotlib/matplotlib"
+           BRANCH="main"
+-          WORKFLOW_NAME="cibuildwheel.yml"
+           ARTIFACT_PATTERN="cibw-wheels-*"
+ 
+-          gh run --repo "${PROJECT_REPO}" \
+-             list --branch "${BRANCH}" \
+-                  --workflow "${WORKFLOW_NAME}" \
+-                  --json event,status,conclusion,databaseId > runs.json
+-          RUN_ID=$(
+-            jq --compact-output \
+-              '[
+-                .[] |
+-                # Filter on "push" events to main (merged PRs) ...
+-                select(.event == "push") |
+-                # that have completed successfully ...
+-                select(.status == "completed" and .conclusion == "success")
+-               ] |
+-              # and get ID of latest build of wheels.
+-              sort_by(.databaseId) | reverse | .[0].databaseId' runs.json
+-          )
+-          gh run --repo "${PROJECT_REPO}" view "${RUN_ID}"
+-          gh run --repo "${PROJECT_REPO}" \
+-             download "${RUN_ID}" --pattern "${ARTIFACT_PATTERN}"
++          for WORKFLOW_NAME in cibuildwheel.yml wasm.yml; do
++            gh run --repo "${PROJECT_REPO}" \
++               list --branch "${BRANCH}" \
++                    --workflow "${WORKFLOW_NAME}" \
++                    --json event,status,conclusion,databaseId > runs.json
++            RUN_ID=$(
++              jq --compact-output \
++                '[
++                  .[] |
++                  # Filter on "push" events to main (merged PRs) ...
++                  select(.event == "push") |
++                  # that have completed successfully ...
++                  select(.status == "completed" and .conclusion == "success")
++                 ] |
++                # and get ID of latest build of wheels.
++                sort_by(.databaseId) | reverse | .[0].databaseId' runs.json
++            )
++            gh run --repo "${PROJECT_REPO}" view "${RUN_ID}"
++            gh run --repo "${PROJECT_REPO}" download "${RUN_ID}" --pattern "${ARTIFACT_PATTERN}"
++          done
+ 
+           mkdir dist
+           mv ${ARTIFACT_PATTERN}/*.whl dist/
+diff --git a/.github/workflows/pr_welcome.yml b/.github/workflows/pr_welcome.yml
+index 466dc9abbaec..f5fea030e4eb 100644
+--- a/.github/workflows/pr_welcome.yml
++++ b/.github/workflows/pr_welcome.yml
+@@ -26,7 +26,10 @@ jobs:
+             If you have not heard from us in a week or so, please leave a new
+             comment below and that should bring it to our attention.
+             Most of our reviewers are volunteers and sometimes things fall
+-            through the cracks.
++            through the cracks. We also ask that you please finish addressing
++            any review comments on this PR and wait for it to be merged (or
++            closed) before opening a new one, as it can be a valuable learning
++            experience to go through the review process.
+ 
+ 
+             You can also join us [on
+@@ -38,7 +41,7 @@ jobs:
+             please see [the developer
+             guide](https://matplotlib.org/devdocs/devel/index.html).
+ 
+-            **Please let us know  if (and how) you use AI, it will help us give you
++            **Please let us know if (and how) you use AI, it will help us give you
+             better feedback on your PR.**
+ 
+ 
+diff --git a/.github/workflows/tests.yml b/.github/workflows/tests.yml
+index 86c90c77b21a..f13a018ab07b 100644
+--- a/.github/workflows/tests.yml
++++ b/.github/workflows/tests.yml
+@@ -52,14 +52,14 @@ jobs:
+           - name-suffix: "(Minimum Versions)"
+             os: ubuntu-22.04
+             python-version: '3.11'
+-            extra-requirements: '-c requirements/testing/minver.txt'
++            extra-requirements: '-c ci/minver-requirements.txt'
+             delete-font-cache: true
+             # https://github.com/matplotlib/matplotlib/issues/29844
+             pygobject-ver: '<3.52.0'
+           - os: ubuntu-22.04
+             python-version: '3.11'
+             CFLAGS: "-fno-lto"  # Ensure that disabling LTO works.
+-            extra-requirements: '-r requirements/testing/extra.txt'
++            extra-requirements: '--group test-extra'
+             # https://github.com/matplotlib/matplotlib/issues/29844
+             pygobject-ver: '<3.52.0'
+           - name-suffix: "(Extra TeX packages)"
+@@ -205,23 +205,25 @@ jobs:
+           esac
+ 
+       - name: Cache pip
+-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306  # v5.0.3
++        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7  # v5.0.4
+         if: startsWith(runner.os, 'Linux')
+         with:
+           path: ~/.cache/pip
+-          key: ${{ matrix.os }}-py${{ matrix.python-version }}-pip-${{ hashFiles('requirements/*/*.txt') }}
++          key: |
++            ${{ matrix.os }}-py${{ matrix.python-version }}-pip-${{
++            hashFiles('pyproject.toml', 'ci/minver-requirements.txt') }}
+           restore-keys: |
+             ${{ matrix.os }}-py${{ matrix.python-version }}-pip-
+       - name: Cache pip
+-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306  # v5.0.3
++        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7  # v5.0.4
+         if: startsWith(runner.os, 'macOS')
+         with:
+           path: ~/Library/Caches/pip
+-          key: ${{ matrix.os }}-py${{ matrix.python-version }}-pip-${{ hashFiles('requirements/*/*.txt') }}
++          key: ${{ matrix.os }}-py${{ matrix.python-version }}-pip-${{ hashFiles('pyproject.toml') }}
+           restore-keys: |
+             ${{ matrix.os }}-py${{ matrix.python-version }}-pip-
+       - name: Cache ccache
+-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306  # v5.0.3
++        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7  # v5.0.4
+         with:
+           path: |
+             ~/.ccache
+@@ -229,7 +231,7 @@ jobs:
+           restore-keys: |
+             ${{ matrix.os }}-py${{ matrix.python-version }}-ccache-
+       - name: Cache Matplotlib
+-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306  # v5.0.3
++        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7  # v5.0.4
+         with:
+           path: |
+             ~/.cache/matplotlib
+@@ -254,12 +256,8 @@ jobs:
+ 
+           # Install dependencies from PyPI.
+           # Preinstall build requirements to enable no-build-isolation builds.
+-          python -m pip install --upgrade $PRE \
+-            'contourpy>=1.0.1' cycler fonttools kiwisolver importlib_resources \
+-            packaging pillow 'pyparsing!=3.1.0' python-dateutil 'setuptools-scm<10' \
+-            'meson-python>=0.13.1' 'pybind11>=2.13.2' \
+-            -r requirements/testing/all.txt \
+-            ${{ matrix.extra-requirements }}
++          python -m pip install --upgrade $PRE --prefer-binary \
++            --group build --group test ${{ matrix.extra-requirements }}
+ 
+           # Install optional dependencies from PyPI.
+           # Sphinx is needed to run sphinxext tests
+@@ -417,7 +415,7 @@ jobs:
+           fi
+       - name: Upload code coverage
+         if: ${{ !cancelled() && github.event_name != 'schedule' }}
+-        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de  # v5.5.2
++        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2  # v6.0.0
+         with:
+           name: "${{ matrix.python-version }} ${{ matrix.os }} ${{ matrix.name-suffix }}"
+           token: ${{ secrets.CODECOV_TOKEN }}
+diff --git a/.github/workflows/wasm.yml b/.github/workflows/wasm.yml
+new file mode 100644
+index 000000000000..725daa918566
+--- /dev/null
++++ b/.github/workflows/wasm.yml
+@@ -0,0 +1,82 @@
++---
++name: Build wasm wheels
++
++on:
++  # Save CI by only running this on release branches or tags.
++  push:
++    branches:
++      - main
++      - v[0-9]+.[0-9]+.x
++    tags:
++      - v*
++  # Also allow running this action on PRs if requested by applying the
++  # "Run cibuildwheel" label.
++  pull_request:
++    types:
++      - opened
++      - synchronize
++      - reopened
++      - labeled
++
++permissions:
++  contents: read
++
++jobs:
++  build_wasm:
++    if: >-
++      (
++        github.event_name == 'push' ||
++        github.event_name == 'pull_request' && (
++          (
++            github.event.action == 'labeled' &&
++            github.event.label.name == 'CI: Run cibuildwheel'
++          ) ||
++          contains(github.event.pull_request.labels.*.name,
++                   'CI: Run cibuildwheel')
++        )
++      )
++    name: Build wasm
++    runs-on: ubuntu-24.04
++
++    steps:
++      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
++        with:
++          fetch-depth: 0
++          persist-credentials: false
++
++      - name: Preload test images
++        run: |
++          git config --global user.name 'Matplotlib'
++          git config --global user.email 'nobody@matplotlib.org'
++          git fetch https://github.com/QuLogic/matplotlib.git text-overhaul-figures:text-overhaul-figures
++          git merge --no-commit text-overhaul-figures || true
++          # If there are any conflicts in baseline images, then pick "ours",
++          # which should be the updated images in the PR.
++          conflicts=$(git diff --name-only --diff-filter=U \
++                      lib/matplotlib/tests/baseline_images \
++                      lib/mpl_toolkits/*/tests/baseline_images)
++          if [ -n "${conflicts}" ]; then
++            git checkout --ours -- ${conflicts}
++            git add -- ${conflicts}
++          fi
++          # If committing fails, there were conflicts other than the baseline images,
++          # which should not be allowed to happen, and should fail the build.
++          git commit -m 'Preload test images from branch text-overhaul-figures'
++
++      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
++        name: Install Python
++        with:
++          python-version: '3.13'
++
++      - name: Build wheels for wasm
++        uses: pypa/cibuildwheel@ee02a1537ce3071a004a6b08c41e72f0fdc42d9a  # v3.4.0
++        env:
++          CIBW_BUILD: "cp312-*"
++          CIBW_PLATFORM: "pyodide"
++          CIBW_TEST_COMMAND: "true"
++
++      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f  # v7.0.0
++        with:
++          name: cibw-wheels-wasm
++          path: ./wheelhouse/*.whl
++          if-no-files-found: error
+diff --git a/azure-pipelines.yml b/azure-pipelines.yml
+index eef71162f9cb..cad8192de001 100644
+--- a/azure-pipelines.yml
++++ b/azure-pipelines.yml
+@@ -93,8 +93,8 @@ stages:
+ 
+           - bash: |
+               python -m pip install --upgrade pip
+-              python -m pip install --upgrade -r requirements/dev/build-requirements.txt
+-              python -m pip install -r requirements/testing/all.txt -r requirements/testing/extra.txt
++              python -m pip install --upgrade --group build
++              python -m pip install --prefer-binary --group test --group test-extra
+             displayName: 'Install dependencies with pip'
+ 
+           - bash: |
+diff --git a/requirements/testing/minver.txt b/ci/minver-requirements.txt
+similarity index 100%
+rename from requirements/testing/minver.txt
+rename to ci/minver-requirements.txt
+diff --git a/ci/mypy-stubtest-allowlist.txt b/ci/mypy-stubtest-allowlist.txt
+index 1a9a888a1896..0e199889cb07 100644
+--- a/ci/mypy-stubtest-allowlist.txt
++++ b/ci/mypy-stubtest-allowlist.txt
+@@ -29,7 +29,6 @@ matplotlib\.ticker\.LogitLocator\.nonsingular
+ 
+ # Stdlib/Enum considered inconsistent (no fault of ours, I don't think)
+ matplotlib\.backend_bases\._Mode\.__new__
+-matplotlib\.units\.Number\.__hash__
+ 
+ # 3.6 Pending deprecations
+ matplotlib\.figure\.Figure\.set_constrained_layout
+diff --git a/doc/_static/multipage_pdf_thumbnail.svg b/doc/_static/multipage_pdf_thumbnail.svg
+new file mode 100644
+index 000000000000..864c4c647492
+--- /dev/null
++++ b/doc/_static/multipage_pdf_thumbnail.svg
+@@ -0,0 +1,12 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 224">
++  <rect width="320" height="224" fill="white"/>
++  <!-- back page -->
++  <rect x="44" y="10" width="256" height="176" fill="white" stroke="#cccccc" stroke-width="2"/>
++  <!-- middle page -->
++  <rect x="30" y="22" width="256" height="176" fill="white" stroke="#bbbbbb" stroke-width="2"/>
++  <!-- front page -->
++  <rect x="16" y="34" width="256" height="176" fill="white" stroke="#888888" stroke-width="2.5"/>
++  <!-- text -->
++  <text x="144" y="118" font-family="sans-serif" font-size="24" text-anchor="middle" fill="#333333">Multipage</text>
++  <text x="144" y="146" font-family="sans-serif" font-size="24" text-anchor="middle" fill="#333333">PDF</text>
++</svg>
+diff --git a/doc/api/next_api_changes/behavior/31223-AS.rst b/doc/api/next_api_changes/behavior/31223-AS.rst
+new file mode 100644
+index 000000000000..0880659e55ee
+--- /dev/null
++++ b/doc/api/next_api_changes/behavior/31223-AS.rst
+@@ -0,0 +1,28 @@
++``pyplot.subplot`` and ``pyplot.subplot_mosaic`` raise *ValueError* on existing figures
++----------------------------------------------------------------------------------------
++
++Passing a *num* argument to `~.pyplot.subplots` or `~.pyplot.subplot_mosaic`
++that refers to an existing figure or is a ``Figure`` instance now raises a
++`ValueError`.
++
++These utility functions are intended strictly for the creation of new figures and
++subplots. Previously, they accidentally allowed the reuse of existing figures because
++they internally called `~.pyplot.figure`. This change ensures that these functions
++strictly follow their documented purpose of creating new figures.
++
++To reuse an existing figure, clear it first using ``clear=True``:
++
++.. code-block:: python
++
++    fig, axs = plt.subplots(num=1, clear=True)
++    # or
++    fig, axd = plt.subplot_mosaic([['A', 'B']], num=1, clear=True)
++
++If you have a ``Figure`` instance and want to add subplots to it, use the
++object-oriented API:
++
++.. code-block:: python
++
++    fig.subplots(nrows=2, ncols=2)
++    # or
++    fig.subplot_mosaic([['A', 'B']])
+diff --git a/doc/api/next_api_changes/deprecations/31248-SS.rst b/doc/api/next_api_changes/deprecations/31248-SS.rst
+new file mode 100644
+index 000000000000..1d7adbdf0fde
+--- /dev/null
++++ b/doc/api/next_api_changes/deprecations/31248-SS.rst
+@@ -0,0 +1,9 @@
++Arbitrary code in ``axes.prop_cycle`` rcParam strings
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++
++The ``axes.prop_cycle`` rcParam accepts Python expressions that are evaluated
++in a limited context.  The evaluation context has been further limited and some
++expressions that previously worked (list comprehensions, for example) no longer
++will. This change is made without a deprecation period to improve security.
++The previously documented cycler operations at
++https://matplotlib.org/cycler/ are still supported.
+diff --git a/doc/api/next_api_changes/deprecations/31347-TH.rst b/doc/api/next_api_changes/deprecations/31347-TH.rst
+new file mode 100644
+index 000000000000..991406e08b97
+--- /dev/null
++++ b/doc/api/next_api_changes/deprecations/31347-TH.rst
+@@ -0,0 +1,8 @@
++Contour labelling on filled contours
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++
++Using `~.Axes.clabel` to label filled contours created with `~.Axes.contourf` is deprecated. ``clabel()``
++is designed to label contour lines (`.Axes.contour`), and using it with filled contours can lead to inconsistent
++plots. If you want to add labels to filled contours, the recommended approach is to first create the filled contours
++with `~.Axes.contourf`, then overlay contour lines using `~.Axes.contour`, and finally apply `~.Axes.clabel` to those
++contour lines for labeling. For an example see :doc:`/gallery/images_contours_and_fields/contourf_demo`.
+diff --git a/doc/api/next_api_changes/development/29181-ES.rst b/doc/api/next_api_changes/development/29181-ES.rst
+new file mode 100644
+index 000000000000..a3c7e5eed448
+--- /dev/null
++++ b/doc/api/next_api_changes/development/29181-ES.rst
+@@ -0,0 +1,11 @@
++pip 25.1 suggested for development
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++
++Dependencies for development (build and testing) are now specified as `Dependency Groups
++<https://packaging.python.org/en/latest/specifications/dependency-groups/#dependency-groups>`_
++instead of `individual requirements files
++<https://pip.pypa.io/en/stable/reference/requirements-file-format/>`_.
++
++Consequently, a version of pip that supports Dependency Groups is suggested, namely
++version 25.1 or higher. Note that if you install build/testing dependencies manually (by
++copying the list from ``pyproject.toml``), then an older version of pip is sufficient.
+diff --git a/doc/api/ticker_api.rst b/doc/api/ticker_api.rst
+index 652050dafedc..ba8f4886b19f 100644
+--- a/doc/api/ticker_api.rst
++++ b/doc/api/ticker_api.rst
+@@ -5,6 +5,7 @@
+ .. automodule:: matplotlib.ticker
+    :members:
+    :undoc-members:
++   :special-members: __call__
+    :show-inheritance:
+ 
+ 
+diff --git a/doc/conf.py b/doc/conf.py
+index dcaac5ad1439..1fec5f632d4e 100644
+--- a/doc/conf.py
++++ b/doc/conf.py
+@@ -271,7 +271,7 @@ def autodoc_process_bases(app, name, obj, options, bases):
+     'dateutil': ('https://dateutil.readthedocs.io/en/stable/', None),
+     'ipykernel': ('https://ipykernel.readthedocs.io/en/latest/', None),
+     'numpy': ('https://numpy.org/doc/stable/', None),
+-    'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
++    'pandas': ('https://pandas.pydata.org/docs/', None),
+     'pytest': ('https://pytest.org/en/stable/', None),
+     'python': ('https://docs.python.org/3/', None),
+     'scipy': ('https://docs.scipy.org/doc/scipy/', None),
+diff --git a/doc/devel/communication_guide.rst b/doc/devel/communication_guide.rst
+index dc5669719442..a0056b80e606 100644
+--- a/doc/devel/communication_guide.rst
++++ b/doc/devel/communication_guide.rst
+@@ -27,14 +27,75 @@ Our approach to community engagement is foremost guided by our :ref:`mission-sta
+   by creating educational resources, building third party tools, and building
+   informal mentoring networks.
+ 
++
++Moderation
++==========
++Moderation rights are granted specific to each :ref:`official platform <communication-channels>`.
++All matplotlib maintainers are moderators on github. If you are interested in moderating
++any of the other platforms:
++
++* Matplotlib maintainers should reach out to the `community-manager`_.
++* Everyone else should send an email to matplotlib-social-admin@numfocus.org:
++
++  * Introduce yourself - GitHub handle and participation in the community.
++  * Explain why you want moderation rights
++
++Enforcement responsibilities
++----------------------------
++Any person with moderation rights is granted the authority to clarify and
++enforce our standards of expected behavior. This is a supplement to our Code of Conduct,
++not a replacement; moderators should make use of the :ref:`code_of_conduct` process for
++CoC violations. In addition violations of platform specific terms of service should be
++reported to that platform.
++
++Moderators may hide, edit, or reject comments, commits, code, wiki edits, issues, and
++other contributions that do not comply with our :ref:`contributing guidelines <developers-guide-index>`.
++Deletion should only be used to remove sensitive information that can not be removed
++through edits. On most platforms, these actions can be accessed through the [...] context
++menu.
++
++Communication
++^^^^^^^^^^^^^
++After taking action, Moderators should publicly communicate their reasons for
++doing so to the user when possible, e.g. when doing so will not reveal sensitive
++information. When the situation is sensitive, moderators should reassess whether the
++situation would be better handled through the code of conduct process and attempt to
++communicate privately with the user (e.g. DMs) if appropriate.
++
++Consequences
++^^^^^^^^^^^^
++Moderators have the right and responsibility to enforce consequences for disruptive
++behavior. Moderators are welcome to consult on levying consequences in the ``staff``
++discourse channel. When possible, this should be done in the following stages:
++
++* warn: alert the user of their misconduct and how they can remedy the situation
++  - this can be done privately and then publicly if the behavior persists
++  - second warning should mention consequence of not heeding warning
++* temporary ban: apply a short term ban from the platform (default 1 week)
++  - temporary bans can be applied in increasing increments at the moderator's discretion
++* permanent ban from the platform
++
++If the user has not modified their behavior in an acceptable fashion, then the moderator
++can move to the next stage. Moderators should notify the other maintainers of temporary
++and permanent bans via the ``staff`` discourse channel or at the weekly developer meeting.
++When feasible, moderators should also maintain a record of the unacceptable behavior. If
++the user would like to appeal a ban (on any platform), moderators should make use of the
++code of conduct process to resolve the situation by directing the user to file a code of
++conduct report.
++
++Moderators may immediately ban users in extenuating circumstance, such as while a
++CoC or TOS report is being investigated or when the user is an agent or bot. Moderators
++should file a code of conduct report for (human) users they feel should be permanently
++banned from all platforms.
++
++
+ .. _communication-channels:
+ 
+-Official communication channels
+-===============================
+-The Scientific Python community uses various communications platforms to stay
+-updated on new features and projects, to contribute by telling us what is on
+-their mind and suggest issues and bugs, and to showcase their use cases and the
+-tools they have built.
++Official project platforms
++==========================
++The Scientific Python community uses various platforms to stay updated on new features
++and projects, to contribute by telling us what is on their mind and suggest issues and
++bugs, and to showcase their use cases and the tools they have built.
+ 
+ The following venues are managed by Matplotlib maintainers and contributors:
+ 
+@@ -79,20 +140,6 @@ Social media coordination
+ * Team mailing list: matplotlib-social@numfocus.org
+ * Public chat room on Discourse: `Community <https://discourse.matplotlib.org/chat/c/community/3>`_
+ 
+-Maintenance
+------------
+-
+-If you are interested in moderating the chat or forum or accessing the social
+-media accounts:
+-
+-* Matplotlib maintainers should reach out to the `community-manager`_.
+-
+-* Everyone else should send an email to matplotlib-social-admin@numfocus.org:
+-
+-  * Introduce yourself - GitHub handle and participation in the community.
+-  * Describe the reason for wanting to moderate or contribute to social.
+-
+-
+ Content guidelines
+ ==================
+ 
+@@ -261,8 +308,8 @@ Changing the guidelines
+ 
+ As the person tasked with implementing these guidelines, the `community-manager`_
+ should be alerted to proposed changes. Similarly, specific platform guidelines
+-(e.g. X, Instagram) should be reviewed by the person responsible for that
+-platform, when different from the community manager. If there is no consensus,
++(e.g. github, discourse, Instagram) should be reviewed by the person responsible for
++that platform, when different from the community manager. If there is no consensus,
+ decisions about guidelines revert to the community manager.
+ 
+ .. _community-manager: https://matplotlib.org/governance/people.html#deputy-project-leads
+diff --git a/doc/devel/contribute.rst b/doc/devel/contribute.rst
+index 96bc5d157518..5eb8ac2b677e 100644
+--- a/doc/devel/contribute.rst
++++ b/doc/devel/contribute.rst
+@@ -304,6 +304,14 @@ guide you through each step:
+    and ensure you understand/are able to complete the template when you open your pull request.
+    Additional information can be found in the `pull request guidelines <https://matplotlib.org/devdocs/devel/pr_guide.html>`_.
+ 
++.. important::
++
++  Make sure you finish addressing any review comments on your first PR and wait
++  for it to be merged (or closed) before opening a new one. It can be a valuable
++  learning experience to go through the review process and to get feedback on
++  your contribution, while also helping maintainers spend their time
++  effectively.
++
+ .. dropdown:: `Pull request template <https://github.com/matplotlib/matplotlib/blob/main/.github/PULL_REQUEST_TEMPLATE.md>`_
+     :open:
+ 
+diff --git a/doc/devel/development_setup.rst b/doc/devel/development_setup.rst
+index 55bf98b4d380..2ee9193c9fa5 100644
+--- a/doc/devel/development_setup.rst
++++ b/doc/devel/development_setup.rst
+@@ -14,9 +14,9 @@
+ 
+ .. _installing_for_devs:
+ 
+-=====================================
+-Setting up Matplotlib for development
+-=====================================
++=================
++Development setup
++=================
+ 
+ To set up Matplotlib for development follow these steps:
+ 
+@@ -177,7 +177,8 @@ setup.
+ 
+       Install the Python dependencies with ::
+ 
+-        pip install -r requirements/dev/dev-requirements.txt
++        pip install -U pip  # You may skip this step if pip 25.1 is already available.
++        pip install --group dev
+ 
+       Remember to activate the environment whenever you start working on Matplotlib!
+ 
+@@ -270,7 +271,7 @@ Install Matplotlib in editable mode
+ Install Matplotlib in editable mode from the :file:`matplotlib` directory using the
+ command ::
+ 
+-    python -m pip install --verbose --no-build-isolation --editable ".[dev]"
++    python -m pip install --verbose --no-build-isolation --group dev --editable .
+ 
+ The 'editable/develop mode' builds everything and places links in your Python environment
+ so that Python will be able to import Matplotlib from your development source directory.
+diff --git a/doc/devel/pr_guide.rst b/doc/devel/pr_guide.rst
+index 46a30e084e18..f29475cbf8d5 100644
+--- a/doc/devel/pr_guide.rst
++++ b/doc/devel/pr_guide.rst
+@@ -162,6 +162,12 @@ Labels
+   See the `list of labels <https://github.com/matplotlib/matplotlib/labels>`__.
+ * If the PR makes changes to the wheel building Action, add the
+   "Run cibuildwheel" label to enable testing wheels.
++* If the PR does not yet have the quality and clarity needed for an effective
++  review, you can use the "status: autoclose candidate" label. This will trigger
++  a two-weeks countdown after which the PR will be automatically closed if no
++  further improvements have been made. See
++  `the autoclose workflow <https://github.com/matplotlib/matplotlib/blob/main/.github/workflows/autoclose_comment.yml>`__
++  for more details.
+ 
+ .. _pr-milestones:
+ 
+diff --git a/doc/devel/release_guide.rst b/doc/devel/release_guide.rst
+index 886b60240415..ccac5b4f8872 100644
+--- a/doc/devel/release_guide.rst
++++ b/doc/devel/release_guide.rst
+@@ -450,7 +450,7 @@ To build the documentation you must have the tagged version installed, but
+ build the docs from the ``ver-doc`` branch.  An easy way to arrange this is::
+ 
+   pip install matplotlib
+-  pip install -r requirements/doc/doc-requirements.txt
++  pip install --group doc
+   git checkout v3.7.0-doc
+   git clean -xfd
+   make -Cdoc O="-t release -j$(nproc)" html latexpdf LATEXMKOPTS="-silent -f"
+diff --git a/doc/install/dependencies.rst b/doc/install/dependencies.rst
+index d0567900ea4c..8f638ea5ed1d 100644
+--- a/doc/install/dependencies.rst
++++ b/doc/install/dependencies.rst
+@@ -406,17 +406,11 @@ Documentation dependencies
+ Python
+ ------
+ 
+-The additional Python packages required to build the
+-:ref:`documentation <documenting-matplotlib>` are listed in
+-:file:`doc-requirements.txt` and can be installed using ::
+-
+-    pip install -r requirements/doc/doc-requirements.txt
+-
+-The content of :file:`doc-requirements.txt` is also shown below:
+-
+-.. include:: ../../requirements/doc/doc-requirements.txt
+-   :literal:
++The additional Python packages required to build the :ref:`documentation
++<documenting-matplotlib>` are listed in :file:`pyproject.toml` and can be
++installed using ::
+ 
++    pip install --group doc
+ 
+ .. _doc-dependencies-external:
+ 
+diff --git a/doc/project/license.rst b/doc/project/license.rst
+index 2cad3f25b95d..6a34eff4637d 100644
+--- a/doc/project/license.rst
++++ b/doc/project/license.rst
+@@ -127,6 +127,12 @@ Colormaps and themes
+    .. literalinclude:: ../../LICENSE/LICENSE_YORICK
+       :language: none
+ 
++.. dropdown:: Turbo
++   :class-container: sdd
++
++   The Turbo colormap was contributed directly to Matplotlib by its author in
++   :ghpull:`15275`
++
+ 
+ .. _licenses-fonts:
+ 
+diff --git a/doc/release/next_whats_new/box_arrow_size_controls.rst b/doc/release/next_whats_new/box_arrow_size_controls.rst
+new file mode 100644
+index 000000000000..6fb2b69e49fd
+--- /dev/null
++++ b/doc/release/next_whats_new/box_arrow_size_controls.rst
+@@ -0,0 +1,37 @@
++Arrow-style sub-classes of ``BoxStyle`` support arrow head resizing
++-------------------------------------------------------------------
++
++The new *head_width* and *head_angle* parameters to
++`.BoxStyle.LArrow`, `.BoxStyle.RArrow` and `.BoxStyle.DArrow` allow for adjustment
++of the size and aspect ratio of the arrow heads used.
++
++To give a consistent appearance across all parameter values, the
++default head position (where the head starts relative to text) is
++slightly changed compared to the previous hard-coded position.
++
++By using negative angles (or corresponding reflex angles) for *head_angle*, arrows
++with 'backwards' heads may be created.
++
++.. plot::
++    :include-source: true
++    :alt:
++        Six arrow-shaped text boxes.  The arrows on the left have the shaft on
++        their left; the arrows on the right have the shaft on the right; the
++        arrows in the middle have shafts on both sides.
++
++    import matplotlib.pyplot as plt
++
++    plt.text(0.2, 0.8, "LArrow", ha='center', size=16,
++             bbox=dict(boxstyle="larrow, pad=0.3, head_angle=150"))
++    plt.text(0.2, 0.2, "LArrow", ha='center', size=16,
++             bbox=dict(boxstyle="larrow, pad=0.3, head_width=0.5"))
++    plt.text(0.5, 0.8, "DArrow", ha='center', size=16,
++             bbox=dict(boxstyle="darrow, pad=0.3, head_width=3"))
++    plt.text(0.5, 0.2, "DArrow", ha='center', size=16,
++             bbox=dict(boxstyle="darrow, pad=0.3, head_width=1, head_angle=60"))
++    plt.text(0.8, 0.8, "RArrow", ha='center', size=16,
++             bbox=dict(boxstyle="rarrow, pad=0.3, head_angle=30"))
++    plt.text(0.8, 0.2, "RArrow", ha='center', size=16,
++             bbox=dict(boxstyle="rarrow, pad=0.3, head_width=2, head_angle=-90"))
++
++    plt.show()
+diff --git a/doc/release/next_whats_new/cycler_rcparam_security.rst b/doc/release/next_whats_new/cycler_rcparam_security.rst
+new file mode 100644
+index 000000000000..e4e2893aa994
+--- /dev/null
++++ b/doc/release/next_whats_new/cycler_rcparam_security.rst
+@@ -0,0 +1,14 @@
++``axes.prop_cycle`` rcParam security improvements
++-------------------------------------------------
++
++The ``axes.prop_cycle`` rcParam is now parsed in a safer and more restricted
++manner. Only literals, ``cycler()`` and ``concat()`` calls, the operators
++``+`` and ``*``, and slicing are allowed. All previously valid cycler strings
++documented at https://matplotlib.org/cycler/ are still supported, for example:
++
++.. code-block:: none
++
++   axes.prop_cycle : cycler('color', ['r', 'g', 'b']) + cycler('linewidth', [1, 2, 3])
++   axes.prop_cycle : 2 * cycler('color', 'rgb')
++   axes.prop_cycle : concat(cycler('color', 'rgb'), cycler('color', 'cmk'))
++   axes.prop_cycle : cycler('color', 'rgbcmk')[:3]
+diff --git a/doc/release/next_whats_new/partial_figsize_none.rst b/doc/release/next_whats_new/partial_figsize_none.rst
+new file mode 100644
+index 000000000000..43bd3e34cc73
+--- /dev/null
++++ b/doc/release/next_whats_new/partial_figsize_none.rst
+@@ -0,0 +1,12 @@
++Partial ``figsize`` specification at figure creation
++----------------------------------------------------
++
++Figure creation now accepts a single ``None`` in ``figsize``.
++Passing ``(None, h)`` uses the default width from :rc:`figure.figsize`, and
++passing ``(w, None)`` uses the default height.
++Passing ``(None, None)`` is invalid and raises a `ValueError`.
++
++For example::
++
++    import matplotlib.pyplot as plt
++    fig = plt.figure(figsize=(None, 4))
+diff --git a/environment.yml b/environment.yml
+index a629c782ac77..313ab11f7e6f 100644
+--- a/environment.yml
++++ b/environment.yml
+@@ -2,7 +2,7 @@
+ #
+ #   conda env create -f environment.yml
+ #   conda activate mpl-dev
+-#   pip install --verbose --no-build-isolation --editable ".[dev]"
++#   pip install --verbose --no-build-isolation --group dev --editable .
+ #
+ ---
+ name: mpl-dev
+@@ -28,7 +28,7 @@ dependencies:
+   - pyqt
+   - python>=3.11
+   - python-dateutil>=2.1
+-  - setuptools_scm
++  - setuptools_scm<10
+   - wxpython
+   # building documentation
+   - colorspacious
+diff --git a/galleries/examples/README.txt b/galleries/examples/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/README.txt
+rename to galleries/examples/GALLERY_HEADER.rst
+diff --git a/galleries/examples/animation/README.txt b/galleries/examples/animation/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/animation/README.txt
+rename to galleries/examples/animation/GALLERY_HEADER.rst
+diff --git a/galleries/examples/axes_grid1/README.txt b/galleries/examples/axes_grid1/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/axes_grid1/README.txt
+rename to galleries/examples/axes_grid1/GALLERY_HEADER.rst
+diff --git a/galleries/examples/axisartist/README.txt b/galleries/examples/axisartist/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/axisartist/README.txt
+rename to galleries/examples/axisartist/GALLERY_HEADER.rst
+diff --git a/galleries/examples/color/README.txt b/galleries/examples/color/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/color/README.txt
+rename to galleries/examples/color/GALLERY_HEADER.rst
+diff --git a/galleries/examples/event_handling/README.txt b/galleries/examples/event_handling/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/event_handling/README.txt
+rename to galleries/examples/event_handling/GALLERY_HEADER.rst
+diff --git a/galleries/examples/images_contours_and_fields/README.txt b/galleries/examples/images_contours_and_fields/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/images_contours_and_fields/README.txt
+rename to galleries/examples/images_contours_and_fields/GALLERY_HEADER.rst
+diff --git a/galleries/examples/lines_bars_and_markers/README.txt b/galleries/examples/lines_bars_and_markers/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/lines_bars_and_markers/README.txt
+rename to galleries/examples/lines_bars_and_markers/GALLERY_HEADER.rst
+diff --git a/galleries/examples/lines_bars_and_markers/axline.py b/galleries/examples/lines_bars_and_markers/axline.py
+index 11e8c646fe41..21e80b9db844 100644
+--- a/galleries/examples/lines_bars_and_markers/axline.py
++++ b/galleries/examples/lines_bars_and_markers/axline.py
+@@ -8,7 +8,8 @@
+ special data values, e.g. in this example the center and limit values of the
+ sigmoid function.
+ 
+-`~.axes.Axes.axline` draws infinite straight lines in arbitrary directions.
++`~.axes.Axes.axline` draws infinite straight lines defined either by two
++points or by a point and a slope.
+ 
+ .. redirect-from:: /gallery/pyplot/axline
+ """
+diff --git a/galleries/examples/misc/README.txt b/galleries/examples/misc/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/misc/README.txt
+rename to galleries/examples/misc/GALLERY_HEADER.rst
+diff --git a/galleries/examples/misc/logos2.py b/galleries/examples/misc/logos2.py
+index aca348474e7b..1cb57f3faa4a 100644
+--- a/galleries/examples/misc/logos2.py
++++ b/galleries/examples/misc/logos2.py
+@@ -21,10 +21,11 @@
+ def get_font_properties():
+     # The original font is Calibri, if that is not installed, we fall back
+     # to Carlito, which is metrically equivalent.
+-    if 'Calibri' in matplotlib.font_manager.findfont('Calibri:bold'):
++    if 'calibri' in matplotlib.font_manager.findfont('Calibri:bold').lower():
+         return matplotlib.font_manager.FontProperties(family='Calibri',
+                                                       weight='bold')
+-    if 'Carlito' in matplotlib.font_manager.findfont('Carlito:bold'):
++    # Our website documentation uses Carlito because Calibri is proprietary.
++    if 'carlito' in matplotlib.font_manager.findfont('Carlito:bold').lower():
+         print('Original font not found. Falling back to Carlito. '
+               'The logo text will not be in the correct font.')
+         return matplotlib.font_manager.FontProperties(family='Carlito',
+diff --git a/galleries/examples/misc/multipage_pdf.py b/galleries/examples/misc/multipage_pdf.py
+index e04cd0431f87..214d27556e65 100644
+--- a/galleries/examples/misc/multipage_pdf.py
++++ b/galleries/examples/misc/multipage_pdf.py
+@@ -15,6 +15,8 @@
+ 
+ from matplotlib.backends.backend_pdf import PdfPages
+ 
++# sphinx_gallery_thumbnail_path = '_static/multipage_pdf_thumbnail.svg'
++
+ # Create the PdfPages object to which we will save the pages:
+ # The with statement makes sure that the PdfPages object is closed properly at
+ # the end of the block, even if an Exception occurs.
+diff --git a/galleries/examples/mplot3d/README.txt b/galleries/examples/mplot3d/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/mplot3d/README.txt
+rename to galleries/examples/mplot3d/GALLERY_HEADER.rst
+diff --git a/galleries/examples/pie_and_polar_charts/README.txt b/galleries/examples/pie_and_polar_charts/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/pie_and_polar_charts/README.txt
+rename to galleries/examples/pie_and_polar_charts/GALLERY_HEADER.rst
+diff --git a/galleries/examples/pyplots/README.txt b/galleries/examples/pyplots/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/pyplots/README.txt
+rename to galleries/examples/pyplots/GALLERY_HEADER.rst
+diff --git a/galleries/examples/scales/README.txt b/galleries/examples/scales/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/scales/README.txt
+rename to galleries/examples/scales/GALLERY_HEADER.rst
+diff --git a/galleries/examples/shapes_and_collections/README.txt b/galleries/examples/shapes_and_collections/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/shapes_and_collections/README.txt
+rename to galleries/examples/shapes_and_collections/GALLERY_HEADER.rst
+diff --git a/galleries/examples/showcase/README.txt b/galleries/examples/showcase/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/showcase/README.txt
+rename to galleries/examples/showcase/GALLERY_HEADER.rst
+diff --git a/galleries/examples/specialty_plots/README.txt b/galleries/examples/specialty_plots/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/specialty_plots/README.txt
+rename to galleries/examples/specialty_plots/GALLERY_HEADER.rst
+diff --git a/galleries/examples/spines/README.txt b/galleries/examples/spines/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/spines/README.txt
+rename to galleries/examples/spines/GALLERY_HEADER.rst
+diff --git a/galleries/examples/statistics/README.txt b/galleries/examples/statistics/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/statistics/README.txt
+rename to galleries/examples/statistics/GALLERY_HEADER.rst
+diff --git a/galleries/examples/style_sheets/README.txt b/galleries/examples/style_sheets/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/style_sheets/README.txt
+rename to galleries/examples/style_sheets/GALLERY_HEADER.rst
+diff --git a/galleries/examples/subplots_axes_and_figures/README.txt b/galleries/examples/subplots_axes_and_figures/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/subplots_axes_and_figures/README.txt
+rename to galleries/examples/subplots_axes_and_figures/GALLERY_HEADER.rst
+diff --git a/galleries/examples/text_labels_and_annotations/README.txt b/galleries/examples/text_labels_and_annotations/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/text_labels_and_annotations/README.txt
+rename to galleries/examples/text_labels_and_annotations/GALLERY_HEADER.rst
+diff --git a/galleries/examples/ticks/README.txt b/galleries/examples/ticks/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/ticks/README.txt
+rename to galleries/examples/ticks/GALLERY_HEADER.rst
+diff --git a/galleries/examples/units/README.txt b/galleries/examples/units/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/units/README.txt
+rename to galleries/examples/units/GALLERY_HEADER.rst
+diff --git a/galleries/examples/user_interfaces/README.txt b/galleries/examples/user_interfaces/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/user_interfaces/README.txt
+rename to galleries/examples/user_interfaces/GALLERY_HEADER.rst
+diff --git a/galleries/examples/widgets/README.txt b/galleries/examples/widgets/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/examples/widgets/README.txt
+rename to galleries/examples/widgets/GALLERY_HEADER.rst
+diff --git a/galleries/plot_types/3D/README.rst b/galleries/plot_types/3D/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/plot_types/3D/README.rst
+rename to galleries/plot_types/3D/GALLERY_HEADER.rst
+diff --git a/galleries/plot_types/README.rst b/galleries/plot_types/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/plot_types/README.rst
+rename to galleries/plot_types/GALLERY_HEADER.rst
+diff --git a/galleries/plot_types/arrays/README.rst b/galleries/plot_types/arrays/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/plot_types/arrays/README.rst
+rename to galleries/plot_types/arrays/GALLERY_HEADER.rst
+diff --git a/galleries/plot_types/basic/README.rst b/galleries/plot_types/basic/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/plot_types/basic/README.rst
+rename to galleries/plot_types/basic/GALLERY_HEADER.rst
+diff --git a/galleries/plot_types/stats/README.rst b/galleries/plot_types/stats/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/plot_types/stats/README.rst
+rename to galleries/plot_types/stats/GALLERY_HEADER.rst
+diff --git a/galleries/plot_types/unstructured/README.rst b/galleries/plot_types/unstructured/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/plot_types/unstructured/README.rst
+rename to galleries/plot_types/unstructured/GALLERY_HEADER.rst
+diff --git a/galleries/tutorials/lifecycle.py b/galleries/tutorials/lifecycle.py
+index 4c009f802cf4..d932021726da 100644
+--- a/galleries/tutorials/lifecycle.py
++++ b/galleries/tutorials/lifecycle.py
+@@ -19,35 +19,6 @@
+     <https://pbpython.com/effective-matplotlib.html>`_
+     by Chris Moffitt. It was transformed into this tutorial by Chris Holdgraf.
+ 
+-A note on the explicit vs. implicit interfaces
+-==============================================
+-
+-Matplotlib has two interfaces. For an explanation of the trade-offs between the
+-explicit and implicit interfaces see :ref:`api_interfaces`.
+-
+-In the explicit object-oriented (OO) interface we directly utilize instances of
+-:class:`axes.Axes` to build up the visualization in an instance of
+-:class:`figure.Figure`.  In the implicit interface, inspired by and modeled on
+-MATLAB, we use a global state-based interface which is encapsulated in the
+-:mod:`.pyplot` module to plot to the "current Axes".  See the :ref:`pyplot
+-tutorials <pyplot_tutorial>` for a more in-depth look at the
+-pyplot interface.
+-
+-Most of the terms are straightforward but the main thing to remember
+-is that:
+-
+-* The `.Figure` is the final image, and may contain one or more `~.axes.Axes`.
+-* The `~.axes.Axes` represents an individual plot (not to be confused with
+-   `~.axis.Axis`, which refers to the x-, y-, or z-axis of a plot).
+-
+-We call methods that do the plotting directly from the Axes, which gives
+-us much more flexibility and power in customizing our plot.
+-
+-.. note::
+-
+-   In general, use the explicit interface over the implicit pyplot interface
+-   for plotting.
+-
+ Our data
+ ========
+ 
+diff --git a/galleries/users_explain/animations/README.txt b/galleries/users_explain/animations/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/users_explain/animations/README.txt
+rename to galleries/users_explain/animations/GALLERY_HEADER.rst
+diff --git a/galleries/users_explain/colors/README.txt b/galleries/users_explain/colors/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/users_explain/colors/README.txt
+rename to galleries/users_explain/colors/GALLERY_HEADER.rst
+diff --git a/galleries/users_explain/colors/colormaps.py b/galleries/users_explain/colors/colormaps.py
+index 263c3c72e8ea..8c97a6acb810 100644
+--- a/galleries/users_explain/colors/colormaps.py
++++ b/galleries/users_explain/colors/colormaps.py
+@@ -451,7 +451,7 @@ def plot_color_gradients(cmap_category, cmap_list):
+ # ==========
+ #
+ # .. _Third-party colormaps: https://matplotlib.org/mpl-third-party/#colormaps-and-styles
+-# .. [Ware] http://ccom.unh.edu/sites/default/files/publications/Ware_1988_CGA_Color_sequences_univariate_maps.pdf
++# .. [Ware] https://dl.acm.org/doi/10.1109/38.7760
+ # .. [Moreland] http://www.kennethmoreland.com/color-maps/ColorMapsExpanded.pdf
+ # .. [list-colormaps] https://gist.github.com/endolith/2719900#id7
+ # .. [mycarta-banding] https://mycarta.wordpress.com/2012/10/14/the-rainbow-is-deadlong-live-the-rainbow-part-4-cie-lab-heated-body/
+diff --git a/galleries/users_explain/text/README.txt b/galleries/users_explain/text/GALLERY_HEADER.rst
+similarity index 100%
+rename from galleries/users_explain/text/README.txt
+rename to galleries/users_explain/text/GALLERY_HEADER.rst
+diff --git a/galleries/users_explain/text/annotations.py b/galleries/users_explain/text/annotations.py
+index 7c25aa9eed9a..5221c6c90e12 100644
+--- a/galleries/users_explain/text/annotations.py
++++ b/galleries/users_explain/text/annotations.py
+@@ -231,20 +231,20 @@
+ # The arguments are the name of the box style with its attributes as
+ # keyword arguments. Currently, following box styles are implemented:
+ #
+-# ==========   ==============   ==========================
++# ==========   ==============   ====================================
+ # Class        Name             Attrs
+-# ==========   ==============   ==========================
++# ==========   ==============   ====================================
+ # Circle       ``circle``       pad=0.3
+-# DArrow       ``darrow``       pad=0.3
++# DArrow       ``darrow``       pad=0.3,head_width=1.5,head_angle=90
+ # Ellipse      ``ellipse``      pad=0.3
+-# LArrow       ``larrow``       pad=0.3
+-# RArrow       ``rarrow``       pad=0.3
++# LArrow       ``larrow``       pad=0.3,head_width=1.5,head_angle=90
++# RArrow       ``rarrow``       pad=0.3,head_width=1.5,head_angle=90
+ # Round        ``round``        pad=0.3,rounding_size=None
+ # Round4       ``round4``       pad=0.3,rounding_size=None
+ # Roundtooth   ``roundtooth``   pad=0.3,tooth_size=None
+ # Sawtooth     ``sawtooth``     pad=0.3,tooth_size=None
+ # Square       ``square``       pad=0.3
+-# ==========   ==============   ==========================
++# ==========   ==============   ====================================
+ #
+ # .. figure:: /gallery/shapes_and_collections/images/sphx_glr_fancybox_demo_001.png
+ #    :target: /gallery/shapes_and_collections/fancybox_demo.html
+diff --git a/galleries/users_explain/toolkits/axisartist.rst b/galleries/users_explain/toolkits/axisartist.rst
+index 6fad0ee6a731..1b770c828ff6 100644
+--- a/galleries/users_explain/toolkits/axisartist.rst
++++ b/galleries/users_explain/toolkits/axisartist.rst
+@@ -517,7 +517,7 @@ required. ::
+                                                      )
+ 
+     # Find a grid values appropriate for the coordinate (degree,
+-    # minute, second). The argument is a approximate number of grids.
++    # minute, second). The argument is an approximate number of grids.
+     grid_locator1 = angle_helper.LocatorDMS(12)
+ 
+     # And also uses an appropriate formatter.  Note that the acceptable Locator
+diff --git a/lib/matplotlib/_mathtext.py b/lib/matplotlib/_mathtext.py
+index a53595261fcf..21ec24d73286 100644
+--- a/lib/matplotlib/_mathtext.py
++++ b/lib/matplotlib/_mathtext.py
+@@ -357,20 +357,15 @@ def __init__(self, default_font_prop: FontProperties, load_glyph_flags: LoadFlag
+         # Per-instance cache.
+         self._get_info = functools.cache(self._get_info)  # type: ignore[method-assign]
+         self._fonts = {}
+-        self.fontmap: dict[str | int, str] = {}
++        self.fontmap: dict[str, str] = {}
+ 
+         filename = findfont(self.default_font_prop)
+         default_font = get_font(filename)
+         self._fonts['default'] = default_font
+         self._fonts['regular'] = default_font
+ 
+-    def _get_font(self, font: str | int) -> FT2Font:
+-        if font in self.fontmap:
+-            basename = self.fontmap[font]
+-        else:
+-            # NOTE: An int is only passed by subclasses which have placed int keys into
+-            # `self.fontmap`, so we must cast this to confirm it to typing.
+-            basename = T.cast(str, font)
++    def _get_font(self, font: str) -> FT2Font:
++        basename = self.fontmap.get(font, font)
+         cached_font = self._fonts.get(basename)
+         if cached_font is None and os.path.exists(basename):
+             cached_font = get_font(basename)
+@@ -613,12 +608,13 @@ def __init__(self, default_font_prop: FontProperties, load_glyph_flags: LoadFlag
+         # include STIX sized alternatives for glyphs if fallback is STIX
+         if isinstance(self._fallback_font, StixFonts):
+             stixsizedaltfonts = {
+-                 0: 'STIXGeneral',
+-                 1: 'STIXSizeOneSym',
+-                 2: 'STIXSizeTwoSym',
+-                 3: 'STIXSizeThreeSym',
+-                 4: 'STIXSizeFourSym',
+-                 5: 'STIXSizeFiveSym'}
++                '0': 'STIXGeneral',
++                '1': 'STIXSizeOneSym',
++                '2': 'STIXSizeTwoSym',
++                '3': 'STIXSizeThreeSym',
++                '4': 'STIXSizeFourSym',
++                '5': 'STIXSizeFiveSym',
++            }
+ 
+             for size, name in stixsizedaltfonts.items():
+                 fullpath = findfont(name)
+@@ -678,7 +674,7 @@ def _get_glyph(self, fontname: str, font_class: str,
+ 
+                 g = self._fallback_font._get_glyph(fontname, font_class, sym)
+                 family = g[0].family_name
+-                if family in list(BakomaFonts._fontmap.values()):
++                if family in BakomaFonts._fontmap.values():
+                     family = "Computer Modern"
+                 _log.info("Substituting symbol %s from %s", sym, family)
+                 return g
+@@ -699,13 +695,12 @@ def _get_glyph(self, fontname: str, font_class: str,
+     def get_sized_alternatives_for_symbol(self, fontname: str,
+                                           sym: str) -> list[tuple[str, str]]:
+         if self._fallback_font:
+-            return self._fallback_font.get_sized_alternatives_for_symbol(
+-                fontname, sym)
++            return self._fallback_font.get_sized_alternatives_for_symbol(fontname, sym)
+         return [(fontname, sym)]
+ 
+ 
+ class DejaVuFonts(UnicodeFonts, metaclass=abc.ABCMeta):
+-    _fontmap: dict[str | int, str] = {}
++    _fontmap: dict[str, str] = {}
+ 
+     def __init__(self, default_font_prop: FontProperties, load_glyph_flags: LoadFlags):
+         # This must come first so the backend's owner is set correctly
+@@ -717,11 +712,11 @@ def __init__(self, default_font_prop: FontProperties, load_glyph_flags: LoadFlag
+         TruetypeFonts.__init__(self, default_font_prop, load_glyph_flags)
+         # Include Stix sized alternatives for glyphs
+         self._fontmap.update({
+-            1: 'STIXSizeOneSym',
+-            2: 'STIXSizeTwoSym',
+-            3: 'STIXSizeThreeSym',
+-            4: 'STIXSizeFourSym',
+-            5: 'STIXSizeFiveSym',
++            '1': 'STIXSizeOneSym',
++            '2': 'STIXSizeTwoSym',
++            '3': 'STIXSizeThreeSym',
++            '4': 'STIXSizeFourSym',
++            '5': 'STIXSizeFiveSym',
+         })
+         for key, name in self._fontmap.items():
+             fullpath = findfont(name)
+@@ -759,7 +754,7 @@ class DejaVuSerifFonts(DejaVuFonts):
+         'sf': 'DejaVu Sans',
+         'tt': 'DejaVu Sans Mono',
+         'ex': 'DejaVu Serif Display',
+-        0:    'DejaVu Serif',
++        '0': 'DejaVu Serif',
+     }
+ 
+     def get_font_constants(self) -> type[FontConstantsBase]:
+@@ -780,7 +775,7 @@ class DejaVuSansFonts(DejaVuFonts):
+         'sf': 'DejaVu Sans',
+         'tt': 'DejaVu Sans Mono',
+         'ex': 'DejaVu Sans Display',
+-        0:    'DejaVu Sans',
++        '0': 'DejaVu Sans',
+     }
+ 
+     def get_font_constants(self) -> type[FontConstantsBase]:
+@@ -799,7 +794,7 @@ class StixFonts(UnicodeFonts):
+ 
+     - handles sized alternative characters for the STIXSizeX fonts.
+     """
+-    _fontmap: dict[str | int, str] = {
++    _fontmap = {
+         'rm': 'STIXGeneral',
+         'it': 'STIXGeneral:italic',
+         'bf': 'STIXGeneral:weight=bold',
+@@ -807,12 +802,12 @@ class StixFonts(UnicodeFonts):
+         'nonunirm': 'STIXNonUnicode',
+         'nonuniit': 'STIXNonUnicode:italic',
+         'nonunibf': 'STIXNonUnicode:weight=bold',
+-        0: 'STIXGeneral',
+-        1: 'STIXSizeOneSym',
+-        2: 'STIXSizeTwoSym',
+-        3: 'STIXSizeThreeSym',
+-        4: 'STIXSizeFourSym',
+-        5: 'STIXSizeFiveSym',
++        '0': 'STIXGeneral',
++        '1': 'STIXSizeOneSym',
++        '2': 'STIXSizeTwoSym',
++        '3': 'STIXSizeThreeSym',
++        '4': 'STIXSizeFourSym',
++        '5': 'STIXSizeFiveSym',
+     }
+     _fallback_font = None
+     _sans = False
+@@ -879,10 +874,8 @@ def _map_virtual_font(self, fontname: str, font_class: str,
+         return fontname, uniindex
+ 
+     @functools.cache
+-    def get_sized_alternatives_for_symbol(  # type: ignore[override]
+-            self,
+-            fontname: str,
+-            sym: str) -> list[tuple[str, str]] | list[tuple[int, str]]:
++    def get_sized_alternatives_for_symbol(self, fontname: str,
++                                          sym: str) -> list[tuple[str, str]]:
+         fixes = {
+             '\\{': '{', '\\}': '}', '\\[': '[', '\\]': ']',
+             '<': '\N{MATHEMATICAL LEFT ANGLE BRACKET}',
+@@ -893,8 +886,8 @@ def get_sized_alternatives_for_symbol(  # type: ignore[override]
+             uniindex = get_unicode_index(sym)
+         except ValueError:
+             return [(fontname, sym)]
+-        alternatives = [(i, chr(uniindex)) for i in range(6)
+-                        if self._get_font(i).get_char_index(uniindex) != 0]
++        alternatives = [(str(i), chr(uniindex)) for i in range(6)
++                        if self._get_font(str(i)).get_char_index(uniindex) != 0]
+         # The largest size of the radical symbol in STIX has incorrect
+         # metrics that cause it to be disconnected from the stem.
+         if sym == r'\__sqrt__':
+@@ -1672,7 +1665,7 @@ def __init__(self, c: str, height: float, depth: float, state: ParserState,
+                 break
+ 
+         shift = 0.0
+-        if state.font != 0 or len(alternatives) == 1:
++        if state.font != '0' or len(alternatives) == 1:
+             if factor is None:
+                 factor = target_total / (char.height + char.depth)
+             state.fontsize *= factor
+@@ -2679,7 +2672,7 @@ def subsuper(self, s: str, loc: int, toks: ParseResults) -> T.Any:
+         # Handle regular sub/superscripts
+         consts = state.fontset.get_font_constants()
+         lc_height   = last_char.height
+-        lc_baseline = 0
++        lc_baseline = 0.0
+         if self.is_dropsub(last_char):
+             lc_baseline = last_char.depth
+ 
+diff --git a/lib/matplotlib/animation.py b/lib/matplotlib/animation.py
+index be69dce4e927..f20928d0abc2 100644
+--- a/lib/matplotlib/animation.py
++++ b/lib/matplotlib/animation.py
+@@ -369,6 +369,8 @@ def bin_path(cls):
+     @classmethod
+     def isAvailable(cls):
+         """Return whether a MovieWriter subclass is actually available."""
++        if sys.platform == 'emscripten':
++            return False
+         return shutil.which(cls.bin_path()) is not None
+ 
+ 
+diff --git a/lib/matplotlib/artist.py b/lib/matplotlib/artist.py
+index cb6e650a94cc..1030a6809ceb 100644
+--- a/lib/matplotlib/artist.py
++++ b/lib/matplotlib/artist.py
+@@ -223,7 +223,7 @@ def __init__(self):
+         self._snap = None
+         self._sketch = mpl.rcParams['path.sketch']
+         self._path_effects = mpl.rcParams['path.effects']
+-        self._sticky_edges = _XYPair([], [])
++        self._sticky_edges = None
+         self._in_layout = True
+         self._in_autoscale = False
+ 
+@@ -255,10 +255,12 @@ def remove(self):
+             # clear stale callback
+             self.stale_callback = None
+             _ax_flag = False
+-            if hasattr(self, 'axes') and self.axes:
++            ax = getattr(self, 'axes', None)
++            mouseover_set = getattr(ax, '_mouseover_set', None)
++            if mouseover_set is not None:
+                 # remove from the mouse hit list
+-                self.axes._mouseover_set.discard(self)
+-                self.axes.stale = True
++                mouseover_set.discard(self)
++                ax.stale = True
+                 self.axes = None  # decouple the artist from the Axes
+                 _ax_flag = True
+ 
+@@ -1229,6 +1231,8 @@ def sticky_edges(self):
+         >>> artist.sticky_edges.y[:] = (ymin, ymax)
+ 
+         """
++        if self._sticky_edges is None:
++            self._sticky_edges = _XYPair([], [])
+         return self._sticky_edges
+ 
+     def update_from(self, other):
+@@ -1243,8 +1247,11 @@ def update_from(self, other):
+         self._label = other._label
+         self._sketch = other._sketch
+         self._path_effects = other._path_effects
+-        self.sticky_edges.x[:] = other.sticky_edges.x.copy()
+-        self.sticky_edges.y[:] = other.sticky_edges.y.copy()
++        if other._sticky_edges is not None:
++            self.sticky_edges.x[:] = other._sticky_edges.x.copy()
++            self.sticky_edges.y[:] = other._sticky_edges.y.copy()
++        else:
++            self._sticky_edges = None
+         self.pchanged()
+         self.stale = True
+ 
+diff --git a/lib/matplotlib/axes/_axes.py b/lib/matplotlib/axes/_axes.py
+index 483d8862f329..66770e426386 100644
+--- a/lib/matplotlib/axes/_axes.py
++++ b/lib/matplotlib/axes/_axes.py
+@@ -556,8 +556,8 @@ def secondary_xaxis(self, location, functions=None, *, transform=None, **kwargs)
+         """
+         Add a second x-axis to this `~.axes.Axes`.
+ 
+-        For example if we want to have a second scale for the data plotted on
+-        the xaxis.
++        This axis is typically used to display a second x-scale for the data
++        plotted on the Axes.
+ 
+         %(_secax_docstring)s
+ 
+@@ -610,8 +610,8 @@ def secondary_yaxis(self, location, functions=None, *, transform=None, **kwargs)
+         """
+         Add a second y-axis to this `~.axes.Axes`.
+ 
+-        For example if we want to have a second scale for the data plotted on
+-        the yaxis.
++        This axis is typically used to display a second y-scale for the data
++        plotted on the Axes.
+ 
+         %(_secax_docstring)s
+ 
+@@ -2390,11 +2390,13 @@ def bar(self, x, height, width=0.8, bottom=None, *, align="center",
+ 
+         label : str or list of str, optional
+             A single label is attached to the resulting `.BarContainer` as a
+-            label for the whole dataset.
++            legend label for the whole dataset.
+             If a list is provided, it must be the same length as *x* and
+             labels the individual bars. Repeated labels are not de-duplicated
+             and will cause repeated label entries, so this is best used when
+-            bars also differ in style (e.g., by passing a list to *color*.)
++            bars also differ in style (e.g., by passing a list to *color*).
++
++            Tip: Use `.bar_label` to place labels on the bars.
+ 
+         xerr, yerr : float or array-like of shape(N,) or shape(2, N), optional
+             If not *None*, add horizontal / vertical errorbars to the bar tips.
+@@ -2435,6 +2437,7 @@ def bar(self, x, height, width=0.8, bottom=None, *, align="center",
+         --------
+         barh : Plot a horizontal bar plot.
+         grouped_bar : Plot multiple datasets as grouped bar plot.
++        bar_label : Add labels to bars.
+ 
+         Notes
+         -----
+@@ -2730,11 +2733,13 @@ def barh(self, y, width, height=0.8, left=None, *, align="center",
+ 
+         label : str or list of str, optional
+             A single label is attached to the resulting `.BarContainer` as a
+-            label for the whole dataset.
+-            If a list is provided, it must be the same length as *y* and
++            legend label for the whole dataset.
++            If a list is provided, it must be the same length as *x* and
+             labels the individual bars. Repeated labels are not de-duplicated
+             and will cause repeated label entries, so this is best used when
+-            bars also differ in style (e.g., by passing a list to *color*.)
++            bars also differ in style (e.g., by passing a list to *color*).
++
++            Tip: Use `.bar_label` to place labels on the bars.
+ 
+         xerr, yerr : float or array-like of shape(N,) or shape(2, N), optional
+             If not *None*, add horizontal / vertical errorbars to the bar tips.
+@@ -2775,6 +2780,7 @@ def barh(self, y, width, height=0.8, left=None, *, align="center",
+         See Also
+         --------
+         bar : Plot a vertical bar plot.
++        bar_label : Add labels to bars.
+ 
+         Notes
+         -----
+@@ -6543,10 +6549,8 @@ def pcolor(self, *args, shading=None, alpha=None, norm=None, cmap=None,
+             :ref:`Notes <axes-pcolormesh-grid-orientation>` section below.
+ 
+             If ``shading='flat'`` the dimensions of *X* and *Y* should be one
+-            greater than those of *C*, and the quadrilateral is colored due
+-            to the value at ``C[i, j]``.  If *X*, *Y* and *C* have equal
+-            dimensions, a warning will be raised and the last row and column
+-            of *C* will be ignored.
++            greater than those of *C*, otherwise a ValueError is raised.  The
++            quadrilateral is colored due to the value at ``C[i, j]``.
+ 
+             If ``shading='nearest'``, the dimensions of *X* and *Y* should be
+             the same as those of *C* (if not, a ValueError will be raised). The
+@@ -6750,10 +6754,8 @@ def pcolormesh(self, *args, alpha=None, norm=None, cmap=None, vmin=None,
+             :ref:`Notes <axes-pcolormesh-grid-orientation>` section below.
+ 
+             If ``shading='flat'`` the dimensions of *X* and *Y* should be one
+-            greater than those of *C*, and the quadrilateral is colored due
+-            to the value at ``C[i, j]``.  If *X*, *Y* and *C* have equal
+-            dimensions, a warning will be raised and the last row and column
+-            of *C* will be ignored.
++            greater than those of *C*, otherwise a ValueError is raised. The
++            quadrilateral is colored due to the value at ``C[i, j]``.
+ 
+             If ``shading='nearest'`` or ``'gouraud'``, the dimensions of *X*
+             and *Y* should be the same as those of *C* (if not, a ValueError
+diff --git a/lib/matplotlib/axes/_base.py b/lib/matplotlib/axes/_base.py
+index 947457100730..db85c1eea7fe 100644
+--- a/lib/matplotlib/axes/_base.py
++++ b/lib/matplotlib/axes/_base.py
+@@ -2479,8 +2479,7 @@ def _point_in_data_domain(self, x, y):
+         (e.g. negative coordinates with a log scale).
+         """
+         for val, axis in zip([x, y], self._axis_map.values()):
+-            vmin, vmax = axis.limit_range_for_scale(val, val)
+-            if vmin != val or vmax != val:
++            if not axis._scale.val_in_range(val):
+                 return False
+         return True
+ 
+@@ -3055,20 +3054,29 @@ def autoscale_view(self, tight=None, scalex=True, scaley=True):
+         if tight is not None:
+             self._tight = bool(tight)
+ 
++        x_shared_axes = self._shared_axes["x"].get_siblings(self)
++        y_shared_axes = self._shared_axes["y"].get_siblings(self)
++
+         x_stickies = y_stickies = np.array([])
+         if self.use_sticky_edges:
+             if self._xmargin and scalex and self.get_autoscalex_on():
+-                edges = []
+-                for ax in self._shared_axes["x"].get_siblings(self):
+-                    for artist in ax.get_children():
+-                        edges.extend(artist.sticky_edges.x)
+-                x_stickies = np.sort(edges)
++                x_sticky = []
++                for ax in x_shared_axes:
++                    for artist in ax._get_data_children():
++                        sticky_edges = artist._sticky_edges
++                        if sticky_edges is not None and sticky_edges.x:
++                            x_sticky.extend(sticky_edges.x)
++                if x_sticky:
++                    x_stickies = np.sort(x_sticky)
+             if self._ymargin and scaley and self.get_autoscaley_on():
+-                edges = []
+-                for ax in self._shared_axes["y"].get_siblings(self):
+-                    for artist in ax.get_children():
+-                        edges.extend(artist.sticky_edges.y)
+-                y_stickies = np.sort(edges)
++                y_sticky = []
++                for ax in y_shared_axes:
++                    for artist in ax._get_data_children():
++                        sticky_edges = artist._sticky_edges
++                        if sticky_edges is not None and sticky_edges.y:
++                            y_sticky.extend(sticky_edges.y)
++                if y_sticky:
++                    y_stickies = np.sort(y_sticky)
+         if self.get_xscale() == 'log':
+             x_stickies = x_stickies[x_stickies > 0]
+         if self.get_yscale() == 'log':
+@@ -3079,11 +3087,9 @@ def handle_single_axis(
+ 
+             if not (scale and axis._get_autoscale_on()):
+                 return  # nothing to do...
+-
+-            shared = shared_axes.get_siblings(self)
+             # Base autoscaling on finite data limits when there is at least one
+             # finite data limit among all the shared_axes and intervals.
+-            values = [val for ax in shared
++            values = [val for ax in shared_axes
+                       for val in getattr(ax.dataLim, f"interval{name}")
+                       if np.isfinite(val)]
+             if values:
+@@ -3099,20 +3105,22 @@ def handle_single_axis(
+             x0, x1 = locator.nonsingular(x0, x1)
+             # Find the minimum minpos for use in the margin calculation.
+             minimum_minpos = min(
+-                getattr(ax.dataLim, f"minpos{name}") for ax in shared)
++                getattr(ax.dataLim, f"minpos{name}") for ax in shared_axes)
+ 
+             # Prevent margin addition from crossing a sticky value.  A small
+             # tolerance must be added due to floating point issues with
+             # streamplot; it is defined relative to x1-x0 but has
+             # no absolute term (e.g. "+1e-8") to avoid issues when working with
+             # datasets where all values are tiny (less than 1e-8).
+-            tol = 1e-5 * abs(x1 - x0)
+-            # Index of largest element < x0 + tol, if any.
+-            i0 = stickies.searchsorted(x0 + tol) - 1
+-            x0bound = stickies[i0] if i0 != -1 else None
+-            # Index of smallest element > x1 - tol, if any.
+-            i1 = stickies.searchsorted(x1 - tol)
+-            x1bound = stickies[i1] if i1 != len(stickies) else None
++            x0bound = x1bound = None
++            if len(stickies):
++                tol = 1e-5 * abs(x1 - x0)
++                # Index of largest element < x0 + tol, if any.
++                i0 = stickies.searchsorted(x0 + tol) - 1
++                x0bound = stickies[i0] if i0 != -1 else None
++                # Index of smallest element > x1 - tol, if any.
++                i1 = stickies.searchsorted(x1 - tol)
++                x1bound = stickies[i1] if i1 != len(stickies) else None
+ 
+             # Add the margin in figure space and then transform back, to handle
+             # non-linear scales.
+@@ -3137,10 +3145,10 @@ def handle_single_axis(
+             # End of definition of internal function 'handle_single_axis'.
+ 
+         handle_single_axis(
+-            scalex, self._shared_axes["x"], 'x', self.xaxis, self._xmargin,
++            scalex, x_shared_axes, 'x', self.xaxis, self._xmargin,
+             x_stickies, self.set_xbound)
+         handle_single_axis(
+-            scaley, self._shared_axes["y"], 'y', self.yaxis, self._ymargin,
++            scaley, y_shared_axes, 'y', self.yaxis, self._ymargin,
+             y_stickies, self.set_ybound)
+ 
+     def _update_title_position(self, renderer):
+@@ -4543,6 +4551,20 @@ def drag_pan(self, button, key, x, y):
+             self.set_xlim(points[:, 0])
+             self.set_ylim(points[:, 1])
+ 
++    def _get_data_children(self):
++        """
++        Return artists that represent data (plot lines, collections, images,
++        patches, etc.) as opposed to auxiliary artists needed to draw the
++        Axes itself (spines, titles, axis objects, etc.).
++
++        Data children are the artists that can contribute to autoscaling
++        and sticky edges.
++
++        Note: This is a preliminary definition and has not been thought
++        through completely. We may want to revise this later.
++        """
++        return [*self._children, *self._axis_map.values()]
++
+     def get_children(self):
+         # docstring inherited.
+         return [
+diff --git a/lib/matplotlib/axes/_secondary_axes.py b/lib/matplotlib/axes/_secondary_axes.py
+index 08e706bba245..c761b993d8e5 100644
+--- a/lib/matplotlib/axes/_secondary_axes.py
++++ b/lib/matplotlib/axes/_secondary_axes.py
+@@ -329,6 +329,14 @@ def set_color(self, color):
+ Returns
+ -------
+ ax : axes._secondary_axes.SecondaryAxis
++    The returned Axes is overlaid on top of the original Axes and all
++    components except for the complementary axis are hidden. You may modify
++    the complementary axis, e.g. by setting ticks or an axis label. However,
++    it is not designed to hold data, so that you should not call any
++    plotting methods on it. Its limits are derived from the parent Axes via
++    the specified transformation, and setting limits on the secondary axis
++    (e.g., via ``set_xlim`` or ``set_ylim``) has no effect.
++
+ 
+ Other Parameters
+ ----------------
+diff --git a/lib/matplotlib/axis.py b/lib/matplotlib/axis.py
+index 2cd07f869060..0ddfee2d537c 100644
+--- a/lib/matplotlib/axis.py
++++ b/lib/matplotlib/axis.py
+@@ -2202,9 +2202,16 @@ def _set_tick_locations(self, ticks, *, minor=False):
+         ticks = self.convert_units(ticks)
+         locator = mticker.FixedLocator(ticks)  # validate ticks early.
+         if len(ticks):
++            old_vmin, old_vmax = self.get_view_interval()
+             for axis in self._get_shared_axis():
+                 # set_view_interval maintains any preexisting inversion.
+                 axis.set_view_interval(min(ticks), max(ticks))
++            new_vmin, new_vmax = self.get_view_interval()
++            if old_vmin != new_vmin or old_vmax != new_vmax:
++                self.axes.callbacks.process(
++                    f"{self._get_axis_name()}lim_changed",
++                    self.axes,
++                )
+         self.axes.stale = True
+         if minor:
+             self.set_minor_locator(locator)
+diff --git a/lib/matplotlib/backends/_backend_tk.py b/lib/matplotlib/backends/_backend_tk.py
+index d4c2ad474165..a18a9bd8660f 100644
+--- a/lib/matplotlib/backends/_backend_tk.py
++++ b/lib/matplotlib/backends/_backend_tk.py
+@@ -270,14 +270,24 @@ def _update_device_pixel_ratio(self, event=None):
+         elif sys.platform == "linux":
+             ratio = self._tkcanvas.winfo_fpixels('1i') / 96
+         if ratio is not None and self._set_device_pixel_ratio(ratio):
+-            # The easiest way to resize the canvas is to resize the canvas
+-            # widget itself, since we implement all the logic for resizing the
+-            # canvas backing store on that event.
++            # Resize the canvas widget, then explicitly update the figure
++            # size to match the actual widget dimensions.  When the canvas
++            # is constrained by a geometry manager (pack/grid), <Configure>
++            # may not fire after configure(), so we handle the resize
++            # directly — similar to Qt's _update_pixel_ratio approach.
+             w, h = self.get_width_height(physical=True)
+             self._tkcanvas.configure(width=w, height=h)
++            self._resize_figure_for_canvas_size(
++                self._tkcanvas.winfo_width(),
++                self._tkcanvas.winfo_height())
+ 
+     def resize(self, event):
+-        width, height = event.width, event.height
++        self._resize_figure_for_canvas_size(event.width, event.height)
++
++    def _resize_figure_for_canvas_size(self, width, height):
++        """Update figure size and redraw based on a given canvas size."""
++        if width <= 0 or height <= 0:
++            return
+ 
+         # compute desired figure size in inches
+         dpival = self.figure.dpi
+diff --git a/lib/matplotlib/backends/backend_pgf.py b/lib/matplotlib/backends/backend_pgf.py
+index ab9782b369a3..3205f294ab2d 100644
+--- a/lib/matplotlib/backends/backend_pgf.py
++++ b/lib/matplotlib/backends/backend_pgf.py
+@@ -282,7 +282,7 @@ def _setup_latex_process(self, *, expect_reply=True):
+         # it.
+         try:
+             self.latex = subprocess.Popen(
+-                [mpl.rcParams["pgf.texsystem"], "-halt-on-error"],
++                [mpl.rcParams["pgf.texsystem"], "-halt-on-error", "-no-shell-escape"],
+                 stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                 encoding="utf-8", cwd=self.tmpdir)
+         except FileNotFoundError as err:
+@@ -849,7 +849,7 @@ def print_pdf(self, fname_or_fh, *, metadata=None, **kwargs):
+             texcommand = mpl.rcParams["pgf.texsystem"]
+             cbook._check_and_log_subprocess(
+                 [texcommand, "-interaction=nonstopmode", "-halt-on-error",
+-                 "figure.tex"], _log, cwd=tmpdir)
++                 "-no-shell-escape", "figure.tex"], _log, cwd=tmpdir)
+             with ((tmppath / "figure.pdf").open("rb") as orig,
+                   cbook.open_file_cm(fname_or_fh, "wb") as dest):
+                 shutil.copyfileobj(orig, dest)  # copy file contents to target
+@@ -966,7 +966,7 @@ def _run_latex(self):
+             tex_source.write_bytes(self._file.getvalue())
+             cbook._check_and_log_subprocess(
+                 [texcommand, "-interaction=nonstopmode", "-halt-on-error",
+-                 tex_source],
++                 "-no-shell-escape", tex_source],
+                 _log, cwd=tmpdir)
+             shutil.move(tex_source.with_suffix(".pdf"), self._output_name)
+ 
+diff --git a/lib/matplotlib/backends/backend_ps.py b/lib/matplotlib/backends/backend_ps.py
+index 644eb5d3f244..f4d29ecfe347 100644
+--- a/lib/matplotlib/backends/backend_ps.py
++++ b/lib/matplotlib/backends/backend_ps.py
+@@ -1266,8 +1266,9 @@ def _convert_psfrags(tmppath, psfrags, paper_width, paper_height, orientation):
+ 
+     with TemporaryDirectory() as tmpdir:
+         psfile = os.path.join(tmpdir, "tmp.ps")
++        # -R1 is a security flag used to prevent shell command execution
+         cbook._check_and_log_subprocess(
+-            ['dvips', '-q', '-R0', '-o', psfile, dvifile], _log)
++            ['dvips', '-q', '-R1', '-o', psfile, dvifile], _log)
+         shutil.move(psfile, tmppath)
+ 
+     # check if the dvips created a ps in landscape paper.  Somehow,
+@@ -1311,7 +1312,7 @@ def gs_distill(tmpfile, eps=False, ptype='letter', bbox=None, rotated=False):
+ 
+     cbook._check_and_log_subprocess(
+         [mpl._get_executable_info("gs").executable,
+-         "-dBATCH", "-dNOPAUSE", "-r%d" % dpi, "-sDEVICE=ps2write",
++         "-dBATCH", "-dNOPAUSE", "-dSAFER", "-r%d" % dpi, "-sDEVICE=ps2write",
+          *paper_option, f"-sOutputFile={psfile}", tmpfile],
+         _log)
+ 
+@@ -1355,6 +1356,7 @@ def xpdf_distill(tmpfile, eps=False, ptype='letter', bbox=None, rotated=False):
+         # happy (https://ghostscript.com/doc/9.56.1/Use.htm#MS_Windows).
+         cbook._check_and_log_subprocess(
+             ["ps2pdf",
++             "-dSAFER",
+              "-dAutoFilterColorImages#false",
+              "-dAutoFilterGrayImages#false",
+              "-sAutoRotatePages#None",
+diff --git a/lib/matplotlib/backends/backend_webagg_core.py b/lib/matplotlib/backends/backend_webagg_core.py
+index 8062c7eabf4d..abd958fb0bcc 100644
+--- a/lib/matplotlib/backends/backend_webagg_core.py
++++ b/lib/matplotlib/backends/backend_webagg_core.py
+@@ -349,8 +349,11 @@ def _handle_key(self, event):
+     handle_key_press = handle_key_release = _handle_key
+ 
+     def handle_toolbar_button(self, event):
+-        # TODO: Be more suspicious of the input
+-        getattr(self.toolbar, event['name'])()
++        name = event['name']
++        for item in self.toolbar.toolitems:
++            if item[3] is not None and name == item[3]:
++                getattr(self.toolbar, name)()
++                break
+ 
+     def handle_refresh(self, event):
+         if self.manager:
+diff --git a/lib/matplotlib/collections.py b/lib/matplotlib/collections.py
+index 27b3789a3105..b2f8255367e8 100644
+--- a/lib/matplotlib/collections.py
++++ b/lib/matplotlib/collections.py
+@@ -1271,7 +1271,15 @@ def legend_elements(self, prop="colors", num="auto",
+               "alpha": self.get_alpha(),
+               **kwargs}
+ 
+-        for val, lab in zip(values, label_values):
++        # Pre-format all labels
++        # TODO: check whether we can switch to
++        #       formatted_labels = fmt.format_ticks(label_values)
++        #       There are subtle differences for some formatters as that passes the
++        #       indices to __call__ as well.
++        fmt.set_locs(label_values)
++        formatted_labels = [fmt(lab) for lab in label_values]
++
++        for val, formatted in zip(values, formatted_labels):
+             if prop == "colors":
+                 color = self.cmap(self.norm(val))
+             elif prop == "sizes":
+@@ -1281,10 +1289,7 @@ def legend_elements(self, prop="colors", num="auto",
+             h = mlines.Line2D([0], [0], ls="", color=color, ms=size,
+                               marker=self.get_paths()[0], **kw)
+             handles.append(h)
+-            if hasattr(fmt, "set_locs"):
+-                fmt.set_locs(label_values)
+-            l = fmt(lab)
+-            labels.append(l)
++            labels.append(formatted)
+ 
+         return handles, labels
+ 
+diff --git a/lib/matplotlib/contour.py b/lib/matplotlib/contour.py
+index 287794e00ad5..eb103dc2fc2a 100644
+--- a/lib/matplotlib/contour.py
++++ b/lib/matplotlib/contour.py
+@@ -145,6 +145,17 @@ def clabel(self, levels=None, *,
+             A list of `.Text` instances for the labels.
+         """
+ 
++        if self.filled:
++            _api.warn_deprecated(
++                "3.11",
++                message="clabel() is not designed to be used with filled contours and "
++                        "may result in inconsistent plots. Applying clabel() to filled "
++                        "contours is thus deprecated since %(since)s. If you need "
++                        "labels with filled contours, instead draw contour lines "
++                        "using contour() in addition to contourf() and add the labels "
++                        "to the contour lines."
++            )
++
+         # Based on the input arguments, clabel() adds a list of "label
+         # specific" attributes to the ContourSet object.  These attributes are
+         # all of the form label* and names should be fairly self explanatory.
+diff --git a/lib/matplotlib/dviread.py b/lib/matplotlib/dviread.py
+index 1a79e7277be8..dd5efdc85b34 100644
+--- a/lib/matplotlib/dviread.py
++++ b/lib/matplotlib/dviread.py
+@@ -1301,7 +1301,7 @@ def find_tex_file(filename):
+ 
+     try:
+         lk = _LuatexKpsewhich()
+-    except FileNotFoundError:
++    except (FileNotFoundError, OSError):
+         lk = None  # Fallback to directly calling kpsewhich, as below.
+ 
+     if lk:
+@@ -1324,7 +1324,7 @@ def find_tex_file(filename):
+             path = cbook._check_and_log_subprocess(
+                 ['kpsewhich', '-mktex=pk', filename], _log, **kwargs,
+             ).rstrip('\n')
+-        except (FileNotFoundError, RuntimeError):
++        except (FileNotFoundError, OSError, RuntimeError):
+             path = None
+ 
+     if path:
+diff --git a/lib/matplotlib/figure.py b/lib/matplotlib/figure.py
+index 501b3e32ebf4..ad0206e0db5c 100644
+--- a/lib/matplotlib/figure.py
++++ b/lib/matplotlib/figure.py
+@@ -2492,6 +2492,9 @@ def __init__(self,
+             - a tuple ``(width, height)``, which is interpreted in inches, i.e. as
+               ``(width, height, "in")``.
+ 
++            One of *width* or *height* may be ``None``; the respective value is
++            taken from :rc:`figure.figsize`.
++
+         dpi : float, default: :rc:`figure.dpi`
+             Dots per inch.
+ 
+@@ -3155,6 +3158,10 @@ def set_size_inches(self, w, h=None, forward=True):
+         """
+         if h is None:  # Got called with a single pair as argument.
+             w, h = w
++        if w is None or h is None:
++            raise ValueError(
++                "Figure.set_size_inches does not accept None; provide both "
++                "width and height explicitly")
+         size = np.array([w, h])
+         if not np.isfinite(size).all() or (size < 0).any():
+             raise ValueError(f'figure size must be positive finite not {size}')
+@@ -3763,25 +3770,40 @@ def _parse_figsize(figsize, dpi):
+     """
+     num_parts = len(figsize)
+     if num_parts == 2:
+-        return figsize
++        x, y = figsize
+     elif num_parts == 3:
+         x, y, unit = figsize
+         if unit == 'in':
+             pass
+         elif unit == 'cm':
+-            x /= 2.54
+-            y /= 2.54
++            if x is not None:
++                x /= 2.54
++            if y is not None:
++                y /= 2.54
+         elif unit == 'px':
+-            x /= dpi
+-            y /= dpi
++            if x is not None:
++                x /= dpi
++            if y is not None:
++                y /= dpi
+         else:
+             raise ValueError(
+                 f"Invalid unit {unit!r} in 'figsize'; "
+                 "supported units are 'in', 'cm', 'px'"
+             )
+-        return x, y
+     else:
+         raise ValueError(
+             "Invalid figsize format, expected (x, y) or (x, y, unit) but got "
+             f"{figsize!r}"
+         )
++
++    if x is None and y is None:
++        raise ValueError(
++            "figsize=(None, None) is invalid; at least one of width or "
++            "height must be provided")
++
++    default_width, default_height = mpl.rcParams["figure.figsize"]
++    if x is None:
++        x = default_width
++    if y is None:
++        y = default_height
++    return x, y
+diff --git a/lib/matplotlib/font_manager.py b/lib/matplotlib/font_manager.py
+index b07dd1345f54..90aa778cb292 100644
+--- a/lib/matplotlib/font_manager.py
++++ b/lib/matplotlib/font_manager.py
+@@ -290,6 +290,9 @@ def findSystemFonts(fontpaths=None, fontext='ttf'):
+         if sys.platform == 'win32':
+             installed_fonts = _get_win32_installed_fonts()
+             fontpaths = []
++        elif sys.platform == 'emscripten':
++            installed_fonts = []
++            fontpaths = []
+         else:
+             installed_fonts = _get_fontconfig_fonts()
+             if sys.platform == 'darwin':
+@@ -1228,9 +1231,12 @@ def __init__(self, size=None, weight='normal'):
+         self.ttflist = []
+ 
+         # Delay the warning by 5s.
+-        timer = threading.Timer(5, lambda: _log.warning(
+-            'Matplotlib is building the font cache; this may take a moment.'))
+-        timer.start()
++        try:
++            timer = threading.Timer(5, lambda: _log.warning(
++                'Matplotlib is building the font cache; this may take a moment.'))
++            timer.start()
++        except RuntimeError:
++            timer = None
+         try:
+             for fontext in ["afm", "ttf"]:
+                 for path in [*findSystemFonts(paths, fontext=fontext),
+@@ -1243,7 +1249,8 @@ def __init__(self, size=None, weight='normal'):
+                         _log.info("Failed to extract font properties from %s: "
+                                   "%s", path, exc)
+         finally:
+-            timer.cancel()
++            if timer:
++                timer.cancel()
+ 
+     def addfont(self, path):
+         """
+diff --git a/lib/matplotlib/ft2font.pyi b/lib/matplotlib/ft2font.pyi
+index 2be018c40d63..3003f83932bc 100644
+--- a/lib/matplotlib/ft2font.pyi
++++ b/lib/matplotlib/ft2font.pyi
+@@ -243,7 +243,7 @@ class FT2Font(Buffer):
+         _kerning_factor: int | None = ...
+     ) -> None: ...
+     if sys.version_info[:2] >= (3, 12):
+-        def __buffer__(self, flags: int) -> memoryview: ...
++        def __buffer__(self, /, flags: int) -> memoryview: ...
+     def _layout(
+         self,
+         text: str,
+@@ -349,7 +349,7 @@ class FT2Image(Buffer):
+     def __init__(self, width: int, height: int) -> None: ...
+     def draw_rect_filled(self, x0: int, y0: int, x1: int, y1: int) -> None: ...
+     if sys.version_info[:2] >= (3, 12):
+-        def __buffer__(self, flags: int) -> memoryview: ...
++        def __buffer__(self, /, flags: int) -> memoryview: ...
+ 
+ @final
+ class Glyph:
+diff --git a/lib/matplotlib/image.py b/lib/matplotlib/image.py
+index 690b28ff5e12..0ae6eab12361 100644
+--- a/lib/matplotlib/image.py
++++ b/lib/matplotlib/image.py
+@@ -209,9 +209,15 @@ def _resample(
+ 
+     # When an output pixel falls exactly on the edge between two input pixels, the Agg
+     # resampler will use the right input pixel as the nearest neighbor.  We want the
+-    # left input pixel to be chosen instead, so we flip the supplied transform.
++    # left input pixel to be chosen instead, so we flip the input data and the supplied
++    # transform.  If origin != 'upper', the transform will already include a flip in the
++    # vertical direction.
+     if interpolation == 'nearest':
+-        transform += Affine2D().translate(-out.shape[1], -out.shape[0]).scale(-1, -1)
++        transform = Affine2D().translate(-data.shape[1], 0).scale(-1, 1) + transform
++        data = np.flip(data, axis=1)
++        if image_obj.origin == 'upper':
++            transform = Affine2D().translate(0, -data.shape[0]).scale(1, -1) + transform
++            data = np.flip(data, axis=0)
+ 
+     _image.resample(data, out, transform,
+                     _interpd_[interpolation],
+@@ -220,10 +226,6 @@ def _resample(
+                     image_obj.get_filternorm(),
+                     image_obj.get_filterrad())
+ 
+-    # Because we flipped the supplied transform, we then flip the output image back.
+-    if interpolation == 'nearest':
+-        out = np.flip(out, axis=(0, 1))
+-
+     return out
+ 
+ 
+@@ -408,7 +410,13 @@ def _make_image(self, A, in_bbox, out_bbox, clip_bbox, magnification=1.0,
+         magnified_extents = clipped_bbox.extents * magnification
+         if ((not unsampled) and round_to_pixel_border):
+             # Round to the nearest output pixel
+-            magnified_bbox = Bbox.from_extents((magnified_extents + 0.5).astype(int))
++            # Add a tiny fudge amount to account for numerical precision loss
++            # on the two sides away from the Agg anchor point (x0, y1)
++            x0 = np.floor(magnified_extents[0] + 0.5)  # round half up
++            y0 = np.ceil(magnified_extents[1] - 0.5 - 1e-8)  # round half down
++            x1 = np.floor(magnified_extents[2] + 0.5 + 1e-8)  # round half up
++            y1 = np.ceil(magnified_extents[3] - 0.5)  # round half down
++            magnified_bbox = Bbox.from_extents([x0, y0, x1, y1])
+         else:
+             magnified_bbox = Bbox.from_extents(magnified_extents)
+ 
+diff --git a/lib/matplotlib/legend.py b/lib/matplotlib/legend.py
+index cde901d286a2..133ca062df7a 100644
+--- a/lib/matplotlib/legend.py
++++ b/lib/matplotlib/legend.py
+@@ -98,9 +98,11 @@ def _update_bbox_to_anchor(self, loc_in_canvas):
+ _legend_kw_doc_base = """
+ bbox_to_anchor : `.BboxBase`, 2-tuple, or 4-tuple of floats
+     Box that is used to position the legend in conjunction with *loc*.
++    This is an advanced option for free placement of the legend. For
++    most use cases, *loc* alone is sufficient.
++
+     Defaults to ``axes.bbox`` (if called as a method to `.Axes.legend`) or
+-    ``figure.bbox`` (if ``figure.legend``).  This argument allows arbitrary
+-    placement of the legend.
++    ``figure.bbox`` (if ``figure.legend``).
+ 
+     Bbox coordinates are interpreted in the coordinate system given by
+     *bbox_transform*, with the default transform
+@@ -119,6 +121,9 @@ def _update_bbox_to_anchor(self, loc_in_canvas):
+ 
+         loc='upper right', bbox_to_anchor=(0.5, 0.5)
+ 
++    For more details on legend positioning, see the
++    :ref:`legend_guide`.
++
+ ncols : int, default: 1
+     The number of columns that the legend has.
+ 
+@@ -265,15 +270,19 @@ def _update_bbox_to_anchor(self, loc_in_canvas):
+ loc : str or pair of floats, default: {default}
+     The location of the legend.
+ 
+-    The strings ``'upper left'``, ``'upper right'``, ``'lower left'``,
+-    ``'lower right'`` place the legend at the corresponding corner of the
+-    {parent}.
++    The string locations place the legend at the corresponding position
++    within the bounding box, which by default is the full {parent} area.
++    The bounding box can be changed via *bbox_to_anchor*.
+ 
+-    The strings ``'upper center'``, ``'lower center'``, ``'center left'``,
+-    ``'center right'`` place the legend at the center of the corresponding edge
+-    of the {parent}.
++    The positions are visualized below::
+ 
+-    The string ``'center'`` places the legend at the center of the {parent}.
++        +--------------+--------------+---------------+
++        | 'upper left' |'upper center'| 'upper right' |
++        +--------------+--------------+---------------+
++        |'center left' |   'center'   |'center right' |
++        +--------------+--------------+---------------+
++        | 'lower left' |'lower center'| 'lower right' |
++        +--------------+--------------+---------------+
+ {best}
+     The location can also be a 2-tuple giving the coordinates of the lower-left
+     corner of the legend in {parent} coordinates (in which case *bbox_to_anchor*
+@@ -1385,6 +1394,11 @@ def _parse_legend_args(axs, *args, handles=None, labels=None, **kwargs):
+ 
+     elif len(args) == 2:  # 2 args: user defined handles and labels.
+         handles, labels = args[:2]
++        if (hasattr(handles, "__len__") and hasattr(labels, "__len__")
++                and len(handles) != len(labels)):
++            _api.warn_external(f"Mismatched number of handles and labels: "
++                               f"len(handles) = {len(handles)} "
++                               f"len(labels) = {len(labels)}")
+ 
+     else:
+         raise _api.nargs_error('legend', '0-2', len(args))
+diff --git a/lib/matplotlib/lines.py b/lib/matplotlib/lines.py
+index b206d51e5085..69ad36fb768b 100644
+--- a/lib/matplotlib/lines.py
++++ b/lib/matplotlib/lines.py
+@@ -799,8 +799,11 @@ def draw(self, renderer):
+                 if self.get_sketch_params() is not None:
+                     gc.set_sketch_params(*self.get_sketch_params())
+ 
+-                # We first draw a path within the gaps if needed.
+-                if self.is_dashed() and self._gapcolor is not None:
++                # We first draw a path within the gaps if needed, but only for
++                # visible dashed lines; zero-width lines would otherwise yield
++                # all-zero dashes.
++                if (self._linewidth > 0 and self.is_dashed()
++                        and self._gapcolor is not None):
+                     lc_rgba = mcolors.to_rgba(self._gapcolor, self._alpha)
+                     gc.set_foreground(lc_rgba, isRGBA=True)
+ 
+@@ -813,7 +816,10 @@ def draw(self, renderer):
+                 lc_rgba = mcolors.to_rgba(self._color, self._alpha)
+                 gc.set_foreground(lc_rgba, isRGBA=True)
+ 
+-                gc.set_dashes(*self._dash_pattern)
++                if self._linewidth > 0:
++                    gc.set_dashes(*self._dash_pattern)
++                else:
++                    gc.set_dashes(0, None)
+                 renderer.draw_path(gc, tpath, affine.frozen())
+                 gc.restore()
+ 
+diff --git a/lib/matplotlib/patches.py b/lib/matplotlib/patches.py
+index 4a4bd698db04..cdd03bcd7e89 100644
+--- a/lib/matplotlib/patches.py
++++ b/lib/matplotlib/patches.py
+@@ -709,8 +709,9 @@ def _draw_paths_with_artist_properties(
+             from matplotlib.patheffects import PathEffectRenderer
+             renderer = PathEffectRenderer(self.get_path_effects(), renderer)
+ 
+-        # Draw the gaps first if gapcolor is set
+-        if self._has_dashed_edge() and self._gapcolor is not None:
++        # We first draw a path within the gaps if needed, but only for visible
++        # dashed edges; zero-width edges would otherwise yield all-zero dashes.
++        if lw > 0 and self._has_dashed_edge() and self._gapcolor is not None:
+             gc.set_foreground(self._gapcolor, isRGBA=True)
+             offset_gaps, gaps = mlines._get_inverse_dash_pattern(
+                 *self._dash_pattern)
+@@ -720,7 +721,10 @@ def _draw_paths_with_artist_properties(
+ 
+         # Draw the main edge
+         gc.set_foreground(self._edgecolor, isRGBA=True)
+-        gc.set_dashes(*self._dash_pattern)
++        if lw > 0:
++            gc.set_dashes(*self._dash_pattern)
++        else:
++            gc.set_dashes(0, None)
+         for draw_path_args in draw_path_args_list:
+             renderer.draw_path(gc, *draw_path_args)
+ 
+@@ -2583,83 +2587,124 @@ def __call__(self, x0, y0, width, height, mutation_size):
+             return trans.transform_path(Path.unit_circle())
+ 
+     @_register_style(_style_list)
+-    class LArrow:
+-        """A box in the shape of a left-pointing arrow."""
++    class RArrow:
++        """A box in the shape of a right-pointing arrow."""
+ 
+-        def __init__(self, pad=0.3):
++        def __init__(self, pad=0.3, head_width=1.5, head_angle=90):
+             """
+             Parameters
+             ----------
+             pad : float, default: 0.3
+                 The amount of padding around the original box.
++            head_width : float, default: 1.5
++                The head width, relative to the arrow shaft width; must be
++                nonnegative.
++            head_angle : float, default: 90
++                The angle at the tip of the arrow, in degrees; must be nonzero
++                (modulo 360).  Negative angles result in arrow heads pointing
++                backwards.
+             """
+             self.pad = pad
++            if head_width < 0:
++                raise ValueError("'head_width' must be nonnegative")
++            self.head_width = head_width
++            if head_angle % 360 == 0:
++                raise ValueError("'head_angle' must be nonzero")
++            self.head_angle = head_angle
+ 
+         def __call__(self, x0, y0, width, height, mutation_size):
+-            # padding
++            # padding & padded dimensions
+             pad = mutation_size * self.pad
+-            # width and height with padding added.
+-            width, height = width + 2 * pad, height + 2 * pad
+-            # boundary of the padded box
++            dx, dy = width + 2 * pad, height + 2 * pad
+             x0, y0 = x0 - pad, y0 - pad,
+-            x1, y1 = x0 + width, y0 + height
+-
+-            dx = (y1 - y0) / 2
+-            dxx = dx / 2
+-            x0 = x0 + pad / 1.4  # adjust by ~sqrt(2)
+-
+-            return Path._create_closed(
+-                [(x0 + dxx, y0), (x1, y0), (x1, y1), (x0 + dxx, y1),
+-                 (x0 + dxx, y1 + dxx), (x0 - dx, y0 + dx),
+-                 (x0 + dxx, y0 - dxx),  # arrow
+-                 (x0 + dxx, y0)])
++            x1, y1 = x0 + dx, y0 + dy
++
++            head_dy = self.head_width * dy
++            mid_y = (y0 + y1) / 2
++            shaft_y0 = mid_y - head_dy / 2
++            shaft_y1 = mid_y + head_dy / 2
++
++            cot = 1 / math.tan(math.radians(self.head_angle / 2))
++
++            if cot > 0:
++                # tip_x is chosen s.t. the angled line moving back from the tip hits
++                # i) if head_width > 1: the box corner, or ii) if head_width <
++                # 1 the box edge at the point giving the correct shaft width.
++                tip_x = x1 + cot * min(dy, head_dy) / 2
++                shaft_x = tip_x - cot * head_dy / 2
++                return Path._create_closed([
++                    (x0, y0), (shaft_x, y0), (shaft_x, shaft_y0),
++                    (tip_x, mid_y),
++                    (shaft_x, shaft_y1), (shaft_x, y1), (x0, y1),
++                ])
++            else:  # Reverse arrowhead.
++                # Make the long (outer) side of the arrowhead flush with the
++                # original box, and move back accordingly (but clipped to no
++                # more than the box length).  If this clipping is necessary,
++                # the y positions at the short (inner) side of the arrowhead
++                # will be thicker than the original box, hence the need to
++                # recompute mid_y0 & mid_y1.
++                # If head_width < 1 no arrowhead is drawn.
++                dx = min(-cot * max(head_dy - dy, 0) / 2, dx)  # cot < 0!
++                mid_y0 = min(shaft_y0, y0) - dx / cot
++                mid_y1 = max(shaft_y1, y1) + dx / cot
++                return Path._create_closed([
++                    (x0, y0), (x1 - dx, mid_y0), (x1, shaft_y0),
++                    (x1, shaft_y1), (x1 - dx, mid_y1), (x0, y1),
++                ])
+ 
+     @_register_style(_style_list)
+-    class RArrow(LArrow):
+-        """A box in the shape of a right-pointing arrow."""
++    class LArrow(RArrow):
++        """A box in the shape of a left-pointing arrow."""
+ 
+         def __call__(self, x0, y0, width, height, mutation_size):
+-            p = BoxStyle.LArrow.__call__(
+-                self, x0, y0, width, height, mutation_size)
++            p = super().__call__(x0, y0, width, height, mutation_size)
+             p.vertices[:, 0] = 2 * x0 + width - p.vertices[:, 0]
+             return p
+ 
+     @_register_style(_style_list)
+-    class DArrow:
++    class DArrow(RArrow):
+         """A box in the shape of a two-way arrow."""
+-        # Modified from LArrow to add a right arrow to the bbox.
+-
+-        def __init__(self, pad=0.3):
+-            """
+-            Parameters
+-            ----------
+-            pad : float, default: 0.3
+-                The amount of padding around the original box.
+-            """
+-            self.pad = pad
++        # Modified from RArrow to have arrows on both sides; see comments above.
+ 
+         def __call__(self, x0, y0, width, height, mutation_size):
+-            # padding
++            # padding & padded dimensions
+             pad = mutation_size * self.pad
+-            # width and height with padding added.
+-            # The width is padded by the arrows, so we don't need to pad it.
+-            height = height + 2 * pad
+-            # boundary of the padded box
+-            x0, y0 = x0 - pad, y0 - pad
+-            x1, y1 = x0 + width, y0 + height
+-
+-            dx = (y1 - y0) / 2
+-            dxx = dx / 2
+-            x0 = x0 + pad / 1.4  # adjust by ~sqrt(2)
+-
+-            return Path._create_closed([
+-                (x0 + dxx, y0), (x1, y0),  # bot-segment
+-                (x1, y0 - dxx), (x1 + dx + dxx, y0 + dx),
+-                (x1, y1 + dxx),  # right-arrow
+-                (x1, y1), (x0 + dxx, y1),  # top-segment
+-                (x0 + dxx, y1 + dxx), (x0 - dx, y0 + dx),
+-                (x0 + dxx, y0 - dxx),  # left-arrow
+-                (x0 + dxx, y0)])
++            dx, dy = width + 2 * pad, height + 2 * pad
++            x0, y0 = x0 - pad, y0 - pad,
++            x1, y1 = x0 + dx, y0 + dy
++
++            head_dy = self.head_width * dy
++            mid_y = (y0 + y1) / 2
++            shaft_y0 = mid_y - head_dy / 2
++            shaft_y1 = mid_y + head_dy / 2
++
++            cot = 1 / math.tan(math.radians(self.head_angle / 2))
++
++            if cot > 0:
++                tip_x0 = x0 - cot * min(dy, head_dy) / 2
++                shaft_x0 = tip_x0 + cot * head_dy / 2
++                tip_x1 = x1 + cot * min(dy, head_dy) / 2
++                shaft_x1 = tip_x1 - cot * head_dy / 2
++                return Path._create_closed([
++                    (shaft_x0, y1), (shaft_x0, shaft_y1),
++                    (tip_x0, mid_y),
++                    (shaft_x0, shaft_y0), (shaft_x0, y0),
++                    (shaft_x1, y0), (shaft_x1, shaft_y0),
++                    (tip_x1, mid_y),
++                    (shaft_x1, shaft_y1), (shaft_x1, y1),
++                ])
++            else:
++                # Don't move back by more than half the box length.
++                dx = min(-cot * max(head_dy - dy, 0) / 2, dx / 2)  # cot < 0!
++                mid_y0 = min(shaft_y0, y0) - dx / cot
++                mid_y1 = max(shaft_y1, y1) + dx / cot
++                return Path._create_closed([
++                    (x0, shaft_y0), (x0 + dx, mid_y0),
++                    (x1 - dx, mid_y0), (x1, shaft_y0),
++                    (x1, shaft_y1), (x1 - dx, mid_y1),
++                    (x0 + dx, mid_y1), (x0, shaft_y1),
++                ])
+ 
+     @_register_style(_style_list)
+     class Round:
+diff --git a/lib/matplotlib/patches.pyi b/lib/matplotlib/patches.pyi
+index 4f44d142074f..862eccf4da64 100644
+--- a/lib/matplotlib/patches.pyi
++++ b/lib/matplotlib/patches.pyi
+@@ -379,9 +379,13 @@ class BoxStyle(_Style):
+             mutation_size: float,
+         ) -> Path: ...
+ 
+-    class LArrow(BoxStyle):
++    class RArrow(BoxStyle):
+         pad: float
+-        def __init__(self, pad: float = ...) -> None: ...
++        head_width: float
++        head_angle: float
++        def __init__(
++            self, pad: float = ..., head_width: float = ..., head_angle: float = ...
++        ) -> None: ...
+         def __call__(
+             self,
+             x0: float,
+@@ -391,7 +395,7 @@ class BoxStyle(_Style):
+             mutation_size: float,
+         ) -> Path: ...
+ 
+-    class RArrow(LArrow):
++    class LArrow(RArrow):
+         def __call__(
+             self,
+             x0: float,
+@@ -401,9 +405,13 @@ class BoxStyle(_Style):
+             mutation_size: float,
+         ) -> Path: ...
+ 
+-    class DArrow(BoxStyle):
++    class DArrow(RArrow):
+         pad: float
+-        def __init__(self, pad: float = ...) -> None: ...
++        head_width: float
++        head_angle: float
++        def __init__(
++            self, pad: float = ..., head_width: float = ..., head_angle: float = ...
++        ) -> None: ...
+         def __call__(
+             self,
+             x0: float,
+diff --git a/lib/matplotlib/pyplot.py b/lib/matplotlib/pyplot.py
+index 9cec08a15c16..ed7821ca1b27 100644
+--- a/lib/matplotlib/pyplot.py
++++ b/lib/matplotlib/pyplot.py
+@@ -947,6 +947,9 @@ def figure(
+           "px".
+         - a tuple ``(x, y)``, which is interpreted as ``(x, y, "inch")``.
+ 
++        One of *width* or *height* may be ``None``; the respective value is taken
++        from :rc:`figure.figsize`.
++
+     dpi : float, default: :rc:`figure.dpi`
+         The resolution of the figure in dots-per-inch.
+ 
+@@ -1178,6 +1181,25 @@ def fignum_exists(num: int | str) -> bool:
+     )
+ 
+ 
++def _raise_if_figure_exists(num, func_name, clear=False):
++    """
++    Raise a ValueError if the figure *num* already exists.
++    """
++    if num is not None and not clear:
++        if isinstance(num, FigureBase):
++            raise ValueError(
++                f"num {num!r} cannot be a FigureBase instance. "
++                f"plt.{func_name}() is for creating new figures. "
++                f"To add to an existing figure, use fig.{func_name}() "
++                "instead.")
++
++        if fignum_exists(num):
++            raise ValueError(
++                f"Figure {num!r} already exists. Use plt.figure({num!r}) "
++                f"to get it or plt.close({num!r}) to close it. "
++                f"Alternatively, pass 'clear=True' to {func_name}().")
++
++
+ def get_fignums() -> list[int]:
+     """Return a list of existing figure numbers."""
+     return sorted(_pylab_helpers.Gcf.figs)
+@@ -1856,6 +1878,9 @@ def subplots(
+         fig, ax = plt.subplots(num=10, clear=True)
+ 
+     """
++    num = fig_kw.get('num')
++    _raise_if_figure_exists(fig_kw.get('num'), "subplots", fig_kw.get('clear'))
++
+     fig = figure(**fig_kw)
+     axs = fig.subplots(nrows=nrows, ncols=ncols, sharex=sharex, sharey=sharey,
+                        squeeze=squeeze, subplot_kw=subplot_kw,
+@@ -2029,6 +2054,9 @@ def subplot_mosaic(
+        total layout.
+ 
+     """
++    num = fig_kw.get('num')
++    _raise_if_figure_exists(fig_kw.get('num'), "subplot_mosaic", fig_kw.get('clear'))
++
+     fig = figure(**fig_kw)
+     ax_dict = fig.subplot_mosaic(  # type: ignore[misc]
+         mosaic,  # type: ignore[arg-type]
+diff --git a/lib/matplotlib/quiver.py b/lib/matplotlib/quiver.py
+index f7af947e68c8..da1e85950933 100644
+--- a/lib/matplotlib/quiver.py
++++ b/lib/matplotlib/quiver.py
+@@ -27,7 +27,7 @@
+ import matplotlib.transforms as transforms
+ 
+ 
+-_quiver_doc = """
++_quiver_doc = r"""
+ Plot a 2D field of arrows.
+ 
+ Call signature::
+@@ -138,15 +138,12 @@
+     The arrow length unit is given by the *scale_units* parameter.
+ 
+ scale_units : {'width', 'height', 'dots', 'inches', 'x', 'y', 'xy'}, default: 'width'
++    The physical image unit, which is used for rendering the scaled arrow data U, V.
+ 
+-    The physical image unit, which is used for rendering the scaled arrow data *U*, *V*.
+-
+-    The rendered arrow length is given by
+-
+-        length in x direction = $\\frac{u}{\\mathrm{scale}} \\mathrm{scale_unit}$
+-
+-        length in y direction = $\\frac{v}{\\mathrm{scale}} \\mathrm{scale_unit}$
++    The rendered arrow length is given by:
+ 
++    - length in x direction = :math:`\frac{u}{\mathrm{scale}}\,\mathrm{scale\_unit}`
++    - length in y direction = :math:`\frac{v}{\mathrm{scale}}\,\mathrm{scale\_unit}`
+     For example, ``(u, v) = (0.5, 0)`` with ``scale=10, scale_units="width"`` results
+     in a horizontal arrow with a length of *0.5 / 10 * "width"*, i.e. 0.05 times the
+     Axes width.
+diff --git a/lib/matplotlib/rcsetup.py b/lib/matplotlib/rcsetup.py
+index 20a5061ed5cf..eefbae5e68f5 100644
+--- a/lib/matplotlib/rcsetup.py
++++ b/lib/matplotlib/rcsetup.py
+@@ -36,7 +36,7 @@
+ from matplotlib._enums import JoinStyle, CapStyle
+ 
+ # Don't let the original cycler collide with our validating cycler
+-from cycler import Cycler, cycler as ccycler
++from cycler import Cycler, concat as cconcat, cycler as ccycler
+ 
+ 
+ class ValidateInStrings:
+@@ -815,11 +815,62 @@ def cycler(*args, **kwargs):
+     return reduce(operator.add, (ccycler(k, v) for k, v in validated))
+ 
+ 
+-class _DunderChecker(ast.NodeVisitor):
+-    def visit_Attribute(self, node):
+-        if node.attr.startswith("__") and node.attr.endswith("__"):
+-            raise ValueError("cycler strings with dunders are forbidden")
+-        self.generic_visit(node)
++def _parse_cycler_string(s):
++    """
++    Parse a string representation of a cycler into a Cycler object safely,
++    without using eval().
++
++    Accepts expressions like::
++
++        cycler('color', ['r', 'g', 'b'])
++        cycler('color', 'rgb') + cycler('linewidth', [1, 2, 3])
++        cycler(c='rgb', lw=[1, 2, 3])
++        cycler('c', 'rgb') * cycler('linestyle', ['-', '--'])
++    """
++    try:
++        tree = ast.parse(s, mode='eval')
++    except SyntaxError as e:
++        raise ValueError(f"Could not parse {s!r}: {e}") from e
++    return _eval_cycler_expr(tree.body)
++
++
++def _eval_cycler_expr(node):
++    """Recursively evaluate an AST node to build a Cycler object."""
++    if isinstance(node, ast.BinOp):
++        left = _eval_cycler_expr(node.left)
++        right = _eval_cycler_expr(node.right)
++        if isinstance(node.op, ast.Add):
++            return left + right
++        if isinstance(node.op, ast.Mult):
++            return left * right
++        raise ValueError(f"Unsupported operator: {type(node.op).__name__}")
++    if isinstance(node, ast.Call):
++        if not (isinstance(node.func, ast.Name)
++                and node.func.id in ('cycler', 'concat')):
++            raise ValueError(
++                "only the 'cycler()' and 'concat()' functions are allowed")
++        func = cycler if node.func.id == 'cycler' else cconcat
++        args = [_eval_cycler_expr(a) for a in node.args]
++        kwargs = {kw.arg: _eval_cycler_expr(kw.value) for kw in node.keywords}
++        return func(*args, **kwargs)
++    if isinstance(node, ast.Subscript):
++        sl = node.slice
++        if not isinstance(sl, ast.Slice):
++            raise ValueError("only slicing is supported, not indexing")
++        s = slice(
++            ast.literal_eval(sl.lower) if sl.lower else None,
++            ast.literal_eval(sl.upper) if sl.upper else None,
++            ast.literal_eval(sl.step) if sl.step else None,
++        )
++        value = _eval_cycler_expr(node.value)
++        return value[s]
++    # Allow literal values (int, strings, lists, tuples) as arguments
++    # to cycler() and concat().
++    try:
++        return ast.literal_eval(node)
++    except (ValueError, TypeError):
++        raise ValueError(
++            f"Unsupported expression in cycler string: {ast.dump(node)}")
+ 
+ 
+ # A validator dedicated to the named legend loc
+@@ -870,25 +921,11 @@ def _validate_legend_loc(loc):
+ def validate_cycler(s):
+     """Return a Cycler object from a string repr or the object itself."""
+     if isinstance(s, str):
+-        # TODO: We might want to rethink this...
+-        # While I think I have it quite locked down, it is execution of
+-        # arbitrary code without sanitation.
+-        # Combine this with the possibility that rcparams might come from the
+-        # internet (future plans), this could be downright dangerous.
+-        # I locked it down by only having the 'cycler()' function available.
+-        # UPDATE: Partly plugging a security hole.
+-        # I really should have read this:
+-        # https://nedbatchelder.com/blog/201206/eval_really_is_dangerous.html
+-        # We should replace this eval with a combo of PyParsing and
+-        # ast.literal_eval()
+         try:
+-            _DunderChecker().visit(ast.parse(s))
+-            s = eval(s, {'cycler': cycler, '__builtins__': {}})
+-        except BaseException as e:
++            s = _parse_cycler_string(s)
++        except Exception as e:
+             raise ValueError(f"{s!r} is not a valid cycler construction: {e}"
+                              ) from e
+-    # Should make sure what comes from the above eval()
+-    # is a Cycler object.
+     if isinstance(s, Cycler):
+         cycler_inst = s
+     else:
+@@ -1162,7 +1199,7 @@ def _convert_validator_spec(key, conv):
+     "axes.formatter.offset_threshold": validate_int,
+     "axes.unicode_minus": validate_bool,
+     # This entry can be either a cycler object or a string repr of a
+-    # cycler-object, which gets eval()'ed to create the object.
++    # cycler-object, which is parsed safely via AST.
+     "axes.prop_cycle": validate_cycler,
+     # If "data", axes limits are set close to the data.
+     # If "round_numbers" axes limits are set to the nearest round numbers.
+diff --git a/lib/matplotlib/scale.py b/lib/matplotlib/scale.py
+index 480ce59e34ec..0793bb31e566 100644
+--- a/lib/matplotlib/scale.py
++++ b/lib/matplotlib/scale.py
+@@ -30,6 +30,7 @@
+ """  # noqa: E501
+ 
+ import inspect
++import math
+ import textwrap
+ from functools import wraps
+ 
+@@ -114,6 +115,22 @@ def limit_range_for_scale(self, vmin, vmax, minpos):
+         """
+         return vmin, vmax
+ 
++    def val_in_range(self, val):
++        """
++        Return whether the value(s) are within the valid range for this scale.
++
++        This method is a generic implementation. Subclasses may implement more
++        efficient solutions for their domain.
++        """
++        try:
++            if not math.isfinite(val):
++                return False
++            else:
++                vmin, vmax = self.limit_range_for_scale(val, val, minpos=1e-300)
++                return vmin == val and vmax == val
++        except (TypeError, ValueError):
++            return False
++
+ 
+ def _make_axis_parameter_optional(init_func):
+     """
+@@ -196,6 +213,14 @@ def get_transform(self):
+         """
+         return IdentityTransform()
+ 
++    def val_in_range(self, val):
++        """
++        Return whether the value is within the valid range for this scale.
++
++        This is True for all values, except +-inf and NaN.
++        """
++        return math.isfinite(val)
++
+ 
+ class FuncTransform(Transform):
+     """
+@@ -400,6 +425,14 @@ def limit_range_for_scale(self, vmin, vmax, minpos):
+         return (minpos if vmin <= 0 else vmin,
+                 minpos if vmax <= 0 else vmax)
+ 
++    def val_in_range(self, val):
++        """
++        Return whether the value is within the valid range for this scale.
++
++        This is True for value(s) > 0 except +inf and NaN.
++        """
++        return math.isfinite(val) and val > 0
++
+ 
+ class FuncScaleLog(LogScale):
+     """
+@@ -581,6 +614,14 @@ def get_transform(self):
+         """Return the `.SymmetricalLogTransform` associated with this scale."""
+         return self._transform
+ 
++    def val_in_range(self, val):
++        """
++        Return whether the value is within the valid range for this scale.
++
++        This is True for all values, except +-inf and NaN.
++        """
++        return math.isfinite(val)
++
+ 
+ class AsinhTransform(Transform):
+     """Inverse hyperbolic-sine transformation used by `.AsinhScale`"""
+@@ -707,6 +748,14 @@ def set_default_locators_and_formatters(self, axis):
+         else:
+             axis.set_major_formatter('{x:.3g}')
+ 
++    def val_in_range(self, val):
++        """
++        Return whether the value is within the valid range for this scale.
++
++        This is True for all values, except +-inf and NaN.
++        """
++        return math.isfinite(val)
++
+ 
+ class LogitTransform(Transform):
+     input_dims = output_dims = 1
+@@ -820,6 +869,14 @@ def limit_range_for_scale(self, vmin, vmax, minpos):
+         return (minpos if vmin <= 0 else vmin,
+                 1 - minpos if vmax >= 1 else vmax)
+ 
++    def val_in_range(self, val):
++        """
++        Return whether the value is within the valid range for this scale.
++
++        This is True for value(s) which are between 0 and 1 (excluded).
++        """
++        return 0 < val < 1
++
+ 
+ _scale_mapping = {
+     'linear': LinearScale,
+diff --git a/lib/matplotlib/scale.pyi b/lib/matplotlib/scale.pyi
+index 7cef8a3438a8..866509ee020d 100644
+--- a/lib/matplotlib/scale.pyi
++++ b/lib/matplotlib/scale.pyi
+@@ -12,6 +12,7 @@ class ScaleBase:
+     def limit_range_for_scale(
+         self, vmin: float, vmax: float, minpos: float
+     ) -> tuple[float, float]: ...
++    def val_in_range(self, val: float) -> bool: ...
+ 
+ class LinearScale(ScaleBase):
+     name: str
+diff --git a/lib/matplotlib/testing/__init__.py b/lib/matplotlib/testing/__init__.py
+index 34d55e0f696a..9fcdb6aeee03 100644
+--- a/lib/matplotlib/testing/__init__.py
++++ b/lib/matplotlib/testing/__init__.py
+@@ -94,9 +94,14 @@ def subprocess_run_for_testing(command, env=None, timeout=60, stdout=None,
+ 
+     Raises
+     ------
++    pytest.skip
++        If running on emscripten, which does not support subprocesses.
+     pytest.xfail
+         If platform is Cygwin and subprocess reports a fork() failure.
+     """
++    if sys.platform == 'emscripten':
++        import pytest
++        pytest.skip('emscripten does not support subprocesses')
+     if capture_output:
+         stdout = stderr = subprocess.PIPE
+     # Add CREATE_NO_WINDOW flag on Windows to prevent console window overhead
+@@ -203,7 +208,8 @@ def _check_for_pgf(texsystem):
+         """, encoding="utf-8")
+         try:
+             subprocess.check_call(
+-                [texsystem, "-halt-on-error", str(tex_path)], cwd=tmpdir,
++                [texsystem, "-halt-on-error", "-no-shell-escape",
++                 str(tex_path)], cwd=tmpdir,
+                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+         except (OSError, subprocess.CalledProcessError):
+             return False
+@@ -214,7 +220,7 @@ def _has_tex_package(package):
+     try:
+         mpl.dviread.find_tex_file(f"{package}.sty")
+         return True
+-    except FileNotFoundError:
++    except (FileNotFoundError, OSError):
+         return False
+ 
+ 
+diff --git a/lib/matplotlib/testing/decorators.py b/lib/matplotlib/testing/decorators.py
+index b26f3ed4a446..f404d7ae84ee 100644
+--- a/lib/matplotlib/testing/decorators.py
++++ b/lib/matplotlib/testing/decorators.py
+@@ -139,6 +139,8 @@ def copy_baseline(self, baseline, extension):
+             try:
+                 if 'microsoft' in uname().release.lower():
+                     raise OSError  # On WSL, symlink breaks silently
++                if sys.platform == 'emscripten':
++                    raise OSError
+                 os.symlink(orig_expected_path, expected_fname)
+             except OSError:  # On Windows, symlink *may* be unavailable.
+                 shutil.copyfile(orig_expected_path, expected_fname)
+diff --git a/lib/matplotlib/tests/baseline_images/test_arrow_patches/boxarrow_adjustment_test_image.png b/lib/matplotlib/tests/baseline_images/test_arrow_patches/boxarrow_adjustment_test_image.png
+new file mode 100644
+index 000000000000..02b8d39d6b98
+Binary files /dev/null and b/lib/matplotlib/tests/baseline_images/test_arrow_patches/boxarrow_adjustment_test_image.png differ
+diff --git a/lib/matplotlib/tests/baseline_images/test_arrow_patches/boxarrow_test_image.png b/lib/matplotlib/tests/baseline_images/test_arrow_patches/boxarrow_test_image.png
+index 11ad0b89b4db..2fa6b71900f7 100644
+Binary files a/lib/matplotlib/tests/baseline_images/test_arrow_patches/boxarrow_test_image.png and b/lib/matplotlib/tests/baseline_images/test_arrow_patches/boxarrow_test_image.png differ
+diff --git a/lib/matplotlib/tests/baseline_images/test_axes/specgram_magnitude_freqs.png b/lib/matplotlib/tests/baseline_images/test_axes/specgram_magnitude_freqs.png
+index 7722f72e13c5..3406a1baf496 100644
+Binary files a/lib/matplotlib/tests/baseline_images/test_axes/specgram_magnitude_freqs.png and b/lib/matplotlib/tests/baseline_images/test_axes/specgram_magnitude_freqs.png differ
+diff --git a/lib/matplotlib/tests/baseline_images/test_axes/specgram_magnitude_freqs_linear.png b/lib/matplotlib/tests/baseline_images/test_axes/specgram_magnitude_freqs_linear.png
+index 74507682cbdd..70e503305782 100644
+Binary files a/lib/matplotlib/tests/baseline_images/test_axes/specgram_magnitude_freqs_linear.png and b/lib/matplotlib/tests/baseline_images/test_axes/specgram_magnitude_freqs_linear.png differ
+diff --git a/lib/matplotlib/tests/baseline_images/test_image/alignment_half_display_pixels.png b/lib/matplotlib/tests/baseline_images/test_image/alignment_half_display_pixels.png
+new file mode 100644
+index 000000000000..e822ced620f2
+Binary files /dev/null and b/lib/matplotlib/tests/baseline_images/test_image/alignment_half_display_pixels.png differ
+diff --git a/lib/matplotlib/tests/baseline_images/test_image/image_bounds_handling.png b/lib/matplotlib/tests/baseline_images/test_image/image_bounds_handling.png
+index 1296975ba64c..3a817f331c42 100644
+Binary files a/lib/matplotlib/tests/baseline_images/test_image/image_bounds_handling.png and b/lib/matplotlib/tests/baseline_images/test_image/image_bounds_handling.png differ
+diff --git a/lib/matplotlib/tests/test__style_helpers.py b/lib/matplotlib/tests/test__style_helpers.py
+index 764bd5a0c88e..ecaccec224ae 100644
+--- a/lib/matplotlib/tests/test__style_helpers.py
++++ b/lib/matplotlib/tests/test__style_helpers.py
+@@ -59,7 +59,7 @@ def test_style_generator_raises_on_empty_style_parameter_list(key):
+ def test_style_generator_sequence_type_styles():
+     """
+     Test that sequence type style values are detected as single value
+-    and passed to a all elements of the generator.
++    and passed to all elements of the generator.
+     """
+     kw = {'facecolor':  ('r', 0.5),
+           'edgecolor': [0.5, 0.5, 0.5],
+diff --git a/lib/matplotlib/tests/test_animation.py b/lib/matplotlib/tests/test_animation.py
+index 114e38996a10..4ca5c1220972 100644
+--- a/lib/matplotlib/tests/test_animation.py
++++ b/lib/matplotlib/tests/test_animation.py
+@@ -271,6 +271,8 @@ def test_no_length_frames(anim):
+     anim.save('unused.null', writer=NullMovieWriter())
+ 
+ 
++@pytest.mark.skipif(sys.platform == 'emscripten',
++                    reason='emscripten does not support subprocesses')
+ def test_movie_writer_registry():
+     assert len(animation.writers._registered) > 0
+     mpl.rcParams['animation.ffmpeg_path'] = "not_available_ever_xxxx"
+@@ -298,6 +300,8 @@ def test_embed_limit(method_name, caplog, anim):
+             and record.levelname == "WARNING")
+ 
+ 
++@pytest.mark.skipif(sys.platform == 'emscripten',
++                    reason='emscripten does not support subprocesses')
+ @pytest.mark.skipif(shutil.which("/bin/sh") is None, reason="requires a POSIX OS")
+ def test_failing_ffmpeg(tmp_path, monkeypatch, anim):
+     """
+@@ -522,6 +526,8 @@ def test_disable_cache_warning(anim):
+ def test_movie_writer_invalid_path(anim):
+     if sys.platform == "win32":
+         match_str = r"\[WinError 3] .*\\\\foo\\\\bar\\\\aardvark'"
++    elif sys.platform == "emscripten":
++        match_str = r"\[Errno 44] .*'/foo"
+     else:
+         match_str = r"\[Errno 2] .*'/foo"
+     with pytest.raises(FileNotFoundError, match=match_str):
+diff --git a/lib/matplotlib/tests/test_arrow_patches.py b/lib/matplotlib/tests/test_arrow_patches.py
+index e26c806c9ea4..9cf1636f7913 100644
+--- a/lib/matplotlib/tests/test_arrow_patches.py
++++ b/lib/matplotlib/tests/test_arrow_patches.py
+@@ -49,6 +49,48 @@ def test_boxarrow():
+                  bbox=dict(boxstyle=stylename, fc="w", ec="k"))
+ 
+ 
++@image_comparison(['boxarrow_adjustment_test_image.png'], style='mpl20')
++def test_boxarrow_adjustment():
++
++    styles = ['larrow', 'rarrow', 'darrow']
++
++    # Cases [head_width, head_angle] to test for each arrow style
++    cases = [
++        [1.5, 90],
++        [1.5, 170],     # Test dynamic padding
++        [0.75, 30],
++        [0.5, -10],     # Should just give a rectangle
++        [2, -90],
++        [2, -15]        # None of arrow body is outside of head
++    ]
++
++    # Horizontal and vertical spacings of arrow centres
++    spacing_horizontal = 3.75
++    spacing_vertical = 1.6
++
++    # Numbers of styles and cases
++    m = len(styles)
++    n = len(cases)
++
++    figwidth = (m * spacing_horizontal)
++    figheight = (n * spacing_vertical) + .5
++
++    fig = plt.figure(figsize=(figwidth / 1.5, figheight / 1.5))
++
++    fontsize = 0.3 * 72
++
++    for i, stylename in enumerate(styles):
++        for j, case in enumerate(cases):
++            # Draw arrow
++            fig.text(
++                ((m - i) * spacing_horizontal - 1.5) / figwidth,
++                ((n - j) * spacing_vertical - 0.5) / figheight,
++                stylename, ha='center', va='center',
++                size=fontsize, transform=fig.transFigure,
++                bbox=dict(boxstyle=f"{stylename}, head_width={case[0]}, \
++                    head_angle={case[1]}", fc="w", ec="k"))
++
++
+ def __prepare_fancyarrow_dpi_cor_test():
+     """
+     Convenience function that prepares and returns a FancyArrowPatch. It aims
+diff --git a/lib/matplotlib/tests/test_axes.py b/lib/matplotlib/tests/test_axes.py
+index b18857d2f103..c4ed8d467060 100644
+--- a/lib/matplotlib/tests/test_axes.py
++++ b/lib/matplotlib/tests/test_axes.py
+@@ -1183,7 +1183,7 @@ def test_limits_empty_data(plot_fun, fig_test, fig_ref):
+ def test_imshow():
+     # use former defaults to match existing baseline image
+     matplotlib.rcParams['image.interpolation'] = 'nearest'
+-    # Create a NxN image
++    # Create an NxN image
+     N = 100
+     (x, y) = np.indices((N, N))
+     x -= N//2
+@@ -1207,7 +1207,7 @@ def test_imshow_clip():
+     # use former defaults to match existing baseline image
+     matplotlib.rcParams['image.interpolation'] = 'nearest'
+ 
+-    # Create a NxN image
++    # Create an NxN image
+     N = 100
+     (x, y) = np.indices((N, N))
+     x -= N//2
+@@ -8081,9 +8081,13 @@ def test_twinning_default_axes_class():
+     assert type(twiny) is Axes
+ 
+ 
+-def test_zero_linewidth():
+-    # Check that setting a zero linewidth doesn't error
+-    plt.plot([0, 1], [0, 1], ls='--', lw=0)
++@mpl.style.context('mpl20')
++@check_figures_equal()
++def test_stairs_fill_zero_linewidth(fig_test, fig_ref):
++    fig_test.subplots().stairs(
++        [1, 2, 3, 4], [1, 2, 3, 4, 5], fill=True, ls='--')
++    fig_ref.subplots().stairs(
++        [1, 2, 3, 4], [1, 2, 3, 4, 5], fill=True, ls='-')
+ 
+ 
+ def test_empty_errorbar_legend():
+@@ -8530,7 +8534,7 @@ def test_normal_axes():
+     ]
+     for nn, b in enumerate(bbaxis):
+         targetbb = mtransforms.Bbox.from_bounds(*target[nn])
+-        assert_array_almost_equal(b.bounds, targetbb.bounds, decimal=2)
++        assert_array_almost_equal(b.bounds, targetbb.bounds, decimal=1)
+ 
+     target = [
+         [150.0, 119.999, 930.0, 11.111],
+@@ -8548,7 +8552,7 @@ def test_normal_axes():
+ 
+     target = [86.89, 75.56, 1019.11, 1017.11]
+     targetbb = mtransforms.Bbox.from_bounds(*target)
+-    assert_array_almost_equal(bbtb.bounds, targetbb.bounds, decimal=2)
++    assert_array_almost_equal(bbtb.bounds, targetbb.bounds, decimal=1)
+ 
+     # test that get_position roundtrips to get_window_extent
+     axbb = ax.get_position().transformed(fig.transFigure).bounds
+diff --git a/lib/matplotlib/tests/test_axis.py b/lib/matplotlib/tests/test_axis.py
+index 67d9ed5bde62..3776b6f054b9 100644
+--- a/lib/matplotlib/tests/test_axis.py
++++ b/lib/matplotlib/tests/test_axis.py
+@@ -111,3 +111,20 @@ def test_grid_rcparams():
+     assert ax.xaxis.get_minor_ticks()[0].gridline.get_linestyle() == def_linestyle
+     assert ax.xaxis.get_major_ticks()[0].gridline.get_alpha() == def_alpha
+     assert ax.xaxis.get_minor_ticks()[0].gridline.get_alpha() == 0.6
++
++
++def test_set_ticks_emits_lim_changed():
++    fig, ax1 = plt.subplots()
++    ax1.set_xlim(0.5, 1)
++    called_cartesian = []
++    ax1.callbacks.connect("xlim_changed", called_cartesian.append)
++    ax1.set_xticks([0, 100])
++    assert called_cartesian
++
++    fig = plt.figure()
++    ax2 = fig.add_subplot(projection="polar")
++    ax2.set_ylim(0.5, 1)
++    called_polar = []
++    ax2.callbacks.connect("ylim_changed", called_polar.append)
++    ax2.set_rticks([1, 2, 3])
++    assert called_polar
+diff --git a/lib/matplotlib/tests/test_backend_pdf.py b/lib/matplotlib/tests/test_backend_pdf.py
+index 9f44e58663cf..dac796336fe9 100644
+--- a/lib/matplotlib/tests/test_backend_pdf.py
++++ b/lib/matplotlib/tests/test_backend_pdf.py
+@@ -1,7 +1,6 @@
+ import datetime
+ import decimal
+ import io
+-import os
+ from pathlib import Path
+ import string
+ 
+@@ -292,8 +291,8 @@ def test_text_urls_tex():
+             assert annot.Rect[1] == decimal.Decimal('0.7') * 72
+ 
+ 
+-def test_pdfpages_fspath():
+-    with PdfPages(Path(os.devnull)) as pdf:
++def test_pdfpages_fspath(tmp_path):
++    with PdfPages(tmp_path / 'unused.pdf') as pdf:
+         pdf.savefig(plt.figure())
+ 
+ 
+diff --git a/lib/matplotlib/tests/test_backend_tk.py b/lib/matplotlib/tests/test_backend_tk.py
+index 1f96ad1308cb..32212610ffc1 100644
+--- a/lib/matplotlib/tests/test_backend_tk.py
++++ b/lib/matplotlib/tests/test_backend_tk.py
+@@ -4,6 +4,7 @@
+ import platform
+ import subprocess
+ import sys
++from unittest.mock import patch
+ 
+ import pytest
+ 
+@@ -280,3 +281,52 @@ def test_figure(master):
+                        foreground="white")
+     test_figure(root)
+     print("success")
++
++
++@_isolated_tk_test(success_count=1)
++def test_dpi_change_triggers_resize():
++    """
++    Test that _update_device_pixel_ratio recalculates figure.size_inches
++    using the actual widget dimensions, so the render size matches the
++    visible canvas area even when constrained by a layout manager.
++    See issue #31126.
++    """
++    import tkinter as tk
++    from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
++    from matplotlib.figure import Figure
++
++    root = tk.Tk()
++    root.geometry("400x300")
++    root.update_idletasks()
++
++    fig = Figure(dpi=100)
++    fig.add_subplot(111)
++
++    canvas = FigureCanvasTkAgg(fig, master=root)
++    canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
++    canvas.draw()
++    root.update_idletasks()
++
++    actual_w = canvas.get_tk_widget().winfo_width()
++    actual_h = canvas.get_tk_widget().winfo_height()
++    assert actual_w > 0 and actual_h > 0
++
++    # Simulate a 2x DPI change through _update_device_pixel_ratio.
++    # Mock the platform-specific DPI query to return ratio=2.0.
++    with patch.object(sys, 'platform', 'linux'), \
++         patch.object(canvas._tkcanvas, 'winfo_fpixels',
++                      return_value=192.0):
++        canvas._update_device_pixel_ratio()
++
++    # Verify the render size matches the actual widget size, NOT the
++    # inflated physical size from get_width_height(physical=True).
++    size = fig.get_size_inches()
++    render_w = round(size[0] * fig.dpi)
++    render_h = round(size[1] * fig.dpi)
++    assert abs(render_w - actual_w) <= 2, \
++        f"render width {render_w} != actual width {actual_w}"
++    assert abs(render_h - actual_h) <= 2, \
++        f"render height {render_h} != actual height {actual_h}"
++
++    print("success")
++    root.destroy()
+diff --git a/lib/matplotlib/tests/test_backend_webagg.py b/lib/matplotlib/tests/test_backend_webagg.py
+index 1d6769494ef9..c63534ad20e3 100644
+--- a/lib/matplotlib/tests/test_backend_webagg.py
++++ b/lib/matplotlib/tests/test_backend_webagg.py
+@@ -1,8 +1,13 @@
+ import os
+ import sys
++from unittest.mock import MagicMock
++
+ import pytest
+ 
+ import matplotlib.backends.backend_webagg_core
++from matplotlib.backends.backend_webagg_core import (
++    FigureCanvasWebAggCore, NavigationToolbar2WebAgg,
++)
+ from matplotlib.testing import subprocess_run_for_testing
+ 
+ 
+@@ -30,3 +35,46 @@ def test_webagg_fallback(backend):
+ def test_webagg_core_no_toolbar():
+     fm = matplotlib.backends.backend_webagg_core.FigureManagerWebAgg
+     assert fm._toolbar2_class is None
++
++
++def test_toolbar_button_dispatch_allowlist():
++    """Only declared toolbar items should be dispatched."""
++    fig = MagicMock()
++    canvas = FigureCanvasWebAggCore(fig)
++    canvas.toolbar = MagicMock(spec=NavigationToolbar2WebAgg)
++    canvas.toolbar.toolitems = NavigationToolbar2WebAgg.toolitems
++
++    # Valid toolbar action should be dispatched.
++    canvas.handle_toolbar_button({'name': 'home'})
++    canvas.toolbar.home.assert_called_once()
++
++    # Invalid names should be silently ignored.
++    canvas.toolbar.reset_mock()
++    canvas.handle_toolbar_button({'name': '__init__'})
++    canvas.handle_toolbar_button({'name': 'not_a_real_button'})
++    # No methods should have been called.
++    assert canvas.toolbar.method_calls == []
++
++
++@pytest.mark.parametrize("host, origin, allowed", [
++    ("localhost:8988", "http://localhost:8988", True),
++    ("localhost:8988", "http://evil.com", False),
++    ("localhost:8988", "http://127.0.0.1:8988", False),
++    ("localhost:8988", "http://[::1]:8988", False),
++    ("127.0.0.1:8988", "http://127.0.0.1:8988", True),
++    ("127.0.0.1:8988", "http://localhost:8988", False),
++    ("127.0.0.1:8988", "http://[::1]:8988", False),
++    ("[::1]:8988", "http://[::1]:8988", True),
++    ("[::1]:8988", "http://[::2]:8988", False),
++    ("[::1]:8988", "http://localhost:8988", False),
++    ("[::1]:8988", "http://evil.com", False),
++])
++def test_websocket_rejects_cross_origin(host, origin, allowed):
++    """Verify Tornado's default check_origin rejects cross-origin requests."""
++    pytest.importorskip("tornado")
++    from matplotlib.backends.backend_webagg import WebAggApplication
++
++    ws = WebAggApplication.WebSocket.__new__(WebAggApplication.WebSocket)
++    ws.request = MagicMock()
++    ws.request.headers = {"Host": host}
++    assert ws.check_origin(origin) is allowed
+diff --git a/lib/matplotlib/tests/test_backends_interactive.py b/lib/matplotlib/tests/test_backends_interactive.py
+index 188983816372..5287b511ce7b 100644
+--- a/lib/matplotlib/tests/test_backends_interactive.py
++++ b/lib/matplotlib/tests/test_backends_interactive.py
+@@ -702,8 +702,11 @@ def _test_sigint_impl(backend, target_name, kwargs):
+ 
+     def interrupter():
+         if sys.platform == 'win32':
+-            import win32api
+-            win32api.GenerateConsoleCtrlEvent(0, 0)
++            from ctypes import windll, wintypes
++            GenerateConsoleCtrlEvent = windll.kernel32.GenerateConsoleCtrlEvent
++            GenerateConsoleCtrlEvent.argtypes = [wintypes.DWORD, wintypes.DWORD]
++            GenerateConsoleCtrlEvent.restype = wintypes.BOOL
++            GenerateConsoleCtrlEvent(0, 0)
+         else:
+             import signal
+             os.kill(os.getpid(), signal.SIGINT)
+diff --git a/lib/matplotlib/tests/test_contour.py b/lib/matplotlib/tests/test_contour.py
+index e242c219df10..42ad75862b2e 100644
+--- a/lib/matplotlib/tests/test_contour.py
++++ b/lib/matplotlib/tests/test_contour.py
+@@ -310,6 +310,15 @@ def test_label_contour_start():
+     assert 0 in idxs
+ 
+ 
++def test_clabel_raises_on_filled_contours():
++    X, Y = np.meshgrid(np.arange(10), np.arange(10))
++    _, ax = plt.subplots()
++    cs = ax.contourf(X, Y, X + Y)
++    # will be an exception once the deprecation expires
++    with pytest.warns(mpl.MatplotlibDeprecationWarning):
++        ax.clabel(cs)
++
++
+ @image_comparison(['contour_corner_mask_False.png', 'contour_corner_mask_True.png'],
+                   remove_text=True, tol=1.88)
+ def test_corner_mask():
+@@ -359,21 +368,16 @@ def test_clabel_zorder(use_clabeltext, contour_zorder, clabel_zorder):
+     x, y = np.meshgrid(np.arange(0, 10), np.arange(0, 10))
+     z = np.max(np.dstack([abs(x), abs(y)]), 2)
+ 
+-    fig, (ax1, ax2) = plt.subplots(ncols=2)
+-    cs = ax1.contour(x, y, z, zorder=contour_zorder)
+-    cs_filled = ax2.contourf(x, y, z, zorder=contour_zorder)
+-    clabels1 = cs.clabel(zorder=clabel_zorder, use_clabeltext=use_clabeltext)
+-    clabels2 = cs_filled.clabel(zorder=clabel_zorder,
+-                                use_clabeltext=use_clabeltext)
++    fig, ax = plt.subplots()
++    cs = ax.contour(x, y, z, zorder=contour_zorder)
++    clabels = cs.clabel(zorder=clabel_zorder, use_clabeltext=use_clabeltext)
+ 
+     if clabel_zorder is None:
+         expected_clabel_zorder = 2+contour_zorder
+     else:
+         expected_clabel_zorder = clabel_zorder
+ 
+-    for clabel in clabels1:
+-        assert clabel.get_zorder() == expected_clabel_zorder
+-    for clabel in clabels2:
++    for clabel in clabels:
+         assert clabel.get_zorder() == expected_clabel_zorder
+ 
+ 
+diff --git a/lib/matplotlib/tests/test_dviread.py b/lib/matplotlib/tests/test_dviread.py
+index 33fe9bb150d2..3581a97c1390 100644
+--- a/lib/matplotlib/tests/test_dviread.py
++++ b/lib/matplotlib/tests/test_dviread.py
+@@ -1,6 +1,7 @@
+ import json
+ from pathlib import Path
+ import shutil
++import sys
+ 
+ from matplotlib import cbook, dviread as dr
+ from matplotlib.testing import subprocess_run_for_testing, _has_tex_package
+@@ -61,7 +62,7 @@ def test_PsfontsMap(monkeypatch):
+         fontmap[b'%']
+ 
+ 
+-@pytest.mark.skipif(shutil.which("kpsewhich") is None,
++@pytest.mark.skipif(sys.platform == "emscripten" or shutil.which("kpsewhich") is None,
+                     reason="kpsewhich is not available")
+ @pytest.mark.parametrize("engine", ["pdflatex", "xelatex", "lualatex"])
+ def test_dviread(tmp_path, engine, monkeypatch):
+@@ -69,9 +70,9 @@ def test_dviread(tmp_path, engine, monkeypatch):
+     shutil.copy(dirpath / "test.tex", tmp_path)
+     shutil.copy(cbook._get_data_path("fonts/ttf/DejaVuSans.ttf"), tmp_path)
+     cmd, fmt = {
+-        "pdflatex": (["latex"], "dvi"),
+-        "xelatex": (["xelatex", "-no-pdf"], "xdv"),
+-        "lualatex": (["lualatex", "-output-format=dvi"], "dvi"),
++        "pdflatex": (["latex", "-no-shell-escape"], "dvi"),
++        "xelatex": (["xelatex", "-no-pdf", "-no-shell-escape"], "xdv"),
++        "lualatex": (["lualatex", "-output-format=dvi", "-no-shell-escape"], "dvi"),
+     }[engine]
+     if shutil.which(cmd[0]) is None:
+         pytest.skip(f"{cmd[0]} is not available")
+@@ -119,7 +120,8 @@ def test_dviread_pk(tmp_path):
+         \end{document}
+         """)
+     subprocess_run_for_testing(
+-        ["latex", "test.tex"], cwd=tmp_path, check=True, capture_output=True)
++        ["latex", "-no-shell-escape", "test.tex"],
++        cwd=tmp_path, check=True, capture_output=True)
+     with dr.Dvi(tmp_path / "test.dvi", None) as dvi:
+         pages = [*dvi]
+     data = [
+diff --git a/lib/matplotlib/tests/test_figure.py b/lib/matplotlib/tests/test_figure.py
+index 4fed9a5f4788..c0508a00d9c8 100644
+--- a/lib/matplotlib/tests/test_figure.py
++++ b/lib/matplotlib/tests/test_figure.py
+@@ -3,6 +3,7 @@
+ import io
+ import pickle
+ import platform
++import sys
+ from threading import Timer
+ from types import SimpleNamespace
+ import warnings
+@@ -1576,6 +1577,7 @@ def test_subfigures_wspace_hspace():
+ def test_subfigure_remove():
+     fig = plt.figure()
+     sfs = fig.subfigures(2, 2)
++    sfs[1, 1].subplots()
+     sfs[1, 1].remove()
+     assert len(fig.subfigs) == 3
+ 
+@@ -1630,6 +1632,8 @@ def test_add_axes_kwargs():
+     plt.close()
+ 
+ 
++@pytest.mark.skipif(sys.platform == 'emscripten',
++                    reason='emscripten does not support threads')
+ def test_ginput(recwarn):  # recwarn undoes warn filters at exit.
+     warnings.filterwarnings("ignore", "cannot show the figure")
+     fig, ax = plt.subplots()
+@@ -1652,6 +1656,8 @@ def multi_presses():
+     np.testing.assert_allclose(fig.ginput(3), [(.3, .4), (.5, .6)])
+ 
+ 
++@pytest.mark.skipif(sys.platform == 'emscripten',
++                    reason='emscripten does not support threads')
+ def test_waitforbuttonpress(recwarn):  # recwarn undoes warn filters at exit.
+     warnings.filterwarnings("ignore", "cannot show the figure")
+     fig = plt.figure()
+@@ -1878,6 +1884,24 @@ def test_figsize(figsize, figsize_inches):
+     assert tuple(fig.get_size_inches()) == figsize_inches
+ 
+ 
++def test_figsize_partial_none():
++    default_w, default_h = mpl.rcParams["figure.figsize"]
++
++    fig = plt.figure(figsize=(None, 4))
++    w, h = fig.get_size_inches()
++    assert (w, h) == (default_w, 4)
++
++    fig = plt.figure(figsize=(6, None))
++    w, h = fig.get_size_inches()
++    assert (w, h) == (6, default_h)
++
++
++def test_figsize_both_none():
++    with pytest.raises(ValueError,
++                       match=r"figsize=\(None, None\) is invalid"):
++        plt.figure(figsize=(None, None))
++
++
+ def test_figsize_invalid_unit():
+     with pytest.raises(ValueError, match="Invalid unit 'um'"):
+         plt.figure(figsize=(6, 4, "um"))
+diff --git a/lib/matplotlib/tests/test_font_manager.py b/lib/matplotlib/tests/test_font_manager.py
+index 26b4ce3bf252..ab6c1d91b106 100644
+--- a/lib/matplotlib/tests/test_font_manager.py
++++ b/lib/matplotlib/tests/test_font_manager.py
+@@ -24,7 +24,7 @@
+ from matplotlib.testing import subprocess_run_helper, subprocess_run_for_testing
+ 
+ 
+-has_fclist = shutil.which('fc-list') is not None
++has_fclist = sys.platform != 'emscripten' and shutil.which('fc-list') is not None
+ 
+ 
+ def test_font_path():
+@@ -298,6 +298,8 @@ def _model_handler(_):
+     plt.close()
+ 
+ 
++@pytest.mark.skipif(sys.platform == 'emscripten',
++                    reason='emscripten does not support subprocesses')
+ @pytest.mark.skipif(not hasattr(os, "register_at_fork"),
+                     reason="Cannot register at_fork handlers")
+ def test_fork():
+diff --git a/lib/matplotlib/tests/test_image.py b/lib/matplotlib/tests/test_image.py
+index 9c4bc02bc5e5..649e345b3613 100644
+--- a/lib/matplotlib/tests/test_image.py
++++ b/lib/matplotlib/tests/test_image.py
+@@ -227,8 +227,8 @@ def test_imsave_rgba_origin(origin):
+ 
+ 
+ @pytest.mark.parametrize("fmt", ["png", "pdf", "ps", "eps", "svg"])
+-def test_imsave_fspath(fmt):
+-    plt.imsave(Path(os.devnull), np.array([[0, 1]]), format=fmt)
++def test_imsave_fspath(fmt, tmp_path):
++    plt.imsave(tmp_path / f'unused.{fmt}', np.array([[0, 1]]), format=fmt)
+ 
+ 
+ def test_imsave_color_alpha():
+@@ -1677,6 +1677,8 @@ def test__resample_valid_output():
+ @pytest.mark.parametrize("data, interpolation, expected",
+     [(np.array([[0.1, 0.3, 0.2]]), mimage.NEAREST,
+       np.array([[0.1, 0.1, 0.1, 0.3, 0.3, 0.3, 0.3, 0.2, 0.2, 0.2]])),
++     (np.array([[0.1, 0.2, 0.3, 0.4, 0.5, 0.6]]), mimage.NEAREST,
++      np.array([[0.1, 0.2, 0.2, 0.3, 0.4, 0.4, 0.5, 0.6, 0.6]])),
+      (np.array([[0.1, 0.3, 0.2]]), mimage.BILINEAR,
+       np.array([[0.1, 0.1, 0.15, 0.21, 0.27, 0.285, 0.255, 0.225, 0.2, 0.2]])),
+      (np.array([[0.1, 0.9]]), mimage.BILINEAR,
+@@ -1906,6 +1908,64 @@ def test_nn_pixel_alignment(nonaffine_identity):
+             axs[i, j].hlines(seps, -1, N, lw=0.5, color='red', ls='dashed')
+ 
+ 
++@image_comparison(['alignment_half_display_pixels.png'], style='mpl20')
++def test_alignment_half_display_pixels(nonaffine_identity):
++    # All values in this test are chosen carefully so that many display pixels are
++    # aligned with an edge or a corner of an input pixel
++
++    # Layout:
++    # Top row is origin='upper', bottom row is origin='lower'
++    # Column 1: affine transform, anchored at whole pixel
++    # Column 2: affine transform, anchored at half pixel
++    # Column 3: nonaffine transform, anchored at whole pixel
++    # Column 4: nonaffine transform, anchored at half pixel
++    # Column 5: affine transform, anchored at half pixel, interpolation='hanning'
++
++    # Each axes patch is magenta, so seeing a magenta line at an edge of the image
++    # means that the image is not filling the axes
++
++    fig = plt.figure(figsize=(5, 2), dpi=100)
++    fig.set_facecolor('g')
++
++    corner_x = [0.01, 0.199, 0.41, 0.599, 0.809]
++    corner_y = [0.05, 0.53]
++
++    axs = []
++    for cy in corner_y:
++        for ix, cx in enumerate(corner_x):
++            my = cy + 0.0125 if ix in [1, 3, 4] else cy
++            axs.append(fig.add_axes([cx, my, 0.17, 0.425], xticks=[], yticks=[]))
++
++    # Verify that each axes has been created with the correct width/height and that all
++    # four corners are on whole pixels (columns 1 and 3) or half pixels (columns 2, 4,
++    # and 5)
++    for i, ax in enumerate(axs):
++        extents = ax.get_window_extent().extents
++        assert_allclose(extents[2:4] - extents[0:2], 85, rtol=0, atol=1e-13)
++        assert_allclose(extents % 1, 0.5 if i % 5 in [1, 3, 4] else 0,
++                        rtol=0, atol=1e-13)
++
++    N = 10
++
++    data = np.arange(N**2).reshape((N, N)) % 9
++    seps = np.arange(-0.5, N)
++
++    for i, ax in enumerate(axs):
++        ax.set_facecolor('m')
++
++        transform = nonaffine_identity + ax.transData if i % 4 >= 2 else ax.transData
++        ax.imshow(data, cmap='Blues',
++                  interpolation='hanning' if i % 5 == 4 else 'nearest',
++                  origin='upper' if i >= 5 else 'lower',
++                  transform=transform)
++
++        ax.vlines(seps, -0.5, N - 0.5, lw=0.5, color='red', ls=(0, (2, 4)))
++        ax.hlines(seps, -0.5, N - 0.5, lw=0.5, color='red', ls=(0, (2, 4)))
++
++        for spine in ax.spines:
++            ax.spines[spine].set_linestyle((0, (5, 10)))
++
++
+ @image_comparison(['image_bounds_handling.png'], tol=0.006)
+ def test_image_bounds_handling(nonaffine_identity):
+     # TODO: The second and third panels in the bottom row show that the handling of
+diff --git a/lib/matplotlib/tests/test_legend.py b/lib/matplotlib/tests/test_legend.py
+index 5112aba843db..06a9d6cf8b63 100644
+--- a/lib/matplotlib/tests/test_legend.py
++++ b/lib/matplotlib/tests/test_legend.py
+@@ -289,7 +289,7 @@ def test_hatching():
+ def test_legend_remove():
+     fig, ax = plt.subplots()
+     lines = ax.plot(range(10))
+-    leg = fig.legend(lines, "test")
++    leg = fig.legend(lines, ["test"])
+     leg.remove()
+     assert fig.legends == []
+     leg = ax.legend("test")
+@@ -421,6 +421,15 @@ def test_parasite(self):
+             plt.legend()
+         Legend.assert_called_with(host, [p1, p2], ['Density', 'Temperature'])
+ 
++    def test_legend_warns_on_unequal_number_of_handles_and_labels(self):
++        fig, ax = plt.subplots()
++        line1, = ax.plot([1, 2])
++        line2, = ax.plot([3, 4])
++        with pytest.warns(UserWarning, match="Mismatched number of handles and labels"):
++            ax.legend([line1, line2], ['only_one'])  # 2 handles, 1 label
++        with pytest.warns(UserWarning, match="Mismatched number of handles and labels"):
++            ax.legend([line1], ['label_a', 'label_b'])  # 1 handle, 2 labels
++
+ 
+ class TestLegendFigureFunction:
+     # Tests the legend function for figure
+@@ -510,10 +519,10 @@ def test_figure_legend_outside():
+         leg = fig.legend(loc='outside ' + todo)
+         fig.draw_without_rendering()
+ 
+-        assert_allclose(axs.get_window_extent().extents,
+-                        axbb[nn])
+-        assert_allclose(leg.get_window_extent().extents,
+-                        legbb[nn])
++        assert_allclose(axs.get_window_extent().extents, axbb[nn],
++                        rtol=1e-4)
++        assert_allclose(leg.get_window_extent().extents, legbb[nn],
++                        rtol=1e-4)
+ 
+ 
+ @image_comparison(['legend_stackplot.png'],
+diff --git a/lib/matplotlib/tests/test_lines.py b/lib/matplotlib/tests/test_lines.py
+index a5b42d5de874..e2a63bbf962b 100644
+--- a/lib/matplotlib/tests/test_lines.py
++++ b/lib/matplotlib/tests/test_lines.py
+@@ -92,6 +92,13 @@ def test_valid_linestyles():
+         line.set_linestyle('aardvark')
+ 
+ 
++@mpl.style.context('mpl20')
++def test_zero_linewidth_dashed_uses_solid_gc_dashes():
++    fig, ax = plt.subplots()
++    ax.plot([0, 1], [0, 1], ls='--', lw=0)
++    fig.draw_without_rendering()
++
++
+ @image_comparison(['drawstyle_variants.png'], remove_text=True,
+                   tol=0 if platform.machine() == 'x86_64' else 0.03)
+ def test_drawstyle_variants():
+diff --git a/lib/matplotlib/tests/test_matplotlib.py b/lib/matplotlib/tests/test_matplotlib.py
+index f17dc2e42354..6dab056f9170 100644
+--- a/lib/matplotlib/tests/test_matplotlib.py
++++ b/lib/matplotlib/tests/test_matplotlib.py
+@@ -19,9 +19,9 @@ def test_parse_to_version_info(version_str, version_tuple):
+     assert matplotlib._parse_to_version_info(version_str) == version_tuple
+ 
+ 
+-@pytest.mark.skipif(sys.platform == "win32",
+-                    reason="chmod() doesn't work as is on Windows")
+-@pytest.mark.skipif(sys.platform != "win32" and os.geteuid() == 0,
++@pytest.mark.skipif(sys.platform not in ["linux", "darwin"],
++                    reason="chmod() doesn't work on this platform")
++@pytest.mark.skipif(sys.platform in ["linux", "darwin"] and os.geteuid() == 0,
+                     reason="chmod() doesn't work as root")
+ def test_tmpconfigdir_warning(tmp_path):
+     """Test that a warning is emitted if a temporary configdir must be used."""
+diff --git a/lib/matplotlib/tests/test_mlab.py b/lib/matplotlib/tests/test_mlab.py
+index 109a6d542450..82f877b4cc01 100644
+--- a/lib/matplotlib/tests/test_mlab.py
++++ b/lib/matplotlib/tests/test_mlab.py
+@@ -884,6 +884,8 @@ def test_single_dataset_element(self):
+         with pytest.raises(ValueError):
+             mlab.GaussianKDE([42])
+ 
++    @pytest.mark.skipif(sys.platform == 'emscripten',
++                        reason="WASM doesn't support floating-point exceptions")
+     def test_silverman_multidim_dataset(self):
+         """Test silverman's for a multi-dimensional array."""
+         x1 = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+@@ -897,6 +899,8 @@ def test_silverman_singledim_dataset(self):
+         y_expected = 0.76770389927475502
+         assert_almost_equal(mygauss.covariance_factor(), y_expected, 7)
+ 
++    @pytest.mark.skipif(sys.platform == 'emscripten',
++                        reason="WASM doesn't support floating-point exceptions")
+     def test_scott_multidim_dataset(self):
+         """Test scott's output for a multi-dimensional array."""
+         x1 = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+diff --git a/lib/matplotlib/tests/test_patches.py b/lib/matplotlib/tests/test_patches.py
+index 51144a7652f3..80dcc43894c4 100644
+--- a/lib/matplotlib/tests/test_patches.py
++++ b/lib/matplotlib/tests/test_patches.py
+@@ -907,6 +907,14 @@ def test_default_linestyle():
+     assert patch.get_linestyle() == 'solid'
+ 
+ 
++@mpl.style.context('mpl20')
++def test_patch_zero_linewidth_dashed_uses_solid_gc_dashes():
++    fig, ax = plt.subplots()
++    ax.add_patch(Rectangle(
++        (0, 0), 1, 1, fill=False, linewidth=0, linestyle='--'))
++    fig.draw_without_rendering()
++
++
+ def test_default_capstyle():
+     patch = Patch()
+     assert patch.get_capstyle() == 'butt'
+diff --git a/lib/matplotlib/tests/test_pyplot.py b/lib/matplotlib/tests/test_pyplot.py
+index 1cca7332aa0c..39ffc54bce79 100644
+--- a/lib/matplotlib/tests/test_pyplot.py
++++ b/lib/matplotlib/tests/test_pyplot.py
+@@ -532,3 +532,42 @@ def assert_same_signature(func1, func2):
+ 
+ def test_setloglevel_signature():
+     assert_same_signature(plt.set_loglevel, mpl.set_loglevel)
++
++
++def test_subplots_reuse_existing_figure_error():
++    """Test interaction of plt.subplots(num=...) with existing figures."""
++    # Create a figure with a specific number first.
++    fig = plt.figure(1)
++
++    # Case 1: Reusing without clear=True should raise ValueError
++    with pytest.raises(ValueError, match="already exists"):
++        plt.subplots(num=1)
++
++    # Case 2: Reusing WITH clear=True should work fine (no error)
++    fig_new, axs = plt.subplots(num=1, clear=True)
++    assert fig_new is fig
++
++    # Case 3: Test passing the actual Figure object (The "Narrow Check")
++    with pytest.raises(ValueError, match="cannot be a FigureBase instance"):
++        plt.subplots(num=fig)
++
++    plt.close(1)
++
++
++def test_subplot_mosaic_reuse_existing_figure_error():
++    """Test that plt.subplot_mosaic raises ValueError when reusing a figure."""
++    fig = plt.figure(2)
++
++    # 1. Test passing the existing figure number
++    with pytest.raises(ValueError, match="already exists"):
++        plt.subplot_mosaic([['A']], num=2)
++
++    # 2. Test passing the actual Figure object
++    with pytest.raises(ValueError, match="cannot be a FigureBase instance"):
++        plt.subplot_mosaic([['A']], num=fig)
++
++    # 3. Test that clear=True allows reuse without error
++    fig_new, axd = plt.subplot_mosaic([['A']], num=2, clear=True)
++    assert fig_new is fig
++
++    plt.close(2)
+diff --git a/lib/matplotlib/tests/test_rcparams.py b/lib/matplotlib/tests/test_rcparams.py
+index 525a9ff60d1a..0479fc7a02a8 100644
+--- a/lib/matplotlib/tests/test_rcparams.py
++++ b/lib/matplotlib/tests/test_rcparams.py
+@@ -275,16 +275,23 @@ def generate_validator_testcases(valid):
+                       cycler('linestyle', ['-', '--'])),
+                      (cycler(mew=[2, 5]),
+                       cycler('markeredgewidth', [2, 5])),
++                     ("2 * cycler('color', 'rgb')", 2 * cycler('color', 'rgb')),
++                     ("2 * cycler('color', 'r' + 'gb')", 2 * cycler('color', 'rgb')),
++                     ("cycler(c='r' + 'gb', lw=[1, 2, 3])",
++                      cycler('color', 'rgb') + cycler('linewidth', [1, 2, 3])),
++                     ("cycler('color', 'rgb') * 2", cycler('color', 'rgb') * 2),
++                     ("concat(cycler('color', 'rgb'), cycler('color', 'cmk'))",
++                      cycler('color', list('rgbcmk'))),
++                     ("cycler('color', 'rgbcmk')[:3]", cycler('color', list('rgb'))),
++                     ("cycler('color', 'rgb')[::-1]", cycler('color', list('bgr'))),
+                      ),
+-         # This is *so* incredibly important: validate_cycler() eval's
+-         # an arbitrary string! I think I have it locked down enough,
+-         # and that is what this is testing.
+-         # TODO: Note that these tests are actually insufficient, as it may
+-         # be that they raised errors, but still did an action prior to
+-         # raising the exception. We should devise some additional tests
+-         # for that...
++         # validate_cycler() parses an arbitrary string using a safe
++         # AST-based parser (no eval). These tests verify that only valid
++         # cycler expressions are accepted.
+          'fail': ((4, ValueError),  # Gotta be a string or Cycler object
+                   ('cycler("bleh, [])', ValueError),  # syntax error
++                  ("cycler('color', 'rgb') * * cycler('color', 'rgb')",  # syntax error
++                  ValueError),
+                   ('Cycler("linewidth", [1, 2, 3])',
+                    ValueError),  # only 'cycler()' function is allowed
+                   # do not allow dunder in string literals
+@@ -298,6 +305,9 @@ def generate_validator_testcases(valid):
+                    ValueError),
+                   ("cycler('c', [j.__class__(j).lower() for j in ['r', 'b']])",
+                    ValueError),
++                  # list comprehensions are arbitrary code, even if "safe"
++                  ("cycler('color', [x for x in ['r', 'g', 'b']])",
++                   ValueError),
+                   ('1 + 2', ValueError),  # doesn't produce a Cycler object
+                   ('os.system("echo Gotcha")', ValueError),  # os not available
+                   ('import os', ValueError),  # should not be able to import
+diff --git a/lib/matplotlib/tests/test_scale.py b/lib/matplotlib/tests/test_scale.py
+index f98e083d84a0..9f882103967e 100644
+--- a/lib/matplotlib/tests/test_scale.py
++++ b/lib/matplotlib/tests/test_scale.py
+@@ -371,3 +371,65 @@ def set_default_locators_and_formatters(self, axis):
+         # cleanup - there's no public unregister_scale()
+         del mscale._scale_mapping["custom"]
+         del mscale._scale_has_axis_parameter["custom"]
++
++
++def test_val_in_range():
++
++    test_cases = [
++        # LinearScale: Always True (even for Inf/NaN)
++        ('linear', 10.0, True),
++        ('linear', -10.0, True),
++        ('linear', 0.0, True),
++        ('linear', np.inf, False),
++        ('linear', np.nan, False),
++
++        # LogScale: Only positive values (> 0)
++        ('log', 1.0, True),
++        ('log', 1e-300, True),
++        ('log', 0.0, False),
++        ('log', -1.0, False),
++        ('log', np.inf, False),
++        ('log', np.nan, False),
++
++        # LogitScale: Strictly between 0 and 1
++        ('logit', 0.5, True),
++        ('logit', 0.0, False),
++        ('logit', 1.0, False),
++        ('logit', -0.1, False),
++        ('logit', 1.1, False),
++        ('logit', np.inf, False),
++        ('logit', np.nan, False),
++
++        # SymmetricalLogScale: Valid for all real numbers
++        # Uses ScaleBase fallback. NaN returns False since NaN != NaN
++        ('symlog', 10.0, True),
++        ('symlog', -10.0, True),
++        ('symlog', 0.0, True),
++        ('symlog', np.inf, False),
++        ('symlog', np.nan, False),
++    ]
++
++    for name, val, expected in test_cases:
++        scale_cls = mscale._scale_mapping[name]
++        s = scale_cls(axis=None)
++
++        result = s.val_in_range(val)
++        assert result is expected, (
++            f"Failed {name}.val_in_range({val})."
++            f"Expected {expected}, got {result}"
++        )
++
++
++def test_val_in_range_base_fallback():
++    # Directly test the ScaleBase fallback for custom scales.
++    # ScaleBase.limit_range_for_scale returns values unchanged by default
++    s = mscale.ScaleBase(axis=None)
++
++    # Normal values should be True
++    assert s.val_in_range(1.0) is True
++    assert s.val_in_range(-5.5) is True
++
++    # NaN and Inf returns False since they cannot be drawn in a plot
++    assert s.val_in_range(np.nan) is False
++    assert s.val_in_range(np.inf) is False
++    assert s.val_in_range(-np.inf) is False
+diff --git a/lib/matplotlib/tests/test_widgets.py b/lib/matplotlib/tests/test_widgets.py
+index 0ac24dc8e8e4..a35e310c2962 100644
+--- a/lib/matplotlib/tests/test_widgets.py
++++ b/lib/matplotlib/tests/test_widgets.py
+@@ -1817,3 +1817,19 @@ def test_parent_axes_removal():
+     evt = DrawEvent('draw_event', fig.canvas, renderer)
+     radio._clear(evt)
+     checks._clear(evt)
++
++
++def test_cursor_overlapping_axes_blitting_warning():
++    """Test that a warning is raised and useblit is disabled for overlapping axes."""
++    fig = plt.figure()
++    ax1 = fig.add_axes([0.1, 0.1, 0.8, 0.8])
++    ax2 = fig.add_axes([0.2, 0.2, 0.6, 0.6])  # Explicitly overlaps ax1
++
++    match_text = (
++        "Cursor blitting is currently not supported on "
++        "overlapping axes"
++    )
++    with pytest.warns(UserWarning, match=match_text):
++        cursor = widgets.Cursor(ax1, useblit=True)
++
++    assert cursor.useblit is False
+diff --git a/lib/matplotlib/texmanager.py b/lib/matplotlib/texmanager.py
+index 35651a94aa85..2a7201c87d77 100644
+--- a/lib/matplotlib/texmanager.py
++++ b/lib/matplotlib/texmanager.py
+@@ -258,10 +258,6 @@ def _run_checked_subprocess(cls, command, tex, *, cwd=None):
+             report = subprocess.check_output(
+                 command, cwd=cwd if cwd is not None else cls._cache_dir,
+                 stderr=subprocess.STDOUT)
+-        except FileNotFoundError as exc:
+-            raise RuntimeError(
+-                f'Failed to process string with tex because {command[0]} '
+-                'could not be found') from exc
+         except subprocess.CalledProcessError as exc:
+             raise RuntimeError(
+                 '{prog} was not able to process the following string:\n'
+@@ -274,6 +270,10 @@ def _run_checked_subprocess(cls, command, tex, *, cwd=None):
+                     tex=tex.encode('unicode_escape'),
+                     exc=exc.output.decode('utf-8', 'backslashreplace'))
+                 ) from None
++        except (FileNotFoundError, OSError) as exc:
++            raise RuntimeError(
++                f'Failed to process string with tex because {command[0]} '
++                'could not be found') from exc
+         _log.debug(report)
+         return report
+ 
+@@ -299,8 +299,8 @@ def make_dvi(cls, tex, fontsize):
+                 Path(tmpdir, "file.tex").write_text(
+                     cls._get_tex_source(tex, fontsize), encoding='utf-8')
+                 cls._run_checked_subprocess(
+-                    ["latex", "-interaction=nonstopmode", "--halt-on-error",
+-                     "file.tex"], tex, cwd=tmpdir)
++                    ["latex", "-interaction=nonstopmode", "-halt-on-error",
++                     "-no-shell-escape", "file.tex"], tex, cwd=tmpdir)
+                 Path(tmpdir, "file.dvi").replace(dvipath)
+                 # Also move the tex source to the main cache directory, but
+                 # only for backcompat.
+diff --git a/lib/matplotlib/ticker.py b/lib/matplotlib/ticker.py
+index 83e13841677a..c3b245c60c51 100644
+--- a/lib/matplotlib/ticker.py
++++ b/lib/matplotlib/ticker.py
+@@ -199,6 +199,17 @@ def create_dummy_axis(self, **kwargs):
+ class Formatter(TickHelper):
+     """
+     Create a string based on a tick value and location.
++
++    The Formatter provides four formatting methods for different use cases:
++
++    - `format_ticks`: The public API for generating tick labels from a set of
++      tick values.
++    - `__call__`: The low-level primitive for formatting a single tick value,
++      potentially in the context of multiple values.
++    - `format_data`: Context-independent representation of a single value.
++      Used internally, e.g. for offset and scientific-notation strings.
++    - `format_data_short`: Concise plain-text representation of a single value
++      for the interactive mouseover tooltip.
+     """
+     # some classes want to see all the locs to help format
+     # individual ones
+@@ -206,28 +217,69 @@ class Formatter(TickHelper):
+ 
+     def __call__(self, x, pos=None):
+         """
+-        Return the format for tick value *x* at position pos.
+-        ``pos=None`` indicates an unspecified location.
++        Return the tick label strings for value *x* at tick index *pos*.
++
++        This is the low-level formatting primitive for a single tick in
++        the context of multiple ticks. Any context-dependent state
++        (e.g. locs, offset, order of magnitude) must already be configured,
++        typically by a prior call to ``format_ticks`` or ``set_locs``.
++
++        *pos* defines the index into ``self.locs`` so that the format can
++        depend on the location. ``pos=None`` indicates an unspecified
++        location.
++
++        The output may contain mathtext or LaTeX markup.
++
++        Subclasses must override this method.
+         """
+         raise NotImplementedError('Derived must override')
+ 
+     def format_ticks(self, values):
+-        """Return the tick labels for all the ticks at once."""
++        """
++        Return the tick label strings for all *values*.
++
++        This is the public API for generating tick labels.  It calls
++        ``set_locs`` to configure context-dependent formatting state before
++        delegating to ``__call__`` for each individual value.
++
++        The output may contain mathtext or LaTeX markup.
++
++        Use this method (rather than ``__call__``) whenever formatting a
++        complete set of tick values, so that formatters which need to see
++        all tick locations (e.g. to determine precision, offsets, or which
++        date components to display) can work correctly.
++        """
+         self.set_locs(values)
+         return [self(value, i) for i, value in enumerate(values)]
+ 
+     def format_data(self, value):
+         """
+-        Return the full string representation of the value with the
+-        position unspecified.
++        Return the context-independent string representation of a single *value*.
++
++        This is used internally, e.g. for constructing offset and
++        scientific-notation strings.  It always formats with ``pos=None``
++        and should return a context-independent representation
++        rather than a concise tick label.
++
++        The output may contain mathtext or LaTeX markup.
+         """
+         return self.__call__(value)
+ 
+     def format_data_short(self, value):
+         """
+-        Return a short string version of the tick value.
++        Return a short string representation of *value* for the mouseover
++        tooltip (the coordinate display in the interactive figure window).
++
++        This should return concise, plain text (no mathtext / LaTeX).
++        The precision is typically adapted to the current axis resolution
++        so that neighbouring pixels produce distinguishable labels.
+ 
+-        Defaults to the position-independent long value.
++        Defaults to `.Formatter.format_data`; subclasses should override
++        this to provide a plain-text representation that is independent
++        of the current tick locations.
++
++        Note: The mouseover text can be customized by setting the
++        ``Axes.fmt_xdata`` and ``Axes.fmt_ydata`` attributes.
+         """
+         return self.format_data(value)
+ 
+@@ -379,6 +431,12 @@ class StrMethodFormatter(Formatter):
+     It is typically unnecessary to explicitly construct `.StrMethodFormatter`
+     objects, as `~.Axis.set_major_formatter` directly accepts the format string
+     itself.
++
++    Examples
++    --------
++    >>> formatter = StrMethodFormatter("{x} km")
++    >>> formatter(10)
++    "10 km"
+     """
+ 
+     def __init__(self, fmt):
+diff --git a/lib/matplotlib/widgets.py b/lib/matplotlib/widgets.py
+index 92c9b779ff09..9ab4548157fd 100644
+--- a/lib/matplotlib/widgets.py
++++ b/lib/matplotlib/widgets.py
+@@ -2084,6 +2084,16 @@ def __init__(self, ax, *, horizOn=True, vertOn=True, useblit=False,
+         self.vertOn = vertOn
+         self.useblit = useblit and self.canvas.supports_blit  # TODO: make dynamic
+ 
++        if self.useblit:
++            for ax_ in ax.get_figure(root=True).get_axes():
++                if ax_ is not ax and ax.bbox.overlaps(ax_.bbox):
++                    _api.warn_external(
++                        "Cursor blitting is currently not supported on "
++                        "overlapping axes; falling back to useblit=False."
++                    )
++                    self.useblit = False
++                    break
++
+         if self.useblit:
+             lineprops['animated'] = True
+         self.lineh = ax.axhline(ax.get_ybound()[0], visible=False, **lineprops)
+diff --git a/lib/mpl_toolkits/axes_grid1/tests/baseline_images/test_axes_grid1/imagegrid_cbar_mode.png b/lib/mpl_toolkits/axes_grid1/tests/baseline_images/test_axes_grid1/imagegrid_cbar_mode.png
+index 156bfeb97e3d..e855c0cc7b0c 100644
+Binary files a/lib/mpl_toolkits/axes_grid1/tests/baseline_images/test_axes_grid1/imagegrid_cbar_mode.png and b/lib/mpl_toolkits/axes_grid1/tests/baseline_images/test_axes_grid1/imagegrid_cbar_mode.png differ
+diff --git a/pyproject.toml b/pyproject.toml
+index 2ede26597a31..2d1308b63347 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -25,10 +25,10 @@ classifiers=[
+ 
+ # When updating the list of dependencies, add an api_changes/development
+ # entry and also update the following places:
++# - the `build` dependency group below
+ # - lib/matplotlib/__init__.py (matplotlib._check_versions())
+-# - requirements/testing/minver.txt
++# - ci/minver-requirements.txt
+ # - doc/devel/dependencies.rst
+-# - .github/workflows/tests.yml
+ # - environment.yml
+ dependencies = [
+     "contourpy >= 1.0.1",
+@@ -44,20 +44,6 @@ dependencies = [
+ # Also keep in sync with find_program of meson.build.
+ requires-python = ">=3.11"
+ 
+-[project.optional-dependencies]
+-# Should be a copy of the build dependencies below.
+-dev = [
+-    "meson-python>=0.13.2,!=0.17.*",
+-    "pybind11>=2.13.2,!=2.13.3",
+-    "setuptools_scm>=7,<10",
+-    # Not required by us but setuptools_scm without a version, cso _if_
+-    # installed, then setuptools_scm 8 requires at least this version.
+-    # Unfortunately, we can't do a sort of minimum-if-installed dependency, so
+-    # we need to keep this for now until setuptools_scm _fully_ drops
+-    # setuptools.
+-    "setuptools>=64",
+-]
+-
+ [project.urls]
+ "Homepage" = "https://matplotlib.org"
+ "Download" = "https://matplotlib.org/stable/install/index.html"
+@@ -69,7 +55,7 @@ dev = [
+ 
+ [build-system]
+ build-backend = "mesonpy"
+-# Also keep in sync with optional dependencies above.
++# Also keep in sync with dependency groups below.
+ requires = [
+     # meson-python 0.17.x breaks symlinks in sdists. You can remove this pin if
+     # you really need it and aren't using an sdist.
+@@ -78,6 +64,103 @@ requires = [
+     "setuptools_scm>=7,<10",
+ ]
+ 
++[dependency-groups]
++build = [
++    # Should be the same as `[project] dependencies` above.
++    "contourpy >= 1.0.1",
++    "cycler >= 0.10",
++    "fonttools >= 4.22.0",
++    "kiwisolver >= 1.3.1",
++    "numpy >= 1.25",
++    "packaging >= 20.0",
++    "pillow >= 9",
++    "pyparsing >= 3",
++    "python-dateutil >= 2.7",
++
++    # Should be the same as `[build-system] requires` above.
++    "meson-python>=0.13.1,!=0.17.*",
++    "pybind11>=2.13.2,!=2.13.3",
++    "setuptools_scm>=7,<10",
++    # Not required by us but setuptools_scm without a version, so _if_
++    # installed, then setuptools_scm 8 requires at least this version.
++    # Unfortunately, we can't do a sort of minimum-if-installed dependency, so
++    # we need to keep this for now until setuptools_scm _fully_ drops
++    # setuptools.
++    "setuptools>=64",
++]
++dev = [
++    {include-group = "build"},
++    {include-group = "doc"},
++    {include-group = "test"},
++    {include-group = "test-extra"},
++    "pre-commit",
++]
++# Requirements for building docs
++#
++# You will first need a matching Matplotlib installation
++# e.g (from the Matplotlib root directory)
++#     pip install --group build --no-build-isolation --editable .
++#
++# Install the documentation requirements with:
++#     pip install --group doc
++#
++doc = [
++    "sphinx>=5.1.0,!=6.1.2",
++    "colorspacious",
++    "ipython",
++    "ipywidgets",
++    "ipykernel",
++    "numpydoc>=1.0",
++    "mpl-sphinx-theme~=3.10.0",
++    "pyyaml",
++    "PyStemmer",
++    "sphinxcontrib-svg2pdfconverter>=1.1.0",
++    "sphinxcontrib-video>=0.2.1",
++    "sphinx-copybutton",
++    "sphinx-design",
++    "sphinx-gallery[parallel]>=0.17.0",
++    "sphinx-tags>=0.4.0",
++]
++
++# pip requirements for all the CI builds
++test = [
++    "black<27",
++    "certifi",
++    "coverage!=6.3",
++    "psutil; sys_platform != 'cygwin'",
++    "pytest!=4.6.0,!=5.4.0,!=8.1.0",
++    "pytest-cov",
++    "pytest-rerunfailures!=16.0",
++    "pytest-timeout",
++    "pytest-xdist",
++    "pytest-xvfb",
++    "tornado",
++]
++
++# Extra pip requirements
++test-extra = [
++    "ipykernel",
++    # jupyter/nbconvert#1970 for the 7.3 series exclusions
++    "nbconvert[execute]!=6.0.0,!=6.0.1,!=7.3.0,!=7.3.1",
++    "nbformat!=5.0.0,!=5.0.1",
++    "pandas!=0.25.0",
++    "pikepdf",
++    "pytz",
++    "xarray",
++]
++
++# Extra pip requirements for the GitHub Actions mypy build
++typing = [
++    "mypy>=1.9",
++    "typing-extensions>=4.6",
++    # Extra stubs distributed separately from the main pypi package
++    "pandas-stubs",
++    "types-pillow",
++    "types-python-dateutil",
++    "types-psutil",
++    "sphinx",
++]
++
+ [tool.meson-python.args]
+ install = ['--tags=data,python-runtime,runtime']
+ 
+@@ -322,3 +405,26 @@ testpaths = ["lib"]
+ addopts = [
+     "--import-mode=importlib",
+ ]
++
++[tool.cibuildwheel.pyodide]
++test-requires = "pytest"
++test-command = [
++    # Wheels are built without test images, so copy them into the testing directory.
++    "basedir=$(python -c 'import pathlib, matplotlib; print(pathlib.Path(matplotlib.__file__).parent.parent)')",
++    "cp -a {package}/lib/matplotlib/tests/data $basedir/matplotlib/tests/",
++    """
++    for subdir in matplotlib mpl_toolkits/axes_grid1 mpl_toolkits/axisartist mpl_toolkits/mplot3d; do
++        cp -a {package}/lib/${subdir}/tests/baseline_images $basedir/${subdir}/tests/
++    done""",
++    # Test installed, not repository, copy as we aren't using an editable install.
++    """\
++    pytest -p no:cacheprovider --pyargs \
++        matplotlib mpl_toolkits.axes_grid1 mpl_toolkits.axisartist mpl_toolkits.mplot3d \
++	-k 'not test_complex_shaping'""",
++]
++[tool.cibuildwheel.pyodide.environment]
++# Exceptions are needed for pybind11:
++# https://github.com/pybind/pybind11/pull/5298
++CFLAGS = "-fexceptions"
++CXXFLAGS = "-fexceptions"
++LDFLAGS = "-fexceptions"
+diff --git a/requirements/dev/build-requirements.txt b/requirements/dev/build-requirements.txt
+deleted file mode 100644
+index 372a7d669fb1..000000000000
+--- a/requirements/dev/build-requirements.txt
++++ /dev/null
+@@ -1,3 +0,0 @@
+-pybind11>=2.13.2,!=2.13.3
+-meson-python
+-setuptools-scm<10
+diff --git a/requirements/dev/dev-requirements.txt b/requirements/dev/dev-requirements.txt
+deleted file mode 100644
+index 3208949ba0e8..000000000000
+--- a/requirements/dev/dev-requirements.txt
++++ /dev/null
+@@ -1,5 +0,0 @@
+--r build-requirements.txt
+--r ../doc/doc-requirements.txt
+--r ../testing/all.txt
+--r ../testing/extra.txt
+-ruff
+diff --git a/requirements/doc/doc-requirements.txt b/requirements/doc/doc-requirements.txt
+deleted file mode 100644
+index 1a352eaae975..000000000000
+--- a/requirements/doc/doc-requirements.txt
++++ /dev/null
+@@ -1,25 +0,0 @@
+-# Requirements for building docs
+-#
+-# You will first need a matching Matplotlib installation
+-# e.g (from the Matplotlib root directory)
+-#     pip install --no-build-isolation --editable .[dev]
+-#
+-# Install the documentation requirements with:
+-#     pip install -r requirements/doc/doc-requirements.txt
+-#
+-sphinx>=5.1.0,!=6.1.2
+-colorspacious
+-ipython
+-ipywidgets
+-ipykernel
+-numpydoc>=1.0
+-packaging>=20
+-mpl-sphinx-theme~=3.10.0
+-pyyaml
+-PyStemmer
+-sphinxcontrib-svg2pdfconverter>=1.1.0
+-sphinxcontrib-video>=0.2.1
+-sphinx-copybutton
+-sphinx-design
+-sphinx-gallery[parallel]>=0.12.0
+-sphinx-tags>=0.4.0
+diff --git a/requirements/testing/all.txt b/requirements/testing/all.txt
+deleted file mode 100644
+index dd1dbf3f29fd..000000000000
+--- a/requirements/testing/all.txt
++++ /dev/null
+@@ -1,13 +0,0 @@
+-# pip requirements for all the CI builds
+-
+-black<26
+-certifi
+-coverage!=6.3
+-psutil
+-pytest!=4.6.0,!=5.4.0,!=8.1.0
+-pytest-cov
+-pytest-rerunfailures!=16.0
+-pytest-timeout
+-pytest-xdist
+-pytest-xvfb
+-tornado
+diff --git a/requirements/testing/extra.txt b/requirements/testing/extra.txt
+deleted file mode 100644
+index e0d84d71c781..000000000000
+--- a/requirements/testing/extra.txt
++++ /dev/null
+@@ -1,12 +0,0 @@
+-# Extra pip requirements
+-
+---prefer-binary
+-ipykernel
+-# jupyter/nbconvert#1970 for the 7.3 series exclusions
+-nbconvert[execute]!=6.0.0,!=6.0.1,!=7.3.0,!=7.3.1
+-nbformat!=5.0.0,!=5.0.1
+-pandas!=0.25.0
+-pikepdf
+-pytz
+-pywin32; sys.platform == 'win32'
+-xarray
+diff --git a/requirements/testing/mypy.txt b/requirements/testing/mypy.txt
+deleted file mode 100644
+index 451a096f6a96..000000000000
+--- a/requirements/testing/mypy.txt
++++ /dev/null
+@@ -1,26 +0,0 @@
+-# Extra pip requirements for the GitHub Actions mypy build
+-
+-mypy>=1.9
+-typing-extensions>=4.6
+-
+-# Extra stubs distributed separately from the main pypi package
+-pandas-stubs
+-types-pillow
+-types-python-dateutil
+-types-psutil
+-
+-sphinx
+-
+-# Default requirements, included here because mpl itself does not
+-# need to be installed for mypy to run, but deps are needed
+-# and pip has no --deps-only install command
+-contourpy>=1.0.1
+-cycler>=0.10
+-fonttools>=4.22.0
+-kiwisolver>=1.3.1
+-packaging>=20.0
+-pillow>=9
+-pyparsing>=3
+-python-dateutil>=2.7
+-setuptools_scm>=7,<10
+-setuptools>=64
+diff --git a/src/_backend_agg_wrapper.cpp b/src/_backend_agg_wrapper.cpp
+index 3dd50b31f64a..11d45773d186 100644
+--- a/src/_backend_agg_wrapper.cpp
++++ b/src/_backend_agg_wrapper.cpp
+@@ -254,12 +254,12 @@ PYBIND11_MODULE(_backend_agg, m, py::mod_gil_not_used())
+ 
+         .def_buffer([](RendererAgg *renderer) -> py::buffer_info {
+             std::vector<py::ssize_t> shape {
+-                renderer->get_height(),
+-                renderer->get_width(),
++                static_cast<py::ssize_t>(renderer->get_height()),
++                static_cast<py::ssize_t>(renderer->get_width()),
+                 4
+             };
+             std::vector<py::ssize_t> strides {
+-                renderer->get_width() * 4,
++                static_cast<py::ssize_t>(renderer->get_width() * 4),
+                 4,
+                 1
+             };
+diff --git a/src/_image_resample.h b/src/_image_resample.h
+index 217f4a6ce86e..eaaf2306ae9f 100644
+--- a/src/_image_resample.h
++++ b/src/_image_resample.h
+@@ -589,8 +589,9 @@ class lookup_distortion
+             if (dx >= 0 && dx < m_out_width &&
+                 dy >= 0 && dy < m_out_height) {
+                 const double *coord = m_mesh + (int(dy) * m_out_width + int(dx)) * 2;
+-                *x = int(coord[0] * agg::image_subpixel_scale + offset);
+-                *y = int(coord[1] * agg::image_subpixel_scale + offset);
++                // Add a tiny fudge amount to account for numerical precision loss
++                *x = int(coord[0] * agg::image_subpixel_scale + offset + 1e-8);
++                *y = int(coord[1] * agg::image_subpixel_scale + offset + 1e-8);
+             }
+         }
+     }
+@@ -780,10 +781,15 @@ void resample(
+             params.affine.transform(&right, &top);
+             if (left > right) { std::swap(left, right); }
+             if (bottom > top) { std::swap(top, bottom); }
+-            if (round(left) < left) { left = round(left); }
+-            if (round(right) > right) { right = round(right); }
+-            if (round(bottom) < bottom) { bottom = round(bottom); }
+-            if (round(top) > top) { top = round(top); }
++            // Add a tiny fudge amount to account for numerical precision loss
++            int rleft = agg::iround(left - 1e-8);
++            int rright = agg::iround(right + 1e-8);
++            int rbottom = agg::iround(bottom - 1e-8);
++            int rtop = agg::iround(top + 1e-8);
++            if (rleft < left) { left = rleft; }
++            if (rright > right) { right = rright; }
++            if (rbottom < bottom) { bottom = rbottom; }
++            if (rtop > top) { top = rtop; }
+             path.move_to(left, bottom);
+             path.line_to(right, bottom);
+             path.line_to(right, top);
+diff --git a/src/agg_workaround.h b/src/agg_workaround.h
+index ef989ac198a3..f1cba6f570d8 100644
+--- a/src/agg_workaround.h
++++ b/src/agg_workaround.h
+@@ -80,6 +80,7 @@ class accurate_interpolator_affine_nn
+     void begin(double x, double y, unsigned len)
+     {
+         m_len = len - 1;
++        m_cur = 0;
+ 
+         m_stx1 = x;
+         m_sty1 = y;
+@@ -98,6 +99,7 @@ class accurate_interpolator_affine_nn
+     void resynchronize(double xe, double ye, unsigned len)
+     {
+         m_len = len - 1;
++        m_cur = 0;
+ 
+         m_trans->transform(&xe, &ye);
+         m_stx2 = xe * subpixel_scale;
+@@ -107,9 +109,7 @@ class accurate_interpolator_affine_nn
+     //----------------------------------------------------------------
+     void operator++()
+     {
+-        m_stx1 += (m_stx2 - m_stx1) / m_len;
+-        m_sty1 += (m_sty2 - m_sty1) / m_len;
+-        m_len--;
++        m_cur++;
+     }
+ 
+     //----------------------------------------------------------------
+@@ -117,13 +117,22 @@ class accurate_interpolator_affine_nn
+     {
+         // Truncate instead of round because this interpolator needs to
+         // match the definitions for nearest-neighbor interpolation
+-        *x = int(m_stx1);
+-        *y = int(m_sty1);
++        if (m_cur == m_len)
++        {
++            *x = int(m_stx2);
++            *y = int(m_sty2);
++        }
++        else
++        {
++            // Add a tiny fudge amount to account for numerical precision loss
++            *x = int(m_stx1 + (m_stx2 - m_stx1) * m_cur / m_len + 1e-8);
++            *y = int(m_sty1 + (m_sty2 - m_sty1) * m_cur / m_len + 1e-8);
++        }
+     }
+ 
+ private:
+     trans_type* m_trans;
+-    unsigned m_len;
++    unsigned m_len, m_cur;
+     double m_stx1, m_sty1, m_stx2, m_sty2;
+ };
+ #endif
+diff --git a/subprojects/freetype2.wrap b/subprojects/freetype2.wrap
+index c3b26ed24625..28b452035cf0 100644
+--- a/subprojects/freetype2.wrap
++++ b/subprojects/freetype2.wrap
+@@ -8,8 +8,9 @@ source_fallback_url = https://downloads.sourceforge.net/project/freetype/freetyp
+ source_filename = freetype-2.14.3.tar.xz
+ source_hash = 36bc4f1cc413335368ee656c42afca65c5a3987e8768cc28cf11ba775e785a5f
+ 
+-# This patch allows using our bundled HarfBuzz.
+-diff_files = freetype-2.14.1-static-harfbuzz.patch
++# First patch allows using our bundled HarfBuzz.
++# Second patch fixes symbol problems on wasm.
++diff_files = freetype-2.14.1-static-harfbuzz.patch, freetype-2.14.1-wasm-visibility.patch
+ 
+ [provide]
+ freetype2 = freetype_dep
+diff --git a/subprojects/packagefiles/freetype-2.14.1-wasm-visibility.patch b/subprojects/packagefiles/freetype-2.14.1-wasm-visibility.patch
+new file mode 100644
+index 000000000000..9c96e4191543
+--- /dev/null
++++ b/subprojects/packagefiles/freetype-2.14.1-wasm-visibility.patch
+@@ -0,0 +1,26 @@
++diff -uPNr freetype-2.14.3.orig/meson.build freetype-2.14.3/meson.build
++--- freetype-2.14.3.orig/meson.build	2026-03-27 05:26:03.270830734 -0400
+++++ freetype-2.14.3/meson.build	2026-03-27 16:19:46.222942478 -0400
++@@ -453,16 +453,21 @@
++   ft2_defines += ['-DFT_CONFIG_CONFIG_H=<ftconfig.h>']
++ endif
++ 
+++if cc.get_id() == 'emscripten'
+++  kwargs = {}
+++else
+++  kwargs = {'gnu_symbol_visibility': 'hidden'}
+++endif
++ 
++ ft2_lib = library('freetype',
++   sources: ft2_sources + [ftmodule_h],
++   c_args: ft2_defines,
++-  gnu_symbol_visibility: 'hidden',
++   include_directories: ft2_includes,
++   dependencies: ft2_deps,
++   install: true,
++   version: ft2_so_version,
++   link_args: common_ldflags,
+++  kwargs: kwargs,
++ )
++ 
++ 
+diff --git a/tools/autoclose_prs.py b/tools/autoclose_prs.py
+new file mode 100644
+index 000000000000..e2c08fbbc586
+--- /dev/null
++++ b/tools/autoclose_prs.py
+@@ -0,0 +1,56 @@
++"""Close PRs labeled with 'status: autoclose candidate' more than 14 days ago.
++
++Called from .github/workflows/autoclose_schedule.yml.
++
++Based on the scikit-learn script at https://github.com/scikit-learn/scikit-learn/blob/main/build_tools/github/autoclose_prs.py
++"""
++
++import os
++from datetime import datetime, timezone
++
++from github import Github
++
++CUTOFF_DAYS = 14
++
++
++def get_labeled_last_time(pr, label):
++    labeled_time = None
++    for event in pr.get_events():
++        if event.event == "labeled" and event.label.name == label:
++            labeled_time = event.created_at
++
++    return labeled_time
++
++
++gh_repo = "matplotlib/matplotlib"
++github_token = os.getenv("GITHUB_TOKEN")
++
++gh = Github(github_token)
++repo = gh.get_repo(gh_repo)
++
++
++now = datetime.now(timezone.utc)
++label = "status: autoclose candidate"
++prs = [
++    each
++    for each in repo.get_issues(labels=[label])
++    if each.pull_request is not None
++    and (now - get_labeled_last_time(each, label)).days > CUTOFF_DAYS
++]
++pr_numbers = [pr.number for pr in prs]
++print(f"Found {len(prs)} PRs to autoclose: {pr_numbers}")
++
++message = (
++    "Thank you for your interest in contributing to Matplotlib, but we cannot "
++    "accept your contribution as this pull request does not meet our development "
++    "standards.\n\n"
++    "Following our review policy, we are closing this PR after allowing two "
++    "weeks time for improvements.\n\n"
++    "Thank you for your understanding. If you think your PR has been closed "
++    "by mistake, please comment below."
++)
++
++for pr in prs:
++    print(f"Closing PR #{pr.number} with comment")
++    pr.create_comment(message)
++    pr.edit(state="closed")
+diff --git a/tox.ini b/tox.ini
+index 1d527a19ff52..956e4050cfa9 100644
+--- a/tox.ini
++++ b/tox.ini
+@@ -33,6 +33,6 @@ changedir = {tox_root}
+ commands =
+     python tools/stubtest.py
+ usedevelop = False
+-deps =
+-    -r requirements/testing/mypy.txt
+-    -r requirements/testing/all.txt
++dependency_groups =
++    build
++    typing

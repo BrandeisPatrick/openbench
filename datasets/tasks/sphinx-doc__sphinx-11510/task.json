@@ -1,0 +1,34 @@
+{
+  "task_id": "sphinx-doc__sphinx-11510",
+  "repo": "sphinx-doc/sphinx",
+  "pr_number": 11510,
+  "base_commit": "6cb783c0024a873722952a67ebb9f41771c8eb6d",
+  "merge_commit": "6cb783c0024a873722952a67ebb9f41771c8eb6d",
+  "merged_at": "2026-06-18T20:42:27.806590Z",
+  "tier": "main",
+  "hardness_score": 0.0,
+  "prompt_path": "prompt.md",
+  "gold_patch_path": "gold.patch",
+  "test_patch_path": "test.patch",
+  "fail_to_pass": [
+    "tests/test_directive_other.py::test_include_source_read_event",
+    "tests/test_directive_other.py::test_include_source_read_event_nested_includes"
+  ],
+  "pass_to_pass": [
+    "tests/test_directive_other.py::test_toctree",
+    "tests/test_directive_other.py::test_relative_toctree",
+    "tests/test_directive_other.py::test_toctree_urls_and_titles",
+    "tests/test_directive_other.py::test_toctree_glob",
+    "tests/test_directive_other.py::test_toctree_glob_and_url",
+    "tests/test_directive_other.py::test_reversed_toctree",
+    "tests/test_directive_other.py::test_toctree_twice"
+  ],
+  "image_tag": null,
+  "install_cmd": "pip install -e .",
+  "test_cmd": "python -m pytest",
+  "protected_test_files": {},
+  "validation": null,
+  "difficulty": "1-4 hours",
+  "difficulty_note": null,
+  "is_impossible": false
+}

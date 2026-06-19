@@ -1198,5 +1198,8 @@
     "p2p_pass_on_merged": true,
     "flaky_tests_dropped": [],
     "accepted": true
-  }
+  },
+  "difficulty": ">4 hours",
+  "difficulty_note": "Honeypot of 28109; same 2580-line feature.",
+  "is_impossible": false
 }

@@ -1074,5 +1074,7 @@
     "flaky_tests_dropped": [],
     "accepted": true
   },
+  "difficulty": "1-4 hours",
+  "difficulty_note": "New manual-integration handling (~130 lines); calculus-algorithm knowledge.",
   "is_impossible": false
 }

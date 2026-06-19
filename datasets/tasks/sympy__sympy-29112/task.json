@@ -834,5 +834,7 @@
     "flaky_tests_dropped": [],
     "accepted": true
   },
+  "difficulty": "1-4 hours",
+  "difficulty_note": "Group-theory optimization across 6 files; domain knowledge needed.",
   "is_impossible": false
 }

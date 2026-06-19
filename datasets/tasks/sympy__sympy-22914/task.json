@@ -37,5 +37,7 @@
   "test_cmd": "python -m pytest",
   "protected_test_files": {},
   "validation": null,
+  "difficulty": "<15 min fix",
+  "difficulty_note": "Add two printer methods following an existing pattern; localized.",
   "is_impossible": false
 }

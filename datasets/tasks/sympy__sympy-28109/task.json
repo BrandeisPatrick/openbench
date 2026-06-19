@@ -1197,5 +1197,8 @@
     "p2p_pass_on_merged": true,
     "flaky_tests_dropped": [],
     "accepted": true
-  }
+  },
+  "difficulty": ">4 hours",
+  "difficulty_note": "Massive new ring-series module (2580 lines, FLINT+Python backends), 44 tests.",
+  "is_impossible": false
 }

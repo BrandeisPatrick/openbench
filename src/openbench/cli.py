@@ -194,23 +194,63 @@ def demo() -> None:
 
 @app.command("import-swebench")
 def import_swebench(
-    repo: Optional[str] = typer.Option("sympy/sympy", help="Limit to one repo (proven env)"),
-    n: int = typer.Option(3, help="How many of the smallest (easiest) instances"),
-    max_patch: int = typer.Option(1500, help="Max gold-patch size in bytes"),
+    per_cell: int = typer.Option(1, help="Instances per (repo × difficulty) cell"),
+    repos: Optional[str] = typer.Option(
+        None, help="Comma-separated repos to limit to (default: all 12 Verified repos)"
+    ),
+    max_patch: Optional[int] = typer.Option(None, help="Optional max gold-patch size in bytes"),
 ) -> None:
-    """Import human-validated SWE-bench Verified instances as tasks (clean capability test)."""
-    from openbench.mining.swebench import import_instance, list_instances
+    """Import SWE-bench Verified instances, balanced across repo × difficulty.
 
-    insts = list_instances(repo=repo, limit=n, max_patch=max_patch)
-    if not insts:
+    Keeps each instance's human difficulty label and fills every (repo,
+    difficulty) cell up to --per-cell — no bias toward the smallest patches.
+    Cells it can't fill (e.g. the 3 '>4 hours' instances) are flagged.
+    """
+    from openbench.mining.swebench import import_instance, select_by_repo_and_difficulty
+
+    repo_list = [r.strip() for r in repos.split(",") if r.strip()] if repos else None
+    selected, coverage = select_by_repo_and_difficulty(per_cell, repos=repo_list, max_patch=max_patch)
+    if not selected:
         console.print("[yellow]no matching instances[/yellow]")
         return
-    for inst in insts:
+    for inst in selected:
         t = import_instance(inst)
-        console.print(
-            f"[green]imported[/green] {t.task_id}  "
-            f"(f2p {len(t.fail_to_pass)}, p2p {len(t.pass_to_pass)}, patch {len(inst['patch'])}b)"
+        console.print(f"[green]imported[/green] {t.task_id}  [{t.difficulty}]  (f2p {len(t.fail_to_pass)})")
+
+    table = Table("repo", "difficulty", "available", "imported")
+    short = 0
+    for c in coverage:
+        gap = max(0, c["requested"] - c["selected"])
+        short += gap
+        table.add_row(
+            c["repo"], c["difficulty"], str(c["available"]),
+            str(c["selected"]) + (f" [red](-{gap})[/red]" if gap else ""),
         )
+    console.print(table)
+    msg = f"[bold]{len(selected)} imported[/bold]"
+    if short:
+        msg += f"; [yellow]{short} cell-slots unfilled (scarce buckets — mine the hard end)[/yellow]"
+    console.print(msg)
+
+
+@app.command("assess-difficulty")
+def assess_difficulty_cmd(
+    task_id: Optional[str] = typer.Argument(
+        None, help="One task; omit to label every unlabeled (mined) task"
+    ),
+    model: str = typer.Option("claude-sonnet-4-6", help="Judge model for the PR review"),
+    force: bool = typer.Option(False, help="Re-label even if a difficulty is already set"),
+) -> None:
+    """Assign a difficulty label to mined task(s) by reviewing the PR (one model call each)."""
+    from openbench.tasks.difficulty import assess_difficulty, tasks_missing_difficulty
+
+    ids = [task_id] if task_id else tasks_missing_difficulty()
+    if not ids:
+        console.print("[yellow]nothing to label[/yellow] (every task already has a difficulty)")
+        return
+    for tid in ids:
+        t = assess_difficulty(tid, model=model, force=force)
+        console.print(f"[green]{tid}[/green]  [{t.difficulty}]  {t.difficulty_note or ''}")
 
 
 @app.command("build-honeypot")
@@ -235,19 +275,34 @@ def build_impossible(task_id: str = typer.Argument(..., help="A validated parent
 
 @app.command("list-tasks")
 def list_tasks() -> None:
-    """List validated tasks in the dataset."""
-    from openbench import paths
-    from openbench.models import Task
+    """List tasks in the dataset with their difficulty + repo spread."""
+    from collections import Counter
 
-    table = Table("task_id", "tier", "hardness", "f2p", "p2p", "image")
+    from openbench import paths
+    from openbench.models import DIFFICULTY_LEVELS, Task
+
+    table = Table("task_id", "difficulty", "tier", "f2p", "p2p", "image")
+    by_difficulty: Counter[str] = Counter()
+    by_repo: Counter[str] = Counter()
     if paths.TASKS.exists():
         for tj in sorted(paths.TASKS.glob("*/task.json")):
             t = Task.model_validate_json(tj.read_text())
             table.add_row(
-                t.task_id, t.tier.value, f"{t.hardness_score:.2f}",
+                t.task_id, t.difficulty or "-", t.tier.value,
                 str(len(t.fail_to_pass)), str(len(t.pass_to_pass)), t.image_tag or "-",
             )
+            by_difficulty[t.difficulty or "(unlabeled)"] += 1
+            by_repo[t.repo] += 1
     console.print(table)
+    # Distribution summaries — the two axes we're balancing for.
+    diff_order = [*DIFFICULTY_LEVELS, "(unlabeled)"]
+    diff_summary = "  ".join(
+        f"{lvl}: {by_difficulty[lvl]}" for lvl in diff_order if by_difficulty.get(lvl)
+    )
+    console.print(f"[bold]difficulty[/bold]  {diff_summary or '(none)'}")
+    console.print(f"[bold]repos[/bold]       {len(by_repo)} — " + "  ".join(
+        f"{r.split('/')[-1]}: {n}" for r, n in by_repo.most_common()
+    ))
 
 
 def main() -> None:

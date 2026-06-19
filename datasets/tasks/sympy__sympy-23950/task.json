@@ -24,5 +24,7 @@
   "test_cmd": "python -m pytest",
   "protected_test_files": {},
   "validation": null,
+  "difficulty": "15 min - 1 hour",
+  "difficulty_note": "One-line Contains.as_set fix; needs the set/relational contract.",
   "is_impossible": false
 }

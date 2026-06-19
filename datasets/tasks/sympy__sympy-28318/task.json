@@ -1171,5 +1171,8 @@
       "sympy/core/tests/test_args.py::test_sympy__physics__control__lti__TransferFunctionBase"
     ],
     "accepted": true
-  }
+  },
+  "difficulty": ">4 hours",
+  "difficulty_note": "GSoC-scale discrete-time TransferFunction; lti.py +1431.",
+  "is_impossible": false
 }

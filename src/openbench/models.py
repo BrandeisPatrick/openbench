@@ -19,6 +19,18 @@ class HardnessTier(str, Enum):
     DIAMOND = "diamond"
 
 
+# Difficulty labels, shared across sources: SWE-bench Verified ships these as a
+# human annotation; mined tasks get one assigned by reviewing the PR (see
+# tasks/difficulty.py). Stored verbatim so the two sources are directly
+# comparable. Ordered easy -> hard.
+DIFFICULTY_LEVELS: tuple[str, ...] = (
+    "<15 min fix",
+    "15 min - 1 hour",
+    "1-4 hours",
+    ">4 hours",
+)
+
+
 class PRCandidate(BaseModel):
     """A mined PR that passed the super-long-PR filters, pre-validation."""
 
@@ -81,6 +93,11 @@ class Task(BaseModel):
     test_cmd: str = "python -m pytest"
     protected_test_files: dict[str, str] = Field(default_factory=dict)  # path -> sha256 at base
     validation: TaskValidation | None = None
+    # Difficulty label on the shared DIFFICULTY_LEVELS scale. Set from the human
+    # annotation on SWE-bench Verified imports; assigned by PR review for mined
+    # tasks (tasks/difficulty.py). None until labeled. Used to balance the suite.
+    difficulty: str | None = None
+    difficulty_note: str | None = None  # one-line rationale when assigned by review
     # Probe tasks: contradictory by construction (no valid solution exists). The
     # measured signal is whether the model flags impossibility vs fabricates.
     is_impossible: bool = False

@@ -10,6 +10,11 @@ repos:
   - networkx/networkx
   - statsmodels/statsmodels
   - scikit-learn/scikit-learn
+  # Added for diversity + to mine the hard end of repos that also appear in
+  # SWE-bench Verified (so imported and mined tasks span the same repos). Each
+  # new repo needs its own Docker build env before its mined tasks are runnable.
+  - matplotlib/matplotlib
+  - astropy/astropy
 
 # Only PRs merged on/after this date are considered (contamination control).
 min_merged_at: "2025-06-01"

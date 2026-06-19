@@ -26,5 +26,7 @@
   "test_cmd": "python -m pytest",
   "protected_test_files": {},
   "validation": null,
+  "difficulty": "1-4 hours",
+  "difficulty_note": "Wide LogisticRegression deprecation + 8 tests; broad but mostly mechanical.",
   "is_impossible": false
 }

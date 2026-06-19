@@ -1,0 +1,30 @@
+{
+  "task_id": "sympy__sympy-11618",
+  "repo": "sympy/sympy",
+  "pr_number": 11618,
+  "base_commit": "360290c4c401e386db60723ddb0109ed499c9f6e",
+  "merge_commit": "360290c4c401e386db60723ddb0109ed499c9f6e",
+  "merged_at": "2026-06-18T20:42:27.811416Z",
+  "tier": "main",
+  "hardness_score": 0.0,
+  "prompt_path": "prompt.md",
+  "gold_patch_path": "gold.patch",
+  "test_patch_path": "test.patch",
+  "fail_to_pass": [
+    "test_issue_11617"
+  ],
+  "pass_to_pass": [
+    "test_point3D",
+    "test_Point2D",
+    "test_issue_9214",
+    "test_transform"
+  ],
+  "image_tag": null,
+  "install_cmd": "pip install -e .",
+  "test_cmd": "python -m pytest",
+  "protected_test_files": {},
+  "validation": null,
+  "difficulty": "15 min - 1 hour",
+  "difficulty_note": null,
+  "is_impossible": false
+}

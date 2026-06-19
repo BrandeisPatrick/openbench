@@ -1,0 +1,31 @@
+{
+  "task_id": "sphinx-doc__sphinx-8548",
+  "repo": "sphinx-doc/sphinx",
+  "pr_number": 8548,
+  "base_commit": "dd1615c59dc6fff633e27dbb3861f2d27e1fb976",
+  "merge_commit": "dd1615c59dc6fff633e27dbb3861f2d27e1fb976",
+  "merged_at": "2026-06-18T20:42:27.807173Z",
+  "tier": "main",
+  "hardness_score": 0.0,
+  "prompt_path": "prompt.md",
+  "gold_patch_path": "gold.patch",
+  "test_patch_path": "test.patch",
+  "fail_to_pass": [
+    "tests/test_ext_autodoc_autoclass.py::test_inherited_instance_variable"
+  ],
+  "pass_to_pass": [
+    "tests/test_ext_autodoc_autoclass.py::test_classes",
+    "tests/test_ext_autodoc_autoclass.py::test_instance_variable",
+    "tests/test_ext_autodoc_autoclass.py::test_decorators",
+    "tests/test_ext_autodoc_autoclass.py::test_slots_attribute",
+    "tests/test_ext_autodoc_autoclass.py::test_show_inheritance_for_subclass_of_generic_type"
+  ],
+  "image_tag": null,
+  "install_cmd": "pip install -e .",
+  "test_cmd": "python -m pytest",
+  "protected_test_files": {},
+  "validation": null,
+  "difficulty": "1-4 hours",
+  "difficulty_note": null,
+  "is_impossible": false
+}

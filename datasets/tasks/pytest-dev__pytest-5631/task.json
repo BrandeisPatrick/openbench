@@ -1,0 +1,41 @@
+{
+  "task_id": "pytest-dev__pytest-5631",
+  "repo": "pytest-dev/pytest",
+  "pr_number": 5631,
+  "base_commit": "cb828ebe70b4fa35cd5f9a7ee024272237eab351",
+  "merge_commit": "cb828ebe70b4fa35cd5f9a7ee024272237eab351",
+  "merged_at": "2026-06-18T20:42:27.800441Z",
+  "tier": "main",
+  "hardness_score": 0.0,
+  "prompt_path": "prompt.md",
+  "gold_patch_path": "gold.patch",
+  "test_patch_path": "test.patch",
+  "fail_to_pass": [
+    "testing/python/integration.py::TestMockDecoration::test_mock_sentinel_check_against_numpy_like"
+  ],
+  "pass_to_pass": [
+    "testing/python/integration.py::test_wrapped_getfslineno",
+    "testing/python/integration.py::TestMockDecoration::test_wrapped_getfuncargnames",
+    "testing/python/integration.py::TestMockDecoration::test_getfuncargnames_patching",
+    "testing/python/integration.py::test_pytestconfig_is_session_scoped",
+    "testing/python/integration.py::TestOEJSKITSpecials::test_funcarg_non_pycollectobj",
+    "testing/python/integration.py::TestOEJSKITSpecials::test_autouse_fixture",
+    "testing/python/integration.py::TestMockDecoration::test_unittest_mock",
+    "testing/python/integration.py::TestMockDecoration::test_unittest_mock_and_fixture",
+    "testing/python/integration.py::TestReRunTests::test_rerun",
+    "testing/python/integration.py::TestNoselikeTestAttribute::test_module_with_global_test",
+    "testing/python/integration.py::TestNoselikeTestAttribute::test_class_and_method",
+    "testing/python/integration.py::TestNoselikeTestAttribute::test_unittest_class",
+    "testing/python/integration.py::TestNoselikeTestAttribute::test_class_with_nasty_getattr",
+    "testing/python/integration.py::TestParameterize::test_idfn_marker",
+    "testing/python/integration.py::TestParameterize::test_idfn_fixture"
+  ],
+  "image_tag": null,
+  "install_cmd": "pip install -e .",
+  "test_cmd": "python -m pytest",
+  "protected_test_files": {},
+  "validation": null,
+  "difficulty": "15 min - 1 hour",
+  "difficulty_note": null,
+  "is_impossible": false
+}

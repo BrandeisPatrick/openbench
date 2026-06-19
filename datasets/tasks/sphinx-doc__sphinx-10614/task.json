@@ -1,0 +1,31 @@
+{
+  "task_id": "sphinx-doc__sphinx-10614",
+  "repo": "sphinx-doc/sphinx",
+  "pr_number": 10614,
+  "base_commit": "ac2b7599d212af7d04649959ce6926c63c3133fa",
+  "merge_commit": "ac2b7599d212af7d04649959ce6926c63c3133fa",
+  "merged_at": "2026-06-18T20:42:27.808341Z",
+  "tier": "main",
+  "hardness_score": 0.0,
+  "prompt_path": "prompt.md",
+  "gold_patch_path": "gold.patch",
+  "test_patch_path": "test.patch",
+  "fail_to_pass": [
+    "tests/test_ext_inheritance_diagram.py::test_inheritance_diagram_svg_html"
+  ],
+  "pass_to_pass": [
+    "tests/test_ext_inheritance_diagram.py::test_inheritance_diagram",
+    "tests/test_ext_inheritance_diagram.py::test_inheritance_diagram_png_html",
+    "tests/test_ext_inheritance_diagram.py::test_inheritance_diagram_latex",
+    "tests/test_ext_inheritance_diagram.py::test_inheritance_diagram_latex_alias",
+    "tests/test_ext_inheritance_diagram.py::test_import_classes"
+  ],
+  "image_tag": null,
+  "install_cmd": "pip install -e .",
+  "test_cmd": "python -m pytest",
+  "protected_test_files": {},
+  "validation": null,
+  "difficulty": "15 min - 1 hour",
+  "difficulty_note": null,
+  "is_impossible": false
+}

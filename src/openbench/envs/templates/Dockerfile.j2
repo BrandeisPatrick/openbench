@@ -19,14 +19,25 @@ RUN git checkout --quiet {{ base_commit }} \
     && git fetch origin {{ merge_commit }} \
     && git checkout --quiet {{ base_commit }}
 
-RUN python -m pip install --upgrade pip \
-    && {{ install_cmd }} \
-    && pip install pytest pytest-xdist
+RUN python -m pip install --upgrade pip
 
-# Common PEP 517 build backends, preinstalled so that grading/validation can
-# reinstall the package offline (network-none) with --no-build-isolation.
+# Build backends + scientific build deps, installed BEFORE the package so the
+# editable install below can run with --no-build-isolation and resolve build
+# tools (meson/ninja) to PERSISTENT site-packages paths. Required for
+# meson-python *editable* installs (matplotlib, scikit-learn) whose loaders
+# rebuild on import: under pip build isolation the loader records an ephemeral
+# /tmp/pip-build-env-*/bin/ninja that is gone by test time (ENOENT at collect);
+# --no-build-isolation records the stable path instead. Harmless for the
+# pure-Python repos (their build deps are already in this set).
 RUN pip install setuptools wheel hatchling hatch-vcs hatch-fancy-pypi-readme \
-    flit-core poetry-core pdm-backend setuptools-scm
+    flit-core poetry-core pdm-backend setuptools-scm \
+    meson meson-python ninja Cython numpy scipy pybind11
+
+# Install the package exactly as grading reinstalls it offline
+# (--no-build-isolation, build deps already present above), so the editable
+# build is consistent from base image through grade time.
+RUN {{ offline_install_cmd }} \
+    && pip install pytest pytest-xdist
 
 # Claude Code CLI for the claude-code agent runner (headless, stream-json).
 RUN apt-get update \

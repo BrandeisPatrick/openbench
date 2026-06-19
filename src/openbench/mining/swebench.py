@@ -13,6 +13,7 @@ are self-contained text, human-confirmed solvable, unlike our mined PRs.
 from __future__ import annotations
 
 import json
+from collections import defaultdict
 from datetime import datetime, timezone
 
 from openbench import paths
@@ -29,26 +30,88 @@ _DELIVERABLE = (
     "must keep passing; stay in scope; do not modify existing tests."
 )
 
+# Parquet column names (FAIL_TO_PASS/PASS_TO_PASS are upper-case there) paired
+# with the dict keys we expose. `difficulty` is the human annotation we keep.
+_SELECT = (
+    'instance_id, repo, base_commit, patch, test_patch, problem_statement, '
+    '"FAIL_TO_PASS", "PASS_TO_PASS", version, difficulty'
+)
+_COLS = [
+    "instance_id", "repo", "base_commit", "patch", "test_patch",
+    "problem_statement", "fail_to_pass", "pass_to_pass", "version", "difficulty",
+]
 
-def list_instances(repo: str | None = None, limit: int = 20, max_patch: int = 1500) -> list[dict]:
-    """Smallest (easiest) SWE-bench Verified instances, optionally one repo."""
+
+def list_instances(
+    repo: str | None = None,
+    max_patch: int | None = None,
+    smallest_first: bool = False,
+    limit: int | None = None,
+) -> list[dict]:
+    """SWE-bench Verified instances as row dicts, including the human `difficulty`.
+
+    Defaults to the FULL set (optionally one repo), ordered by instance_id — no
+    bias toward small/easy patches (the old default silently grabbed the 20
+    smallest). `smallest_first`/`limit`/`max_patch` remain available for quick
+    spot pulls or to cap patch size, but none are applied unless asked.
+    """
     import duckdb
 
-    where = "where length(patch) <= ?"
-    params: list = [max_patch]
+    clauses: list[str] = []
+    params: list = []
+    if max_patch is not None:
+        clauses.append("length(patch) <= ?")
+        params.append(max_patch)
     if repo:
-        where += " and repo = ?"
+        clauses.append("repo = ?")
         params.append(repo)
+    where = ("where " + " and ".join(clauses)) if clauses else ""
+    order = "order by length(patch) asc" if smallest_first else "order by instance_id"
+    tail = ""
+    if limit is not None:
+        tail = "limit ?"
+        params.append(limit)
     con = duckdb.connect()
-    rows = con.execute(
-        f"select instance_id, repo, base_commit, patch, test_patch, "
-        f"problem_statement, \"FAIL_TO_PASS\", \"PASS_TO_PASS\", version "
-        f"from '{_PARQUET}' {where} order by length(patch) asc limit ?",
-        [*params, limit],
-    ).fetchall()
-    cols = ["instance_id", "repo", "base_commit", "patch", "test_patch",
-            "problem_statement", "fail_to_pass", "pass_to_pass", "version"]
-    return [dict(zip(cols, r, strict=True)) for r in rows]
+    rows = con.execute(f"select {_SELECT} from '{_PARQUET}' {where} {order} {tail}", params).fetchall()
+    return [dict(zip(_COLS, r, strict=True)) for r in rows]
+
+
+def stratify(
+    rows: list[dict], per_cell: int, repos: list[str] | None = None
+) -> tuple[list[dict], list[dict]]:
+    """Pick up to ``per_cell`` instances for each (repo, difficulty) cell.
+
+    Deterministic and patch-size-blind: within a cell, instances are sorted by
+    instance_id and the first ``per_cell`` taken. Returns (selected, coverage),
+    where coverage is one ``{repo, difficulty, available, selected, requested}``
+    row per cell so callers can surface cells that under-fill — e.g. Verified has
+    only 3 ``>4 hours`` instances, so a high per_cell can't be met there.
+    """
+    by_cell: dict[tuple[str, str], list[dict]] = defaultdict(list)
+    for r in rows:
+        if repos and r["repo"] not in repos:
+            continue
+        by_cell[(r["repo"], r.get("difficulty") or "unknown")].append(r)
+
+    selected: list[dict] = []
+    coverage: list[dict] = []
+    for (repo, diff), insts in sorted(by_cell.items()):
+        insts.sort(key=lambda r: r["instance_id"])
+        take = insts[:per_cell]
+        selected.extend(take)
+        coverage.append({
+            "repo": repo, "difficulty": diff,
+            "available": len(insts), "selected": len(take), "requested": per_cell,
+        })
+    return selected, coverage
+
+
+def select_by_repo_and_difficulty(
+    per_cell: int, repos: list[str] | None = None, max_patch: int | None = None
+) -> tuple[list[dict], list[dict]]:
+    """Fetch the full Verified set (optionally a repo subset) and stratify it."""
+    rows = list_instances(max_patch=max_patch)
+    return stratify(rows, per_cell, repos=repos)
 
 
 def _as_list(v) -> list[str]:
@@ -99,6 +162,7 @@ def import_instance(inst: dict) -> Task:
         merged_at=datetime.now(timezone.utc),
         tier=HardnessTier.MAIN,
         hardness_score=0.0,
+        difficulty=inst.get("difficulty"),  # human annotation, kept for balancing
         fail_to_pass=_as_list(inst["fail_to_pass"]),
         pass_to_pass=_as_list(inst["pass_to_pass"]),
     )
