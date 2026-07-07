@@ -288,7 +288,31 @@ def list_tasks() -> None:
     ))
 
 
+def _load_dotenv() -> None:
+    """Load ROOT/.env into the environment (existing vars win, never overridden).
+
+    The docs say `cp .env.example .env` is enough; without this, keys had to be
+    exported manually. Plain KEY=VALUE lines only — no interpolation.
+    """
+    import os
+
+    from openbench import paths
+
+    env_file = paths.ROOT / ".env"
+    if not env_file.exists():
+        return
+    for line in env_file.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        key, value = key.strip(), value.strip().strip("'\"")
+        if key and value and key not in os.environ:
+            os.environ[key] = value
+
+
 def main() -> None:
+    _load_dotenv()
     app()
 
 

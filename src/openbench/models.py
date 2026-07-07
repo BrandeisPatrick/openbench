@@ -89,6 +89,10 @@ class Task(BaseModel):
     fail_to_pass: list[str] = Field(default_factory=list)  # pytest node ids
     pass_to_pass: list[str] = Field(default_factory=list)
     image_tag: str | None = None  # docker image, set by build-env
+    # Python for the task image. Old base commits break on modern Python
+    # (e.g. 2017-era sympy imports collections.Mapping, removed in 3.10) —
+    # grading such a task on the default image scores the GOLD patch 0%.
+    python_version: str = "3.12"
     install_cmd: str = "pip install -e ."
     test_cmd: str = "python -m pytest"
     protected_test_files: dict[str, str] = Field(default_factory=dict)  # path -> sha256 at base

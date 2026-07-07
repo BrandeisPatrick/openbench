@@ -39,6 +39,5 @@
   "validation": null,
   "difficulty": "<15 min fix",
   "difficulty_note": "Add two printer methods following an existing pattern; localized.",
-  "is_impossible": false,
   "source": "swebench-verified"
 }

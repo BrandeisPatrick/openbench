@@ -13,8 +13,14 @@ from openbench import dockerutil, paths
 from openbench.models import Task
 
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
-DEFAULT_BASE_IMAGE = "python:3.12-slim"
 DEFAULT_BUILD_TIMEOUT_S = 1800
+
+
+def base_image_for(task: Task) -> str:
+    """python:<task.python_version>-slim — per-task, SWE-bench style, because
+    old base commits cannot import on modern Python (the golden control then
+    grades 0% and every model looks like a failure on that task)."""
+    return f"python:{task.python_version}-slim"
 
 
 def image_tag_for(task_id: str) -> str:
@@ -40,14 +46,14 @@ def _grading_config() -> dict[str, Any]:
     return {}
 
 
-def render_dockerfile(task: Task, base_image: str = DEFAULT_BASE_IMAGE) -> str:
+def render_dockerfile(task: Task, base_image: str | None = None) -> str:
     env = Environment(
         loader=FileSystemLoader(str(TEMPLATES_DIR)),
         undefined=StrictUndefined,
         keep_trailing_newline=True,
     )
     return env.get_template("Dockerfile.j2").render(
-        base_image=base_image,
+        base_image=base_image or base_image_for(task),
         repo=task.repo,
         base_commit=task.base_commit,
         merge_commit=task.merge_commit,
@@ -59,7 +65,7 @@ def render_dockerfile(task: Task, base_image: str = DEFAULT_BASE_IMAGE) -> str:
     )
 
 
-def build_task_image(task_id: str, base_image: str = DEFAULT_BASE_IMAGE) -> str:
+def build_task_image(task_id: str, base_image: str | None = None) -> str:
     """Render Dockerfile.j2, build openbench/<task_id>:base, record it in task.json."""
     task_json = paths.task_dir(task_id) / "task.json"
     task = Task.model_validate_json(task_json.read_text())

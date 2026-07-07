@@ -131,5 +131,6 @@
   "difficulty": "<15 min fix",
   "difficulty_note": null,
   "is_impossible": false,
-  "source": "swebench-verified"
+  "source": "swebench-verified",
+  "python_version": "3.9"
 }

@@ -189,5 +189,6 @@
   "difficulty": "15 min - 1 hour",
   "difficulty_note": "One-line reflected-multiply fix, but locating Poly mul handling takes digging.",
   "is_impossible": false,
-  "source": "swebench-verified"
+  "source": "swebench-verified",
+  "python_version": "3.9"
 }
