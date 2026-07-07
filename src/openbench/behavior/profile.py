@@ -298,7 +298,12 @@ def compute_profile(
         ) / len(actions)
     # search_before_edit: of scored edits (first edit of a never-seen path is
     # file creation, excluded), the fraction whose file appeared in an earlier
-    # search / read / tool_result.
+    # look (search / shell read like `cat file` / tool_result / Read). Shell
+    # events count because bash-harness reads arrive as plain commands whose
+    # file tokens the adapter records in files_touched.
+    def _looked(ev: TraceEvent) -> bool:
+        return ev.type in ("search", "shell", "tool_result") or ev.tool_name == "Read"
+
     if edits:
         seen: set[str] = set()
         edited_before: set[str] = set()
@@ -314,19 +319,19 @@ def compute_profile(
                     if any(f in seen for f in ev.files_touched):
                         informed += 1
                 edited_before.update(ev.files_touched)
-            if ev.type in ("search", "tool_result") or ev.tool_name == "Read":
+            if _looked(ev):
                 seen.update(ev.files_touched)
         if scored:
             p.search_before_edit_rate = informed / scored
     explored: set[str] = set()
     for ev in events:
-        if ev.type in ("search", "tool_result") or ev.tool_name == "Read":
+        if _looked(ev):
             explored.update(ev.files_touched)
     p.files_explored = len(explored)
     reads = [
         ev
         for ev in events
-        if (ev.type == "search" or ev.tool_name == "Read") and ev.files_touched
+        if (ev.type in ("search", "shell") or ev.tool_name == "Read") and ev.files_touched
     ]
     if reads:
         seen_reads: set[str] = set()

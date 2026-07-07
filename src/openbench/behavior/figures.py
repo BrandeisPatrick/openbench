@@ -212,8 +212,10 @@ def fig_pass_trajectories(
         events = [json.loads(ln) for ln in ev_path.read_text().splitlines() if ln.strip()]
         test_marks = []
         for i, e in enumerate(events):
+            # pytest counts live on the tool_result of a test command (the
+            # adapter attaches them where the output is) — match any carrier.
             d = e.get("derived") or {}
-            if e.get("type") == "test_run" and "tests_passed" in d:
+            if "tests_passed" in d:
                 green = (d.get("tests_failed") or 0) == 0 and (d.get("tests_passed") or 0) > 0
                 test_marks.append((i / max(len(events) - 1, 1), green))
         if not test_marks:
