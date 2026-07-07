@@ -183,6 +183,24 @@ def test_gpt_responses_captures_cot_through_harness(tmp_path, monkeypatch):
     assert "ls src/" in [r["command"] for r in lines if r["type"] == "exec"]
 
 
+def test_responses_nudge_answers_pending_function_call():
+    """A function_call with unparseable arguments still awaits its output; a
+    plain user nudge makes the Responses API 400 ('No tool output found')."""
+    from openbench.runners.protocols import OpenAIResponsesProtocol
+
+    p = OpenAIResponsesProtocol()
+    bad_args = {"id": "r1", "output": [
+        {"type": "function_call", "call_id": "fc9", "name": "bash", "arguments": "{not json"}]}
+    act = p.parse_action(bad_args)
+    assert act.well_formed is False
+    nudge = p.nudge()
+    assert nudge["type"] == "function_call_output" and nudge["call_id"] == "fc9"
+    assert p.nudge()["role"] == "user"  # pending consumed; prose-only nudges stay plain
+
+    p.parse_action(_responses(reasoning="just prose"))  # no function_call at all
+    assert p.nudge()["role"] == "user"
+
+
 def test_responses_reasoning_param_only_for_reasoning_models(monkeypatch):
     """gpt-4.1 (no reasoning channel) must not receive the `reasoning` body param —
     the Responses API 400s on it; gpt-5.5 must still get it."""

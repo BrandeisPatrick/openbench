@@ -34,6 +34,10 @@ class OpenAIResponsesProtocol(OpenAICompatProtocol):
         super().__init__(chat_fn)
         self._summary = summary
         self._prev_id: str | None = None
+        # A function_call whose arguments failed to parse still awaits its
+        # function_call_output — a plain nudge next turn makes the API 400
+        # ("No tool output found for function call ...").
+        self._pending_call_id: str | None = None
 
     def initial_messages(self, prompt: str) -> list[dict]:
         return [{"role": "user", "content": prompt}]
@@ -85,6 +89,7 @@ class OpenAIResponsesProtocol(OpenAICompatProtocol):
                 for c in item.get("content") or []:
                     if c.get("type") == "output_text":
                         text_parts.append(c.get("text") or "")
+        self._pending_call_id = call_id if command is None and call_id else None
         return Action(
             command=command, text="\n".join(text_parts), reasoning="\n".join(summary_parts),
             well_formed=command is not None, tool_call_id=call_id,
@@ -112,5 +117,13 @@ class OpenAIResponsesProtocol(OpenAICompatProtocol):
         }
 
     def nudge(self) -> dict:
+        if self._pending_call_id is not None:
+            cid, self._pending_call_id = self._pending_call_id, None
+            return {
+                "type": "function_call_output",
+                "call_id": cid,
+                "output": 'error: arguments were not valid JSON with a "command" string; '
+                          f"call the bash tool again, or run `echo {DONE_MARKER}` if done.",
+            }
         return {"role": "user",
                 "content": f"Call the bash tool with one command, or run `echo {DONE_MARKER}` if the task is complete."}
