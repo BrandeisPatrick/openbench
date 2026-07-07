@@ -23,6 +23,32 @@ def test_slugify_model_strips_slashes():
     assert slugify_model("deepseek-v4-pro") == "deepseek-v4-pro"  # already safe
 
 
+# --- #9: parametrized F2P ids were scored failed regardless of outcome --------
+
+def test_parse_junit_matches_parametrized_expansions():
+    """SWE-bench ids are often unparametrized (test_foo) while junit reports the
+    expansions (test_foo[a], test_foo[b]). Exact/endswith matching saw neither,
+    so a fully passing parametrized test graded as failed (scikit-learn-32659's
+    golden gate failed 7/8 F2P on exactly this)."""
+    from openbench.grading.mergeability import parse_junit
+
+    xml = """<testsuite>
+      <testcase classname="pkg.tests.test_mod" name="test_foo[a]"/>
+      <testcase classname="pkg.tests.test_mod" name="test_foo[b]"/>
+      <testcase classname="pkg.tests.test_mod" name="test_bar[x]"><failure/></testcase>
+      <testcase classname="pkg.tests.test_mod" name="test_bar[y]"/>
+      <testcase classname="pkg.tests.test_mod" name="test_plain"/>
+    </testsuite>"""
+    expected = [
+        "pkg/tests/test_mod.py::test_foo",    # all params green -> passed
+        "pkg/tests/test_mod.py::test_bar",    # one param red -> failed
+        "pkg/tests/test_mod.py::test_plain",  # unparametrized exact -> passed
+    ]
+    passed, failed = parse_junit(xml, expected)
+    assert passed == ["pkg/tests/test_mod.py::test_foo", "pkg/tests/test_mod.py::test_plain"]
+    assert failed == ["pkg/tests/test_mod.py::test_bar"]
+
+
 # --- #8: the cost cap must bind on EVERY loop path, incl. fence-less replies ---
 
 def test_cost_cap_fires_on_fenceless_turns(tmp_path, monkeypatch):

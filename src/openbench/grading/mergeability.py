@@ -54,7 +54,18 @@ def _dotted(node_id: str) -> str:
 def _match(dotted: str, pool: set[str]) -> bool:
     if dotted in pool:
         return True
-    return any(p.endswith(dotted) or dotted.endswith(p) for p in pool)
+    if any(p.endswith(dotted) or dotted.endswith(p) for p in pool):
+        return True
+    if "[" not in dotted:
+        # An unparametrized expected id must match its parametrized expansions:
+        # junit reports test_foo as N testcases named "test_foo[param]", which
+        # neither exact nor endswith can see. parse_junit checks failed-first,
+        # so one red param marks the id failed (all-params-must-pass).
+        bases = {p.split("[", 1)[0] for p in pool if "[" in p}
+        return dotted in bases or any(
+            b.endswith(dotted) or dotted.endswith(b) for b in bases
+        )
+    return False
 
 
 def parse_junit(xml_text: str, expected: list[str]) -> tuple[list[str], list[str]]:
