@@ -14,7 +14,6 @@
     "testing/test_capture.py::TestFDCapture::test_capfd_sys_stdout_mode"
   ],
   "pass_to_pass": [
-    "[100%]",
     "testing/test_capture.py::TestCaptureManager::test_getmethod_default_no_fd",
     "testing/test_capture.py::TestCaptureManager::test_capturing_basic_api[no]",
     "testing/test_capture.py::TestCaptureManager::test_capturing_basic_api[sys]",
@@ -124,13 +123,12 @@
     "testing/test_capture.py::test_typeerror_encodedfile_write"
   ],
   "image_tag": "openbench/pytest-dev__pytest-5262:base",
+  "python_version": "3.9",
   "install_cmd": "pip install -e .",
   "test_cmd": "python -m pytest",
   "protected_test_files": {},
   "validation": null,
   "difficulty": "<15 min fix",
   "difficulty_note": null,
-  "is_impossible": false,
-  "source": "swebench-verified",
-  "python_version": "3.9"
+  "source": "swebench-verified"
 }

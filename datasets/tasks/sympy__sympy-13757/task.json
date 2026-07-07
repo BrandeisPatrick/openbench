@@ -182,13 +182,12 @@
     "test_Poly_precision"
   ],
   "image_tag": "openbench/sympy__sympy-13757:base",
+  "python_version": "3.9",
   "install_cmd": "pip install -e .",
   "test_cmd": "python -m pytest",
   "protected_test_files": {},
   "validation": null,
   "difficulty": "15 min - 1 hour",
   "difficulty_note": "One-line reflected-multiply fix, but locating Poly mul handling takes digging.",
-  "is_impossible": false,
-  "source": "swebench-verified",
-  "python_version": "3.9"
+  "source": "swebench-verified"
 }

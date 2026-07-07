@@ -116,13 +116,18 @@ def select_by_repo_and_difficulty(
 
 def _as_list(v) -> list[str]:
     if isinstance(v, list):
-        return list(v)
-    if isinstance(v, str):
+        items = list(v)
+    elif isinstance(v, str):
         try:
-            return json.loads(v)
+            items = json.loads(v)
         except json.JSONDecodeError:
-            return [v] if v else []
-    return list(v) if v is not None else []
+            items = [v] if v else []
+    else:
+        items = list(v) if v is not None else []
+    # The dataset occasionally carries pytest OUTPUT artifacts (e.g. "[100%]")
+    # in its test lists; a progress marker is never a test id, and passing it
+    # to pytest fails the whole grading chunk.
+    return [t for t in items if t and not t.startswith("[")]
 
 
 def import_instance(inst: dict) -> Task:

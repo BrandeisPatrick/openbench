@@ -35,9 +35,11 @@ RUN pip install setuptools wheel hatchling hatch-vcs hatch-fancy-pypi-readme \
 
 # Install the package exactly as grading reinstalls it offline
 # (--no-build-isolation, build deps already present above), so the editable
-# build is consistent from base image through grade time.
+# build is consistent from base image through grade time. pytest only if the
+# repo didn't already pin its own (never plugins like xdist: a modern plugin
+# poisons collection when the repo under test is itself an old pytest).
 RUN {{ offline_install_cmd }} \
-    && pip install pytest pytest-xdist
+    && pip install pytest
 
 # Claude Code CLI for the claude-code agent runner (headless, stream-json).
 RUN apt-get update \

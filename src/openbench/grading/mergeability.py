@@ -9,6 +9,7 @@ from __future__ import annotations
 import shlex
 import tempfile
 import xml.etree.ElementTree as ET
+from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Iterator
@@ -111,15 +112,27 @@ def _resolve_node_ids(container: str, node_ids: list[str]) -> dict[str, str]:
     for nid in node_ids:
         if "::" in nid:
             resolved[nid] = nid
+    # A name can be defined in several files (sympy's test_symbol lives in 3);
+    # the task's names cluster in the test files the PR touched, so collect
+    # every candidate and let the files vote: the file defining the most of
+    # this task's names wins each ambiguity.
+    candidates: dict[str, list[str]] = {}
     for nid in bare:
         # strip a parametrization suffix for the grep, keep it on the node id
         name = nid.split("[", 1)[0].rsplit(".", 1)[-1]
         res = dockerutil.exec_in(
             container,
-            f"grep -rEl '^[[:space:]]*(def|class) {name}\\b' --include='*.py' . | head -1",
+            f"grep -rEl '^[[:space:]]*(def|class) {name}\\b' --include='*.py' .",
         )
-        path = res.stdout.strip()
-        resolved[nid] = f"{path}::{nid}" if path else nid
+        candidates[nid] = [ln.strip() for ln in res.stdout.splitlines() if ln.strip()]
+    votes = Counter(f for files in candidates.values() for f in set(files))
+    for nid in bare:
+        files = candidates[nid]
+        if not files:
+            resolved[nid] = nid
+        else:
+            best = max(files, key=lambda f: (votes[f], f))
+            resolved[nid] = f"{best}::{nid}"
     return resolved
 
 
