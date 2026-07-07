@@ -1,4 +1,5 @@
-build_timeout_s: 1800
+# 90 min: compiled repos (scikit-learn's meson build) exceed 30 min on a laptop.
+build_timeout_s: 5400
 min_f2p_tests: 1
 p2p_sample_cap: 500
 test_timeout_s: 1200

@@ -95,6 +95,10 @@ class Task(BaseModel):
     python_version: str = "3.12"
     install_cmd: str = "pip install -e ."
     test_cmd: str = "python -m pytest"
+    # Extra image-build commands (RUN lines) after the generic env setup —
+    # e.g. pinning ecosystem packages whose modern versions break an old repo
+    # (setuptools' vendored typeguard plugin cannot load into a 2019 pytest).
+    env_setup_cmds: list[str] = Field(default_factory=list)
     protected_test_files: dict[str, str] = Field(default_factory=dict)  # path -> sha256 at base
     validation: TaskValidation | None = None
     # Difficulty label on the shared DIFFICULTY_LEVELS scale. Set from the human

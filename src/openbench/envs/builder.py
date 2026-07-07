@@ -62,6 +62,7 @@ def render_dockerfile(task: Task, base_image: str | None = None) -> str:
         # preinstalled, --no-build-isolation) so meson-python editable installs
         # record persistent tool paths, not pip's ephemeral build-env.
         offline_install_cmd=offline_install_cmd(task.install_cmd),
+        env_setup_cmds=task.env_setup_cmds,
     )
 
 

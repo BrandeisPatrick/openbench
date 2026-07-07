@@ -130,5 +130,8 @@
   "validation": null,
   "difficulty": "<15 min fix",
   "difficulty_note": null,
-  "source": "swebench-verified"
+  "source": "swebench-verified",
+  "env_setup_cmds": [
+    "pip install 'setuptools<70' 'hypothesis<5'"
+  ]
 }

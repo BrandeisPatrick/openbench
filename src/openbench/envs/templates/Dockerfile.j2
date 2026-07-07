@@ -57,6 +57,12 @@ RUN for g in dev test tests testing; do pip install --group "$g" || true; done; 
         pip install -e ".[$e]" || true; done; \
     true
 
+# Task-specific environment fixes (task.json env_setup_cmds) — last, so they
+# override anything the generic best-effort installs above pulled in.
+{% for cmd in env_setup_cmds %}
+RUN {{ cmd }}
+{% endfor %}
+
 # --system so root (validation/grading execs) and agent both see it.
 RUN git config --system user.email bench@openbench \
     && git config --system user.name openbench \
