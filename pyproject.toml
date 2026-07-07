@@ -1,7 +1,7 @@
 [project]
 name = "openbench"
 version = "0.1.0"
-description = "Long-horizon PR replay benchmark for coding agents, with reasoning-trace reward-fingerprint analysis"
+description = "Long-horizon PR replay benchmark for coding agents, with cross-generation behavioral analysis"
 readme = "README.md"
 authors = [
     { name = "Bat", email = "59629055+BrandeisPatrick@users.noreply.github.com" }
@@ -15,7 +15,6 @@ dependencies = [
     "pydantic>=2.13.4",
     "pyyaml>=6.0.3",
     "rich>=15.0.0",
-    "scipy>=1.17.1",
     "typer>=0.26.7",
     "unidiff>=0.7.5",
 ]

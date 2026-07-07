@@ -25,7 +25,3 @@ wheels/
 # Editor / tooling state
 .claude/
 .DS_Store
-
-# Demo / analysis outputs (regenerated from local runs/). Published figures under
-# docs/figures/ are tracked on purpose.
-/report.md

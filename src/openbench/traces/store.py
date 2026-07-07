@@ -8,7 +8,7 @@ from pathlib import Path
 import duckdb
 
 from openbench import paths
-from openbench.models import GradeReport, RunMetrics, RunResult, TraceEvent
+from openbench.models import GradeReport, RunResult, TraceEvent
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS tasks (
@@ -75,33 +75,6 @@ CREATE TABLE IF NOT EXISTS events (
     cum_cost_usd DOUBLE,
     derived VARCHAR              -- JSON object
 );
-CREATE TABLE IF NOT EXISTS metrics (
-    run_id VARCHAR PRIMARY KEY,
-    task_id VARCHAR,
-    harness VARCHAR,
-    model VARCHAR,
-    tier VARCHAR,
-    test_tampering BOOLEAN,
-    assert_weakening_count INTEGER,
-    skip_xfail_added INTEGER,
-    verified_before_done BOOLEAN,
-    test_run_count INTEGER,
-    file_edit_count INTEGER,
-    test_runs_per_edit DOUBLE,
-    early_stop BOOLEAN,
-    verification_loop_count INTEGER,
-    post_success_churn INTEGER,
-    total_tokens BIGINT,
-    thinking_fraction DOUBLE,
-    consecutive_failures_at_end INTEGER,
-    diff_size_ratio DOUBLE,
-    file_jaccard DOUBLE,
-    out_of_scope_files INTEGER,
-    search_before_edit_rate DOUBLE,
-    guess_first_rate DOUBLE,
-    exploration_fraction DOUBLE,
-    revert_count INTEGER
-);
 """
 
 
@@ -136,13 +109,12 @@ def ingest_run(
     run: RunResult,
     events: list[TraceEvent],
     grade: GradeReport | None,
-    metrics: RunMetrics | None,
 ) -> None:
     """Upsert one run (delete-then-insert by run_id) into the warehouse."""
     conn = ensure_db()
     try:
         conn.execute("BEGIN")
-        for table in ("runs", "grades", "events", "metrics"):
+        for table in ("runs", "grades", "events"):
             conn.execute(f"DELETE FROM {table} WHERE run_id = ?", [run.run_id])
 
         conn.execute(
@@ -180,26 +152,6 @@ def ingest_run(
                     json.dumps(grade.f2p_passed), json.dumps(grade.f2p_failed),
                     json.dumps(grade.p2p_passed), json.dumps(grade.p2p_failed),
                     grade.anticheat.model_dump_json(), grade.resolved, grade.graded_at,
-                ],
-            )
-
-        if metrics is not None:
-            conn.execute(
-                "INSERT INTO metrics VALUES "
-                "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                [
-                    metrics.run_id, metrics.task_id, metrics.harness, metrics.model,
-                    metrics.tier.value if metrics.tier else None,
-                    metrics.test_tampering, metrics.assert_weakening_count,
-                    metrics.skip_xfail_added, metrics.verified_before_done,
-                    metrics.test_run_count, metrics.file_edit_count,
-                    metrics.test_runs_per_edit, metrics.early_stop,
-                    metrics.verification_loop_count, metrics.post_success_churn,
-                    metrics.total_tokens, metrics.thinking_fraction,
-                    metrics.consecutive_failures_at_end, metrics.diff_size_ratio,
-                    metrics.file_jaccard, metrics.out_of_scope_files,
-                    metrics.search_before_edit_rate, metrics.guess_first_rate,
-                    metrics.exploration_fraction, metrics.revert_count,
                 ],
             )
 

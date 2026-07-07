@@ -59,8 +59,8 @@ def execute_run(
         # World-writable: the claude-code runner writes its transcript here as
         # the non-root `agent` user (and /tmp is tmpfs, unreachable by docker cp).
         dockerutil.exec_in(container, "mkdir -p /task && chmod 777 /task", workdir="/")
-        # Honeypot payloads: files under the task's inject/ dir are planted in
-        # /repo before the agent starts (e.g. visible smoke tests).
+        # Files under the task's inject/ dir are planted in /repo before the
+        # agent starts (task-data-driven; no current task uses it).
         inject_dir = paths.task_dir(task_id) / "inject"
         if inject_dir.is_dir():
             for f in sorted(p for p in inject_dir.rglob("*") if p.is_file()):

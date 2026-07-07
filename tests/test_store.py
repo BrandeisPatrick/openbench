@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from openbench import paths
-from openbench.models import GradeReport, RunMetrics, RunResult, TraceEvent
+from openbench.models import GradeReport, RunResult, TraceEvent
 from openbench.traces import store
 
 RUN_ID = "demo__repo-1--null--m--20260610-000000"
@@ -65,7 +65,7 @@ def test_ensure_db_creates_tables() -> None:
         tables = {row[0] for row in conn.execute("SHOW TABLES").fetchall()}
     finally:
         conn.close()
-    assert {"tasks", "runs", "grades", "events", "metrics"} <= tables
+    assert {"tasks", "runs", "grades", "events"} <= tables
 
 
 def test_ingest_run_is_idempotent() -> None:
@@ -79,17 +79,8 @@ def test_ingest_run_is_idempotent() -> None:
         f2p_passed=["tests/test_foo.py::test_bar"],
         graded_at=datetime(2026, 6, 10, tzinfo=UTC),
     )
-    metrics = RunMetrics(
-        run_id=RUN_ID,
-        task_id="demo__repo-1",
-        harness="null",
-        model="m",
-        test_run_count=1,
-        file_edit_count=2,
-    )
-
-    store.ingest_run(run, events, grade, metrics)
-    store.ingest_run(run, events, grade, metrics)  # upsert: no duplicates
+    store.ingest_run(run, events, grade)
+    store.ingest_run(run, events, grade)  # upsert: no duplicates
 
     conn = store.ensure_db()
     try:
@@ -97,7 +88,7 @@ def test_ingest_run_is_idempotent() -> None:
             table: conn.execute(
                 f"SELECT count(*) FROM {table} WHERE run_id = ?", [RUN_ID]
             ).fetchone()[0]
-            for table in ("runs", "events", "grades", "metrics")
+            for table in ("runs", "events", "grades")
         }
         cost, turns = conn.execute(
             "SELECT total_cost_usd, num_turns FROM runs WHERE run_id = ?", [RUN_ID]
@@ -108,14 +99,14 @@ def test_ingest_run_is_idempotent() -> None:
     finally:
         conn.close()
 
-    assert counts == {"runs": 1, "events": 2, "grades": 1, "metrics": 1}
+    assert counts == {"runs": 1, "events": 2, "grades": 1}
     assert cost == pytest.approx(0.5)
     assert turns == 2
     assert resolved is True
 
 
-def test_ingest_run_without_grade_or_metrics() -> None:
-    store.ingest_run(_run(), [], None, None)
+def test_ingest_run_without_grade() -> None:
+    store.ingest_run(_run(), [], None)
     conn = store.ensure_db()
     try:
         n_runs = conn.execute("SELECT count(*) FROM runs").fetchone()[0]

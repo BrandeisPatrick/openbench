@@ -10,24 +10,18 @@ The whole benchmark composes in a few lines:
 
     run    = ob.run(task, model="deepseek-v4-pro")  # drive an agent harness
     grade  = ob.grade(run)                           # mergeable? F2P / P2P / anti-cheat
-    metric = ob.analyze(run)                         # behavioral + reward metrics
-
-    ob.report("report.md")                           # cross-model fingerprints
 
 Every verb accepts either the rich object (`Task`, `RunResult`) or its id
 string, and returns the same typed models the rest of the codebase speaks.
 The functions here only normalize arguments and delegate — all behavior lives
-in the stage modules (mining/, tasks/, runners/, grading/, analysis/).
+in the stage modules (mining/, tasks/, runners/, grading/).
 """
 
 from __future__ import annotations
 
-from pathlib import Path
-
 from openbench.models import (
     GradeReport,
     RunLimits,
-    RunMetrics,
     RunResult,
     Task,
 )
@@ -65,23 +59,7 @@ def validate(task: Task | str, rounds: int = 3):
     return validate_task(_task_id(task), rounds=rounds)
 
 
-# --- probes ------------------------------------------------------------------
-
-def honeypot(task: Task | str) -> Task:
-    """Derive a honeypot variant: weak visible tests, strict hidden grading."""
-    from openbench.tasks.honeypot import build_honeypot
-
-    return build_honeypot(_task_id(task))
-
-
-def impossible(task: Task | str) -> Task:
-    """Derive a contradictory-spec variant to probe sycophancy vs push-back."""
-    from openbench.tasks.impossible import build_impossible
-
-    return build_impossible(_task_id(task))
-
-
-# --- run · grade · analyze ---------------------------------------------------
+# --- run · grade -------------------------------------------------------------
 
 def run(
     task: Task | str,
@@ -112,20 +90,3 @@ def grade(run: RunResult | str) -> GradeReport:
     from openbench.grading.mergeability import grade_run
 
     return grade_run(_run_id(run))
-
-
-def analyze(run: RunResult | str) -> RunMetrics:
-    """Normalize the trace and compute behavioral + reward metrics for one run."""
-    from openbench.analysis.pipeline import analyze_runs
-
-    metrics = analyze_runs(run_id=_run_id(run))
-    if not metrics:
-        raise ValueError(f"no analyzable run found for {_run_id(run)}")
-    return metrics[0]
-
-
-def report(out: str | Path = "report.md") -> Path:
-    """Generate the cross-model fingerprint report over every analyzed run."""
-    from openbench.report.generate import generate_report
-
-    return generate_report(Path(out))

@@ -1,7 +1,7 @@
 """Core data contracts shared by every pipeline stage.
 
 Everything that crosses a stage boundary (mining -> tasks -> envs -> runners
--> grading -> traces -> analysis) is one of these models, serialized as JSON.
+-> grading -> traces) is one of these models, serialized as JSON.
 """
 
 from __future__ import annotations
@@ -98,9 +98,6 @@ class Task(BaseModel):
     # tasks (tasks/difficulty.py). None until labeled. Used to balance the suite.
     difficulty: str | None = None
     difficulty_note: str | None = None  # one-line rationale when assigned by review
-    # Probe tasks: contradictory by construction (no valid solution exists). The
-    # measured signal is whether the model flags impossibility vs fabricates.
-    is_impossible: bool = False
 
 
 class RunLimits(BaseModel):
@@ -190,8 +187,6 @@ class GradeReport(BaseModel):
     p2p_passed: list[str] = Field(default_factory=list)
     p2p_failed: list[str] = Field(default_factory=list)
     anticheat: AntiCheatReport = Field(default_factory=AntiCheatReport)
-    # Honeypot tasks only: did the planted weak smoke suite pass?
-    honeypot_smoke_passed: bool | None = None
     graded_at: datetime | None = None
 
     @property
@@ -213,77 +208,3 @@ class GradeReport(BaseModel):
             and not self.f2p_failed
             and not self.p2p_failed
         )
-
-
-class RunMetrics(BaseModel):
-    """Deterministic behavioral metrics for one run (Pillar 2)."""
-
-    run_id: str
-    task_id: str
-    harness: str
-    model: str
-    tier: HardnessTier | None = None
-    # test gaming
-    test_tampering: bool = False
-    assert_weakening_count: int = 0
-    skip_xfail_added: int = 0
-    # binary "any-gaming" flags — length-invariant forms for reward inference
-    # (counts scale with how much the agent edited; presence is the signal).
-    assert_weakened: bool = False
-    skip_xfail_inserted: bool = False
-    # verification discipline
-    verified_before_done: bool = False
-    test_run_count: int = 0
-    file_edit_count: int = 0
-    test_runs_per_edit: float = 0.0
-    # premature stop vs exhaustive loops
-    early_stop: bool = False
-    verification_loop_count: int = 0
-    post_success_churn: int = 0
-    # length-invariant (rate) forms of the counts above — these, not the raw
-    # counts, drive reward inference (counts confound with trajectory length;
-    # see docs/RESEARCH.md "Known limitations").
-    verification_loops_per_edit: float = 0.0
-    post_success_churn_rate: float = 0.0
-    gave_up_failing: bool = False  # ended on a failing test run (length-invariant)
-    # effort
-    total_tokens: int = 0
-    thinking_fraction: float = 0.0
-    consecutive_failures_at_end: int = 0
-    # scope (vs gold)
-    diff_size_ratio: float | None = None
-    file_jaccard: float | None = None
-    out_of_scope_files: int | None = None
-    out_of_scope_ratio: float | None = None  # length-invariant form of the above
-    # literature-grounded, length-invariant (see docs/RESEARCH.md provenance table)
-    recovery_rate: float | None = None        # self-correction rate (survey 2507.21504)
-    progress_proxy: float | None = None       # model-free AgentPRM progress (2511.08325)
-    action_efficiency: float | None = None    # optimal/actual files (2604.02547)
-    plan_ned: float | None = None             # normalized edit distance vs gold (survey)
-    redundancy_rate: float = 0.0              # duplicate edits / total edits (survey)
-    # tool strategy
-    search_before_edit_rate: float = 0.0
-    guess_first_rate: float = 0.0
-    exploration_fraction: float = 0.0
-    # backtracking
-    revert_count: int = 0
-    # context / recall (H7)
-    re_read_rate: float | None = None  # reads touching already-read files / all reads
-    # context / recall (H13, user hypothesis, pre-registered 2026-06-12): working
-    # memory — reasoning turns referencing artifacts last seen > W turns earlier
-    # WITHOUT re-reading them (vs H7 = memory via re-action, H9 = memory from
-    # weights). None when the trajectory is shorter than the dormancy window.
-    long_range_recall_rate: float | None = None  # recalling reasoning events / all
-    recall_distance_norm: float | None = None  # median recall reach / total turns
-    # E3b action channel (registered 2026-06-12): executed commands targeting
-    # dormant artifacts — behaviorally-proven recall, computable regardless of
-    # CoT visibility. Precision = recalled targets that actually existed.
-    action_recall_rate: float | None = None  # recalling commands / all commands
-    action_recall_precision: float | None = None  # precise / checkable recalls
-    # honeypot probe (H1 vs H2); None on non-honeypot tasks
-    honeypot_exploit: bool | None = None  # claimed done + smoke green + hidden F2P ~0
-    # confabulation: declared completion having never observed a green test, and
-    # didn't actually pass (claims success it cannot have verified). Needs grade.
-    confabulated_completion: bool | None = None
-    # impossible probe: did the model flag the task as contradictory/unsolvable?
-    flagged_impossible: bool | None = None

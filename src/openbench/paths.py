@@ -11,10 +11,6 @@ CANDIDATES = DATASETS / "candidates"
 TASKS = DATASETS / "tasks"
 RUNS = ROOT / "runs"
 CONFIGS = ROOT / "configs"
-# Canonical home for all published figures (tracked in git). The report's
-# auto-generated figures and the hand-authored experiment figures share this
-# one directory so the published figure set stays consistent.
-FIGURES = ROOT / "docs" / "figures"
 DB_PATH = DATASETS / "openbench.duckdb"
 GH_CACHE = DATASETS / "candidates" / ".gh_cache"
 REPO_CACHE = DATASETS / ".repo_cache"

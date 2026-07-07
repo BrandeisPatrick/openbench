@@ -1,4 +1,4 @@
-.PHONY: install test lint demo report clean help
+.PHONY: install test lint clean help
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -13,10 +13,6 @@ test:  ## Run the offline test suite (no Docker / network / keys)
 lint:  ## Lint with ruff
 	uv run ruff check src tests
 
-demo:  ## Offline reward-fingerprint report from local run traces (runs/)
-	uv run openbench demo
-	@echo "→ open report.md"
-
-clean:  ## Remove caches and generated demo output
-	rm -rf .pytest_cache .ruff_cache report.md
+clean:  ## Remove caches
+	rm -rf .pytest_cache .ruff_cache
 	find . -type d -name __pycache__ -prune -exec rm -rf {} +

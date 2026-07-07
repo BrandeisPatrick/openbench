@@ -8,9 +8,9 @@ from openbench.models import RunResult, Task
 
 def test_all_verbs_and_models_exported():
     for name in [
-        "build_task", "build_env", "validate", "honeypot", "impossible",
-        "run", "grade", "analyze", "report",
-        "Task", "RunResult", "TraceEvent", "GradeReport", "RunMetrics",
+        "build_task", "build_env", "validate",
+        "run", "grade",
+        "Task", "RunResult", "TraceEvent", "GradeReport",
     ]:
         assert hasattr(ob, name), f"openbench.{name} missing from public API"
 

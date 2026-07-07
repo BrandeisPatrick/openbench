@@ -1,4 +1,4 @@
-"""openbench CLI: mine -> build-task -> validate -> build-env -> run -> grade -> analyze -> report."""
+"""openbench CLI: mine -> build-task -> validate -> build-env -> run -> grade."""
 
 from __future__ import annotations
 
@@ -153,63 +153,6 @@ def grade(run_id: str = typer.Argument(...)) -> None:
     )
 
 
-@app.command()
-def analyze(
-    run_id: Optional[str] = typer.Option(None, help="Analyze one run; omit for all runs"),
-) -> None:
-    """Normalize traces, compute behavioral metrics, ingest into DuckDB."""
-    from openbench.analysis.pipeline import analyze_runs
-
-    metrics = analyze_runs(run_id=run_id)
-    table = Table("run_id", "test_runs", "edits", "verified_before_done", "early_stop", "revert_count")
-    for m in metrics:
-        table.add_row(
-            m.run_id,
-            str(m.test_run_count),
-            str(m.file_edit_count),
-            str(m.verified_before_done),
-            str(m.early_stop),
-            str(m.revert_count),
-        )
-    console.print(table)
-
-
-@app.command()
-def report(
-    out: Path = typer.Option(Path("runs/report.md"), help="Output markdown path"),
-) -> None:
-    """Generate the cross-model report with reward fingerprints."""
-    from openbench.report.generate import generate_report
-
-    path = generate_report(out)
-    console.print(f"[green]Report written:[/green] {path}")
-
-
-@app.command()
-def demo() -> None:
-    """Build a reward-fingerprint report from local run traces (runs/), offline.
-    No API keys, no Docker, no GitHub token required — needs local runs present
-    (generate them with `openbench run-matrix`, or keep a corpus under runs/)."""
-    from openbench import paths
-    from openbench.report.generate import generate_report
-
-    runs = paths.RUNS
-    n = sum(1 for d in runs.iterdir() if (d / "metrics.json").exists()) if runs.exists() else 0
-    if n == 0:
-        console.print(
-            "[yellow]No local runs found under runs/[/yellow] — run a matrix first "
-            "([bold]openbench run-matrix[/bold]) or restore a run corpus."
-        )
-        raise typer.Exit(1)
-    out = paths.ROOT / "report.md"
-    path = generate_report(out)
-    console.print(f"[green]Report written:[/green] {path}  ({n} local runs)")
-    console.print(
-        "Per-model reward fingerprints, computed offline — no keys or Docker. "
-        "Open the file, or run [bold]openbench analyze[/bold] on the same traces."
-    )
-
-
 @app.command("import-swebench")
 def import_swebench(
     per_cell: int = typer.Option(1, help="Instances per (repo × difficulty) cell"),
@@ -269,26 +212,6 @@ def assess_difficulty_cmd(
     for tid in ids:
         t = assess_difficulty(tid, model=model, force=force)
         console.print(f"[green]{tid}[/green]  [{t.difficulty}]  {t.difficulty_note or ''}")
-
-
-@app.command("build-honeypot")
-def build_honeypot(task_id: str = typer.Argument(..., help="A validated parent task id")) -> None:
-    """Create a honeypot variant: weak visible smoke tests, strict hidden grading."""
-    from openbench.tasks.honeypot import build_honeypot as _build
-
-    hp = _build(task_id)
-    console.print(f"[green]Honeypot built:[/green] {hp.task_id} (image: {hp.image_tag})")
-    console.print("  run it like any task; grade records honeypot_smoke_passed")
-
-
-@app.command("build-impossible")
-def build_impossible(task_id: str = typer.Argument(..., help="A validated parent task id")) -> None:
-    """Create a contradictory-spec variant to probe sycophancy vs push-back."""
-    from openbench.tasks.impossible import build_impossible as _build
-
-    imp = _build(task_id)
-    console.print(f"[green]Impossible probe built:[/green] {imp.task_id}")
-    console.print("  run it; metrics records flagged_impossible (did the model push back?)")
 
 
 @app.command("list-tasks")
