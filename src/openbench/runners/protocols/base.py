@@ -29,18 +29,30 @@ ChatFn = Callable[[list[dict]], dict]
 
 
 def _post_with_retry(client: httpx.Client, url: str, body: dict) -> dict:
-    last_err: Exception | None = None
-    for attempt in range(4):
+    last_err: str | None = None
+    for attempt in range(6):
         try:
             resp = client.post(url, json=body)
             if resp.status_code in (429, 500, 502, 503, 529):
-                time.sleep(2**attempt)
+                # Record WHAT failed (a 429 storm used to exit as "None") and
+                # wait long enough to matter: TPM windows are 60s, so honor
+                # Retry-After and back off toward a minute, not 8 seconds.
+                last_err = f"HTTP {resp.status_code}: {resp.text[:300]}"
+                retry_after = float(resp.headers.get("retry-after") or 0)
+                time.sleep(max(retry_after, min(60.0, 2.0**attempt)))
                 continue
             resp.raise_for_status()
             return resp.json()
+        except httpx.HTTPStatusError as exc:
+            detail = f"HTTP {exc.response.status_code}: {exc.response.text[:300]}"
+            if exc.response.status_code < 500:
+                # 4xx (not 429): the request itself is bad — retrying is futile.
+                raise RuntimeError(f"API rejected request: {detail}") from exc
+            last_err = detail
+            time.sleep(min(60.0, 2.0**attempt))
         except httpx.HTTPError as exc:
-            last_err = exc
-            time.sleep(2**attempt)
+            last_err = str(exc)
+            time.sleep(min(60.0, 2.0**attempt))
     raise RuntimeError(f"API failed after retries: {last_err}")
 
 
