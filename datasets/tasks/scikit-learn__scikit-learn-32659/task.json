@@ -28,5 +28,6 @@
   "validation": null,
   "difficulty": "1-4 hours",
   "difficulty_note": "Wide LogisticRegression deprecation + 8 tests; broad but mostly mechanical.",
-  "is_impossible": false
+  "is_impossible": false,
+  "source": "mined"
 }

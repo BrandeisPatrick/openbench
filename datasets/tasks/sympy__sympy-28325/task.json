@@ -1169,5 +1169,6 @@
   },
   "difficulty": ">4 hours",
   "difficulty_note": "Large power-series ring API (2152 lines) building on 28109.",
-  "is_impossible": false
+  "is_impossible": false,
+  "source": "mined"
 }

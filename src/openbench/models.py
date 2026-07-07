@@ -98,6 +98,10 @@ class Task(BaseModel):
     # tasks (tasks/difficulty.py). None until labeled. Used to balance the suite.
     difficulty: str | None = None
     difficulty_note: str | None = None  # one-line rationale when assigned by review
+    # Provenance: "swebench-verified" (import) or "mined" (own pipeline). Drives
+    # the contamination strata in cross-generation comparisons — Verified PRs
+    # predate every model's cutoff; mined PRs (2025-06+) postdate the old gen's.
+    source: str | None = None
 
 
 class RunLimits(BaseModel):

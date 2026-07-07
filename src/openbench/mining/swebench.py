@@ -163,6 +163,7 @@ def import_instance(inst: dict) -> Task:
         tier=HardnessTier.MAIN,
         hardness_score=0.0,
         difficulty=inst.get("difficulty"),  # human annotation, kept for balancing
+        source="swebench-verified",
         fail_to_pass=_as_list(inst["fail_to_pass"]),
         pass_to_pass=_as_list(inst["pass_to_pass"]),
     )

@@ -75,6 +75,13 @@ CREATE TABLE IF NOT EXISTS events (
     cum_cost_usd DOUBLE,
     derived VARCHAR              -- JSON object
 );
+CREATE TABLE IF NOT EXISTS profiles (
+    run_id VARCHAR PRIMARY KEY,
+    task_id VARCHAR,
+    harness VARCHAR,
+    model VARCHAR,
+    profile VARCHAR              -- full BehaviorProfile as JSON (schema-free)
+);
 """
 
 
@@ -159,5 +166,24 @@ def ingest_run(
     except Exception:
         conn.execute("ROLLBACK")
         raise
+    finally:
+        conn.close()
+
+
+def ingest_profile(profile) -> None:
+    """Upsert one BehaviorProfile (stored as a JSON blob — schema-free)."""
+    conn = ensure_db()
+    try:
+        conn.execute("DELETE FROM profiles WHERE run_id = ?", [profile.run_id])
+        conn.execute(
+            "INSERT INTO profiles VALUES (?, ?, ?, ?, ?)",
+            [
+                profile.run_id,
+                profile.task_id,
+                profile.harness,
+                profile.model,
+                profile.model_dump_json(),
+            ],
+        )
     finally:
         conn.close()

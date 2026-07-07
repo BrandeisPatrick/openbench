@@ -1170,5 +1170,6 @@
   },
   "difficulty": ">4 hours",
   "difficulty_note": "Large lti refactor bundled with the doit fix (1786 lines).",
-  "is_impossible": false
+  "is_impossible": false,
+  "source": "mined"
 }

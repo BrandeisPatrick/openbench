@@ -145,6 +145,7 @@ def build_task(repo: str, pr_number: int) -> Task:
         merged_at=candidate.merged_at,
         tier=tier,
         hardness_score=hardness,
+        source="mined",
         fail_to_pass=extract_f2p_candidates(test_patch),
         pass_to_pass=[],  # filled by validate (needs to run the suite)
         protected_test_files={},  # filled by build-env/validate (needs a checkout)

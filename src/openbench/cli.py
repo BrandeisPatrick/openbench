@@ -1,4 +1,4 @@
-"""openbench CLI: mine -> build-task -> validate -> build-env -> run -> grade."""
+"""openbench CLI: mine -> build-task -> validate -> build-env -> run -> grade -> behavior -> compare."""
 
 from __future__ import annotations
 
@@ -107,12 +107,13 @@ def run_matrix_cmd(
     tasks: str = typer.Option(..., help="Comma-separated task ids"),
     models: str = typer.Option(..., help="Comma-separated model names"),
     runner: str = typer.Option("native"),
+    reps: int = typer.Option(1, help="Repetitions per (task × model) cell"),
     concurrency: int = typer.Option(3, help="Max runs in parallel"),
     max_turns: int = typer.Option(80),
     wall_clock_s: int = typer.Option(3600),
     max_cost_usd: float = typer.Option(4.0),
 ) -> None:
-    """Run every (task × model) cell in parallel, isolated containers."""
+    """Run every (task × model × rep) cell in parallel, isolated containers."""
     from openbench.models import RunLimits
     from openbench.runners.matrix import MatrixCell, run_matrix
 
@@ -120,6 +121,7 @@ def run_matrix_cmd(
         MatrixCell(task_id=t.strip(), model=m.strip(), runner=runner)
         for t in tasks.split(",") if t.strip()
         for m in models.split(",") if m.strip()
+        for _ in range(max(reps, 1))
     ]
     limits = RunLimits(max_turns=max_turns, wall_clock_s=wall_clock_s, max_cost_usd=max_cost_usd)
     console.print(f"[bold]running {len(cells)} cells, {concurrency} at a time[/bold]")
@@ -151,6 +153,46 @@ def grade(run_id: str = typer.Argument(...)) -> None:
         f"f2p={report.f2p_pass_rate:.0%} p2p={report.p2p_pass_rate:.0%} "
         f"tampering={report.anticheat.test_tampering}"
     )
+
+
+@app.command()
+def behavior(
+    run_id: Optional[str] = typer.Argument(None, help="One run; omit for all runs"),
+) -> None:
+    """Normalize traces and compute per-run behavior profiles (offline)."""
+    from openbench.behavior import profile_runs
+
+    profiles = profile_runs(run_id=run_id)
+    table = Table("run_id", "model", "resolved", "test_runs", "verified", "exit")
+    for p in profiles:
+        table.add_row(
+            p.run_id,
+            p.model.split("/")[-1],
+            str(p.resolved),
+            str(p.test_run_count),
+            str(p.verified_before_done),
+            p.exit_reason or "-",
+        )
+    console.print(table)
+    console.print(f"[green]{len(profiles)} profile(s) written[/green]")
+
+
+@app.command()
+def compare(
+    pair: list[str] = typer.Option(
+        ["deepseek", "gpt"], "--pair", help="Generation pair(s) to compare"
+    ),
+    out: Path = typer.Option(Path("runs/behavior_report.md"), help="Output markdown path"),
+) -> None:
+    """Generate the generational behavior-comparison report (offline)."""
+    from openbench.behavior import GEN_PAIRS, generate_comparison_report
+
+    unknown = [p for p in pair if p not in GEN_PAIRS]
+    if unknown:
+        console.print(f"[red]unknown pair(s) {unknown}[/red]; known: {sorted(GEN_PAIRS)}")
+        raise typer.Exit(1)
+    path = generate_comparison_report(pair, out)
+    console.print(f"[green]Report written:[/green] {path}")
 
 
 @app.command("import-swebench")
