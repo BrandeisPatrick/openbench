@@ -72,9 +72,13 @@ def test_is_test_path_negative():
 # --- split_patch --------------------------------------------------------------
 
 
-def test_split_patch_gold_is_full_diff():
+def test_split_patch_gold_is_source_only():
     gold, _ = split_patch(SAMPLE_DIFF)
-    assert gold == SAMPLE_DIFF
+    files = [pf.path for pf in PatchSet(gold)]
+    assert "pkg/core.py" in files
+    # test files live ONLY in test.patch — a gold that carries them collides
+    # with the anti-cheat revert + test.patch injection at grade time
+    assert not any(f.startswith("tests/") for f in files)
 
 
 def test_split_patch_test_subset_only_contains_test_files():

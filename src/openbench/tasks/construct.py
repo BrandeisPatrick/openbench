@@ -1,7 +1,7 @@
 """Task construction: turn one merged PR into datasets/tasks/<task_id>/.
 
-Writes prompt.md (leakage-stripped requirements), gold.patch (full hidden
-solution diff), test.patch (test-only subset), and task.json. pass_to_pass and
+Writes prompt.md (leakage-stripped requirements), gold.patch (hidden solution
+diff, source only), test.patch (test-only subset), and task.json. pass_to_pass and
 protected_test_files are left empty here — validate.py fills them because they
 need a runnable checkout.
 """

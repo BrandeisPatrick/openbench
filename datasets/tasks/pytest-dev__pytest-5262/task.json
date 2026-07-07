@@ -126,12 +126,12 @@
   "python_version": "3.9",
   "install_cmd": "pip install -e .",
   "test_cmd": "python -m pytest",
+  "env_setup_cmds": [
+    "pip install 'setuptools<70' 'hypothesis<5'"
+  ],
   "protected_test_files": {},
   "validation": null,
   "difficulty": "<15 min fix",
   "difficulty_note": null,
-  "source": "swebench-verified",
-  "env_setup_cmds": [
-    "pip install 'setuptools<70' 'hypothesis<5'"
-  ]
+  "source": "swebench-verified"
 }

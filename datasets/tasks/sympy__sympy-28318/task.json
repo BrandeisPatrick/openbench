@@ -527,8 +527,10 @@
     "sympy/core/tests/test_args.py::test_sympy__physics__quantum__boson__BosonCoherentKet"
   ],
   "image_tag": "openbench/sympy__sympy-28318:base",
+  "python_version": "3.12",
   "install_cmd": "pip install -e .",
   "test_cmd": "python -m pytest",
+  "env_setup_cmds": [],
   "protected_test_files": {
     "bin/test_executable.py": "4dfff7be79574a17a0e203774919bda81f5f22e180644260e49e96500362c9cd",
     "bin/test_external_imports.py": "70f85782ea0a73585e0a9b22a268fa29b9f9a67875d15eabe2b141d4a788653c",
@@ -1174,6 +1176,5 @@
   },
   "difficulty": ">4 hours",
   "difficulty_note": "GSoC-scale discrete-time TransferFunction; lti.py +1431.",
-  "is_impossible": false,
   "source": "mined"
 }

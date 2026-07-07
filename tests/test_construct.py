@@ -163,7 +163,9 @@ def test_build_task_round_trip(monkeypatch, tmp_path):
 
     assert task.task_id == "acme__widget-42"
     task_dir = tmp_path / task.task_id
-    assert (task_dir / "gold.patch").read_text() == ROUND_TRIP_DIFF  # full diff kept
+    gold_patch = (task_dir / "gold.patch").read_text()
+    assert "pkg/core.py" in gold_patch
+    assert "tests/test_core.py" not in gold_patch  # tests live only in test.patch
     test_patch = (task_dir / "test.patch").read_text()
     assert "tests/test_core.py" in test_patch
     assert "pkg/core.py" not in test_patch  # source files excluded from test.patch

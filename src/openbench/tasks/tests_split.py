@@ -32,14 +32,18 @@ def is_test_path(path: str) -> bool:
 
 
 def split_patch(diff_text: str) -> tuple[str, str]:
-    """Split a unified diff into (gold_full, test_only).
+    """Split a unified diff into (gold_source_only, test_only) — SWE-bench style.
 
-    gold.patch stays the FULL diff (the hidden solution includes its tests);
-    test.patch is the test-file subset injected at grade/validate time.
+    gold.patch must NOT contain test files: grading applies the solution patch,
+    reverts protected-test-file edits (anti-cheat), then injects test.patch. A
+    gold patch that also carries the test changes collides with that flow —
+    test files the PR *created* aren't in the protected map, so they survive
+    the revert and test.patch then fails to apply (every F2P marked failed).
     """
     patch = PatchSet(diff_text)
+    gold_parts = [str(pf) for pf in patch if not is_test_path(pf.path)]
     test_parts = [str(pf) for pf in patch if is_test_path(pf.path)]
-    return diff_text, "".join(test_parts)
+    return "".join(gold_parts), "".join(test_parts)
 
 
 def extract_f2p_candidates(test_patch_text: str) -> list[str]:

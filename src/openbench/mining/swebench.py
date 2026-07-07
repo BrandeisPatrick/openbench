@@ -133,8 +133,8 @@ def _as_list(v) -> list[str]:
 def import_instance(inst: dict) -> Task:
     """Map one SWE-bench instance dict to an openbench Task on disk.
 
-    Their `patch` is the gold solution MINUS tests; `test_patch` is the tests.
-    Our gold.patch is the full diff, so we concatenate the two — equivalent.
+    Their `patch` is the gold solution MINUS tests; `test_patch` is the tests —
+    exactly our convention (gold.patch = source only), so both map 1:1.
     """
     task_id = inst["instance_id"]
     tdir = paths.task_dir(task_id)

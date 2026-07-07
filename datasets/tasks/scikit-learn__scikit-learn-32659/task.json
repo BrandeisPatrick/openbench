@@ -22,12 +22,13 @@
   ],
   "pass_to_pass": [],
   "image_tag": "openbench/scikit-learn__scikit-learn-32659:base",
+  "python_version": "3.12",
   "install_cmd": "pip install -e .",
   "test_cmd": "python -m pytest",
+  "env_setup_cmds": [],
   "protected_test_files": {},
   "validation": null,
   "difficulty": "1-4 hours",
   "difficulty_note": "Wide LogisticRegression deprecation + 8 tests; broad but mostly mechanical.",
-  "is_impossible": false,
   "source": "mined"
 }
