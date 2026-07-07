@@ -181,3 +181,21 @@ def test_gpt_responses_captures_cot_through_harness(tmp_path, monkeypatch):
     api = [r for r in lines if r["type"] == "api_response"]
     assert api[0]["reasoning_content"] == "I should inspect symbol.py first."  # CoT visible
     assert "ls src/" in [r["command"] for r in lines if r["type"] == "exec"]
+
+
+def test_responses_reasoning_param_only_for_reasoning_models(monkeypatch):
+    """gpt-4.1 (no reasoning channel) must not receive the `reasoning` body param —
+    the Responses API 400s on it; gpt-5.5 must still get it."""
+    from openbench.runners.protocols import openai_responses as mod
+
+    bodies: list[dict] = []
+    monkeypatch.setattr(
+        mod, "_post_with_retry",
+        lambda client, path, body: (bodies.append(body), {"id": "r1", "output": []})[1],
+    )
+    for wire in ("gpt-4.1", "gpt-5.5"):
+        p = mod.OpenAIResponsesProtocol()
+        p._wire = wire
+        p._send(None, [{"role": "user", "content": "go"}], wire)
+    assert "reasoning" not in bodies[0]                      # gpt-4.1: omitted
+    assert bodies[1]["reasoning"] == {"summary": "auto"}     # gpt-5.5: present

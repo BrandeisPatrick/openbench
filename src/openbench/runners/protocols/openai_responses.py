@@ -47,9 +47,12 @@ class OpenAIResponsesProtocol(OpenAICompatProtocol):
             "tools": [BASH_FUNCTION_RESPONSES],
             "tool_choice": "auto",
             "instructions": SYSTEM_PROMPT_TOOLUSE,
-            "reasoning": {"summary": self._summary},
             "store": True,
         }
+        # Non-reasoning models (gpt-4.1, gpt-4o, ...) reject the `reasoning`
+        # body param outright; only send it where a reasoning channel exists.
+        if not self._wire.startswith("gpt-4"):
+            body["reasoning"] = {"summary": self._summary}
         if self._prev_id is None:
             body["input"] = messages           # first turn: seed user message(s)
         else:
