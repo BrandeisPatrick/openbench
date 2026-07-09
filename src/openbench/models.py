@@ -67,6 +67,8 @@ class TaskValidation(BaseModel):
     rounds: int = 3
     f2p_fail_on_base: bool
     f2p_pass_on_merged: bool
+    # None on task.json written before the base-side P2P leg existed.
+    p2p_pass_on_base: bool | None = None
     p2p_pass_on_merged: bool
     flaky_tests_dropped: list[str] = Field(default_factory=list)
     accepted: bool

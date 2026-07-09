@@ -2,7 +2,8 @@
 
 Two containers from the task's base image:
   A — stays at the base commit: baseline suite run (PASS_TO_PASS sampling),
-      then test.patch applied and F2P candidates must fail.
+      then test.patch applied: F2P candidates must fail and sampled P2P must
+      still pass (this is the tree grading sees for an empty agent patch).
   B — checked out at the merge commit: F2P and sampled P2P must pass.
 Steps 2-3 repeat `rounds` times; tests that misbehave in any round are dropped
 as flaky. Results are written back into task.json.
@@ -322,10 +323,13 @@ def validate_task(task_id: str, rounds: int = 3) -> TaskValidation:
         flaky: set[str] = set()
         f2p_runnable_at_base: set[str] | None = None
         for round_idx in range(rounds):
-            # 2. base + test.patch: every F2P candidate must fail/error.
+            # 2. base + test.patch (the tree grading sees for an empty agent
+            #    patch): every F2P candidate must fail/error, and every sampled
+            #    P2P must still pass — a P2P test that needs the gold change is
+            #    an F2P mislabel that would veto any agent's resolution.
             _reset_repo(container_a, task.base_commit)
             _apply_test_patch(container_a, task_dir / task.test_patch_path)
-            if round_idx == 0 and f2p_keep:
+            if round_idx == 0 and (f2p_keep or p2p_keep):
                 # F2P tests that don't collect at base (ImportError on the
                 # not-yet-implemented module) already satisfy fail-on-base —
                 # that's the expected failure mode, not staleness. Collect to
@@ -335,19 +339,34 @@ def validate_task(task_id: str, rounds: int = 3) -> TaskValidation:
                     container_a, task, test_timeout, scope=scope or None
                 )
                 f2p_runnable_at_base = f2p_keep & base_ids
+                # A P2P id that doesn't collect here needs the gold change to
+                # even import; drop it now (and it can't be passed to pytest
+                # below without aborting the run).
+                if base_ids:
+                    uncollected = p2p_keep - base_ids
+                    if uncollected:
+                        console.log(
+                            f"{task_id}: {len(uncollected)} P2P ids do not "
+                            f"collect at base+test.patch; dropped"
+                        )
+                        p2p_keep -= uncollected
+                        flaky |= uncollected
             bad_f2p: set[str] = set()
             runnable = f2p_keep & (f2p_runnable_at_base or set())
             if runnable:
                 on_base = _run_tests(container_a, task, sorted(runnable), test_timeout)
                 bad_f2p |= runnable & _passed(on_base)
+            bad_p2p: set[str] = set()
+            if p2p_keep:
+                p2p_base = _run_tests(container_a, task, sorted(p2p_keep), test_timeout)
+                bad_p2p |= {nid for nid in p2p_keep if p2p_base.get(nid) != "passed"}
             # 3. merged: F2P and sampled P2P must pass.
             if f2p_keep:
                 on_merged = _run_tests(container_b, task, sorted(f2p_keep), test_timeout)
                 bad_f2p |= {nid for nid in f2p_keep if on_merged.get(nid) != "passed"}
-            bad_p2p: set[str] = set()
             if p2p_keep:
                 p2p_res = _run_tests(container_b, task, sorted(p2p_keep), test_timeout)
-                bad_p2p = {nid for nid in p2p_keep if p2p_res.get(nid) != "passed"}
+                bad_p2p |= {nid for nid in p2p_keep if p2p_res.get(nid) != "passed"}
             f2p_keep -= bad_f2p
             p2p_keep -= bad_p2p
             flaky |= bad_f2p | bad_p2p
@@ -360,6 +379,7 @@ def validate_task(task_id: str, rounds: int = 3) -> TaskValidation:
             rounds=rounds,
             f2p_fail_on_base=bool(f2p_keep),
             f2p_pass_on_merged=bool(f2p_keep),
+            p2p_pass_on_base=p2p_ok,
             p2p_pass_on_merged=p2p_ok,
             flaky_tests_dropped=sorted(flaky),
             accepted=len(f2p_keep) >= min_f2p and p2p_ok,
