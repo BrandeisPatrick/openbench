@@ -20,6 +20,7 @@ wheels/
 # local runs/ working dir (run traces are generated locally, not bundled in git).
 /datasets/*
 !/datasets/tasks/
+!/datasets/quarantine/
 /runs/
 
 # Editor / tooling state
