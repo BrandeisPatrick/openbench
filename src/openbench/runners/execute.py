@@ -59,12 +59,14 @@ def execute_run(
         # World-writable: the claude-code runner writes its transcript here as
         # the non-root `agent` user (and /tmp is tmpfs, unreachable by docker cp).
         dockerutil.exec_in(container, "mkdir -p /task && chmod 777 /task", workdir="/")
-        # Solution-leak quarantine: the image's clone carries post-base history —
-        # including the PR's own merge commit — so `git log/show` inside the
-        # sandbox could read the gold solution (observed once: a model ran
-        # `git diff <merge>^..<merge>` and copied gold strings verbatim). Re-init
-        # a single-commit repo for the agent; validation/grading run in fresh
-        # containers from the image and keep the full history they need.
+        # Solution-leak quarantine, run-time layer: images used to carry the
+        # full upstream clone — including the PR's own merge commit — and a
+        # model was observed reading the gold solution out of it (`git diff
+        # <merge>^..<merge>`, gold strings copied verbatim). The image build
+        # now truncates history at the base commit (Dockerfile.j2), so this
+        # re-init to a single-commit repo is defense in depth: it keeps agents
+        # history-blind even if a stale/foreign image slips through, and keeps
+        # the agent-visible environment identical to the graded run corpus.
         dockerutil.exec_in(
             container,
             "rm -rf .git && git init -q && git add -A && git commit -qm base"
