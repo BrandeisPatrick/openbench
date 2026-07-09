@@ -1069,6 +1069,7 @@
     "rounds": 3,
     "f2p_fail_on_base": true,
     "f2p_pass_on_merged": true,
+    "p2p_pass_on_base": null,
     "p2p_pass_on_merged": true,
     "flaky_tests_dropped": [],
     "accepted": true

@@ -27,8 +27,10 @@
     "test_uniquely_named_symbol_and_Symbol"
   ],
   "image_tag": "openbench/sympy__sympy-23534:base",
+  "python_version": "3.12",
   "install_cmd": "pip install -e .",
   "test_cmd": "python -m pytest",
+  "env_setup_cmds": [],
   "protected_test_files": {},
   "validation": null,
   "difficulty": "15 min - 1 hour",
