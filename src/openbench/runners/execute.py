@@ -59,6 +59,17 @@ def execute_run(
         # World-writable: the claude-code runner writes its transcript here as
         # the non-root `agent` user (and /tmp is tmpfs, unreachable by docker cp).
         dockerutil.exec_in(container, "mkdir -p /task && chmod 777 /task", workdir="/")
+        # Solution-leak quarantine: the image's clone carries post-base history —
+        # including the PR's own merge commit — so `git log/show` inside the
+        # sandbox could read the gold solution (observed once: a model ran
+        # `git diff <merge>^..<merge>` and copied gold strings verbatim). Re-init
+        # a single-commit repo for the agent; validation/grading run in fresh
+        # containers from the image and keep the full history they need.
+        dockerutil.exec_in(
+            container,
+            "rm -rf .git && git init -q && git add -A && git commit -qm base"
+            " && chown -R agent:agent .git",
+        )
         # Files under the task's inject/ dir are planted in /repo before the
         # agent starts (task-data-driven; no current task uses it).
         inject_dir = paths.task_dir(task_id) / "inject"

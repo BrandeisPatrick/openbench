@@ -183,6 +183,9 @@ def compare(
         ["deepseek", "gpt"], "--pair", help="Generation pair(s) to compare"
     ),
     out: Path = typer.Option(Path("runs/behavior_report.md"), help="Output markdown path"),
+    source: Optional[str] = typer.Option(
+        None, help="Restrict to one task-provenance stratum (e.g. swebench-verified)"
+    ),
 ) -> None:
     """Generate the generational behavior-comparison report (offline)."""
     from openbench.behavior import GEN_PAIRS, generate_comparison_report
@@ -191,7 +194,7 @@ def compare(
     if unknown:
         console.print(f"[red]unknown pair(s) {unknown}[/red]; known: {sorted(GEN_PAIRS)}")
         raise typer.Exit(1)
-    path = generate_comparison_report(pair, out)
+    path = generate_comparison_report(pair, out, source=source)
     console.print(f"[green]Report written:[/green] {path}")
 
 

@@ -89,11 +89,17 @@ def _pair_section(comp: PairComparison) -> str:
 
 
 def generate_comparison_report(
-    pair_names: list[str], out: Path | None = None
+    pair_names: list[str], out: Path | None = None, source: str | None = None
 ) -> Path:
-    """Profiles must exist (run `openbench behavior` first); writes report + figures."""
+    """Profiles must exist (run `openbench behavior` first); writes report + figures.
+
+    `source` restricts the corpus to one task-provenance stratum (e.g.
+    "swebench-verified") — used when a stratum's tasks are audited out.
+    """
     out = out or (paths.RUNS / "behavior_report.md")
     profiles = load_profiles()
+    if source is not None:
+        profiles = [p for p in profiles if p.source == source]
     if not profiles:
         raise FileNotFoundError(
             "no profile.json files under runs/ — run `openbench behavior` first"
@@ -102,7 +108,15 @@ def generate_comparison_report(
 
     fig_dir = out.parent / "figures"
     fig_dir.mkdir(parents=True, exist_ok=True)
-    run_dirs = sorted(d for d in paths.RUNS.iterdir() if d.is_dir()) if paths.RUNS.exists() else []
+    kept_tasks = {p.task_id for p in profiles}
+    run_dirs = (
+        sorted(
+            d for d in paths.RUNS.iterdir()
+            if d.is_dir() and d.name.split("--")[0] in kept_tasks
+        )
+        if paths.RUNS.exists()
+        else []
+    )
     figs = {
         "Paired deltas": figures.fig_paired_deltas(comps, fig_dir),
         "Axis radar": figures.fig_axis_radar(profiles, comps, fig_dir),
@@ -112,6 +126,8 @@ def generate_comparison_report(
     }
 
     md = "# Generational behavior comparison\n\n"
+    if source is not None:
+        md += f"> **Corpus restricted to `source == {source}` tasks.**\n\n"
     md += _CAVEATS + "\n"
     for name, path in figs.items():
         if path is not None:
