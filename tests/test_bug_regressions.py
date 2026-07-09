@@ -201,6 +201,7 @@ def test_validate_drops_p2p_that_needs_the_gold_change(tmp_path, monkeypatch):
 
     monkeypatch.setattr(dockerutil, "image_exists", lambda tag: True)
     monkeypatch.setattr(dockerutil, "start_container", lambda image, name, **kw: name)
+    monkeypatch.setattr(dockerutil, "disconnect_network", lambda *a, **k: None)
     monkeypatch.setattr(dockerutil, "exec_in", fake_exec)
     monkeypatch.setattr(dockerutil, "copy_in", lambda *a, **k: None)
     monkeypatch.setattr(dockerutil, "remove_container", lambda name: None)

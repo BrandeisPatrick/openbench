@@ -78,6 +78,11 @@ def exec_in(
         return ExecResult(124, "", f"timeout after {timeout}s: {command[:200]}")
 
 
+def disconnect_network(container: str, network: str = "bridge") -> None:
+    """Detach a running container from a network (leaves only loopback)."""
+    _run(["docker", "network", "disconnect", network, container], check=True)
+
+
 def copy_in(container: str, src: Path, dest: str) -> None:
     _run(["docker", "cp", str(src), f"{container}:{dest}"], check=True)
 

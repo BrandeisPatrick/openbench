@@ -56,7 +56,6 @@ def render_dockerfile(task: Task, base_image: str | None = None) -> str:
         base_image=base_image or base_image_for(task),
         repo=task.repo,
         base_commit=task.base_commit,
-        merge_commit=task.merge_commit,
         install_cmd=task.install_cmd,
         # Install the package the same way grading reinstalls it (with build deps
         # preinstalled, --no-build-isolation) so meson-python editable installs

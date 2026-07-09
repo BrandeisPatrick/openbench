@@ -10,14 +10,25 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends git build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-RUN git clone https://github.com/{{ repo }} /repo
+# Contamination control: clone and truncate in ONE layer, so no layer of the
+# published image ever holds post-base history. The only ref left is `main`
+# pinned at the base commit; every commit not reachable from it (the gold fix,
+# its tests, all later upstream history) is pruned from the object store, and
+# the remote is dropped so nothing can be re-fetched. Pre-base history stays:
+# git log/blame are legitimate agent tools. validate_task fetches the merge
+# commit at validation time for its merged-passes leg instead.
+RUN git clone https://github.com/{{ repo }} /repo \
+    && cd /repo \
+    && git checkout --quiet {{ base_commit }} \
+    && git checkout -B main \
+    && git remote remove origin \
+    && git for-each-ref --format='%(refname)' \
+        | grep -v '^refs/heads/main$' \
+        | xargs -r -n 1 git update-ref -d \
+    && git reflog expire --expire=now --all \
+    && git gc --prune=now \
+    && rm -f .git/FETCH_HEAD
 WORKDIR /repo
-
-# Pin the working tree at the base commit, but also fetch the merge commit so
-# validate_task can `git checkout {{ merge_commit }}` for the merged-passes leg.
-RUN git checkout --quiet {{ base_commit }} \
-    && git fetch origin {{ merge_commit }} \
-    && git checkout --quiet {{ base_commit }}
 
 RUN python -m pip install --upgrade pip
 
@@ -67,12 +78,6 @@ RUN {{ cmd }}
 RUN git config --system user.email bench@openbench \
     && git config --system user.name openbench \
     && git config --system --add safe.directory /repo
-
-# Contamination control: drop the remote so an agent inside the container
-# cannot fetch post-base history (network is "none" anyway; belt and braces).
-# TODO(MVP): the merge commit and post-base history fetched above remain in the
-# local git object store — full truncation of post-base history is future work.
-RUN git remote remove origin
 
 RUN useradd -m agent && chown -R agent:agent /repo
 WORKDIR /repo

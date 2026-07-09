@@ -281,7 +281,26 @@ def validate_task(task_id: str, rounds: int = 3) -> TaskValidation:
         )
 
         # --- container B at the merged state
-        container_b = dockerutil.start_container(task.image_tag, name_merged)
+        # The task image is truncated at the base commit (contamination
+        # control), so the merge commit must be fetched from GitHub here.
+        # Container B alone gets network, and only until the fetch completes:
+        # it is detached again before any install/test so the merged leg runs
+        # as offline as grading does. (SWE-bench-mined tasks have
+        # merge_commit == base_commit, which is already present — no fetch.)
+        container_b = dockerutil.start_container(
+            task.image_tag, name_merged, network="bridge"
+        )
+        fetch = dockerutil.exec_in(
+            container_b,
+            f"git cat-file -e {task.merge_commit} 2>/dev/null"
+            f" || git fetch https://github.com/{task.repo} {task.merge_commit}",
+            timeout=600,
+        )
+        dockerutil.disconnect_network(name_merged)
+        if fetch.exit_code != 0:
+            raise dockerutil.DockerError(
+                f"{task_id}: cannot fetch merge commit: {fetch.stderr[-2000:]}"
+            )
         checkout = dockerutil.exec_in(
             container_b, f"git checkout --quiet {task.merge_commit}", timeout=300
         )
