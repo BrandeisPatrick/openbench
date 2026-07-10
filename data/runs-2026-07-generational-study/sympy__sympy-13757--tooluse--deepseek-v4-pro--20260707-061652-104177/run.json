@@ -1,0 +1,16 @@
+{
+  "run_id": "sympy__sympy-13757--tooluse--deepseek-v4-pro--20260707-061652-104177",
+  "task_id": "sympy__sympy-13757",
+  "harness": "tooluse",
+  "model": "deepseek-v4-pro",
+  "started_at": "2026-07-07T06:16:52.104177Z",
+  "finished_at": "2026-07-07T06:26:13.345655Z",
+  "exit_reason": "cost_cap",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 2.50395,
+  "total_tokens_in": 1980153,
+  "total_tokens_out": 26618,
+  "total_thinking_tokens": 18258,
+  "num_turns": 77
+}

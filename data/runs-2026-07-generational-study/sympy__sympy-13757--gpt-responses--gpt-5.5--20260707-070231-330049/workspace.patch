@@ -1,0 +1,35 @@
+diff --git a/sympy/core/expr.py b/sympy/core/expr.py
+index 72728c44ef..4ca96db40e 100644
+--- a/sympy/core/expr.py
++++ b/sympy/core/expr.py
+@@ -137,6 +137,13 @@ def __rsub__(self, other):
+     @_sympifyit('other', NotImplemented)
+     @call_highest_priority('__rmul__')
+     def __mul__(self, other):
++        if getattr(other, 'is_Poly', False) and not self.is_Poly:
++            # Poly is an Expr subclass, so Python's normal reflected
++            # operation dispatch does not call Poly.__rmul__ for Expr*Poly.
++            # Delegate here so polynomial multiplication can coerce the left
++            # expression just as Poly.__mul__ does for a right expression.
++            if self.is_real or not self.is_number:
++                return other.__rmul__(self)
+         return Mul(self, other)
+ 
+     @_sympifyit('other', NotImplemented)
+diff --git a/sympy/polys/tests/test_poly_arithmetic_priority.py b/sympy/polys/tests/test_poly_arithmetic_priority.py
+new file mode 100644
+index 0000000000..941061b83e
+--- /dev/null
++++ b/sympy/polys/tests/test_poly_arithmetic_priority.py
+@@ -0,0 +1,11 @@
++from sympy import Poly, S
++from sympy.abc import x
++
++
++def test_Poly_reflected_multiplication_by_expr():
++    assert Poly(x)*x == Poly(x**2, x)
++    assert x*Poly(x) == Poly(x**2, x)
++
++    assert -2*Poly(x) == Poly(-2*x, x)
++    assert S(-2)*Poly(x) == Poly(-2*x, x)
++    assert Poly(x)*S(-2) == Poly(-2*x, x)

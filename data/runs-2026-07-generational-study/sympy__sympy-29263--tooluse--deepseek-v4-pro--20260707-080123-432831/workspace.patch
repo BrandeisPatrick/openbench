@@ -1,0 +1,174 @@
+diff --git a/sympy/integrals/manualintegrate.py b/sympy/integrals/manualintegrate.py
+index 2876c839f8..748cac85a7 100644
+--- a/sympy/integrals/manualintegrate.py
++++ b/sympy/integrals/manualintegrate.py
+@@ -30,7 +30,7 @@
+ from sympy.core.add import Add
+ from sympy.core.cache import cacheit
+ from sympy.core.containers import Dict
+-from sympy.core.function import Derivative
++from sympy.core.function import Derivative, diff
+ from sympy.core.logic import fuzzy_not
+ from sympy.core.mul import Mul
+ from sympy.core.numbers import Integer, Number, E
+@@ -63,6 +63,7 @@
+ from sympy.polys.polytools import degree, lcm_list, gcd_list, Poly
+ from sympy.simplify.radsimp import fraction
+ from sympy.simplify.simplify import simplify
++from sympy.simplify.powsimp import powdenest
+ from sympy.simplify.powsimp import powsimp
+ from sympy.solvers.solvers import solve
+ from sympy.strategies.core import switch, do_one, null_safe, condition
+@@ -1938,45 +1939,121 @@ def quadratic_denom_rule(integral):
+ def sqrt_linear_rule(integral: IntegralInfo):
+     """
+     Substitute common (a+b*x)**(1/n)
++
++    This function handles two cases:
++
++    1. Same-sign case: all linear bases (a+b*x) have b coefficients with the
++       same sign, allowing the substitution u = (a0+b0*x)**(1/q0).
++
++    2. Opposite-sign case: there are two linear bases (a+b*x) and (a-b*x)
++       with the same a and opposite b, allowing the rationalizing
++       substitution u = ((a-b*x)/(a+b*x))**(1/q).
+     """
+     integrand, x = integral
+-    a = Wild('a', exclude=[x])
+-    b = Wild('b', exclude=[x, 0])
+-    a0 = b0 = 0
+-    bases, qs, bs = [], [], []
+-    for pow_ in integrand.find(Pow):  # collect all (a+b*x)**(p/q)
++    a_wild = Wild('a', exclude=[x])
++    b_wild = Wild('b', exclude=[x, 0])
++
++    # Collect all (a+b*x)**(p/q) entries
++    entries = []  # (base, a_val, b_val, exp, q)
++    for pow_ in integrand.find(Pow):
+         base, exp_ = pow_.base, pow_.exp
+-        if exp_.is_Integer or x not in base.free_symbols:  # skip 1/x and sqrt(2)
++        if exp_.is_Integer or x not in base.free_symbols:
+             continue
+-        if not exp_.is_Rational:  # exclude x**pi
++        if not exp_.is_Rational:
+             return
+-        match = base.match(a+b*x)
+-        if not match:  # skip non-linear
+-            continue  # for sqrt(x+sqrt(x)), although base is non-linear, we can still substitute sqrt(x)
+-        a1, b1 = match[a], match[b]
+-        if a0*b1 != a1*b0 or not (b0/b1).is_nonnegative:  # cannot transform sqrt(x) to sqrt(x+1) or sqrt(-x)
+-            return
+-        if b0 == 0 or (b0/b1 > 1) is S.true:  # choose the latter of sqrt(2*x) and sqrt(x) as representative
++        match = base.match(a_wild + b_wild*x)
++        if not match:
++            continue
++        a1, b1 = match[a_wild], match[b_wild]
++        entries.append((base, a1, b1, exp_, exp_.q))
++
++    if not entries:
++        return
++
++    # ---- same-sign case ----
++    a0 = b0 = 0
++    bases, qs, bs = [], [], []
++    for base, a1, b1, exp_, q in entries:
++        if a0*b1 != a1*b0 or not (b0/b1).is_nonnegative:
++            break
++        if b0 == 0 or (b0/b1 > 1) is S.true:
+             a0, b0 = a1, b1
+         bases.append(base)
+         bs.append(b1)
+-        qs.append(exp_.q)
+-    if b0 == 0:  # no such pattern found
+-        return
+-    q0: Integer = lcm_list(qs)
+-    u_x = (a0 + b0*x)**(1/q0)
+-    u = Dummy("u")
+-    substituted = integrand.subs({base**(S.One/q): (b/b0)**(S.One/q)*u**(q0/q)
+-                                  for base, b, q in zip(bases, bs, qs)}).subs(x, (u**q0-a0)/b0)
+-    substep = integral_steps(substituted*u**(q0-1)*q0/b0, u)
+-    if not substep.contains_dont_know():
+-        step: Rule = URule(integrand, x, u, u_x, substep)
+-        generic_cond = Ne(b0, 0)
+-        if generic_cond is not S.true:  # possible degenerate case
+-            simplified = integrand.subs(dict.fromkeys(bs, 0))
+-            degenerate_step = integral_steps(simplified, x)
+-            step = PiecewiseRule(integrand, x, [(step, generic_cond), (degenerate_step, S.true)])
+-        return step
++        qs.append(q)
++    else:
++        # all entries passed the same-sign check
++        if b0 != 0:
++            q0: Integer = lcm_list(qs)
++            u_x = (a0 + b0*x)**(1/q0)
++            u = Dummy("u")
++            substituted = integrand.subs({base**(S.One/q): (b/b0)**(S.One/q)*u**(q0/q)
++                                          for base, b, q in zip(bases, bs, qs)}).subs(x, (u**q0-a0)/b0)
++            substep = integral_steps(substituted*u**(q0-1)*q0/b0, u)
++            if not substep.contains_dont_know():
++                step: Rule = URule(integrand, x, u, u_x, substep)
++                generic_cond = Ne(b0, 0)
++                if generic_cond is not S.true:
++                    simplified = integrand.subs(dict.fromkeys(bs, 0))
++                    degenerate_step = integral_steps(simplified, x)
++                    step = PiecewiseRule(integrand, x, [(step, generic_cond), (degenerate_step, S.true)])
++                return step
++
++    # ---- opposite-sign case ----
++    # Group entries by a-value, look for pairs (a+b*x) and (a-b*x)
++    by_a = defaultdict(list)
++    for entry in entries:
++        by_a[entry[1]].append(entry)
++
++    for a_val, group in by_a.items():
++        if len(group) < 2:
++            continue
++        for i in range(len(group)):
++            for j in range(i + 1, len(group)):
++                base1, a1, b1, exp1, q1 = group[i]
++                base2, a2, b2, exp2, q2 = group[j]
++                if b1 + b2 != 0 or a1 - a2 != 0:
++                    continue
++                # Found an opposite pair: (a + b*x) and (a - b*x)
++                if b1 > 0:
++                    pos_base, pos_exp = base1, exp1
++                    neg_base, neg_exp = base2, exp2
++                    b_pos = b1
++                else:
++                    pos_base, pos_exp = base2, exp2
++                    neg_base, neg_exp = base1, exp1
++                    b_pos = b2
++
++                q = lcm_list([pos_exp.q, neg_exp.q])
++                u = Dummy("u")
++
++                # u = ((a - b*x)/(a + b*x))**(1/q)
++                u_func = (neg_base / pos_base)**(S.One / q)
++
++                # Express x in terms of u:
++                # u**q = (a - b*x)/(a + b*x)  =>  x = a*(1 - u**q)/(b*(1 + u**q))
++                x_u = a_val * (1 - u**q) / (b_pos * (1 + u**q))
++                dx_du = diff(x_u, u)
++
++                # Replace bases: a+b*x -> 2*a/(1+u**q), a-b*x -> 2*a*u**q/(1+u**q)
++                pos_repl = 2 * a_val / (1 + u**q)
++                neg_repl = 2 * a_val * u**q / (1 + u**q)
++
++                substituted = integrand.replace(pos_base, pos_repl)
++                substituted = substituted.replace(neg_base, neg_repl)
++                substituted = substituted.subs(x, x_u) * dx_du
++                substituted = simplify(substituted)
++                substituted = powdenest(substituted, force=True)
++
++                substep = integral_steps(substituted, u)
++                if not substep.contains_dont_know():
++                    step: Rule = URule(integrand, x, u, u_func, substep)
++                    generic_cond = Ne(b_pos, 0)
++                    if generic_cond is not S.true:
++                        simplified = integrand.subs({b_pos: 0})
++                        degenerate_step = integral_steps(simplified, x)
++                        step = PiecewiseRule(integrand, x, [(step, generic_cond), (degenerate_step, S.true)])
++                    return step
+ 
+ 
+ def sqrt_quadratic_rule(integral: IntegralInfo, degenerate=True):

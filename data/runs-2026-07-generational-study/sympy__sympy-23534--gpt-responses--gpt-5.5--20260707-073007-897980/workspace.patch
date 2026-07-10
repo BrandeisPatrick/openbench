@@ -1,0 +1,28 @@
+diff --git a/sympy/core/symbol.py b/sympy/core/symbol.py
+index f4a555c13f..2aca8bab27 100644
+--- a/sympy/core/symbol.py
++++ b/sympy/core/symbol.py
+@@ -791,7 +791,7 @@ def literal(s):
+         return tuple(result)
+     else:
+         for name in names:
+-            result.append(symbols(name, **args))
++            result.append(symbols(name, cls=cls, **args))
+ 
+         return type(names)(result)
+ 
+diff --git a/sympy/core/tests/test_symbols_cls_regression.py b/sympy/core/tests/test_symbols_cls_regression.py
+new file mode 100644
+index 0000000000..cf740028c8
+--- /dev/null
++++ b/sympy/core/tests/test_symbols_cls_regression.py
+@@ -0,0 +1,9 @@
++from sympy.core.function import Function, UndefinedFunction
++from sympy.core.symbol import symbols
++
++
++def test_symbols_iterable_preserves_cls_for_ranges():
++    q, u = symbols(('q:2', 'u:2'), cls=Function)
++
++    assert all(isinstance(f, UndefinedFunction) for f in q)
++    assert all(isinstance(f, UndefinedFunction) for f in u)

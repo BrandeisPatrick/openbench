@@ -1,0 +1,13 @@
+diff --git a/sympy/printing/pycode.py b/sympy/printing/pycode.py
+index 3a72ab606c..06d9a902ab 100644
+--- a/sympy/printing/pycode.py
++++ b/sympy/printing/pycode.py
+@@ -17,6 +17,8 @@
+ }
+ 
+ _known_functions = {
++    'Min': 'min',
++    'Max': 'max',
+     'Abs': 'abs',
+ }
+ _known_functions_math = {

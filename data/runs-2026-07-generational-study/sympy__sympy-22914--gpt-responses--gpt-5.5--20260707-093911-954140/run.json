@@ -1,0 +1,16 @@
+{
+  "run_id": "sympy__sympy-22914--gpt-responses--gpt-5.5--20260707-093911-954140",
+  "task_id": "sympy__sympy-22914",
+  "harness": "gpt-responses",
+  "model": "gpt-5.5",
+  "started_at": "2026-07-07T09:39:11.954140Z",
+  "finished_at": "2026-07-07T09:39:29.962579Z",
+  "exit_reason": "crash",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.0,
+  "total_tokens_in": 0,
+  "total_tokens_out": 0,
+  "total_thinking_tokens": 0,
+  "num_turns": 0
+}

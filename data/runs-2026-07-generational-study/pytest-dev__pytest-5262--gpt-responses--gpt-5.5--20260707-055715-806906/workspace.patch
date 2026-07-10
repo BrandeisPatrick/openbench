@@ -1,0 +1,86 @@
+diff --git a/src/_pytest/capture.py b/src/_pytest/capture.py
+index 25eab7fdf..b326f1672 100644
+--- a/src/_pytest/capture.py
++++ b/src/_pytest/capture.py
+@@ -447,6 +447,20 @@ class EncodedFile(object):
+         """Ensure that file.name is a string."""
+         return repr(self.buffer)
+ 
++    @property
++    def mode(self):
++        """Ensure that file.mode does not advertise binary mode.
++
++        ``EncodedFile`` presents a text interface for writing unicode
++        strings. The wrapped file is opened in binary mode, but exposing the
++        wrapped mode directly causes callers to incorrectly write bytes to this
++        object.
++        """
++        mode = self.buffer.mode
++        if isinstance(mode, six.string_types):
++            mode = mode.replace("b", "")
++        return mode
++
+     def __getattr__(self, name):
+         return getattr(object.__getattribute__(self, "buffer"), name)
+ 
+diff --git a/testing/test_capture_encodedfile.py b/testing/test_capture_encodedfile.py
+new file mode 100644
+index 000000000..baac7edf3
+--- /dev/null
++++ b/testing/test_capture_encodedfile.py
+@@ -0,0 +1,55 @@
++from __future__ import absolute_import
++from __future__ import division
++from __future__ import print_function
++
++import os
++import sys
++from tempfile import TemporaryFile
++
++import pytest
++
++from _pytest import capture
++
++
++needsosdup = pytest.mark.skipif(
++    not hasattr(os, "dup"), reason="test needs os.dup, not available on this platform"
++)
++
++
++@needsosdup
++def test_encodedfile_mode_is_text():
++    f = TemporaryFile()
++    try:
++        encoded = capture.safe_text_dupfile(f, mode="wb+")
++        try:
++            assert "b" not in encoded.mode
++            assert "+" in encoded.mode
++        finally:
++            encoded.close()
++    finally:
++        f.close()
++
++
++@needsosdup
++def test_fd_capture_tmpfile_mode_is_text():
++    cap = capture.FDCapture(1)
++    try:
++        assert "b" not in cap.tmpfile.mode
++        assert "+" in cap.tmpfile.mode
++    finally:
++        cap.done()
++
++
++@needsosdup
++def test_fd_capture_stdout_mode_is_text():
++    cap = capture.FDCapture(1)
++    cap.start()
++    try:
++        assert "b" not in sys.stdout.mode
++        if "b" in sys.stdout.mode:
++            sys.stdout.write(b"captured as bytes\n")
++        else:
++            sys.stdout.write("captured as text\n")
++        assert cap.snap() == "captured as text\n"
++    finally:
++        cap.done()

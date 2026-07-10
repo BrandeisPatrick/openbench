@@ -1,0 +1,381 @@
+diff --git a/edit_lr_params.sh b/edit_lr_params.sh
+new file mode 100644
+index 0000000000..4b4d0693df
+--- /dev/null
++++ b/edit_lr_params.sh
+@@ -0,0 +1,58 @@
++cat > /tmp/lr_edit.py << LRFILE
++import sys
++input_lines = open(sys.argv[1]).readlines()
++out = []
++inside_init = False
++for line in input_lines:
++    # LogisticRegression updates
++    if line.strip().startswith('def __init__(') and 'LogisticRegression' in ''.join(out[-10:]):
++        inside_init = 'LogisticRegression'
++
++    if inside_init == 'LogisticRegression' and 'l1_ratio=None' in line:
++        # Change l1_ratio default to 0
++        line = line.replace('l1_ratio=None', 'l1_ratio=0')
++    if inside_init == 'LogisticRegression' and 'penalty="l2"' in line:
++        # keep place to inject warning
++        found_penalty = True
++    if inside_init == 'LogisticRegression' and line.strip().startswith('self.l1_ratio = l1_ratio'):
++        # Inject deprecation checks and warnings before assigning l1_ratio
++        out.append('        if penalty != "l2":\n')
++        out.append('            import warnings\n')
++        out.append('            warnings.warn("The parameter 'penalty' is deprecated and will be removed in version 1.10.", FutureWarning, stacklevel=2)\n')
++        out.append('        if l1_ratio is None:\n')
++        out.append('            import warnings\n')
++        out.append('            warnings.warn("The parameter 'l1_ratio=None' is deprecated in version 1.4 and will be removed in 1.10. Set 'l1_ratio=0' instead.", FutureWarning, stacklevel=2)\n')
++        out.append('            l1_ratio = 0\n')
++    out.append(line)
++    if inside_init == 'LogisticRegression' and line.strip().startswith('self.l1_ratio = l1_ratio'):
++        inside_init = False
++
++input_lines = out
++out = []
++inside_init = False
++for line in input_lines:
++    # LogisticRegressionCV updates
++    if line.strip().startswith('def __init__(') and 'LogisticRegressionCV' in ''.join(out[-10:]):
++        inside_init = 'LogisticRegressionCV'
++    if inside_init == 'LogisticRegressionCV' and 'l1_ratios=None' in line:
++        # Change l1_ratios default to "warn"
++        line = line.replace('l1_ratios=None', 'l1_ratios="warn"')
++    if inside_init == 'LogisticRegressionCV' and 'penalty="l2"' in line:
++        # keep place for warning
++        found_penalty = True
++    if inside_init == 'LogisticRegressionCV' and line.strip().startswith('self.l1_ratios = l1_ratios'):
++        # Inject warnings/deprecation for penalty and l1_ratios=None
++        out.append('        if penalty != "l2":\n')
++        out.append('            import warnings\n')
++        out.append('            warnings.warn("The parameter 'penalty' is deprecated and will be removed in version 1.10.", FutureWarning, stacklevel=2)\n')
++        out.append('        if l1_ratios is None:\n')
++        out.append('            import warnings\n')
++        out.append('            warnings.warn("The parameter 'l1_ratios=None' is deprecated and will be removed in 1.10. Use l1_ratios=(0,) instead.", FutureWarning, stacklevel=2)\n')
++        out.append('            l1_ratios = "warn"\n')
++    out.append(line)
++    if inside_init == 'LogisticRegressionCV' and line.strip().startswith('self.l1_ratios = l1_ratios'):
++        inside_init = False
++with open(sys.argv[2], 'w') as f:
++    f.writelines(out)
++LRFILE
++python3 /tmp/lr_edit.py sklearn/linear_model/_logistic.py sklearn/linear_model/_logistic.py
+diff --git a/patch_logistic.py b/patch_logistic.py
+new file mode 100644
+index 0000000000..14d85ac41e
+--- /dev/null
++++ b/patch_logistic.py
+@@ -0,0 +1,47 @@
++import warnings
++from inspect import signature
++
++def patch_LogisticRegression():
++    from sklearn.linear_model._logistic import LogisticRegression
++    
++    orig_init = LogisticRegression.__init__
++    def new_init(self, *args, **kwargs):
++        sig = signature(orig_init)
++        ba = sig.bind(self, *args, **kwargs)
++        ba.apply_defaults()
++        penalty = ba.arguments.get("penalty", "l2")
++        l1_ratio = ba.arguments.get("l1_ratio", 0)
++        if "penalty" in kwargs or (len(args) > 0 and sig.parameters['penalty']):
++            warnings.warn(
++                "The parameter 'penalty' is deprecated and will be removed in version 1.10.",
++                FutureWarning,
++                stacklevel=2,
++            )
++        if l1_ratio is None:
++            warnings.warn(
++                "The parameter 'l1_ratio=None' is deprecated in version 1.4 and will be removed in 1.10. Set 'l1_ratio=0' instead.",
++                FutureWarning,
++                stacklevel=2,
++            )
++            l1_ratio = 0
++        orig_init(
++            self,
++            penalty=penalty,
++            dual=ba.arguments.get("dual", False),
++            tol=ba.arguments.get("tol", 1e-4),
++            C=ba.arguments.get("C", 1.0),
++            fit_intercept=ba.arguments.get("fit_intercept", True),
++            intercept_scaling=ba.arguments.get("intercept_scaling", 1),
++            class_weight=ba.arguments.get("class_weight", None),
++            random_state=ba.arguments.get("random_state", None),
++            solver=ba.arguments.get("solver", "lbfgs"),
++            max_iter=ba.arguments.get("max_iter", 100),
++            verbose=ba.arguments.get("verbose", 0),
++            warm_start=ba.arguments.get("warm_start", False),
++            n_jobs=ba.arguments.get("n_jobs", None),
++            l1_ratio=l1_ratio,
++        )
++    LogisticRegression.__init__ = new_init
++
++if __name__ == "__main__":
++    patch_LogisticRegression()
+diff --git a/patch_logistic_code b/patch_logistic_code
+new file mode 100644
+index 0000000000..9f7b60a960
+--- /dev/null
++++ b/patch_logistic_code
+@@ -0,0 +1 @@
++python3 patch_logistic.py
+diff --git a/patch_logistic_cv.py b/patch_logistic_cv.py
+new file mode 100644
+index 0000000000..febcbcd074
+--- /dev/null
++++ b/patch_logistic_cv.py
+@@ -0,0 +1,50 @@
++import warnings
++from inspect import signature
++
++def patch_LogisticRegressionCV():
++    from sklearn.linear_model._logistic import LogisticRegressionCV
++    
++    orig_init = LogisticRegressionCV.__init__
++    def new_init(self, *args, **kwargs):
++        sig = signature(orig_init)
++        ba = sig.bind(self, *args, **kwargs)
++        ba.apply_defaults()
++        penalty = ba.arguments.get("penalty", "l2")
++        l1_ratios = ba.arguments.get("l1_ratios", "warn")
++        if "penalty" in kwargs:
++            warnings.warn(
++                "The parameter 'penalty' is deprecated and will be removed in version 1.10.",
++                FutureWarning,
++                stacklevel=2,
++            )
++        if l1_ratios is None:
++            warnings.warn(
++                "The parameter 'l1_ratios=None' is deprecated and will be removed in 1.10. Use l1_ratios=(0,) instead.",
++                FutureWarning,
++                stacklevel=2,
++            )
++            l1_ratios = "warn"
++        orig_init(
++            self,
++            Cs=ba.arguments.get("Cs", 10),
++            fit_intercept=ba.arguments.get("fit_intercept", True),
++            cv=ba.arguments.get("cv", None),
++            dual=ba.arguments.get("dual", False),
++            penalty=penalty,
++            scoring=ba.arguments.get("scoring", None),
++            solver=ba.arguments.get("solver", "lbfgs"),
++            tol=ba.arguments.get("tol", 1e-4),
++            max_iter=ba.arguments.get("max_iter", 100),
++            class_weight=ba.arguments.get("class_weight", None),
++            n_jobs=ba.arguments.get("n_jobs", None),
++            verbose=ba.arguments.get("verbose", 0),
++            refit=ba.arguments.get("refit", True),
++            intercept_scaling=ba.arguments.get("intercept_scaling", 1.0),
++            random_state=ba.arguments.get("random_state", None),
++            l1_ratios=l1_ratios,
++            use_legacy_attributes=ba.arguments.get("use_legacy_attributes", "warn"),
++        )
++    LogisticRegressionCV.__init__ = new_init
++
++if __name__ == "__main__":
++    patch_LogisticRegressionCV()
+diff --git a/patch_logistic_cv_code b/patch_logistic_cv_code
+new file mode 100644
+index 0000000000..0b1bf67418
+--- /dev/null
++++ b/patch_logistic_cv_code
+@@ -0,0 +1 @@
++python3 patch_logistic_cv.py
+diff --git a/result.log b/result.log
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/sklearn/linear_model/_logistic.py b/sklearn/linear_model/_logistic.py
+index baddda1a10..052414a049 100644
+--- a/sklearn/linear_model/_logistic.py
++++ b/sklearn/linear_model/_logistic.py
+@@ -1040,8 +1040,19 @@ class LogisticRegression(LinearClassifierMixin, SparseCoefMixin, BaseEstimator):
+         verbose=0,
+         warm_start=False,
+         n_jobs=None,
+-        l1_ratio=None,
++        l1_ratio=0,
+     ):
++        if penalty != "l2":
++            import warnings
++            warnings.warn(
++                "The parameter 'penalty' is deprecated and will be removed in version 1.10.",
++                FutureWarning, stacklevel=2)
++        if l1_ratio is None:
++            import warnings
++            warnings.warn(
++                "The parameter 'l1_ratio=None' is deprecated in version 1.4 and will be removed in 1.10. Set 'l1_ratio=0' instead.",
++                FutureWarning, stacklevel=2)
++            l1_ratio = 0
+         self.penalty = penalty
+         self.dual = dual
+         self.tol = tol
+@@ -1056,6 +1067,14 @@ class LogisticRegression(LinearClassifierMixin, SparseCoefMixin, BaseEstimator):
+         self.warm_start = warm_start
+         self.n_jobs = n_jobs
+         self.l1_ratio = l1_ratio
++        self.class_weight = class_weight
++        self.random_state = random_state
++        self.solver = solver
++        self.max_iter = max_iter
++        self.verbose = verbose
++        self.warm_start = warm_start
++        self.n_jobs = n_jobs
++        self.l1_ratio = l1_ratio
+ 
+     @_fit_context(prefer_skip_nested_validation=True)
+     def fit(self, X, y, sample_weight=None):
+@@ -1639,9 +1658,20 @@ class LogisticRegressionCV(LogisticRegression, LinearClassifierMixin, BaseEstima
+         refit=True,
+         intercept_scaling=1.0,
+         random_state=None,
+-        l1_ratios=None,
++        l1_ratios="warn",
+         use_legacy_attributes="warn",
+     ):
++        if penalty != "l2":
++            import warnings
++            warnings.warn(
++                "The parameter 'penalty' is deprecated and will be removed in version 1.10.",
++                FutureWarning, stacklevel=2)
++        if l1_ratios is None:
++            import warnings
++            warnings.warn(
++                "The parameter 'l1_ratios=None' is deprecated and will be removed in 1.10. Use l1_ratios=(0,) instead.",
++                FutureWarning, stacklevel=2)
++            l1_ratios = "warn"
+         self.Cs = Cs
+         self.fit_intercept = fit_intercept
+         self.cv = cv
+@@ -1659,6 +1689,21 @@ class LogisticRegressionCV(LogisticRegression, LinearClassifierMixin, BaseEstima
+         self.random_state = random_state
+         self.l1_ratios = l1_ratios
+         self.use_legacy_attributes = use_legacy_attributes
++        self.cv = cv
++        self.dual = dual
++        self.penalty = penalty
++        self.scoring = scoring
++        self.tol = tol
++        self.max_iter = max_iter
++        self.class_weight = class_weight
++        self.n_jobs = n_jobs
++        self.verbose = verbose
++        self.solver = solver
++        self.refit = refit
++        self.intercept_scaling = intercept_scaling
++        self.random_state = random_state
++        self.l1_ratios = l1_ratios
++        self.use_legacy_attributes = use_legacy_attributes
+ 
+     @_fit_context(prefer_skip_nested_validation=True)
+     def fit(self, X, y, sample_weight=None, **params):
+diff --git a/temp_patch_logistic.py b/temp_patch_logistic.py
+new file mode 100644
+index 0000000000..5f91579f73
+--- /dev/null
++++ b/temp_patch_logistic.py
+@@ -0,0 +1,91 @@
++from sklearn.linear_model._logistic import LogisticRegression, LogisticRegressionCV
++import warnings
++import types
++
++def patch_LogisticRegression():
++    orig_init = LogisticRegression.__init__
++    def new_init(
++        self,
++        penalty="l2",
++        *,
++        dual=False,
++        tol=1e-4,
++        C=1.0,
++        fit_intercept=True,
++        intercept_scaling=1,
++        class_weight=None,
++        random_state=None,
++        solver="lbfgs",
++        max_iter=100,
++        verbose=0,
++        warm_start=False,
++        n_jobs=None,
++        l1_ratio=0,
++    ):
++        if penalty != "l2":
++            warnings.warn(
++                "The parameter 'penalty' is deprecated and will be removed in version 1.10.",
++                FutureWarning,
++                stacklevel=2,
++            )
++        if l1_ratio is None:
++            warnings.warn(
++                "The parameter 'l1_ratio=None' is deprecated in version 1.4 and will be removed in 1.10. Set 'l1_ratio=0' instead.",
++                FutureWarning,
++                stacklevel=2,
++            )
++            l1_ratio = 0
++        orig_init(
++            self, penalty=penalty, dual=dual, tol=tol, C=C, fit_intercept=fit_intercept,
++            intercept_scaling=intercept_scaling, class_weight=class_weight, random_state=random_state,
++            solver=solver, max_iter=max_iter, verbose=verbose, warm_start=warm_start,
++            n_jobs=n_jobs, l1_ratio=l1_ratio
++        )
++    LogisticRegression.__init__ = new_init
++
++def patch_LogisticRegressionCV():
++    orig_init = LogisticRegressionCV.__init__
++    def new_init(
++        self,
++        *,
++        Cs=10,
++        fit_intercept=True,
++        cv=None,
++        dual=False,
++        penalty="l2",
++        scoring=None,
++        solver="lbfgs",
++        tol=1e-4,
++        max_iter=100,
++        class_weight=None,
++        n_jobs=None,
++        verbose=0,
++        refit=True,
++        intercept_scaling=1.0,
++        random_state=None,
++        l1_ratios="warn",
++        use_legacy_attributes="warn",
++    ):
++        if penalty != "l2":
++            warnings.warn(
++                "The parameter 'penalty' is deprecated and will be removed in version 1.10.",
++                FutureWarning,
++                stacklevel=2,
++            )
++        if l1_ratios is None:
++            warnings.warn(
++                "The parameter 'l1_ratios=None' is deprecated and will be removed in 1.10. Use l1_ratios=(0,) instead.",
++                FutureWarning,
++                stacklevel=2,
++            )
++            l1_ratios = "warn"
++        orig_init(
++            self, Cs=Cs, fit_intercept=fit_intercept, cv=cv, dual=dual,
++            penalty=penalty, scoring=scoring, solver=solver, tol=tol, max_iter=max_iter,
++            class_weight=class_weight, n_jobs=n_jobs, verbose=verbose, refit=refit,
++            intercept_scaling=intercept_scaling, random_state=random_state,
++            l1_ratios=l1_ratios, use_legacy_attributes=use_legacy_attributes
++        )
++    LogisticRegressionCV.__init__ = new_init
++
++# This would patch if imported and run
+diff --git a/temp_patch_logistic_apply.py b/temp_patch_logistic_apply.py
+new file mode 100644
+index 0000000000..1013f8d69c
+--- /dev/null
++++ b/temp_patch_logistic_apply.py
+@@ -0,0 +1,4 @@
++import temp_patch_logistic
++
++temp_patch_logistic.patch_LogisticRegression()
++temp_patch_logistic.patch_LogisticRegressionCV()

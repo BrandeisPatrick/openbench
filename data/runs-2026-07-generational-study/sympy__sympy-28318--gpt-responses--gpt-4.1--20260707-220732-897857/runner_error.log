@@ -1,0 +1,8 @@
+API rejected request: HTTP 400: {
+  "error": {
+    "message": "No tool output found for function call call_ytN8xvxKFYqYCScHkOEcOFdX.",
+    "type": "invalid_request_error",
+    "param": "input",
+    "code": null
+  }
+}

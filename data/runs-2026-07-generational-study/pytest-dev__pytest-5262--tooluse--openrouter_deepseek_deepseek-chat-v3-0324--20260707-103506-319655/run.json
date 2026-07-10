@@ -1,0 +1,16 @@
+{
+  "run_id": "pytest-dev__pytest-5262--tooluse--openrouter_deepseek_deepseek-chat-v3-0324--20260707-103506-319655",
+  "task_id": "pytest-dev__pytest-5262",
+  "harness": "tooluse",
+  "model": "openrouter/deepseek/deepseek-chat-v3-0324",
+  "started_at": "2026-07-07T10:35:06.319655Z",
+  "finished_at": "2026-07-07T10:43:20.841712Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.03504324,
+  "total_tokens_in": 162607,
+  "total_tokens_out": 12390,
+  "total_thinking_tokens": 0,
+  "num_turns": 17
+}

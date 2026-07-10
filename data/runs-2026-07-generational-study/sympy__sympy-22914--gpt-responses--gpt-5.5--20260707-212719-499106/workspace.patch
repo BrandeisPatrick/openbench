@@ -1,0 +1,19 @@
+diff --git a/sympy/printing/pycode.py b/sympy/printing/pycode.py
+index 3a72ab606c..2a665d0c63 100644
+--- a/sympy/printing/pycode.py
++++ b/sympy/printing/pycode.py
+@@ -299,6 +299,14 @@ def _print_KroneckerDelta(self, expr):
+             b = self._print(b)
+         )
+ 
++    def _print_Min(self, expr):
++        return 'min({})'.format(
++            ', '.join(self._print(arg) for arg in expr.args))
++
++    def _print_Max(self, expr):
++        return 'max({})'.format(
++            ', '.join(self._print(arg) for arg in expr.args))
++
+     def _print_MatrixBase(self, expr):
+         name = expr.__class__.__name__
+         func = self.known_functions.get(name, name)

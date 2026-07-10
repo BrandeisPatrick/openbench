@@ -1,0 +1,15 @@
+diff --git a/fix_symbols.py b/fix_symbols.py
+new file mode 100644
+index 0000000000..df31c72d3c
+--- /dev/null
++++ b/fix_symbols.py
+@@ -0,0 +1,9 @@
++import sympy as smp
++
++def fixed_symbols(names, **assumptions):
++    if isinstance(names, (str, tuple)) and 'cls' in assumptions:
++        cls = assumptions.pop('cls')
++        if isinstance(names, tuple):
++            return [cls(s, **assumptions) for s in names]
++        return cls(names, **assumptions)
++    return smp.symbols(names, **assumptions)

@@ -1,0 +1,195 @@
+diff --git a/sympy/polys/polytools.py b/sympy/polys/polytools.py
+index d5ac051f63..e91224bc33 100644
+--- a/sympy/polys/polytools.py
++++ b/sympy/polys/polytools.py
+@@ -106,6 +106,7 @@ class Poly(Expr):
+ 
+     is_commutative = True
+     is_Poly = True
++    _op_priority = 11.0
+ 
+     def __new__(cls, rep, *gens, **args):
+         """Create a new polynomial instance out of something useful. """
+@@ -391,7 +392,7 @@ def unify(f, g):
+     def _unify(f, g):
+         g = sympify(g)
+ 
+-        if not g.is_Poly:
++        if not getattr(g, "is_Poly", False):
+             try:
+                 return f.rep.dom, f.per, f.rep, f.rep.per(f.rep.dom.from_sympy(g))
+             except CoercionFailed:
+@@ -1333,7 +1334,7 @@ def add(f, g):
+         """
+         g = sympify(g)
+ 
+-        if not g.is_Poly:
++        if not getattr(g, "is_Poly", False):
+             return f.add_ground(g)
+ 
+         _, per, F, G = f._unify(g)
+@@ -1364,7 +1365,7 @@ def sub(f, g):
+         """
+         g = sympify(g)
+ 
+-        if not g.is_Poly:
++        if not getattr(g, "is_Poly", False):
+             return f.sub_ground(g)
+ 
+         _, per, F, G = f._unify(g)
+@@ -1395,7 +1396,7 @@ def mul(f, g):
+         """
+         g = sympify(g)
+ 
+-        if not g.is_Poly:
++        if not getattr(g, "is_Poly", False):
+             return f.mul_ground(g)
+ 
+         _, per, F, G = f._unify(g)
+@@ -3999,7 +4000,7 @@ def __neg__(f):
+ 
+     @_sympifyit('g', NotImplemented)
+     def __add__(f, g):
+-        if not g.is_Poly:
++        if not getattr(g, "is_Poly", False):
+             try:
+                 g = f.__class__(g, *f.gens)
+             except PolynomialError:
+@@ -4009,7 +4010,7 @@ def __add__(f, g):
+ 
+     @_sympifyit('g', NotImplemented)
+     def __radd__(f, g):
+-        if not g.is_Poly:
++        if not getattr(g, "is_Poly", False):
+             try:
+                 g = f.__class__(g, *f.gens)
+             except PolynomialError:
+@@ -4019,7 +4020,7 @@ def __radd__(f, g):
+ 
+     @_sympifyit('g', NotImplemented)
+     def __sub__(f, g):
+-        if not g.is_Poly:
++        if not getattr(g, "is_Poly", False):
+             try:
+                 g = f.__class__(g, *f.gens)
+             except PolynomialError:
+@@ -4029,7 +4030,7 @@ def __sub__(f, g):
+ 
+     @_sympifyit('g', NotImplemented)
+     def __rsub__(f, g):
+-        if not g.is_Poly:
++        if not getattr(g, "is_Poly", False):
+             try:
+                 g = f.__class__(g, *f.gens)
+             except PolynomialError:
+@@ -4039,20 +4040,26 @@ def __rsub__(f, g):
+ 
+     @_sympifyit('g', NotImplemented)
+     def __mul__(f, g):
+-        if not g.is_Poly:
+-            try:
+-                g = f.__class__(g, *f.gens)
+-            except PolynomialError:
++        if not getattr(g, "is_Poly", False):
++            if isinstance(g, Basic):
++                try:
++                    g = f.__class__(g, *f.gens)
++                except PolynomialError:
++                    return f.as_expr()*g
++            else:
+                 return f.as_expr()*g
+ 
+         return f.mul(g)
+ 
+     @_sympifyit('g', NotImplemented)
+     def __rmul__(f, g):
+-        if not g.is_Poly:
+-            try:
+-                g = f.__class__(g, *f.gens)
+-            except PolynomialError:
++        if not getattr(g, "is_Poly", False):
++            if isinstance(g, Basic):
++                try:
++                    g = f.__class__(g, *f.gens)
++                except PolynomialError:
++                    return g*f.as_expr()
++            else:
+                 return g*f.as_expr()
+ 
+         return g.mul(f)
+@@ -4066,42 +4073,42 @@ def __pow__(f, n):
+ 
+     @_sympifyit('g', NotImplemented)
+     def __divmod__(f, g):
+-        if not g.is_Poly:
++        if not getattr(g, "is_Poly", False):
+             g = f.__class__(g, *f.gens)
+ 
+         return f.div(g)
+ 
+     @_sympifyit('g', NotImplemented)
+     def __rdivmod__(f, g):
+-        if not g.is_Poly:
++        if not getattr(g, "is_Poly", False):
+             g = f.__class__(g, *f.gens)
+ 
+         return g.div(f)
+ 
+     @_sympifyit('g', NotImplemented)
+     def __mod__(f, g):
+-        if not g.is_Poly:
++        if not getattr(g, "is_Poly", False):
+             g = f.__class__(g, *f.gens)
+ 
+         return f.rem(g)
+ 
+     @_sympifyit('g', NotImplemented)
+     def __rmod__(f, g):
+-        if not g.is_Poly:
++        if not getattr(g, "is_Poly", False):
+             g = f.__class__(g, *f.gens)
+ 
+         return g.rem(f)
+ 
+     @_sympifyit('g', NotImplemented)
+     def __floordiv__(f, g):
+-        if not g.is_Poly:
++        if not getattr(g, "is_Poly", False):
+             g = f.__class__(g, *f.gens)
+ 
+         return f.quo(g)
+ 
+     @_sympifyit('g', NotImplemented)
+     def __rfloordiv__(f, g):
+-        if not g.is_Poly:
++        if not getattr(g, "is_Poly", False):
+             g = f.__class__(g, *f.gens)
+ 
+         return g.quo(f)
+@@ -4121,7 +4128,7 @@ def __rdiv__(f, g):
+     def __eq__(self, other):
+         f, g = self, other
+ 
+-        if not g.is_Poly:
++        if not getattr(g, "is_Poly", False):
+             try:
+                 g = f.__class__(g, f.gens, domain=f.get_domain())
+             except (PolynomialError, DomainError, CoercionFailed):
+@@ -4199,7 +4206,7 @@ def free_symbols(self):
+     def __eq__(self, other):
+         f, g = self, other
+ 
+-        if not g.is_Poly:
++        if not getattr(g, "is_Poly", False):
+             try:
+                 g = f.__class__(g, f.gens, domain=f.get_domain())
+             except (PolynomialError, DomainError, CoercionFailed):
+@@ -4225,7 +4232,7 @@ def _strict_eq(f, g):
+     def _unify(f, g):
+         g = sympify(g)
+ 
+-        if not g.is_Poly:
++        if not getattr(g, "is_Poly", False):
+             try:
+                 return f.rep.dom, f.per, f.rep, f.rep.per(f.rep.dom.from_sympy(g))
+             except CoercionFailed:

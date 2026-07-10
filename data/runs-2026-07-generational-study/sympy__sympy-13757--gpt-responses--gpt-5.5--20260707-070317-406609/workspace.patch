@@ -1,0 +1,41 @@
+diff --git a/sympy/polys/polytools.py b/sympy/polys/polytools.py
+index d5ac051f63..90ca0649fa 100644
+--- a/sympy/polys/polytools.py
++++ b/sympy/polys/polytools.py
+@@ -104,6 +104,10 @@ class Poly(Expr):
+ 
+     __slots__ = ['rep', 'gens']
+ 
++    # Ensure arithmetic with Expr on the left hand side is dispatched to
++    # Poly's reflected methods rather than creating unevaluated Add/Mul.
++    _op_priority = 10.0001
++
+     is_commutative = True
+     is_Poly = True
+ 
+diff --git a/sympy/polys/tests/test_polytools_priority.py b/sympy/polys/tests/test_polytools_priority.py
+new file mode 100644
+index 0000000000..60a05749a1
+--- /dev/null
++++ b/sympy/polys/tests/test_polytools_priority.py
+@@ -0,0 +1,20 @@
++"""Tests for Poly arithmetic dispatch priority."""
++
++from sympy import Matrix, S, sin
++from sympy.abc import x
++from sympy.polys.polytools import Poly
++
++
++def test_Poly_arithmetic_left_expr_dispatch():
++    assert x*Poly(x, x) == Poly(x**2, x)
++    assert S(-2)*Poly(x, x) == Poly(-2*x, x)
++    assert sin(x)*Poly(x, x) == x*sin(x)
++
++
++def test_Poly_arithmetic_left_expr_add_sub_dispatch():
++    assert x + Poly(x, x) == Poly(2*x, x)
++    assert x - Poly(x, x) == Poly(0, x)
++
++
++def test_Poly_priority_below_matrix():
++    assert Matrix([[1, 2]])*Poly(x, x) == Matrix([[Poly(x, x), Poly(2*x, x)]])

@@ -1,0 +1,59 @@
+diff --git a/src/_pytest/capture.py b/src/_pytest/capture.py
+index 25eab7fdf..348fb414f 100644
+--- a/src/_pytest/capture.py
++++ b/src/_pytest/capture.py
+@@ -447,6 +447,21 @@ class EncodedFile(object):
+         """Ensure that file.name is a string."""
+         return repr(self.buffer)
+ 
++    @property
++    def mode(self):
++        """Return a mode string appropriate for a text stream.
++
++        The wrapped file is opened in binary mode to allow writing encoded
++        bytes, but :class:`EncodedFile` itself accepts text.  Some code uses
++        ``"b" in file.mode`` to decide whether to write bytes or text, so
++        exposing the wrapped binary mode would incorrectly advertise that
++        bytes are accepted by this object.
++        """
++        mode = self.buffer.mode
++        if isinstance(mode, six.string_types):
++            mode = mode.replace("b", "")
++        return mode
++
+     def __getattr__(self, name):
+         return getattr(object.__getattribute__(self, "buffer"), name)
+ 
+diff --git a/testing/test_capture_encodedfile.py b/testing/test_capture_encodedfile.py
+new file mode 100644
+index 000000000..faede80ec
+--- /dev/null
++++ b/testing/test_capture_encodedfile.py
+@@ -0,0 +1,27 @@
++from __future__ import absolute_import
++
++import pytest
++
++from _pytest import capture
++
++
++class Buffer(object):
++    def __init__(self, mode):
++        self.mode = mode
++
++    def write(self, data):
++        pass
++
++
++def test_encoded_file_mode_is_text():
++    encoded_file = capture.EncodedFile(Buffer("rb+"), "utf-8")
++
++    assert encoded_file.mode == "r+"
++    assert "b" not in encoded_file.mode
++
++
++def test_encoded_file_mode_without_buffer_mode_raises_attribute_error():
++    encoded_file = capture.EncodedFile(object(), "utf-8")
++
++    with pytest.raises(AttributeError):
++        encoded_file.mode

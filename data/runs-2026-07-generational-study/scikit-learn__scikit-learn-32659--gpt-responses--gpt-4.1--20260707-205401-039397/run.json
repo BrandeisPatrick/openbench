@@ -1,0 +1,16 @@
+{
+  "run_id": "scikit-learn__scikit-learn-32659--gpt-responses--gpt-4.1--20260707-205401-039397",
+  "task_id": "scikit-learn__scikit-learn-32659",
+  "harness": "gpt-responses",
+  "model": "gpt-4.1",
+  "started_at": "2026-07-07T20:54:01.039397Z",
+  "finished_at": "2026-07-07T20:55:34.887288Z",
+  "exit_reason": "crash",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.600478,
+  "total_tokens_in": 295891,
+  "total_tokens_out": 1087,
+  "total_thinking_tokens": 0,
+  "num_turns": 38
+}

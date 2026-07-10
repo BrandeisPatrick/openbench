@@ -1,0 +1,16 @@
+{
+  "run_id": "pytest-dev__pytest-5262--tooluse--deepseek-v4-pro--20260707-053455-675783",
+  "task_id": "pytest-dev__pytest-5262",
+  "harness": "tooluse",
+  "model": "deepseek-v4-pro",
+  "started_at": "2026-07-07T05:34:55.675783Z",
+  "finished_at": "2026-07-07T05:36:41.079020Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.1777392,
+  "total_tokens_in": 132940,
+  "total_tokens_out": 3794,
+  "total_thinking_tokens": 1333,
+  "num_turns": 21
+}

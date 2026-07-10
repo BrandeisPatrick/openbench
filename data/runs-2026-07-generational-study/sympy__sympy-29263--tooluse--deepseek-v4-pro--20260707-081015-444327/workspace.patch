@@ -1,0 +1,86 @@
+diff --git a/sympy/integrals/manualintegrate.py b/sympy/integrals/manualintegrate.py
+index 2876c839f8..07277624af 100644
+--- a/sympy/integrals/manualintegrate.py
++++ b/sympy/integrals/manualintegrate.py
+@@ -2352,6 +2352,73 @@ def trig_substitution_rule(integral):
+                     return TrigSubstitutionRule(integrand, symbol,
+                         theta, x_func, replaced, substep, restriction)
+ 
++
++def sqrt_fraction_rule(integral):
++    """
++    Substitute u = sqrt((a - b*x)/(a + b*x)) for integrands containing
++    sqrt((a - b*x)/(a + b*x)) or sqrt(a - b*x)/sqrt(a + b*x).
++    """
++    integrand, symbol = integral
++    a = Wild('a', exclude=[symbol])
++    b = Wild('b', exclude=[symbol])
++
++    # Pattern 1: sqrt((a - b*symbol)/(a + b*symbol)) as a single power
++    p1 = sqrt((a - b*symbol)/(a + b*symbol))
++    matches = list(integrand.find(p1))
++
++    # Pattern 2: sqrt(a - b*symbol)/sqrt(a + b*symbol) as a product
++    p2 = sqrt(a - b*symbol)/sqrt(a + b*symbol)
++    matches2 = list(integrand.find(p2))
++
++    # Pattern 3: f * sqrt(a - b*symbol) / sqrt(a + b*symbol)
++    f = Wild('f')
++    p3 = f * sqrt(a - b*symbol) / sqrt(a + b*symbol)
++    match3 = integrand.match(p3)
++
++    if not matches and not matches2 and not match3:
++        return None
++
++    if matches:
++        m = matches[0].match(p1)
++    elif matches2:
++        m = matches2[0].match(p2)
++    else:
++        m = match3
++
++    if not m:
++        return None
++
++    a_val = m[a]
++    b_val = m.get(b, S.One)
++
++    u = Dummy("u")
++    u_func = sqrt((a_val - b_val*symbol)/(a_val + b_val*symbol))
++
++    # Solve u = sqrt((a - b*x)/(a + b*x)) for x:
++    #   u**2 = (a - b*x)/(a + b*x)
++    #   u**2*(a + b*x) = a - b*x
++    #   a*u**2 + b*x*u**2 = a - b*x
++    #   b*x*(u**2 + 1) = a*(1 - u**2)
++    #   x = a*(1 - u**2) / (b*(1 + u**2))
++    x_expr = a_val*(1 - u**2) / (b_val*(1 + u**2))
++    dx_du = manual_diff(x_expr, u)  # derivative of x with respect to u
++
++    # Replace the matched sqrt fraction with u, then substitute x with x_expr
++    if matches:
++        new_integrand = integrand.subs(matches[0], u)
++    elif matches2:
++        new_integrand = integrand.subs(matches2[0], u)
++    else:
++        new_integrand = match3[f] * u
++
++    new_integrand = new_integrand.subs(symbol, x_expr) * dx_du
++    new_integrand = new_integrand.cancel()
++
++    substep = integral_steps(new_integrand, u)
++    if not substep.contains_dont_know():
++        return URule(integrand, symbol, u, u_func, substep)
++    return None
++
+ def heaviside_rule(integral):
+     integrand, symbol = integral
+     pattern, m, b, g = heaviside_pattern(symbol)
+@@ -2611,6 +2678,7 @@ def _integral_is_subclass(integral):
+                 trig_expand_rule
+             )),
+             null_safe(condition(integral_is_subclass(Mul, Pow), nested_pow_rule)),
++            null_safe(sqrt_fraction_rule),
+             null_safe(trig_substitution_rule)
+         ),
+         fallback_rule)(integral)

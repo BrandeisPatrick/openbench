@@ -1,0 +1,47 @@
+diff --git a/src/_pytest/capture.py b/src/_pytest/capture.py
+index 25eab7fdf..ab8e68e46 100644
+--- a/src/_pytest/capture.py
++++ b/src/_pytest/capture.py
+@@ -447,6 +447,16 @@ class EncodedFile(object):
+         """Ensure that file.name is a string."""
+         return repr(self.buffer)
+ 
++    @property
++    def mode(self):
++        """Ensure that file.mode does not expose binary mode.
++
++        EncodedFile is a text wrapper around a binary file. Some libraries use
++        ``'b' in file.mode`` to decide whether to write bytes or text, so the
++        mode advertised by EncodedFile must not include ``b``.
++        """
++        return self.buffer.mode.replace("b", "")
++
+     def __getattr__(self, name):
+         return getattr(object.__getattribute__(self, "buffer"), name)
+ 
+diff --git a/testing/test_capture_encodedfile.py b/testing/test_capture_encodedfile.py
+new file mode 100644
+index 000000000..74670d9bb
+--- /dev/null
++++ b/testing/test_capture_encodedfile.py
+@@ -0,0 +1,20 @@
++from __future__ import absolute_import, division, print_function
++
++import pytest
++
++from _pytest.capture import EncodedFile
++
++
++class DummyBuffer(object):
++    def __init__(self, mode):
++        self.mode = mode
++
++
++@pytest.mark.parametrize(
++    "buffer_mode, expected_mode", [("wb+", "w+"), ("rb+", "r+"), ("w+b", "w+")]
++)
++def test_encodedfile_mode_is_text(buffer_mode, expected_mode):
++    encoded_file = EncodedFile(DummyBuffer(buffer_mode), "utf-8")
++
++    assert encoded_file.mode == expected_mode
++    assert "b" not in encoded_file.mode

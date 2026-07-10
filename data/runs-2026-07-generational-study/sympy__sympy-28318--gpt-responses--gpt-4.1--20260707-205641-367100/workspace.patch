@@ -1,0 +1,74 @@
+diff --git a/sympy/physics/control/__init__.py b/sympy/physics/control/__init__.py
+index 407bd2171e..c14a447a30 100644
+--- a/sympy/physics/control/__init__.py
++++ b/sympy/physics/control/__init__.py
+@@ -1,4 +1,4 @@
+-from .lti import (TransferFunction, PIDController, Series, MIMOSeries, Parallel, MIMOParallel,
++from .lti import (TransferFunction, DiscreteTransferFunction, PIDController, Series, MIMOSeries, Parallel, MIMOParallel,
+     Feedback, MIMOFeedback, TransferFunctionMatrix, StateSpace, gbt, bilinear, forward_diff,
+     backward_diff, phase_margin, gain_margin)
+ from .control_plots import (pole_zero_numerical_data, pole_zero_plot, step_response_numerical_data,
+@@ -7,7 +7,7 @@
+     bode_phase_plot, bode_plot, nyquist_plot_expr, nyquist_plot, nichols_plot_expr, nichols_plot)
+ from .routh_table import RouthHurwitz, negative_real_part_conditions
+ 
+-__all__ = ['TransferFunction', 'PIDController', 'Series', 'MIMOSeries', 'Parallel',
++__all__ = ['TransferFunction', 'DiscreteTransferFunction', 'PIDController', 'Series', 'MIMOSeries', 'Parallel',
+     'MIMOParallel', 'Feedback', 'MIMOFeedback', 'TransferFunctionMatrix', 'StateSpace',
+     'gbt', 'bilinear', 'forward_diff', 'backward_diff', 'phase_margin', 'gain_margin',
+     'pole_zero_numerical_data', 'pole_zero_plot', 'step_response_numerical_data',
+diff --git a/sympy/physics/control/lti.py b/sympy/physics/control/lti.py
+index 151f813c58..e71d0b2311 100644
+--- a/sympy/physics/control/lti.py
++++ b/sympy/physics/control/lti.py
+@@ -5449,3 +5449,50 @@ def get_asymptotic_stability_conditions(self):
+         determinant = self.A.charpoly(s)
+ 
+         return negative_real_part_conditions(determinant, s)
++
++# === Extension: Discrete-Time TransferFunction Support ===
++
++__all__.insert(1, 'DiscreteTransferFunction')
++
++class TransferFunctionBase(Basic, EvalfMixin):
++    """
++    Abstract base class for transfer functions (both continuous and discrete time).
++    """
++    is_continuous = None
++    is_discrete = None
++
++    def __new__(cls, num, den, var, **kwargs):
++        if cls is TransferFunctionBase:
++            raise NotImplementedError("TransferFunctionBase is abstract")
++        obj = Basic.__new__(cls, num, den, var)
++        return obj
++
++    @property
++    def num(self):
++        return self.args[0]
++    @property
++    def den(self):
++        return self.args[1]
++    @property
++    def var(self):
++        return self.args[2]
++    @property
++    def is_SISO(self):
++        return True
++
++    @staticmethod
++    def create(num, den, var, discrete=False):
++        """Create a continuous or discrete transfer function based on 'discrete' flag."""
++        if discrete:
++            return DiscreteTransferFunction(num, den, var)
++        else:
++            return TransferFunction(num, den, var)
++
++# --- Discrete Transfer Function ---
++class DiscreteTransferFunction(TransferFunctionBase):
++    is_continuous = False
++    is_discrete = True
++
++    def __new__(cls, num, den, var):
++        return super().__new__(cls, num, den, var)
++
