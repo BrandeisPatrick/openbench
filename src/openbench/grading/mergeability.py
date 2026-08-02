@@ -205,6 +205,7 @@ def grade_run(run_id: str) -> GradeReport:
     test_timeout = int(cfg.get("test_timeout_s", 1200))
 
     report = GradeReport(run_id=run_id, task_id=run.task_id)
+    report.image_id = dockerutil.image_id(task.image_tag)
 
     patch_path = rdir / run.workspace_patch_path
     patch_text = patch_path.read_text() if patch_path.exists() else ""

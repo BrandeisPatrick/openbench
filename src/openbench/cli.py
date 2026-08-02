@@ -155,6 +155,48 @@ def grade(run_id: str = typer.Argument(...)) -> None:
     )
 
 
+@app.command("golden-gate")
+def golden_gate(task_id: Optional[str] = typer.Argument(None)) -> None:
+    """Re-grade the latest golden fixture per task; exit 1 if any fails.
+
+    The gold patch cannot legitimately fail, so a red gate means the grading
+    environment is broken — run this BEFORE grading any batch. (July 2026:
+    a silently restored stale image and a tag-stripped rebuild each graded
+    the gold patch itself 0%, faking model failures for whole batches.)
+    """
+    from openbench import paths
+    from openbench.grading.mergeability import grade_run
+
+    latest: dict[str, str] = {}
+    for d in sorted(paths.RUNS.glob("*--golden--*")):
+        latest[d.name.split("--", 1)[0]] = d.name  # sorted → last wins
+    if task_id:
+        latest = {t: r for t, r in latest.items() if t == task_id}
+    if not latest:
+        target = task_id or "any task"
+        console.print(
+            f"[red]no golden fixture runs for {target}[/red] — create one with "
+            "`openbench run <task_id> --runner golden`"
+        )
+        raise typer.Exit(1)
+
+    failed: list[str] = []
+    for t, rid in sorted(latest.items()):
+        report = grade_run(rid)
+        ok = report.resolved
+        mark = "[green]PASS[/green]" if ok else "[red]FAIL[/red]"
+        console.print(f"{mark}  {t}  (image {str(report.image_id)[:19]}…)")
+        if not ok:
+            failed.append(t)
+    if failed:
+        console.print(
+            f"[red]golden gate FAILED for {len(failed)} task(s): {failed}[/red] "
+            "— the grading env is broken; do NOT trust grades until fixed"
+        )
+        raise typer.Exit(1)
+    console.print(f"[bold green]golden gate passed for all {len(latest)} task(s)[/bold green]")
+
+
 @app.command()
 def behavior(
     run_id: Optional[str] = typer.Argument(None, help="One run; omit for all runs"),

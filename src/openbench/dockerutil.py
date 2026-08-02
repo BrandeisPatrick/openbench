@@ -30,6 +30,12 @@ def _run(cmd: list[str], timeout: int | None = None, check: bool = False) -> Exe
     return result
 
 
+def image_id(tag: str) -> str | None:
+    """Resolve a tag to its immutable image ID for run/grade provenance."""
+    res = _run(["docker", "inspect", "--format", "{{.Id}}", tag])
+    return (res.stdout.strip() or None) if res.exit_code == 0 else None
+
+
 def image_exists(tag: str) -> bool:
     return _run(["docker", "image", "inspect", tag]).exit_code == 0
 

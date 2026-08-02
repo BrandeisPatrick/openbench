@@ -96,8 +96,11 @@ def execute_run(
         total_cost_usd=float(usage.get("cost_usd", 0.0)),
         total_tokens_in=int(usage.get("tokens_in", 0)),
         total_tokens_out=int(usage.get("tokens_out", 0)),
+        total_tokens_cached=int(usage.get("tokens_cached", 0)),
         total_thinking_tokens=int(usage.get("tokens_thinking", 0)),
         num_turns=int(usage.get("num_turns", 0)),
+        limits=limits,
+        image_id=dockerutil.image_id(task.image_tag),
     )
     (run_path / "run.json").write_text(result.model_dump_json(indent=2))
     return result

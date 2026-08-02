@@ -138,8 +138,14 @@ class RunResult(BaseModel):
     total_cost_usd: float = 0.0
     total_tokens_in: int = 0
     total_tokens_out: int = 0
+    total_tokens_cached: int = 0
     total_thinking_tokens: int = 0
     num_turns: int = 0
+    # Provenance: the exact limits and image this run executed under. The July
+    # 2026 incident (silent image swap; per-batch caps invisible in artifacts)
+    # was undiagnosable from run.json alone — these two fields fix that.
+    limits: RunLimits | None = None
+    image_id: str | None = None
 
 
 EventType = Literal[
@@ -202,6 +208,8 @@ class GradeReport(BaseModel):
     p2p_failed: list[str] = Field(default_factory=list)
     anticheat: AntiCheatReport = Field(default_factory=AntiCheatReport)
     graded_at: datetime | None = None
+    # Image the grade ran against (docker image ID, not the mutable tag).
+    image_id: str | None = None
 
     @property
     def f2p_pass_rate(self) -> float:

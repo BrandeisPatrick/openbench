@@ -23,7 +23,10 @@ from openbench.runners.protocols.base import (
     _post_with_retry,
 )
 from openbench.runners.protocols.prompts import SYSTEM_PROMPT_TOOLUSE
-from openbench.runners.protocols.providers import PRICES_PER_MTOK
+from openbench.runners.protocols.providers import (
+    PRICES_CACHED_PER_MTOK,
+    PRICES_PER_MTOK,
+)
 from openbench.runners.protocols.tools import BASH_FUNCTION_RESPONSES
 
 
@@ -99,14 +102,20 @@ class OpenAIResponsesProtocol(OpenAICompatProtocol):
     def usage(self, resp: dict, model: str) -> dict:
         u = resp.get("usage") or {}
         details = u.get("output_tokens_details") or {}
+        in_details = u.get("input_tokens_details") or {}
         tin = int(u.get("input_tokens") or 0)
         tout = int(u.get("output_tokens") or 0)
+        cached = min(tin, int(in_details.get("cached_tokens") or 0))
         price_in, price_out = PRICES_PER_MTOK.get(model, (0.0, 0.0))
+        price_cached = PRICES_CACHED_PER_MTOK.get(model, price_in)
         return {
             "tokens_in": tin,
             "tokens_out": tout,
+            "tokens_cached": cached,
             "tokens_thinking": int(details.get("reasoning_tokens") or 0),
-            "cost_usd": (tin * price_in + tout * price_out) / 1e6,
+            "cost_usd": (
+                (tin - cached) * price_in + cached * price_cached + tout * price_out
+            ) / 1e6,
         }
 
     def result_message(self, action: Action, output: str, exit_code: int) -> dict:

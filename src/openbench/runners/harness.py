@@ -104,6 +104,7 @@ class Harness:
                 u = proto.usage(resp, model)
                 usage["tokens_in"] += u["tokens_in"]
                 usage["tokens_out"] += u["tokens_out"]
+                usage["tokens_cached"] += u.get("tokens_cached", 0)
                 usage["tokens_thinking"] += u["tokens_thinking"]
                 usage["cost_usd"] += u["cost_usd"]
                 usage["num_turns"] = turn
@@ -113,6 +114,10 @@ class Harness:
                         "type": "api_response", "turn": turn,
                         "content": action.text, "reasoning_content": action.reasoning,
                         "usage": {"prompt_tokens": u["tokens_in"], "completion_tokens": u["tokens_out"]},
+                        # Provider-verbatim usage: cache/reasoning fields the
+                        # normalized dict drops. July 2026 cost audits needed
+                        # exactly this and it wasn't there.
+                        "usage_raw": resp.get("usage"),
                     })
                     + "\n"
                 )
