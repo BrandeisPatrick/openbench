@@ -182,6 +182,11 @@ def golden_gate(task_id: Optional[str] = typer.Argument(None)) -> None:
 
     failed: list[str] = []
     for t, rid in sorted(latest.items()):
+        # Quarantined/removed tasks keep their golden fixtures as audit
+        # evidence, but have no task.json to grade against — not a gate result.
+        if not (paths.task_dir(t) / "task.json").exists():
+            console.print(f"[yellow]SKIP[/yellow]  {t}  (not in active dataset)")
+            continue
         report = grade_run(rid)
         ok = report.resolved
         mark = "[green]PASS[/green]" if ok else "[red]FAIL[/red]"
