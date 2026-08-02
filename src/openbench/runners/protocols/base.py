@@ -23,7 +23,10 @@ from openbench.runners.protocols.providers import _resolve_provider
 # The sentinel a model echoes (`echo OPENBENCH_DONE`) to declare completion; the
 # loop checks for it and protocols embed it in prompts/nudges.
 DONE_MARKER = "OPENBENCH_DONE"
-_API_TIMEOUT_S = 600
+# R1-0528's ~9k-token thinking turns run ~490s at the ~20 tok/s its OpenRouter
+# hosts sustain (measured 2026-07-12, every host equally slow); 600s left no
+# margin — a long think would time out and retry-loop, burning wall clock.
+_API_TIMEOUT_S = 1200
 
 ChatFn = Callable[[list[dict]], dict]
 
@@ -42,7 +45,14 @@ def _post_with_retry(client: httpx.Client, url: str, body: dict) -> dict:
                 time.sleep(max(retry_after, min(60.0, 2.0**attempt)))
                 continue
             resp.raise_for_status()
-            return resp.json()
+            try:
+                return resp.json()
+            except ValueError as exc:
+                # A 200 with a malformed/truncated body (flaky OpenRouter host)
+                # is as retryable as a 5xx — one bad body must not kill a run.
+                last_err = f"malformed JSON body: {exc}"
+                time.sleep(min(60.0, 2.0**attempt))
+                continue
         except httpx.HTTPStatusError as exc:
             detail = f"HTTP {exc.response.status_code}: {exc.response.text[:300]}"
             if exc.response.status_code < 500:

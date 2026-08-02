@@ -41,6 +41,26 @@ GEN_PAIRS: dict[str, GenPair] = {
         new_model="deepseek-v4-pro",
     ),
     "gpt": GenPair(lab="openai", old_model="gpt-4.1", new_model="gpt-5.5"),
+    # Thinking lineages (July 2026 extension): each lab's reasoning-model line
+    # as two consecutive hops, so the 3-point trajectory reads as old->mid and
+    # mid->new. OpenAI: o1 (Dec 2024) -> o3 (Apr 2025) -> gpt-5.5. DeepSeek:
+    # R1-0528 (May 2025, first agent-capable thinker) -> V3.2 (first hybrid
+    # whose thinking mode tool-calls) -> v4-pro.
+    "gpt-think-early": GenPair(lab="openai", old_model="o1", new_model="o3"),
+    "gpt-think-late": GenPair(lab="openai", old_model="o3", new_model="gpt-5.5"),
+    "deepseek-think-early": GenPair(
+        lab="deepseek",
+        old_model="openrouter/deepseek/deepseek-r1-0528",
+        new_model="openrouter/deepseek/deepseek-v3.2",
+    ),
+    "deepseek-think-late": GenPair(
+        lab="deepseek",
+        old_model="openrouter/deepseek/deepseek-v3.2",
+        new_model="deepseek-v4-pro",
+    ),
+    # Third lab (July 2026): Moonshot's thinking lineage, both hybrid thinkers
+    # served first-party (reasoning_content + native tool calls).
+    "kimi-think": GenPair(lab="moonshot", old_model="kimi-k2.6", new_model="kimi-k3"),
 }
 
 

@@ -19,8 +19,10 @@ def resolve_runner(name: str, model: str) -> str:
     makes its reasoning visible, so chain-of-thought is captured for ALL models
     (logged uniformly into the transcript's ``reasoning_content``):
     - ``claude*``  -> ``claude-native``  (Anthropic Messages, summarized thinking)
-    - ``gpt*``     -> ``gpt-responses``  (OpenAI Responses API, reasoning.summary;
-                       the /chat/completions path hides GPT CoT entirely)
+    - ``gpt*`` / o-series (``o1*``, ``o3*``) -> ``gpt-responses``  (OpenAI Responses
+                       API, reasoning.summary; the /chat/completions path hides GPT
+                       CoT entirely. o1 predates summaries — it accepts the param but
+                       returns no summary text, so its arm is CoT-less like gpt-4.1)
     - everything else (deepseek / qwen / glm / kimi / openrouter) -> ``tooluse``
                        (captures ``reasoning_content`` / ``reasoning``).
     ``mini-swe`` (text-fence scaffold probe) stays available by explicit name. The
@@ -31,7 +33,7 @@ def resolve_runner(name: str, model: str) -> str:
     if name == "native":
         if model.startswith("claude"):
             return "claude-native"
-        if model.startswith("gpt"):
+        if model.startswith(("gpt", "o1", "o3")):
             return "gpt-responses"
         return "tooluse"
     return name
