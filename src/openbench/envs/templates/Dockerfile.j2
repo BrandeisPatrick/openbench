@@ -11,20 +11,27 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Contamination control: clone and truncate in ONE layer, so no layer of the
-# published image ever holds post-base history. The only ref left is `main`
-# pinned at the base commit; every commit not reachable from it (the gold fix,
-# its tests, all later upstream history) is pruned from the object store, and
-# the remote is dropped so nothing can be re-fetched. Pre-base history stays:
-# git log/blame are legitimate agent tools. validate_task fetches the merge
+# published image ever holds post-base history. The refs left are `main`
+# pinned at the base commit plus tags that are ancestors of it; every commit
+# not reachable from main (the gold fix, its tests, all later upstream
+# history) is pruned from the object store, and the remote is dropped so
+# nothing can be re-fetched. Pre-base history stays: git log/blame are
+# legitimate agent tools. Ancestor tags stay because setuptools_scm derives
+# the package's own version from the nearest reachable tag — with no tags,
+# repos like pytest self-install as 0.1.dev* and their minversion checks
+# abort the whole test suite at grading time. validate_task fetches the merge
 # commit at validation time for its merged-passes leg instead.
 RUN git clone https://github.com/{{ repo }} /repo \
     && cd /repo \
     && git checkout --quiet {{ base_commit }} \
     && git checkout -B main \
     && git remote remove origin \
+    && git tag --merged main | sed 's|^|refs/tags/|' > /tmp/keeptags \
     && git for-each-ref --format='%(refname)' \
         | grep -v '^refs/heads/main$' \
+        | grep -v -x -F -f /tmp/keeptags \
         | xargs -r -n 1 git update-ref -d \
+    && rm -f /tmp/keeptags \
     && git reflog expire --expire=now --all \
     && git gc --prune=now \
     && rm -f .git/FETCH_HEAD

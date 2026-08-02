@@ -34,12 +34,13 @@
   ],
   "pass_to_pass": [],
   "image_tag": "openbench/matplotlib__matplotlib-31408:base",
+  "python_version": "3.12",
   "install_cmd": "pip install -e .",
   "test_cmd": "python -m pytest",
+  "env_setup_cmds": [],
   "protected_test_files": {},
   "validation": null,
   "difficulty": ">4 hours",
   "difficulty_note": "Fresh-mined diamond PR: 151 files, +1835/-551, 20 f2p; uncontaminated (2026-04).",
-  "is_impossible": false,
   "source": "mined"
 }
