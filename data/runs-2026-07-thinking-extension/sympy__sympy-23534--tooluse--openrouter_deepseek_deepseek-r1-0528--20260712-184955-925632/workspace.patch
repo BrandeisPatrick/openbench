@@ -1,0 +1,83 @@
+diff --git a/sympy/core/symbol.py b/sympy/core/symbol.py
+index f4a555c..290cb5a 100644
+--- a/sympy/core/symbol.py
++++ b/sympy/core/symbol.py
+@@ -759,16 +759,19 @@ def literal(s):
+                     if s.endswith(':'):
+                         raise ValueError('missing end range')
+                     a, b = s.split(':')
+-                    if b[-1] in string.digits:
+-                        a_i = 0 if not a else int(a)
+-                        b_i = int(b)
+-                        split_list.append([str(c) for c in range(a_i, b_i)])
+-                    else:
+-                        a = a or 'a'
+-                        split_list.append([string.ascii_letters[c] for c in range(
+-                            string.ascii_letters.index(a),
+-                            string.ascii_letters.index(b) + 1)])  # inclusive
+-                    if not split_list[-1]:
++                                                    if b[-1] in string.digits:
++                    a_i = 0 if not a else int(a)
++                    b_i = int(b)
++                    # Replace the next line to use cls instead of Symbol
++                    split_list.append([str(c) for c in range(a_i, b_i)])
++                else:
++                    a = a or 'a'
++                    # Replace the next line to use cls instead of Symbol
++                    split_list.append([string.ascii_letters[c] for c in range(
++                        string.ascii_letters.index(a),
++                        string.ascii_letters.index(b) + 1)])  # inclusive
++                if not split_list[-1]:
++                    break
+                         break
+                 else:
+                     split_list.append([s])
+diff --git a/sympy/core/tests/test_symbol.py b/sympy/core/tests/test_symbol.py
+index 19494c2..a8c2fae 100644
+--- a/sympy/core/tests/test_symbol.py
++++ b/sympy/core/tests/test_symbol.py
+@@ -389,3 +389,44 @@ def test_disambiguate():
+     assert disambiguate(*t7) == (y*y_1, y_1)
+     assert disambiguate(Dummy('x_1'), Dummy('x_1')
+         ) == (x_1, Symbol('x_1_1'))
++
++def test_symbols_function_with_colon_expansion():
++    from sympy.core.function import UndefinedFunction
++    from sympy import symbols
++    
++    # Test with different formats that include an extra layer of parentheses
++    cases = [
++        (('f:3', 'g:2'), (True, True, True, True, True)),
++        (('f:3', 'g:3'), (True, True, True, True, True, True)),
++        (('f:3',), (True, True, True)),
++        (('h:1',), (True,)),
++        (('i:3', 'j:2', 'k:1'), (True, True, True, True, True, True))
++    ]
++    
++    for symbols_args, expected in cases:
++        # Unpack with an extra layer of parentheses
++        func_tuples = symbols(*symbols_args, cls=Function)
++        
++        # Flatten the result
++        funcs = []
++        for t in func_tuples:
++            if isinstance(t, (tuple, list)):
++                funcs.extend(t)
++            else:
++                funcs.append(t)
++        
++        # Verify each is an UndefinedFunction
++        assert len(funcs) == len(expected)
++        for f in funcs:
++            assert isinstance(f, UndefinedFunction), \
++                f"Expected {f} to be an UndefinedFunction, got {type(f)}"
++        
++        # Also verify that we can call them as functions
++        x = symbols('x')
++        for f in funcs:
++            expr = f(x)
++            assert expr.func == f, \
++                f"Expected expr.func={expr.func} to equal {f}"
++            assert f in expr.free_symbols, \
++                f"Expected {f} to be in free symbols of {expr}"
++

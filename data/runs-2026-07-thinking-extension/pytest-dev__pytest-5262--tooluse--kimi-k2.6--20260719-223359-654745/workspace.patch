@@ -1,0 +1,102 @@
+diff --git a/src/_pytest/assertion/rewrite.py b/src/_pytest/assertion/rewrite.py
+index 2903b89..169aa6e 100644
+--- a/src/_pytest/assertion/rewrite.py
++++ b/src/_pytest/assertion/rewrite.py
+@@ -5,7 +5,10 @@ from __future__ import print_function
+ 
+ import ast
+ import errno
+-import imp
++try:
++    import imp
++except ImportError:
++    import _pytest.compat_imp as imp
+ import itertools
+ import marshal
+ import os
+diff --git a/src/_pytest/capture.py b/src/_pytest/capture.py
+index 25eab7f..5601711 100644
+--- a/src/_pytest/capture.py
++++ b/src/_pytest/capture.py
+@@ -447,6 +447,10 @@ class EncodedFile(object):
+         """Ensure that file.name is a string."""
+         return repr(self.buffer)
+ 
++    @property
++    def mode(self):
++        return self.buffer.mode.replace("b", "")
++
+     def __getattr__(self, name):
+         return getattr(object.__getattribute__(self, "buffer"), name)
+ 
+diff --git a/src/_pytest/compat_imp.py b/src/_pytest/compat_imp.py
+new file mode 100644
+index 0000000..a0ae450
+--- /dev/null
++++ b/src/_pytest/compat_imp.py
+@@ -0,0 +1,43 @@
++"""Compatibility shim for imp module removed in Python 3.12."""
++import importlib.util
++import importlib.machinery
++import struct
++import sys
++
++def get_tag():
++    return sys.implementation.cache_tag
++
++def get_magic():
++    return importlib.util.MAGIC_NUMBER
++
++def find_module(name, path=None):
++    spec = importlib.machinery.PathFinder.find_spec(name, path)
++    if spec is None:
++        raise ImportError("No module named {}".format(name))
++    origin = spec.origin
++    if spec.origin is None and spec.submodule_search_locations:
++        return None, list(spec.submodule_search_locations)[0], ("", "", PKG_DIRECTORY)
++    loader = spec.loader
++    kind = PY_SOURCE
++    suffix = importlib.machinery.SOURCE_SUFFIXES[0]
++    if isinstance(loader, importlib.machinery.SourceFileLoader):
++        suffix = importlib.machinery.SOURCE_SUFFIXES[0]
++        kind = PY_SOURCE
++    elif isinstance(loader, importlib.machinery.ExtensionFileLoader):
++        suffix = importlib.machinery.EXTENSION_SUFFIXES[0]
++        kind = C_EXTENSION
++    elif isinstance(loader, importlib.machinery.BytecodeFileLoader):
++        suffix = importlib.machinery.BYTECODE_SUFFIXES[0]
++        kind = PY_COMPILED
++    return None, origin, (suffix, "rb", kind)
++
++def new_module(name):
++    return type(sys)(name)
++
++def source_from_cache(path):
++    return importlib.util.source_from_cache(path)
++
++PY_SOURCE = 1
++PY_COMPILED = 2
++C_EXTENSION = 3
++PKG_DIRECTORY = 5
+diff --git a/testing/test_capture.py b/testing/test_capture.py
+index 5d80eb6..881f756 100644
+--- a/testing/test_capture.py
++++ b/testing/test_capture.py
+@@ -1461,6 +1461,17 @@ def test_pickling_and_unpickling_encoded_file():
+     pickle.loads(ef_as_str)
+ 
+ 
++def test_encodedfile_mode():
++    # Issue #5449
++    # EncodedFile.mode should not include 'b' since it is a text wrapper
++    import io
++    binary = io.BytesIO()
++    binary.mode = "wb"
++    ef = capture.EncodedFile(binary, "utf-8")
++    assert ef.mode == "w"
++    assert "b" not in ef.mode
++
++
+ def test_global_capture_with_live_logging(testdir):
+     # Issue 3819
+     # capture should work with live cli logging

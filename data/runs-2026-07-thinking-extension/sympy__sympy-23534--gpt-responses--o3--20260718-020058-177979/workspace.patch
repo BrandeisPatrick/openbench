@@ -1,0 +1,44 @@
+diff --git a/sympy/core/symbol.py b/sympy/core/symbol.py
+index f4a555c..d3510ce 100644
+--- a/sympy/core/symbol.py
++++ b/sympy/core/symbol.py
+@@ -790,8 +790,19 @@ def literal(s):
+ 
+         return tuple(result)
+     else:
++        # ``names`` is an iterable (e.g. list, tuple, set).  We need to
++        # recurse into its elements while *preserving* the ``cls`` kwarg
++        # supplied by the user.  Without forwarding ``cls`` the inner call
++        # defaults to ``Symbol`` and breaks cases like::
++        #
++        #     q, u = symbols(('q:2', 'u:2'), cls=Function)
++        #
++        # In that example ``q[0]`` should be an ``UndefinedFunction`` but was
++        # a ``Symbol`` because the recursive call lost the ``cls``
++        # information.  By explicitly passing ``cls`` we enforce consistent
++        # behaviour irrespective of nesting depth.
+         for name in names:
+-            result.append(symbols(name, **args))
++            result.append(symbols(name, cls=cls, **args))
+ 
+         return type(names)(result)
+ 
+diff --git a/sympy/core/tests/test_symbols_cls_recursive.py b/sympy/core/tests/test_symbols_cls_recursive.py
+new file mode 100644
+index 0000000..57a8bd5
+--- /dev/null
++++ b/sympy/core/tests/test_symbols_cls_recursive.py
+@@ -0,0 +1,13 @@
++import sympy as smp
++from sympy import Function
++
++def test_symbols_cls_recursive():
++    # See gh-24709: ensure that an explicit ``cls`` argument is respected even
++    # when the *names* input is an iterable so that ``symbols`` calls itself
++    # recursively.
++    q, u = smp.symbols(("q:2", "u:2"), cls=Function)
++
++    # The elements inside the returned tuples should be of the requested class
++    # (UndefinedFunction) and *not* plain Symbol.
++    assert all(isinstance(sym, smp.core.function.UndefinedFunction) for sym in q)
++    assert all(isinstance(sym, smp.core.function.UndefinedFunction) for sym in u)

@@ -1,0 +1,16 @@
+{
+  "run_id": "sympy__sympy-13757--tooluse--openrouter_deepseek_deepseek-r1-0528--20260712-170510-941394",
+  "task_id": "sympy__sympy-13757",
+  "harness": "tooluse",
+  "model": "openrouter/deepseek/deepseek-r1-0528",
+  "started_at": "2026-07-12T17:05:10.941394Z",
+  "finished_at": "2026-07-12T17:45:25.729389Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.10419282,
+  "total_tokens_in": 14261,
+  "total_tokens_out": 44524,
+  "total_thinking_tokens": 39002,
+  "num_turns": 8
+}

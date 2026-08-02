@@ -1,0 +1,36 @@
+diff --git a/sympy/printing/numpy.py b/sympy/printing/numpy.py
+index 0a49b03..f258015 100644
+--- a/sympy/printing/numpy.py
++++ b/sympy/printing/numpy.py
+@@ -292,7 +292,7 @@ def _print_ArrayDiagonal(self, expr):
+         if len(diagonal_indices[0]) != 2:
+             raise NotImplementedError
+         return "%s(%s, 0, axis1=%s, axis2=%s)" % (
+-            self._module_format("numpy.diagonal"),
++            "numpy.diagonal",
+             self._print(expr.expr),
+             diagonal_indices[0][0],
+             diagonal_indices[0][1],
+diff --git a/sympy/printing/pycode.py b/sympy/printing/pycode.py
+index 3a72ab6..df5bd98 100644
+--- a/sympy/printing/pycode.py
++++ b/sympy/printing/pycode.py
+@@ -450,6 +450,18 @@ def _print_frac(self, expr):
+         from sympy.core.mod import Mod
+         return self._print_Mod(Mod(expr.args[0], 1))
+ 
++# --------------------------------------------------------------
++    # Min / Max
++    # --------------------------------------------------------------
++    def _print_Min(self, expr):
++        """Python representation of sympy.Min using the built-in min."""
++        return 'min({})'.format(', '.join(self._print(arg) for arg in expr.args))
++    
++    def _print_Max(self, expr):
++        """Python representation of sympy.Max using the built-in max."""
++        return 'max({})'.format(', '.join(self._print(arg) for arg in expr.args))
++    
++    
+     def _print_Symbol(self, expr):
+ 
+         name = super()._print_Symbol(expr)

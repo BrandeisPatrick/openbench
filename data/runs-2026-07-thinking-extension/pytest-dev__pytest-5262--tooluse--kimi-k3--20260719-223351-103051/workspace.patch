@@ -1,0 +1,22 @@
+diff --git a/changelog/5302.bugfix.rst b/changelog/5302.bugfix.rst
+new file mode 100644
+index 0000000..ca13cb8
+--- /dev/null
++++ b/changelog/5302.bugfix.rst
+@@ -0,0 +1 @@
++Fix ``EncodedFile.mode`` to not include ``b`` (binary) -- it is a text stream.
+diff --git a/src/_pytest/capture.py b/src/_pytest/capture.py
+index 25eab7f..5601711 100644
+--- a/src/_pytest/capture.py
++++ b/src/_pytest/capture.py
+@@ -447,6 +447,10 @@ class EncodedFile(object):
+         """Ensure that file.name is a string."""
+         return repr(self.buffer)
+ 
++    @property
++    def mode(self):
++        return self.buffer.mode.replace("b", "")
++
+     def __getattr__(self, name):
+         return getattr(object.__getattribute__(self, "buffer"), name)
+ 

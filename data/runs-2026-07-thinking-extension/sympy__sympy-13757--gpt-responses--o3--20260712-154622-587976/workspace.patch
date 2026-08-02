@@ -1,0 +1,60 @@
+diff --git a/sympy/parsing/sympy_parser.py b/sympy/parsing/sympy_parser.py
+index 25a3b54..8b32fc2 100644
+--- a/sympy/parsing/sympy_parser.py
++++ b/sympy/parsing/sympy_parser.py
+@@ -943,7 +943,7 @@ def visit_BinOp(self, node):
+                     left = ast.Call(
+                     func=ast.Name(id='Pow', ctx=ast.Load()),
+                     args=[left, ast.UnaryOp(op=ast.USub(), operand=ast.Num(1))],
+-                    keywords=[ast.keyword(arg='evaluate', value=ast.Name(id='False', ctx=ast.Load()))],
++                    keywords=[ast.keyword(arg='evaluate', value=ast.NameConstant(False))],
+                     starargs=None,
+                     kwargs=None
+                 )
+@@ -951,7 +951,7 @@ def visit_BinOp(self, node):
+                     right = ast.Call(
+                     func=ast.Name(id='Pow', ctx=ast.Load()),
+                     args=[right, ast.UnaryOp(op=ast.USub(), operand=ast.Num(1))],
+-                    keywords=[ast.keyword(arg='evaluate', value=ast.Name(id='False', ctx=ast.Load()))],
++                    keywords=[ast.keyword(arg='evaluate', value=ast.NameConstant(False))],
+                     starargs=None,
+                     kwargs=None
+                 )
+@@ -959,7 +959,7 @@ def visit_BinOp(self, node):
+             new_node = ast.Call(
+                 func=ast.Name(id=sympy_class, ctx=ast.Load()),
+                 args=[left, right],
+-                keywords=[ast.keyword(arg='evaluate', value=ast.Name(id='False', ctx=ast.Load()))],
++                keywords=[ast.keyword(arg='evaluate', value=ast.NameConstant(False))],
+                 starargs=None,
+                 kwargs=None
+             )
+diff --git a/sympy/polys/polytools.py b/sympy/polys/polytools.py
+index d5ac051..2b080b2 100644
+--- a/sympy/polys/polytools.py
++++ b/sympy/polys/polytools.py
+@@ -60,6 +60,7 @@
+ 
+ @public
+ class Poly(Expr):
++    _op_priority = 10.0
+     """
+     Generic class for representing and operating on polynomial expressions.
+     Subclasses Expr class.
+@@ -7077,3 +7078,16 @@ def _poly(expr, opt):
+     opt = options.build_options(gens, args)
+ 
+     return _poly(expr, opt)
++
++# -----------------------------------------------------------------------------
++# Postprocessor to automatically evaluate multiplication that involves Poly on
++# the right hand side, e.g. ``x*Poly(x) -> Poly(x**2)``.  The usual SymPy
++# dispatch calls the ``Expr.__mul__`` method in such cases, which constructs a
++# ``Mul`` without giving ``Poly`` a chance to handle the multiplication.  By
++# registering the helper below as a constructor postprocessor for ``Mul`` we
++# can post-process the freshly created ``Mul`` and, if appropriate, convert it
++# to a single ``Poly`` instance.
++# -----------------------------------------------------------------------------
++from sympy.core.mul import Mul as _Mul
++from sympy.core import Basic as _Basic
++

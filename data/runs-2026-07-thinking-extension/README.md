@@ -1,0 +1,76 @@
+# Run corpus — thinking-lineage extension (July 2026, grades corrected 2026-08-02)
+
+Frozen snapshot of the thinking-lineage arms extending the generational study
+(`data/runs-2026-07-generational-study/`): both labs' reasoning lineages plus a
+third lab, as five within-lab pairs. Old/new sides drawn from these runs plus
+the already-frozen gpt-5.5 / deepseek-v4-pro runs of the July study.
+
+## Corrected results (SWE-bench-Verified stratum, 12 usable runs per model)
+
+| pair | old → new | solve |
+|---|---|---|
+| gpt-think-early | o1 → o3 | 1/12 → 9/12 |
+| gpt-think-late | o3 → gpt-5.5 | 9/12 → 12/12 |
+| deepseek-think-early | R1-0528 → V3.2 | 0/12 → 5/12 |
+| deepseek-think-late | V3.2 → v4-pro | 5/12 → 12/12 |
+| kimi-think | kimi-k2.6 → kimi-k3 | 8/12 → 11/12 |
+
+`behavior_report_thinking_verified.md` is generated from these corrected
+grades.
+
+## The grading-env incident (why grades were corrected)
+
+The original July-12/19 grading batches ran against a silently restored stale
+docker image for `pytest-dev__pytest-5262` (a colima VM recreation restored a
+June-18 image export, reverting the per-task-Python fix): Python 3.12 cannot
+run 2019-era pytest (`import imp`), so pytest crashed before collection and
+every expected test id was counted failed — including for the GOLD patch.
+A second latent defect (history truncation deleted ancestor tags →
+setuptools_scm versioned pytest as `0.1.dev*` → its own minversion check
+aborted the suite) broke fresh rebuilds the same way; both were fixed
+2026-07-24 (see commits `5394117` and the incident notes in the repo memory).
+
+On the repaired image, all 32 pytest-5262 runs were re-graded: every
+trustworthy pre-incident grade reproduced identically, and 8 artifact-era
+grades flipped to resolved — kimi-k3 ×3 (its three "failed" patches are the
+gold fix verbatim), kimi-k2.6 ×3, o1 ×1, V3.2 ×1. Each affected run dir keeps
+the superseded grade as `grade.json.orig*` (audit trail); `grade.json` is the
+corrected verdict and records the `image_id` it was graded against.
+
+## Reading guide
+
+- Exclude `run.json` `exit_reason == "crash"` (infrastructure, never model
+  behavior). Kimi's two crashes predate the tooluse dangling-tool_call_id fix.
+- **Cap asymmetry**: the OpenAI thinking arm ran at $10 / 100 turns / 2 h;
+  DeepSeek and Kimi arms at $2.50 / 100 turns (4 h wall for R1's slow hosts).
+  kimi-k3 is priced at $3/$15 per Mtok, so its $2.50 cap ≈ 40 turns: its one
+  remaining Verified failure (sympy-13757, seed 224457) is a cost_cap kill,
+  and cost was computed billing every input token at full price although
+  Moonshot discounts cached prefix to $0.30/M — treat k3's 11/12 as a floor.
+  **Symmetric-budget footnote**: rerun 2026-08-02 at the o-series caps
+  ($10 / 100 turns), that cell RESOLVES (run `…kimi-k3--20260802-194913`,
+  turn 81, $2.31 cache-aware — Moonshot reported 97.5% of input as cache
+  hits, so the July accounting had overbilled this trajectory ~5x). The
+  banked 12-run cells are unchanged; under budget parity kimi-k3 is 12/12.
+- **Run-time prices**: `cost_usd` in these runs used the July price table
+  (o1 15/60, o3 2/8, kimi-k2.6 0.95/4, kimi-k3 3/15 — all verified correct;
+  OpenRouter runs carry provider-exact `usage.cost`). Note for cross-study
+  comparisons: the July study priced gpt-5.5 at 3/15 and v4-pro at 1.2/4.8;
+  published rates as of 2026-08-02 are 5/30 and 0.435/0.87 — recompute from
+  token counts if absolute dollars matter.
+- R1-0528 is the only model in the corpus that weakens tests (128 asserts on
+  sympy-22914); kimi tampering flags are all *additive* tests — check
+  `anticheat.assert_weakening_count` before citing `test_tampering`.
+
+## Reproduce the report
+
+```bash
+cp -R data/runs-2026-07-thinking-extension/* runs/
+uv run openbench behavior
+uv run openbench compare --pair gpt-think-early --pair gpt-think-late \
+    --pair deepseek-think-early --pair deepseek-think-late --pair kimi-think \
+    --source swebench-verified --out runs/behavior_report_thinking_verified.md
+```
+
+Before grading anything, run `uv run openbench golden-gate` — the incident
+above is exactly the failure class it catches.

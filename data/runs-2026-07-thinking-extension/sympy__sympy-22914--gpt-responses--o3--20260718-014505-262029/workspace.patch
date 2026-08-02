@@ -1,0 +1,40 @@
+diff --git a/sympy/printing/numpy.py b/sympy/printing/numpy.py
+index 0a49b03..0acd817 100644
+--- a/sympy/printing/numpy.py
++++ b/sympy/printing/numpy.py
+@@ -289,15 +289,11 @@ def _print_ArrayDiagonal(self, expr):
+             # ArrayDiagonal object into nested ones. Same reasoning for
+             # the array contraction.
+             raise NotImplementedError
+-        if len(diagonal_indices[0]) != 2:
+-            raise NotImplementedError
+-        return "%s(%s, 0, axis1=%s, axis2=%s)" % (
+-            self._module_format("numpy.diagonal"),
++        return "numpy.diagonal(%s, 0, axis1=%s, axis2=%s)" % (
+             self._print(expr.expr),
+             diagonal_indices[0][0],
+             diagonal_indices[0][1],
+         )
+-
+     def _print_PermuteDims(self, expr):
+         return "%s(%s, %s)" % (
+             self._module_format("numpy.transpose"),
+diff --git a/sympy/printing/pycode.py b/sympy/printing/pycode.py
+index 3a72ab6..b6351a5 100644
+--- a/sympy/printing/pycode.py
++++ b/sympy/printing/pycode.py
+@@ -439,6 +439,14 @@ def _print_Indexed(self, expr):
+ 
+     def _print_Pow(self, expr, rational=False):
+         return self._hprint_Pow(expr, rational=rational)
++    def _print_Min(self, expr):
++        """Print Min using Python built-in min."""
++        return "min({})".format(", ".join(self._print(arg) for arg in expr.args))
++
++    def _print_Max(self, expr):
++        """Print Max using Python built-in max."""
++        return "max({})".format(", ".join(self._print(arg) for arg in expr.args))
++
+ 
+     def _print_Rational(self, expr):
+         return '{}/{}'.format(expr.p, expr.q)

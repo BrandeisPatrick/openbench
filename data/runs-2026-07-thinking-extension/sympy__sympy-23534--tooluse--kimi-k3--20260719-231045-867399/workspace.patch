@@ -1,0 +1,52 @@
+diff --git a/sympy/core/symbol.py b/sympy/core/symbol.py
+index f4a555c..2aca8ba 100644
+--- a/sympy/core/symbol.py
++++ b/sympy/core/symbol.py
+@@ -791,7 +791,7 @@ def literal(s):
+         return tuple(result)
+     else:
+         for name in names:
+-            result.append(symbols(name, **args))
++            result.append(symbols(name, cls=cls, **args))
+ 
+         return type(names)(result)
+ 
+diff --git a/sympy/core/tests/test_symbol.py b/sympy/core/tests/test_symbol.py
+index 19494c2..8ea8f84 100644
+--- a/sympy/core/tests/test_symbol.py
++++ b/sympy/core/tests/test_symbol.py
+@@ -336,6 +336,34 @@ def test_symbols_become_functions_issue_3539():
+     raises(TypeError, lambda: phi(t))
+ 
+ 
++def test_symbols_cls_with_tuple_of_names():
++    # issue: cls keyword was dropped when names was given as a
++    # sequence of strings instead of a single string
++    from sympy.core.function import Function, UndefinedFunction
++
++    q, u = symbols(('q:2', 'u:2'), cls=Function)
++    assert isinstance(q[0], UndefinedFunction)
++    assert isinstance(q[1], UndefinedFunction)
++    assert isinstance(u[0], UndefinedFunction)
++    assert isinstance(u[1], UndefinedFunction)
++    assert q == symbols('q:2', cls=Function)
++    assert u == symbols('u:2', cls=Function)
++
++    r = symbols(['a:2', 'b:2'], cls=Function)
++    assert isinstance(r, list)
++    assert all(isinstance(f, UndefinedFunction) for f in r[0] + r[1])
++
++    w = symbols(('w:2',), cls=Wild)
++    assert all(isinstance(s, Wild) for s in w[0])
++
++    d = symbols(('d1', 'd2'), cls=Dummy)
++    assert all(isinstance(s, Dummy) for s in d)
++
++    # default (no cls) is unchanged
++    x = symbols(('x:2', 'y:2'))
++    assert all(isinstance(s, Symbol) for s in x[0] + x[1])
++
++
+ def test_unicode():
+     xu = Symbol('x')
+     x = Symbol('x')

@@ -181,12 +181,14 @@ def golden_gate(task_id: Optional[str] = typer.Argument(None)) -> None:
         raise typer.Exit(1)
 
     failed: list[str] = []
+    gated = 0
     for t, rid in sorted(latest.items()):
         # Quarantined/removed tasks keep their golden fixtures as audit
         # evidence, but have no task.json to grade against — not a gate result.
         if not (paths.task_dir(t) / "task.json").exists():
             console.print(f"[yellow]SKIP[/yellow]  {t}  (not in active dataset)")
             continue
+        gated += 1
         report = grade_run(rid)
         ok = report.resolved
         mark = "[green]PASS[/green]" if ok else "[red]FAIL[/red]"
@@ -199,7 +201,7 @@ def golden_gate(task_id: Optional[str] = typer.Argument(None)) -> None:
             "— the grading env is broken; do NOT trust grades until fixed"
         )
         raise typer.Exit(1)
-    console.print(f"[bold green]golden gate passed for all {len(latest)} task(s)[/bold green]")
+    console.print(f"[bold green]golden gate passed for all {gated} gated task(s)[/bold green]")
 
 
 @app.command()

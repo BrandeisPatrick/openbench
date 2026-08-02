@@ -1,0 +1,61 @@
+diff --git a/fix_poly_priority.py b/fix_poly_priority.py
+new file mode 100644
+index 0000000..16556f5
+--- /dev/null
++++ b/fix_poly_priority.py
+@@ -0,0 +1,37 @@
++import sys
++
++filename = "sympy/polys/polytools.py"
++try:
++    with open(filename, 'r') as f:
++        lines = f.readlines()
++
++    # Find Poly class and insert __priority__ after the docstring
++    in_class = False
++    in_docstring = False
++    for i, line in enumerate(lines):
++        if 'class Poly(PolyElement):' in line:
++            in_class = True
++            indent = line.split('class')[0]
++            continue
++            
++        if in_class:
++            if '\"\"\"' in line or "'''" in line:
++                if in_docstring:
++                    in_docstring = False
++                    # After closing docstring is where we want to insert
++                    lines.insert(i+1, indent + '    __priority__ = 20\n')
++                    break
++                else:
++                    in_docstring = True
++            elif not line.strip() and not in_docstring:
++                # If it's a blank line and we're not in docstring, insert
++                lines.insert(i, indent + '    __priority__ = 20\n')
++                break
++
++    with open(filename, 'w') as f:
++        f.writelines(lines)
++    sys.exit(0)
++    
++except Exception as e:
++    print("Error:", e, file=sys.stderr)
++    sys.exit(1)
+diff --git a/sympy/polys/polytools.py b/sympy/polys/polytools.py
+index d5ac051..f2af3be 100644
+--- a/sympy/polys/polytools.py
++++ b/sympy/polys/polytools.py
+@@ -1,3 +1,5 @@
++class Poly(PolyElement):
++    __priority__ = 20
+ """User-friendly public interface to polynomial functions. """
+ 
+ from __future__ import print_function, division
+@@ -61,6 +63,7 @@
+ @public
+ class Poly(Expr):
+     """
++    __priority__ = 20
+     Generic class for representing and operating on polynomial expressions.
+     Subclasses Expr class.
+ 

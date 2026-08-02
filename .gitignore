@@ -26,3 +26,6 @@ wheels/
 # Editor / tooling state
 .claude/
 .DS_Store
+
+# June-era exploration runs, superseded by the data/ freezes
+/runs-archive-2026-06/

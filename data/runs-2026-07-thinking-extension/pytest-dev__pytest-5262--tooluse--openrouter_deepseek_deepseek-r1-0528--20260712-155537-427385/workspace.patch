@@ -1,0 +1,27 @@
+diff --git a/src/_pytest/capture.py b/src/_pytest/capture.py
+index 25eab7f..875ed4a 100644
+--- a/src/_pytest/capture.py
++++ b/src/_pytest/capture.py
+@@ -429,6 +429,12 @@ class EncodedFile(object):
+         self.buffer = buffer
+         self.encoding = encoding
+ 
++    @property
++    def mode(self):
++        buffer_mode = getattr(self.buffer, "mode", "w")
++        return buffer_mode.replace("b", "")
++
++
+     def write(self, obj):
+         if isinstance(obj, six.text_type):
+             obj = obj.encode(self.encoding, "replace")
+@@ -842,3 +848,8 @@ def _attempt_to_close_capture_file(f):
+             pass
+     else:
+         f.close()
++
++    @property
++    def mode(self):
++        buffer_mode = getattr(self.buffer, \"mode\", \"w\")
++        return buffer_mode.replace(\"b\", \"\")
+\ No newline at end of file

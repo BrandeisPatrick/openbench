@@ -1,0 +1,14 @@
+diff --git a/sympy/core/tests/test_function_symbols.py b/sympy/core/tests/test_function_symbols.py
+new file mode 100644
+index 0000000..260da91
+--- /dev/null
++++ b/sympy/core/tests/test_function_symbols.py
+@@ -0,0 +1,8 @@
++import sympy as smp
++
++def test_function_symbols():
++    q, u = smp.symbols(('q:2', 'u:2'), cls=smp.Function)
++    assert all(isinstance(x, smp.Function) for x in q)
++    assert all(isinstance(x, smp.Function) for x in u)
++    f0 = smp.symbols('f0:3', cls=smp.Function)
++    assert isinstance(f0[0], smp.Function)

@@ -1,0 +1,114 @@
+diff --git a/sympy/core/numbers.py b/sympy/core/numbers.py
+index 0303786..26523b0 100644
+--- a/sympy/core/numbers.py
++++ b/sympy/core/numbers.py
+@@ -1039,6 +1039,12 @@ def __new__(cls, num, dps=None, precision=None):
+         if isinstance(num, str):
+             # Float accepts spaces as digit separators
+             num = num.replace(' ', '').lower()
++            # Reject strings that start with an underscore. SymPy treats this as invalid.
++            if num.startswith('_'):
++                raise ValueError(f"Invalid numeric literal: '{num}'")
++            # Reject standalone decimal points like '.', '+.' or '-.' which are invalid.
++            if num in {'.', '+.', '-.'}:
++                raise ValueError(f"Invalid numeric literal: '{num}'")
+             if num.startswith('.') and len(num) > 1:
+                 num = '0' + num
+             elif num.startswith('-.') and len(num) > 2:
+diff --git a/sympy/core/symbol.py b/sympy/core/symbol.py
+index f4a555c..82e8003 100644
+--- a/sympy/core/symbol.py
++++ b/sympy/core/symbol.py
+@@ -790,8 +790,15 @@ def literal(s):
+ 
+         return tuple(result)
+     else:
++
++        # When *names* is an iterable of strings we need to create the
++        # corresponding symbols for each entry by **recursively** calling
++        # ``symbols``. Make sure to forward the ``cls`` keyword from the
++        # current invocation so that the requested subclass (e.g.
++        # ``Function``) is used instead of falling back to the default
++        # ``Symbol``.
+         for name in names:
+-            result.append(symbols(name, **args))
++            result.append(symbols(name, cls=cls, **args))
+ 
+         return type(names)(result)
+ 
+diff --git a/sympy/parsing/sympy_parser.py b/sympy/parsing/sympy_parser.py
+index aee4805..b89e6c7 100644
+--- a/sympy/parsing/sympy_parser.py
++++ b/sympy/parsing/sympy_parser.py
+@@ -624,29 +624,51 @@ def lambda_notation(tokens: List[TOKEN], local_dict: DICT, global_dict: DICT):
+ 
+ 
+ def factorial_notation(tokens: List[TOKEN], local_dict: DICT, global_dict: DICT):
+-    """Allows standard notation for factorial."""
++    
++    """Allows standard notation for factorial using the ``!`` symbol.
++    
++    Python's tokenizer has changed over versions.  In Python < 3.12 the
++    ``!`` character was returned as an ``ERRORTOKEN`` whereas in Python
++    3.12+ it is returned as an ``OP`` token.  To remain compatible across
++    all supported versions we treat a token as a factorial if **its string
++    value** is ``'!'`` regardless of whether the token type is ``ERRORTOKEN``
++    or ``OP``.
++    """
+     result: List[TOKEN] = []
+-    nfactorial = 0
++    nfactorial = 0  # counts consecutive ``!`` tokens
+     for toknum, tokval in tokens:
+-        if toknum == ERRORTOKEN:
+-            op = tokval
+-            if op == '!':
+-                nfactorial += 1
+-            else:
+-                nfactorial = 0
+-                result.append((OP, op))
+-        else:
+-            if nfactorial == 1:
+-                result = _add_factorial_tokens('factorial', result)
+-            elif nfactorial == 2:
+-                result = _add_factorial_tokens('factorial2', result)
+-            elif nfactorial > 2:
+-                raise TokenError
+-            nfactorial = 0
+-            result.append((toknum, tokval))
++        if tokval == '!':
++            # This token is an exclamation mark.  Increment the counter and
++            # delay processing until we see the next (non-``!``) token so we
++            # know whether this was ``!`` or ``!!``.
++            nfactorial += 1
++            # Do *not* append anything to *result* yet – that will be handled
++            # when we see the following token.
++            continue
++    
++        # A non-``!`` token encountered.  First, flush any pending factorials.
++        if nfactorial == 1:
++            result = _add_factorial_tokens('factorial', result)
++        elif nfactorial == 2:
++            result = _add_factorial_tokens('factorial2', result)
++        elif nfactorial > 2:
++            # Three or more consecutive ``!`` are not supported.
++            raise TokenError
++        nfactorial = 0
++    
++        # Append the current (non-``!``) token.
++        result.append((toknum, tokval))
++    
++    # End of input – there might be factorials that were immediately before
++    # the end.  Flush them now.
++    if nfactorial == 1:
++        result = _add_factorial_tokens('factorial', result)
++    elif nfactorial == 2:
++        result = _add_factorial_tokens('factorial2', result)
++    elif nfactorial > 2:
++        raise TokenError
++    
+     return result
+-
+-
+ def convert_xor(tokens: List[TOKEN], local_dict: DICT, global_dict: DICT):
+     """Treats XOR, ``^``, as exponentiation, ``**``."""
+     result: List[TOKEN] = []

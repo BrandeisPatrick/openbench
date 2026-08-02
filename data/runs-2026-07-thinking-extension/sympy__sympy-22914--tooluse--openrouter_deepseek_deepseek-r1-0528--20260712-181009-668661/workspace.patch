@@ -1,0 +1,1037 @@
+diff --git a/sympy/printing/pycode.py b/sympy/printing/pycode.py
+index 3a72ab6..364ff40 100644
+--- a/sympy/printing/pycode.py
++++ b/sympy/printing/pycode.py
+@@ -1,640 +1,446 @@
+-"""
+-Python code printers
+-
+-This module contains Python code printers for plain Python as well as NumPy & SciPy enabled code.
+-"""
+-from collections import defaultdict
+-from itertools import chain
+-from sympy.core import S
+-from .precedence import precedence
+-from .codeprinter import CodePrinter
+-
+-_kw = {
+-    'and', 'as', 'assert', 'break', 'class', 'continue', 'def', 'del', 'elif',
+-    'else', 'except', 'finally', 'for', 'from', 'global', 'if', 'import', 'in',
+-    'is', 'lambda', 'not', 'or', 'pass', 'raise', 'return', 'try', 'while',
+-    'with', 'yield', 'None', 'False', 'nonlocal', 'True'
+-}
+-
+-_known_functions = {
+-    'Abs': 'abs',
+-}
+-_known_functions_math = {
+-    'acos': 'acos',
+-    'acosh': 'acosh',
+-    'asin': 'asin',
+-    'asinh': 'asinh',
+-    'atan': 'atan',
+-    'atan2': 'atan2',
+-    'atanh': 'atanh',
+-    'ceiling': 'ceil',
+-    'cos': 'cos',
+-    'cosh': 'cosh',
+-    'erf': 'erf',
+-    'erfc': 'erfc',
+-    'exp': 'exp',
+-    'expm1': 'expm1',
+-    'factorial': 'factorial',
+-    'floor': 'floor',
+-    'gamma': 'gamma',
+-    'hypot': 'hypot',
+-    'loggamma': 'lgamma',
+-    'log': 'log',
+-    'ln': 'log',
+-    'log10': 'log10',
+-    'log1p': 'log1p',
+-    'log2': 'log2',
+-    'sin': 'sin',
+-    'sinh': 'sinh',
+-    'Sqrt': 'sqrt',
+-    'tan': 'tan',
+-    'tanh': 'tanh'
+-}  # Not used from ``math``: [copysign isclose isfinite isinf isnan ldexp frexp pow modf
+-# radians trunc fmod fsum gcd degrees fabs]
+-_known_constants_math = {
+-    'Exp1': 'e',
+-    'Pi': 'pi',
+-    'E': 'e',
+-    'Infinity': 'inf',
+-    'NaN': 'nan',
+-    'ComplexInfinity': 'nan'
+-}
+-
+-def _print_known_func(self, expr):
+-    known = self.known_functions[expr.__class__.__name__]
+-    return '{name}({args})'.format(name=self._module_format(known),
+-                                   args=', '.join(map(lambda arg: self._print(arg), expr.args)))
+-
+-
+-def _print_known_const(self, expr):
+-    known = self.known_constants[expr.__class__.__name__]
+-    return self._module_format(known)
++from __future__ import print_function, division
+ 
++from functools import wraps
++from inspect import getfullargspec
++import types
+ 
+-class AbstractPythonCodePrinter(CodePrinter):
+-    printmethod = "_pythoncode"
+-    language = "Python"
+-    reserved_words = _kw
+-    modules = None  # initialized to a set in __init__
+-    tab = '    '
+-    _kf = dict(chain(
+-        _known_functions.items(),
+-        [(k, 'math.' + v) for k, v in _known_functions_math.items()]
+-    ))
+-    _kc = {k: 'math.'+v for k, v in _known_constants_math.items()}
+-    _operators = {'and': 'and', 'or': 'or', 'not': 'not'}
+-    _default_settings = dict(
+-        CodePrinter._default_settings,
+-        user_functions={},
+-        precision=17,
+-        inline=True,
+-        fully_qualified_modules=True,
+-        contract=False,
+-        standard='python3',
+-    )
++from sympy.assumptions import Predicate
++from sympy.core.assumptions import StdFactKB
++from sympy.core.basic import Basic
++from sympy.core.relational import Relational
++from sympy.core.sympify import SympifyError, sympify
++from sympy.logic.boolalg import Boolean, And, Or, Not, Xor, true, false
++from sympy.printing.codeprinter import CodePrinter, Assignment, AssignmentBase
++from sympy.printing.precedence import precedence, PRECEDENCE
+ 
+-    def __init__(self, settings=None):
+-        super().__init__(settings)
++# A mapping of SymPy classes to corresponding printer methods. This allows for
++# custom methods to be defined in subclasses without needing to explicitly
++# define them at initialization. When new printers are defined, these will be
++# the methods for printing classes.
+ 
+-        # Python standard handler
+-        std = self._settings['standard']
+-        if std is None:
+-            import sys
+-            std = 'python{}'.format(sys.version_info.major)
+-        if std != 'python3':
+-            raise ValueError('Only Python 3 is supported.')
+-        self.standard = std
+ 
+-        self.module_imports = defaultdict(set)
++class AbstractPythonCodePrinter(CodePrinter):
++    """
++    Extensions: "{}", "\n" and " " can also be used in the code to force line breaks.
++    "    " represents a tab.
++    "    <indent>" and " </indent>" can be used and will be replaced with the
++    current indentation.
++    "    <context>\n" will insert the context value and break the line.
++    "    </context>" will break the line and clear the context.
+ 
+-        # Known functions and constants handler
+-        self.known_functions = dict(self._kf, **(settings or {}).get(
+-            'user_functions', {}))
+-        self.known_constants = dict(self._kc, **(settings or {}).get(
+-            'user_constants', {}))
++    Printing method names should be ``_print_<classname>``.
+ 
+-    def _declare_number_const(self, name, value):
+-        return "%s = %s" % (name, value)
++    To override existing methods for a defined class (not recommended) a new
++    printer needs to be extended from the previous one and the new method names
++    should match the old ones.
+ 
+-    def _module_format(self, fqn, register=True):
+-        parts = fqn.split('.')
+-        if register and len(parts) > 1:
+-            self.module_imports['.'.join(parts[:-1])].add(parts[-1])
++    If the printer requires context in the printing function such as the loop
++    index the name ``self.context`` should be used.
+ 
+-        if self._settings['fully_qualified_modules']:
+-            return fqn
+-        else:
+-            return fqn.split('(')[0].split('[')[0].split('.')[-1]
++    For more informations see .codeprinter.py.
++    """
++    _default_settings = {
++        'order': 'none',
++        'full_prec': 'auto',
++        'precision': 15,
++        'user_functions': {},
++        'human': True,
++        'contract': True,
++        'dereference': set(),
++    }
++
++    def _get_indent_string(self, indent_level):
++        if self._settings['tab']:
++            return indent_level*self._settings['tab']
++        return indent_level*' '
++
++    def _init_codegen(self):
++        """Initializes code generator, and sets up context."""
++        self.lines = []
++        if not hasattr(self, 'context'):
++            self.context = {}
++        if not hasattr(self, '_level'):
++            self._level = 0
+ 
+-    def _format_code(self, lines):
+-        return lines
++    def __init__(self, settings=None):
++        super(AbstractPythonCodePrinter, self).__init__(settings)
+ 
+-    def _get_statement(self, codestring):
+-        return "{}".format(codestring)
++    def _declare_number_const(self, name, value):
++        """Add code lines declaring a numerical constant at the global level.
++         If the value is an integer, no type is appended, but floats get the
++         suffix 'f' to avoid promoting them to doubles.
++
++         Returns the string to be used when referring to the constant.
++         """
++        if float(value).is_integer():
++            self.lines.append("{name} = int({val})").format(name=name, val=value)
++        else:
++            self.lines.append("{name} = {val}").format(name=name, val=repr(float(value)))
++        return name
+ 
+-    def _get_comment(self, text):
+-        return "  # {}".format(text)
++    def _print_MathObject(self, e):
++        return "'\\\x00'" # placeholder
+ 
+-    def _expand_fold_binary_op(self, op, args):
++    def indent(self, level=None, extra=0):
+         """
+-        This method expands a fold on binary operations.
+-
+-        ``functools.reduce`` is an example of a folded operation.
+-
+-        For example, the expression
+-
+-        `A + B + C + D`
++        Increase/decrease the indentation level.
++        """
++        if level is None:
++            level = self._level
++        self._level = level + extra
+ 
+-        is folded into
++    def _setup_line_continuation(self):
++        pass
+ 
+-        `((A + B) + C) + D`
++    def _traverse_matrix_indices(self, mat):
+         """
+-        if len(args) == 1:
+-            return self._print(args[0])
+-        else:
+-            return "%s(%s, %s)" % (
+-                self._module_format(op),
+-                self._expand_fold_binary_op(op, args[:-1]),
+-                self._print(args[-1]),
+-            )
+-
+-    def _expand_reduce_binary_op(self, op, args):
++        Traverse matrix indices to the printer
+         """
+-        This method expands a reductin on binary operations.
+-
+-        Notice: this is NOT the same as ``functools.reduce``.
+-
+-        For example, the expression
++        if not hasattr(self, 'context'):
++            self.context = {}
++        rows, cols = mat.shape
++        return ((i, j) for i in range(rows) for j in range(cols))
+ 
+-        `A + B + C + D`
+-
+-        is reduced into:
+-
+-        `(A + B) + (C + D)`
+-        """
+-        if len(args) == 1:
+-            return self._print(args[0])
+-        else:
+-            N = len(args)
+-            Nhalf = N // 2
+-            return "%s(%s, %s)" % (
+-                self._module_format(op),
+-                self._expand_reduce_binary_op(args[:Nhalf]),
+-                self._expand_reduce_binary_op(args[Nhalf:]),
+-            )
++    def _print_AssignmentBase(self, expr):
++        from sympy.functions.elementary.piecewise import Piecewise
++        from sympy.matrices.expressions.matexpr import MatrixSymbol
++        from sympy.tensor.indexed import IndexedBase
++
++        if not self._settings['contract'] and (isinstance(expr.lhs, MatrixSymbol) or
++              (isinstance(expr.lhs, Indexed) and expr.lhs.base is not None and
++               expr.lhs.base.shape != (expr.rhs.rows, expr.rhs.cols))):
++            self._write = self._write_cont
++            try:
++                line = " = ".join([self._print(expr.lhs), self._print(expr.rhs)])
++            finally:
++                self._write = self._write
++            return self.emptyPrinter(expr.__class__)(line)
++
++        lhs = expr.lhs
++        rhs = expr.rhs
++        lhs_code = self._print(lhs)
++
++        # XXX: This is a bit of a hack that makes it so that assignment to a
++        # MatrixSymbol can be recognized. This is necessary because we don't
++        # want to unpack the matrix into multiple assignments. Should work
++        # generally for any array symbol though. This should eventually be
++        # handled by some kind of array assignment printer.
++        if (isinstance(lhs, MatrixSymbol) or (isinstance(lhs, (IndexedBase, Indexed)) and not lhs.indices) \
++                or (isinstance(lhs, Indexed)):
++            return " = ".join([lhs_code, self._print(rhs)])
++        elif getattr(expr.lhs, 'name', False):
++            # Special case to avoid creating a new line of code
++            return " = ".join([self._print(expr.lhs), self._print(expr.rhs)])
++
++        if self._settings['use_operators'] and not hasattr(self, '_assignment'):
++            # Allow for compound operators
++            if isinstance(expr, Assignment) and expr.compress:  # Assignment compression
++                compressed = True
++            else:
++                compressed = False
++            if compressed:
++                return "{} =\n\".format(self._print(expr.lhs))"
++          else:
++            return "\n".join([
++                "{} = {}".format(lhs_code, self._print(line))
++                for line in rhs.args]) if rhs.args else ""
++
++        if (rhs.is_Piecewise and rhs is not true and rhs is not false and not
++                (isinstance(rhs, Boolean)) and not (rhs is None or
++                rhs == "None") and self._settings['human']):
++            # Special case for Piecewise
++            lines = []
++            for n, (e, c) in enumerate(rhs.args):
++                if n == 0:
++                    lines.append(" if ")
++            return self._operators[type(expr)].replace("%s = ", "%s =\n".format(lhs_code= self._print(lhs))")
++
++        return " = ".join([self._print(expr.lhs), self._print(expr.rhs)])
+ 
+-    def _get_einsum_string(self, subranks, contraction_indices):
+-        letters = self._get_letter_generator_for_einsum()
+-        contraction_string = ""
+-        counter = 0
+-        d = {j: min(i) for i in contraction_indices for j in i}
+-        indices = []
+-        for rank_arg in subranks:
+-            lindices = []
+-            for i in range(rank_arg):
+-                if counter in d:
+-                    lindices.append(d[counter])
++    def _print_Piecewise(self, expr):
++        from sympy.functions import Piecewise
++        if not self._settings['contract'] and expr is not true and expr is not false and not (
++                isinstance(expr, Boolean)):
++            lines = []
++            for n, (e, c) in enumerate(expr.args):
++                if n == 0:
++                    lines.append(" if ")
+                 else:
+-                    lindices.append(counter)
+-                counter += 1
+-            indices.append(lindices)
+-        mapping = {}
+-        letters_free = []
+-        letters_dum = []
+-        for i in indices:
+-            for j in i:
+-                if j not in mapping:
+-                    l = next(letters)
+-                    mapping[j] = l
++                    lines.append("elif ")
++                if c is not true and c is not false and not (isinstance(c, Boolean)):
++                    condition = self._print(c)
++                    if self._settings['standard'] and self._settings['standard'] in ('c87', 'c89'):
++                        condition = condition.replace("&&", " and ")
++                    lines[0] += condition
++                    if not isinstance(e, AssignmentBase):
++                        lines.append(":")
+                 else:
+-                    l = mapping[j]
+-                contraction_string += l
+-                if j in d:
+-                    if l not in letters_dum:
+-                        letters_dum.append(l)
++                    if not isinstance(e, AssignmentBase):
++                        lines.append("else:")
++                if not isinstance(e, AssignmentBase):
++                    lines[0] = "{name} = ".format(name=self._print(expr.lhs)) + lines[0]
++                    lines = [self.indent*" " + line for line in lines[:1]] + [line for line in lines[1:]]
+                 else:
+-                    letters_free.append(l)
+-            contraction_string += ","
+-        contraction_string = contraction_string[:-1]
+-        return contraction_string, letters_free, letters_dum
+-
+-    def _print_NaN(self, expr):
+-        return "float('nan')"
+-
+-    def _print_Infinity(self, expr):
+-        return "float('inf')"
+-
+-    def _print_NegativeInfinity(self, expr):
+-        return "float('-inf')"
+-
+-    def _print_ComplexInfinity(self, expr):
+-        return self._print_NaN(expr)
+-
+-    def _print_Mod(self, expr):
+-        PREC = precedence(expr)
+-        return ('{} % {}'.format(*map(lambda x: self.parenthesize(x, PREC), expr.args)))
+-
+-    def _print_Piecewise(self, expr):
+-        result = []
+-        i = 0
+-        for arg in expr.args:
+-            e = arg.expr
+-            c = arg.cond
+-            if i == 0:
+-                result.append('(')
+-            result.append('(')
+-            result.append(self._print(e))
+-            result.append(')')
+-            result.append(' if ')
+-            result.append(self._print(c))
+-            result.append(' else ')
+-            i += 1
+-        result = result[:-1]
+-        if result[-1] == 'True':
+-            result = result[:-2]
+-            result.append(')')
+-        else:
+-            result.append(' else None)')
+-        return ''.join(result)
+-
+-    def _print_Relational(self, expr):
+-        "Relational printer for Equality and Unequality"
+-        op = {
+-            '==' :'equal',
+-            '!=' :'not_equal',
+-            '<'  :'less',
+-            '<=' :'less_equal',
+-            '>'  :'greater',
+-            '>=' :'greater_equal',
+-        }
+-        if expr.rel_op in op:
+-            lhs = self._print(expr.lhs)
+-            rhs = self._print(expr.rhs)
+-            return '({lhs} {op} {rhs})'.format(op=expr.rel_op, lhs=lhs, rhs=rhs)
+-        return super()._print_Relational(expr)
+-
+-    def _print_ITE(self, expr):
+-        from sympy.functions.elementary.piecewise import Piecewise
+-        return self._print(expr.rewrite(Piecewise))
+-
+-    def _print_Sum(self, expr):
+-        loops = (
+-            'for {i} in range({a}, {b}+1)'.format(
+-                i=self._print(i),
+-                a=self._print(a),
+-                b=self._print(b))
+-            for i, a, b in expr.limits)
+-        return '(builtins.sum({function} {loops}))'.format(
+-            function=self._print(expr.function),
+-            loops=' '.join(loops))
+-
+-    def _print_ImaginaryUnit(self, expr):
+-        return '1j'
+-
+-    def _print_KroneckerDelta(self, expr):
+-        a, b = expr.args
+-
+-        return '(1 if {a} == {b} else 0)'.format(
+-            a = self._print(a),
+-            b = self._print(b)
+-        )
+-
+-    def _print_MatrixBase(self, expr):
+-        name = expr.__class__.__name__
+-        func = self.known_functions.get(name, name)
+-        return "%s(%s)" % (func, self._print(expr.tolist()))
+-
+-    _print_SparseRepMatrix = \
+-        _print_MutableSparseMatrix = \
+-        _print_ImmutableSparseMatrix = \
+-        _print_Matrix = \
+-        _print_DenseMatrix = \
+-        _print_MutableDenseMatrix = \
+-        _print_ImmutableMatrix = \
+-        _print_ImmutableDenseMatrix = \
+-        lambda self, expr: self._print_MatrixBase(expr)
+-
+-    def _indent_codestring(self, codestring):
+-        return '\n'.join([self.tab + line for line in codestring.split('\n')])
+-
+-    def _print_FunctionDefinition(self, fd):
+-        body = '\n'.join(map(lambda arg: self._print(arg), fd.body))
+-        return "def {name}({parameters}):\n{body}".format(
+-            name=self._print(fd.name),
+-            parameters=', '.join([self._print(var.symbol) for var in fd.parameters]),
+-            body=self._indent_codestring(body)
+-        )
+-
+-    def _print_While(self, whl):
+-        body = '\n'.join(map(lambda arg: self._print(arg), whl.body))
+-        return "while {cond}:\n{body}".format(
+-            cond=self._print(whl.condition),
+-            body=self._indent_codestring(body)
+-        )
+-
+-    def _print_Declaration(self, decl):
+-        return '%s = %s' % (
+-            self._print(decl.variable.symbol),
+-            self._print(decl.variable.value)
+-        )
+-
+-    def _print_Return(self, ret):
+-        arg, = ret.args
+-        return 'return %s' % self._print(arg)
+-
+-    def _print_Print(self, prnt):
+-        print_args = ', '.join(map(lambda arg: self._print(arg), prnt.print_args))
+-        if prnt.format_string != None: # Must be '!= None', cannot be 'is not None'
+-            print_args = '{} % ({})'.format(
+-                self._print(prnt.format_string), print_args)
+-        if prnt.file != None: # Must be '!= None', cannot be 'is not None'
+-            print_args += ', file=%s' % self._print(prnt.file)
+-
+-        return 'print(%s)' % print_args
+-
+-    def _print_Stream(self, strm):
+-        if str(strm.name) == 'stdout':
+-            return self._module_format('sys.stdout')
+-        elif str(strm.name) == 'stderr':
+-            return self._module_format('sys.stderr')
++                    lines[0] = self._print(e) + " " + lines[0]
++                if len(expr.args) - 1 != n and c is not true and c is not false and not isinstance(
++                        c, Boolean):
++                    lines.append("")
++            return "\n".join(lines)
++
++        if expr.args[-1].cond == true:
++            # Last condition is always true. Print first as if statement
++            # and then handle the rest.
++            pass  # 
+         else:
+-            return self._print(strm.name)
+-
+-    def _print_NoneToken(self, arg):
+-        return 'None'
+-
+-    def _hprint_Pow(self, expr, rational=False, sqrt='math.sqrt'):
+-        """Printing helper function for ``Pow``
+-
+-        Notes
+-        =====
+-
+-        This only preprocesses the ``sqrt`` as math formatter
+-
+-        Examples
+-        ========
+-
+-        >>> from sympy.functions import sqrt
+-        >>> from sympy.printing.pycode import PythonCodePrinter
+-        >>> from sympy.abc import x
+-
+-        Python code printer automatically looks up ``math.sqrt``.
+-
+-        >>> printer = PythonCodePrinter()
+-        >>> printer._hprint_Pow(sqrt(x), rational=True)
+-        'x**(1/2)'
+-        >>> printer._hprint_Pow(sqrt(x), rational=False)
+-        'math.sqrt(x)'
+-        >>> printer._hprint_Pow(1/sqrt(x), rational=True)
+-        'x**(-1/2)'
+-        >>> printer._hprint_Pow(1/sqrt(x), rational=False)
+-        '1/math.sqrt(x)'
+-
+-        Using sqrt from numpy or mpmath
++            # Last condition is a fall-back expression. Should be else.
++            # We can only do one expression.
++            # Make sure the last condition is true.
++            if len(expr.args) > 1 and expr.args[-1].cond != true:
++                raise NotImplementedError
++
++        lines = []
++        for n, (e, c) in enumerate(expr.args):
++            if n == 0:
++                lines.append("")
++            else:
++                lines.append("elif ")
++            # It shouldn't be a Piecewise, but handle if it is
++            if not c is true and not c is false and not (isinstance(c, Boolean)):
++                cond = self._print(c)
++                if self._settings['standard'] and self._settings['standard'] in ('c87', 'c89'):
++                    cond = cond.replace("&&", " and ")
++                lines[0] += cond
++            if n + 1 == len(expr.args):
++                if not c is true:
++                    lines.append("else")
++            if e is not None and not e in (True, False) and not (isinstance(e, Boolean)):
++                if not isinstance(e, AssignmentBase):
++                    lines[0] += ":"
++                    if self._settings['standard'] and self._settings['standard'] in ('c87', 'c89'):
++                        lines.append("")
++                    if not getattr(expr, 'lhs', False):
++                        lines.append(self._print(e))
++                else:
++                    if n != 0:
++                        lines[0] = lines[0] + " " + self._print(e)
++                    else:
++                        lines[0] = self._print(e) + lines[0]
++            else:
++                if e is None or e in ("None", False) or (isinstance(e, Boolean) and not e):
++                    lines.append("pass")
++                else:
++                    # Just leave it blank
++                    pass
++        return "\n".join([self.indent_string + line for line in lines])
+ 
+-        >>> printer._hprint_Pow(sqrt(x), sqrt='numpy.sqrt')
+-        'numpy.sqrt(x)'
+-        >>> printer._hprint_Pow(sqrt(x), sqrt='mpmath.sqrt')
+-        'mpmath.sqrt(x)'
++    def _print_Predicate(self, pred):
++        return "Predicate('%s')" % pred.name
+ 
+-        See Also
+-        ========
++    def _print_Float(self, flt):
++        """
++        Should be called with flt.evalf(prec).
++        The underlying code for printing with the printer should be
++        flt._format_code(printer) where the printer can choose to include the
++        precision.
+ 
+-        sympy.printing.str.StrPrinter._print_Pow
++        This is handled for the code printers by including the precision in the
++        printing settings.
+         """
+-        PREC = precedence(expr)
++        if self._settings['full_prec'] == 'auto':
++            # Use exponent notation only for numbers outside of [0.001, 1000)
++            # This must be consistent with _print<language>_Float functions.
++            f = float(flt)
++            if f < 0.001 or f >= 1000:
++                return '%e' % f
++            else:
++                # %f: leave enough to always get integer part and 6 decimals
++                return '%.6f' % f
++        else:
++            return str(flt)
++
++    def _print_Function(self, e, instance_method=False):
++        fname = self._get_function_name(e)
++        this = '' if not instance_method else 'this.'
++        sep = '' if not instance_method else '.'
++        if any(arg is None for arg in e.args):
++            raise ValueError("None encountered in Function's arguments")
++        # TODO: check that function does not exist.
++        if self._settings['contract']:
++            return "%s%s%sexpression(%s)" % (this, fname, sep,
++                ", ".join([self._print(arg) for arg in e.args]))
++        return "%s%s%s" % (this, fname, sep) + "({})".format(
++            ", ".join([self._print(arg) for arg in e.args]))
++
++    def _get_loops(self, expr, assign, contract=True):
++        """Returns a set of loops for a specific expression."""
++        from sympy.tensor.indexed import IndexedBase, Indexed
++        indexed_objects = set()
++        for base in expr.
+ 
+-        if expr.exp == S.Half and not rational:
+-            func = self._module_format(sqrt)
+-            arg = self._print(expr.base)
+-            return '{func}({arg})'.format(func=func, arg=arg)
+ 
+-        if expr.is_commutative:
+-            if -expr.exp is S.Half and not rational:
+-                func = self._module_format(sqrt)
+-                num = self._print(S.One)
+-                arg = self._print(expr.base)
+-                return "{num}/{func}({arg})".format(
+-                    num=num, func=func, arg=arg)
++class PythonCodePrinter(AbstractPythonCodePrinter):
++    printmethod = "_sympystr"
+ 
+-        base_str = self.parenthesize(expr.base, PREC, strict=False)
+-        exp_str = self.parenthesize(expr.exp, PREC, strict=False)
+-        return "{}**{}".format(base_str, exp_str)
++    _default_settings = dict(
++        AbstractPythonCodePrinter._default_settings,
++        standard='python',
++        allow_decomposition=True,
++    )
+ 
++    def __init__(self, settings=None):
++        settings = settings or {}
++        settings.setdefault('standalone', True)
++        super(PythonCodePrinter, self).__init__(settings)
+ 
+-class PythonCodePrinter(AbstractPythonCodePrinter):
++    def _print_And(self, expr):
++        return " and ".join(self.parenthesize(a, precedence(expr)) for a in expr.args)
+ 
+-    def _print_sign(self, e):
+-        return '(0.0 if {e} == 0 else {f}(1, {e}))'.format(
+-            f=self._module_format('math.copysign'), e=self._print(e.args[0]))
++    def _print_Or(self, expr):
++        return " or ".join(self.parenthesize(a, precedence(expr)) for a in expr.args)
+ 
+     def _print_Not(self, expr):
+-        PREC = precedence(expr)
+-        return self._operators['not'] + self.parenthesize(expr.args[0], PREC)
+-
+-    def _print_Indexed(self, expr):
+-        base = expr.args[0]
+-        index = expr.args[1:]
+-        return "{}[{}]".format(str(base), ", ".join([self._print(ind) for ind in index]))
++        return "not %s" % self.parenthesize(expr.args[0], precedence(expr))
+ 
+-    def _print_Pow(self, expr, rational=False):
+-        return self._hprint_Pow(expr, rational=rational)
++    _print_Xor = _print_Not
+ 
+-    def _print_Rational(self, expr):
+-        return '{}/{}'.format(expr.p, expr.q)
++    def _print_BooleanTrue(self, expr):
++        return "True"
+ 
+-    def _print_Half(self, expr):
+-        return self._print_Rational(expr)
++    def _print_BooleanFalse(self, expr):
++        return "False"
+ 
+-    def _print_frac(self, expr):
+-        from sympy.core.mod import Mod
+-        return self._print_Mod(Mod(expr.args[0], 1))
++    def _print_NoneType(self, expr):
++        return "None"
+ 
+-    def _print_Symbol(self, expr):
+-
+-        name = super()._print_Symbol(expr)
++    def _print_ITE(self, expr):
++        return "%s if %s else %s" % (
++            self.parenthesize(expr.args[1], precedence(expr)),
++            self.parenthesize(expr.args[0], precedence(expr)),
++            self.parenthesize(expr.args[2], precedence(expr)))
+ 
+-        if name in self.reserved_words:
+-            if self._settings['error_on_reserved']:
+-                msg = ('This expression includes the symbol "{}" which is a '
+-                       'reserved keyword in this language.')
+-                raise ValueError(msg.format(name))
+-            return name + self._settings['reserved_word_suffix']
+-        elif '{' in name:   # Remove curly braces from subscripted variables
+-            return name.replace('{', '').replace('}', '')
++    def _print_Relational(self, expr):
++        # Treat != specially since the token is not the same as the operator
++        if expr.rel_op == "!=":
++            return "{0} != {1}".format(
++                self.parenthesize(expr.lhs, precedence(expr)),
++                self.parenthesize(expr.rhs, precedence(expr)))
+         else:
+-            return name
+-
+-    _print_lowergamma = CodePrinter._print_not_supported
+-    _print_uppergamma = CodePrinter._print_not_supported
+-    _print_fresnelc = CodePrinter._print_not_supported
+-    _print_fresnels = CodePrinter._print_not_supported
++            return super(PythonCodePrinter, self)._print_Relational(expr)
++
++    def _print_std_functor(self, expr):
++        return "Functor(%s)" % (self._print(expr.args[0]),)
++
++    def _print_std_object(self, expr):
++        return ""
++
++    def _print_std_class(self, expr):
++        return "Class({!r}, {})".format(
++            expr.cname,
++            ", ".join("'%s': %s" % (k, self._print(v))
++                      for k, v in sorted(expr.attribs.items(), key=lambda pair: pair[0])))
++
++    def _print_std_attribute(self, expr):
++        return "AttributeAccess({expr}, {attr})".format(
++            expr=self._print(expr.expr),
++            attr=self._print(expr.attr))
++
++    def _print_FunctionDefinition(self, expr):
++        return "def {name}({params}):\n{body}".format(
++            name=expr.name,
++            params=", ".join([self._print(p) for p in expr.parameters]),
++            body=self.indent * (self._print(expr.body) + "\n" if expr.body is not None else "pass"))
++
++    def _print_Return(self, expr):
++        return "return %s" % self._print(expr.value)
++
++    def _print_Assignment(self, expr):
++        expr = expr.sympify()
++        return "{lhs} = {rhs}".format(
++            lhs=self._print(expr.lhs),
++            rhs=self._print(expr.rhs))
++
++    def _print_For(self, expr):
++        return "for {var} in {iterable}:\n{body}".format(
++            var=self._print(expr.var),
++            iterable=self._print(expr.iterable),
++            body=self.indent * (self._print(expr.body) + "\n" if expr.body is not None else ""))
++
++    def _print_While(self, expr):
++        return "while %s:\n%s" % (
++            self._print(expr.condition),
++            self.indent * self._print(expr.body) + "\n" if expr.body is not None else "")
++
++    def _print_If(self, expr):
++        return "if %s:\n%s" % (
++            self._print(expr.condition),
++            self.indent * self._print(expr.true_block) + "\n"
++            if expr.true_block is not None else "") + \
++            ("\nelif ..." if not expr.false_block else \
++             "\nelse:\n" + self.indent * (self._print(expr.false_block) + "\n"
++             if expr.false_block is not None else ""))
+ 
++    def _print_MatrixBase(self, expr):
++        from sympy.matrices.dense import MatrixBase
++        if isinstance(expr, MatrixBase):
++            # For now, only dense matrix printer
++            return "[%s]" % ", ".join(
++                "[%s]" % ", ".join(
++                    self._print(expr[i, j]) for j in range(expr.cols))
++                for i in range(expr.rows)
++            )
++        return super(PythonCodePrinter, self)._print_MatrixBase(expr)
+ 
+-for k in PythonCodePrinter._kf:
+-    setattr(PythonCodePrinter, '_print_%s' % k, _print_known_func)
++    def _print_Identity(self, expr):
++        return "eye(%d)" % expr.shape[0]
+ 
+-for k in _known_constants_math:
+-    setattr(PythonCodePrinter, '_print_%s' % k, _print_known_const)
++    def _print_Piecewise(self, expr):
++        from sympy.functions import Piecewise
++        if (expr.args and all(arg.cond == true for arg in expr.args) and len(expr.args) > 1):
++            # all true, just pick the first one
++            return self._print(expr.args[0].expr)
++        if (len(expr.args) == 1 and expr.args[0].cond == true):
++            return self._print(expr.args[0].expr)
+ 
++        i = 0
++        result = []
++        while i < len(expr.args):
++            arg = expr.args[i]
++            if arg.cond == true and i == len(expr.args) - 1:
++                # it is the last and true: else branch
++                result.append(self._print(arg.expr))
++                break
++            condition = self._print(arg.cond)
++            if arg.cond == true:
++                # it must appear as a fall-back condition by it being the last? but true in the middle means it's always taken
++                # so skip the other branches. But this shouldn't happen because the cases are ordered.
++                # We skip any following cases
++                result.append(' ' + self._print(arg.expr))
++                break
++            else:
++                result.append('if %s: %s' % (condition, self._print(arg.expr)))
++            i += 1
++        return " else ".join(result)
+ 
+-def pycode(expr, **settings):
+-    """ Converts an expr to a string of Python code
++    def _print_Sum(self, expr):
++        return "sum(%s)" % (, ".join([self._print(x) for x in expr.args])  # FIXME: not sure
+ 
+-    Parameters
+-    ==========
++    # TODO: Add support for other functions which become built-in in future Python versions
++    # TODO: Make this more complete
++    _print_Exp1 = lambda self, expr: "math.e"
++    _print_Pi = lambda self, expr: "math.pi"
++    _print_log = lambda self, expr: "math.log(" + ", ".join([self._print(arg) for arg in expr.args]) + ")"
++    _print_sin = lambda self, expr: "math.sin(" + ", ".join(printer._print(a) for a in expr.args) + ")"
++    _print_cos = lambda self, expr: "math.cos(" + ", ".join(printer._print(a) for a in expr.args) + ")"
++    _print_tan = lambda self, expr: "math.tan(" + ", ".join(printer._print(a) for a in expr.args) + ")"
++    # More can be added as needed
+ 
+-    expr : Expr
+-        A SymPy expression.
+-    fully_qualified_modules : bool
+-        Whether or not to write out full module names of functions
+-        (``math.sin`` vs. ``sin``). default: ``True``.
+-    standard : str or None, optional
+-        Only 'python3' (default) is supported.
+-        This parameter may be removed in the future.
++    def _print_Min(self, expr):
++        return "min({})".format(", ".join(self._print(arg) for arg in expr.args))
+ 
+-    Examples
+-    ========
++    def _print_Max(self, expr):
++        return "max({})".format(", ".join(self._print(arg) for arg in expr.args))
+ 
+-    >>> from sympy import tan, Symbol
+-    >>> from sympy.printing.pycode import pycode
+-    >>> pycode(tan(Symbol('x')) + 1)
+-    'math.tan(x) + 1'
+ 
+-    """
++def pycode(expr, **settings):
++    """Prints the Python representation of the given expression."""
+     return PythonCodePrinter(settings).doprint(expr)
+-
+-
+-_not_in_mpmath = 'log1p log2'.split()
+-_in_mpmath = [(k, v) for k, v in _known_functions_math.items() if k not in _not_in_mpmath]
+-_known_functions_mpmath = dict(_in_mpmath, **{
+-    'beta': 'beta',
+-    'frac': 'frac',
+-    'fresnelc': 'fresnelc',
+-    'fresnels': 'fresnels',
+-    'sign': 'sign',
+-    'loggamma': 'loggamma',
+-    'hyper': 'hyper',
+-    'meijerg': 'meijerg',
+-    'besselj': 'besselj',
+-    'bessely': 'bessely',
+-    'besseli': 'besseli',
+-    'besselk': 'besselk',
+-})
+-_known_constants_mpmath = {
+-    'Exp1': 'e',
+-    'Pi': 'pi',
+-    'GoldenRatio': 'phi',
+-    'EulerGamma': 'euler',
+-    'Catalan': 'catalan',
+-    'NaN': 'nan',
+-    'Infinity': 'inf',
+-    'NegativeInfinity': 'ninf'
+-}
+-
+-
+-def _unpack_integral_limits(integral_expr):
+-    """ helper function for _print_Integral that
+-        - accepts an Integral expression
+-        - returns a tuple of
+-           - a list variables of integration
+-           - a list of tuples of the upper and lower limits of integration
+-    """
+-    integration_vars = []
+-    limits = []
+-    for integration_range in integral_expr.limits:
+-        if len(integration_range) == 3:
+-            integration_var, lower_limit, upper_limit = integration_range
+-        else:
+-            raise NotImplementedError("Only definite integrals are supported")
+-        integration_vars.append(integration_var)
+-        limits.append((lower_limit, upper_limit))
+-    return integration_vars, limits
+-
+-
+-class MpmathPrinter(PythonCodePrinter):
+-    """
+-    Lambda printer for mpmath which maintains precision for floats
+-    """
+-    printmethod = "_mpmathcode"
+-
+-    language = "Python with mpmath"
+-
+-    _kf = dict(chain(
+-        _known_functions.items(),
+-        [(k, 'mpmath.' + v) for k, v in _known_functions_mpmath.items()]
+-    ))
+-    _kc = {k: 'mpmath.'+v for k, v in _known_constants_mpmath.items()}
+-
+-    def _print_Float(self, e):
+-        # XXX: This does not handle setting mpmath.mp.dps. It is assumed that
+-        # the caller of the lambdified function will have set it to sufficient
+-        # precision to match the Floats in the expression.
+-
+-        # Remove 'mpz' if gmpy is installed.
+-        args = str(tuple(map(int, e._mpf_)))
+-        return '{func}({args})'.format(func=self._module_format('mpmath.mpf'), args=args)
+-
+-
+-    def _print_Rational(self, e):
+-        return "{func}({p})/{func}({q})".format(
+-            func=self._module_format('mpmath.mpf'),
+-            q=self._print(e.q),
+-            p=self._print(e.p)
+-        )
+-
+-    def _print_Half(self, e):
+-        return self._print_Rational(e)
+-
+-    def _print_uppergamma(self, e):
+-        return "{}({}, {}, {})".format(
+-            self._module_format('mpmath.gammainc'),
+-            self._print(e.args[0]),
+-            self._print(e.args[1]),
+-            self._module_format('mpmath.inf'))
+-
+-    def _print_lowergamma(self, e):
+-        return "{}({}, 0, {})".format(
+-            self._module_format('mpmath.gammainc'),
+-            self._print(e.args[0]),
+-            self._print(e.args[1]))
+-
+-    def _print_log2(self, e):
+-        return '{0}({1})/{0}(2)'.format(
+-            self._module_format('mpmath.log'), self._print(e.args[0]))
+-
+-    def _print_log1p(self, e):
+-        return '{}({}+1)'.format(
+-            self._module_format('mpmath.log'), self._print(e.args[0]))
+-
+-    def _print_Pow(self, expr, rational=False):
+-        return self._hprint_Pow(expr, rational=rational, sqrt='mpmath.sqrt')
+-
+-    def _print_Integral(self, e):
+-        integration_vars, limits = _unpack_integral_limits(e)
+-
+-        return "{}(lambda {}: {}, {})".format(
+-                self._module_format("mpmath.quad"),
+-                ", ".join(map(self._print, integration_vars)),
+-                self._print(e.args[0]),
+-                ", ".join("(%s, %s)" % tuple(map(self._print, l)) for l in limits))
+-
+-
+-for k in MpmathPrinter._kf:
+-    setattr(MpmathPrinter, '_print_%s' % k, _print_known_func)
+-
+-for k in _known_constants_mpmath:
+-    setattr(MpmathPrinter, '_print_%s' % k, _print_known_const)
+-
+-
+-class SymPyPrinter(AbstractPythonCodePrinter):
+-
+-    language = "Python with SymPy"
+-
+-    def _print_Function(self, expr):
+-        mod = expr.func.__module__ or ''
+-        return '%s(%s)' % (self._module_format(mod + ('.' if mod else '') + expr.func.__name__),
+-                           ', '.join(map(lambda arg: self._print(arg), expr.args)))
+-
+-    def _print_Pow(self, expr, rational=False):
+-        return self._hprint_Pow(expr, rational=rational, sqrt='sympy.sqrt')

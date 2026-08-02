@@ -1,0 +1,729 @@
+diff --git a/add_encodedfile_mode.py b/add_encodedfile_mode.py
+new file mode 100644
+index 0000000..94211e9
+--- /dev/null
++++ b/add_encodedfile_mode.py
+@@ -0,0 +1,54 @@
++import sys
++
++with open("src/_pytest/capture.py", "r") as f:
++    lines = f.readlines()
++
++output = []
++inside_encodedfile = False
++inserted = False
++class_indent = None
++
++for i, line in enumerate(lines):
++    # detect the start of EncodedFile class
++    if line.strip().startswith("class EncodedFile("):
++        inside_encodedfile = True
++        # We'll find how many leading spaces there are
++        class_indent = len(line) - len(line.lstrip('\n'))
++        output.append(line)
++        continue
++
++    if inside_encodedfile and not inserted:
++        # if we see a method definition, we can insert our mode property before it
++        # as long as it's the same indentation level as the class + 4
++        # or if we see the end of the class.
++        striped = line.lstrip(" ")
++        current_indent = len(line) - len(striped)
++
++        # If this is a method def inside the class at indentation of class_indent+4
++        if striped.startswith("def ") and current_indent == class_indent + 4:
++            # Insert the property
++            prop = (" " * (class_indent + 4)) + "@property\n"
++            prop += (" " * (class_indent + 4)) + "def mode(self):\n"
++            prop += (" " * (class_indent + 8)) + "\"\"\"Advertise text mode by removing 'b'.\"\"\"\n"
++            prop += (" " * (class_indent + 8)) + "return self.buffer.mode.replace('b', '')\n\n"
++            output.append(prop)
++            inserted = True
++        output.append(line)
++        # If we see another class or we are out of class scope, we won't insert anymore.
++        if line.strip().startswith("class ") and not line.strip().startswith("class EncodedFile("):
++            # we've left the class definition block entirely, so if we haven't inserted, do it now.
++            if not inserted:
++                # Insert the property right before this line.
++                prop = (" " * (class_indent + 4)) + "@property\n"
++                prop += (" " * (class_indent + 4)) + "def mode(self):\n"
++                prop += (" " * (class_indent + 8)) + "\"\"\"Advertise text mode by removing 'b'.\"\"\"\n"
++                prop += (" " * (class_indent + 8)) + "return self.buffer.mode.replace('b', '')\n\n"
++                # because we found a new class, let's insert before it.
++                output[-1] = prop + output[-1]
++                inserted = True
++            inside_encodedfile = False
++    else:
++        output.append(line)
++
++with open("src/_pytest/capture.py", "w") as f:
++    f.writelines(output)
+diff --git a/add_mode_property.py b/add_mode_property.py
+new file mode 100644
+index 0000000..bdf8cbc
+--- /dev/null
++++ b/add_mode_property.py
+@@ -0,0 +1,41 @@
++import sys
++
++with open("src/_pytest/capture.py", "r") as f:
++    lines = f.readlines()
++
++output = []
++inside_encodedfile = False
++inserted = False
++
++for i, line in enumerate(lines):
++    # detect the start of EncodedFile class
++    if line.strip().startswith("class EncodedFile("):
++        inside_encodedfile = True
++        output.append(line)
++        continue
++
++    if inside_encodedfile and not inserted:
++        # once we see 'def write(' at the same indentation level, we can insert the property above it
++        # let's check indentation
++        striped = line.lstrip('\n')
++        indent = len(line) - len(line.lstrip())
++        if striped.startswith("def write("):
++            # insert the property above
++            prop = (" " * indent) + "@property\n"
++            prop += (" " * indent) + "def mode(self):\n"
++            prop += (" " * indent) + "    return self.buffer.mode.replace('b', '')\n\n"
++            output.append(prop)
++            inserted = True
++        output.append(line)
++        # if we see the end of the class, we should also stop searching for insertion point
++        if line.strip().startswith("def write("):
++            # we inserted, continue
++            continue
++        if line.strip().startswith("class ") or line.strip().startswith("def "):
++            # we missed the place, let's just insert at the end of the class?
++            pass
++    else:
++        output.append(line)
++
++with open("src/_pytest/capture.py", "w") as f:
++    f.writelines(output)
+diff --git a/fix_imp_import.py b/fix_imp_import.py
+new file mode 100644
+index 0000000..e62e756
+--- /dev/null
++++ b/fix_imp_import.py
+@@ -0,0 +1,36 @@
++import sys
++
++original = []
++with open("src/_pytest/assertion/rewrite.py", "r") as f:
++    original = f.readlines()
++
++fixed = []
++import_imp_found = False
++
++for line in original:
++    # remove any lines that directly import imp
++    if line.strip().startswith("import imp"):
++        import_imp_found = True
++        continue
++    fixed.append(line)
++
++# If we removed an import imp, we should add: from _pytest.assertion import imp_stub as imp
++if import_imp_found:
++    # Insert at top of file (after docstrings) or after the __future__ lines
++    new_fixed = []
++    inserted = False
++    for i, line in enumerate(fixed):
++        new_fixed.append(line)
++        # find first line that is not blank or docstring.
++        if not inserted:
++            if line.strip() == "" or line.strip().startswith("from __future__") or line.strip().startswith("import sys"):
++                # keep going
++                continue
++            else:
++                # insert right before this line for safety
++                new_fixed.insert(len(new_fixed)-1, "from _pytest.assertion import imp_stub as imp\n")
++                inserted = True
++    fixed = new_fixed
++
++with open("src/_pytest/assertion/rewrite.py", "w") as f:
++    f.writelines(fixed)
+diff --git a/fix_indentation.py b/fix_indentation.py
+new file mode 100644
+index 0000000..86cad39
+--- /dev/null
++++ b/fix_indentation.py
+@@ -0,0 +1,62 @@
++import sys
++
++lines = []
++with open("src/_pytest/assertion/rewrite.py", "r") as f:
++    lines = f.readlines()
++
++fixed = []
++
++insert_import_here = 0
++found_class_line = False
++
++# We first remove the line `from _pytest.assertion import imp_stub as imp` wherever it is.
++for line in lines:
++    if line.strip() == 'from _pytest.assertion import imp_stub as imp':
++        continue
++    fixed.append(line)
++
++lines = fixed
++
++# Now we want to insert the import after the docstring and future imports.
++
++# We'll parse from the top.
++
++new_lines = []
++idx = 0
++n = len(lines)
++
++# skip leading blank lines
++while idx < n and not lines[idx].strip():
++    new_lines.append(lines[idx])
++    idx += 1
++
++# if docstring
++if idx < n and (lines[idx].strip().startswith("\"\"\"") or lines[idx].strip().startswith("'''") ):
++    # docstring start
++    new_lines.append(lines[idx])
++    idx += 1
++    # read docstring body
++    triple = lines[idx-1].strip()[:3]
++    while idx < n:
++        new_lines.append(lines[idx])
++        if triple in lines[idx]:
++            idx += 1
++            break
++        idx += 1
++
++# skip from __future__ lines
++while idx < n and 'from __future__ import' in lines[idx]:
++    new_lines.append(lines[idx])
++    idx += 1
++
++# insert the import now
++new_lines.append('from _pytest.assertion import imp_stub as imp\n')
++
++# copy the rest
++while idx < n:
++    new_lines.append(lines[idx])
++    idx += 1
++
++
++with open("src/_pytest/assertion/rewrite.py", "w") as f:
++    f.writelines(new_lines)
+diff --git a/fix_rewrite.py b/fix_rewrite.py
+new file mode 100644
+index 0000000..e5da0e5
+--- /dev/null
++++ b/fix_rewrite.py
+@@ -0,0 +1,119 @@
++import sys
++
++lines = []
++with open("src/_pytest/assertion/rewrite.py", "r") as f:
++    lines = f.readlines()
++
++out = []
++
++# We will remove "import imp" and references to it, replacing them with importlib-based fallback.
++# We also remove the block that sets PYTEST_TAG using "if hasattr(imp, 'get_tag'):".
++
++skip_block_for_get_tag = False
++for i, line in enumerate(lines):
++    # remove 'import imp'
++    if 'import imp' in line:
++        continue
++    
++    # skip block of code that handles if hasattr(imp, "get_tag"). We'll replace it.
++    if 'if hasattr(imp, "get_tag"):' in line:
++        skip_block_for_get_tag = True
++        continue
++    if skip_block_for_get_tag:
++        if line.strip().startswith("else:"):
++            # The else branch sets PYTEST_TAG
++            continue
++        if line.strip() == "":
++            skip_block_for_get_tag = False
++            continue
++        continue
++
++    out.append(line)
++
++out2 = []
++injected = False
++
++for line in out:
++    out2.append(line)
++    if not injected and line.strip() == "import sys":
++        # Insert fallback code
++        out2.append("\n")
++        out2.append("# Provide a fallback for 'imp' functionality using importlib\n")
++        out2.append("try:\n")
++        out2.append("    import importlib.util\n")
++        out2.append("    import importlib.machinery\n")
++        out2.append("    HAS_IMPORTLIB = True\n")
++        out2.append("except ImportError:\n")
++        out2.append("    import imp\n")
++        out2.append("    HAS_IMPORTLIB = False\n")
++        out2.append("\n")
++        out2.append("def _custom_find_module(name, path=None):\n")
++        out2.append("    if HAS_IMPORTLIB:\n")
++        out2.append("        spec = importlib.util.find_spec(name, path)\n")
++        out2.append("        if spec is None:\n")
++        out2.append("            raise ImportError(f\"No module named '{name}'\")\n")
++        out2.append("        if spec.origin is None:\n")
++        out2.append("            return None, None, ('', '', 5)\n")
++        out2.append("        if spec.loader is not None and hasattr(spec.loader, 'get_source'):\n")
++        out2.append("            return None, spec.origin, ('.py', 'U', 1)\n")
++        out2.append("        return None, spec.origin, ('', '', 5)\n")
++        out2.append("    else:\n")
++        out2.append("        return imp.find_module(name, path)\n")
++        out2.append("\n")
++        out2.append("def _custom_load_module(name, file, pathname, description):\n")
++        out2.append("    if HAS_IMPORTLIB:\n")
++        out2.append("        spec = importlib.util.find_spec(name)\n")
++        out2.append("        if spec is None:\n")
++        out2.append("            raise ImportError(f\"No module named '{name}'\")\n")
++        out2.append("        module = importlib.util.module_from_spec(spec)\n")
++        out2.append("        sys.modules[name] = module\n")
++        out2.append("        if spec.loader is not None:\n")
++        out2.append("            spec.loader.exec_module(module)\n")
++        out2.append("        return module\n")
++        out2.append("    else:\n")
++        out2.append("        return imp.load_module(name, file, pathname, description)\n")
++        out2.append("\n")
++        injected = True
++
++fixed_lines = []
++
++for line in out2:
++    # remove function def _imp_find_module
++    if "def _imp_find_module(" in line:
++        continue
++    if "return imp.find_module(" in line:
++        continue
++    if "def load_module(" in line and "self," in line and "name):" in line:
++        fixed_lines.append(line)
++        continue
++    if "return imp.load_module(" in line:
++        continue
++    line = line.replace("imp.find_module(", "_custom_find_module(")
++    line = line.replace("imp.load_module(", "_custom_load_module(")
++    fixed_lines.append(line)
++
++# remove the line setting PYTEST_TAG via if hasattr(imp, "get_tag")
++
++# remove existing line with "PYTEST_TAG =" if it references imp.
++
++for i, line in enumerate(fixed_lines):
++    if "PYTEST_TAG =" in line:
++        fixed_lines[i] = ""
++
++# Insert new definition of PYTEST_TAG after we see 'ver = sys.version_info'
++added_pytest_tag = False
++final_lines = []
++for i, line in enumerate(fixed_lines):
++    final_lines.append(line)
++    if "ver = sys.version_info" in line:
++        final_lines.append("    PYTEST_TAG = f\"{impl}-{ver[0]}{ver[1]}-PYTEST\"\n")
++        added_pytest_tag = True
++
++if not added_pytest_tag:
++    final_lines.append("\n# If not inserted, define fallback\n")
++    final_lines.append("impl = 'cpython' if not hasattr(sys, 'pypy_version_info') else 'pypy'\n")
++    final_lines.append("ver = sys.version_info\n")
++    final_lines.append("PYTEST_TAG = f\"{impl}-{ver[0]}{ver[1]}-PYTEST\"\n")
++
++with open("src/_pytest/assertion/rewrite.py", "w") as f:
++    f.writelines(final_lines)
+diff --git a/insert_imp_import.py b/insert_imp_import.py
+new file mode 100644
+index 0000000..4d05a00
+--- /dev/null
++++ b/insert_imp_import.py
+@@ -0,0 +1,48 @@
++import sys
++
++def is_triplequoted(line):
++    l = line.strip()
++    return (l.startswith("\"\"\"") or l.startswith("'''"))
++
++def find_end_of_docstring(lines, start_idx):
++    # move forward until we find the closing triple quotes
++    # or end of file
++    first_line = lines[start_idx].strip()
++    quote_chars = first_line[:3]
++    idx = start_idx + 1
++    while idx < len(lines):
++        if quote_chars in lines[idx]:
++            return idx
++        idx += 1
++    return idx - 1
++
++with open("src/_pytest/assertion/rewrite.py", "r") as f:
++    lines = f.readlines()
++
++# We want to insert "from _pytest.assertion import imp_stub as imp"
++# after the docstring and any from __future__ lines.
++
++idx = 0
++n = len(lines)
++
++# skip leading blank lines
++while idx < n and not lines[idx].strip():
++    idx += 1
++
++# if docstring start
++if idx < n and is_triplequoted(lines[idx]):
++    # find end of docstring
++    end_doc = find_end_of_docstring(lines, idx)
++    idx = end_doc + 1
++    # skip any lines that might continue docstring on same line?
++    # The above function tries to find the line that ends docstring.
++
++# skip any from __future__ lines
++while idx < n and 'from __future__ import' in lines[idx]:
++    idx += 1
++
++# now insert the import at idx
++lines.insert(idx, 'from _pytest.assertion import imp_stub as imp\n')
++
++with open("src/_pytest/assertion/rewrite.py", "w") as f:
++    f.writelines(lines)
+diff --git a/patch_encodedfile_mode.diff b/patch_encodedfile_mode.diff
+new file mode 100644
+index 0000000..56c6f36
+--- /dev/null
++++ b/patch_encodedfile_mode.diff
+@@ -0,0 +1,16 @@
++diff --git a/src/_pytest/capture.py b/src/_pytest/capture.py
++index 9c1cd6f..c703566 100644
++--- a/src/_pytest/capture.py
+++++ b/src/_pytest/capture.py
++@@ -426,6 +426,11 @@ class EncodedFile(object):
++     def __init__(self, buffer, encoding):
++         self.buffer = buffer
++         self.encoding = encoding
+++
+++    @property
+++    def mode(self):
+++        # remove 'b' from the underlying buffer mode so we advertise text mode
+++        return self.buffer.mode.replace('b', '')
++ 
++     def write(self, obj):
++         import six
+diff --git a/patch_encodedfile_mode2.diff b/patch_encodedfile_mode2.diff
+new file mode 100644
+index 0000000..45cac77
+--- /dev/null
++++ b/patch_encodedfile_mode2.diff
+@@ -0,0 +1,15 @@
++diff --git a/src/_pytest/capture.py b/src/_pytest/capture.py
++--- a/src/_pytest/capture.py
+++++ b/src/_pytest/capture.py
++@@ -433,6 +433,11 @@ class EncodedFile(object):
++         self.buffer = buffer
++         self.encoding = encoding
++ 
+++    @property
+++    def mode(self):
+++        """Advertise text mode (remove 'b')."""
+++        return self.buffer.mode.replace('b', '')
+++
++     def write(self, obj):
++         import six
++         if isinstance(obj, six.text_type):
+diff --git a/patch_remove_imp.diff b/patch_remove_imp.diff
+new file mode 100644
+index 0000000..f7b0114
+--- /dev/null
++++ b/patch_remove_imp.diff
+@@ -0,0 +1,95 @@
++diff --git a/src/_pytest/assertion/rewrite.py b/src/_pytest/assertion/rewrite.py
++index e36eb34..8f91ef4 100644
++--- a/src/_pytest/assertion/rewrite.py
+++++ b/src/_pytest/assertion/rewrite.py
++@@ -5,7 +5,6 @@ from __future__ import division
++ from __future__ import print_function
++ 
++ import ast
++-import imp
++ import errno
++ import itertools
++ import marshal
++@@ -27,6 +26,38 @@ import six
++ 
++ from _pytest._io.saferepr import saferepr
++ from _pytest.assertion import util
+++from _pytest.assertion.util import (
+++    format_explanation as _format_explanation,
+++)
++ from _pytest.compat import spec_from_file_location
++ from _pytest.pathlib import fnmatch_ex
++ from _pytest.pathlib import PurePath
++ 
+++# Provide a fallback for "imp" functionality.
+++try:
+++    import importlib.util
+++    import importlib.machinery
+++    def find_module(name, path=None):
+++        spec = importlib.util.find_spec(name, path)
+++        if spec is None:
+++            raise ImportError("No module named '{}'".format(name))
+++        # Return file, pathname, description
+++        if spec.origin is None:
+++            # built-in or namespace
+++            return None, None, ('', '', 5)
+++        if spec.loader is not None and hasattr(spec.loader, 'get_source'):
+++            # Emulate the legacy triple for a source loader
+++            return None, spec.origin, ('.py', 'U', 1)
+++        # For other loader types, fallback
+++        return None, spec.origin, ('', '', 5)
+++
+++    def load_module(name, file, pathname, description):
+++        spec = importlib.util.find_spec(name)
+++        if spec is None:
+++            raise ImportError("No module named '{}'".format(name))
+++        module = importlib.util.module_from_spec(spec)
+++        sys.modules[name] = module
+++        if spec.loader is not None:
+++            spec.loader.exec_module(module)
+++        return module
+++
+++except ImportError:
+++    import imp
+++    find_module = imp.find_module
+++    load_module = imp.load_module
++ 
++ # pytest caches rewritten pycs in __pycache__.
++ if hasattr(sys, "implementation") and hasattr(sys.implementation, "cache_tag"):
++@@ -40,14 +71,9 @@ else:
++     else:
++         impl = "cpython"
++     ver = sys.version_info
++-    if hasattr(imp, "get_tag"):
++-        PYTEST_TAG = imp.get_tag() + "-PYTEST"
++-    else:
++-        PYTEST_TAG = "%s-%s%s-PYTEST" % (impl, ver[0], ver[1])
+++    PYTEST_TAG = "%s-%s%s-PYTEST" % (impl, ver[0], ver[1])
++     del ver, impl
++ 
++-PYC_EXT = ".py" + (__debug__ and "c" or "o")
++-PYC_TAIL = "." + PYTEST_TAG + PYC_EXT
+++PYC_EXT = ".py" + ("c" if __debug__ else "o")
+++PYC_TAIL = f".{PYTEST_TAG}{PYC_EXT}"
++ 
++ ASCII_IS_DEFAULT_ENCODING = sys.version_info[0] < 3
++ 
++@@ -279,10 +305,6 @@ class AssertionRewritingHook(object):
++         return imp.find_module(name, path)
++ 
++     def load_module(self, name):
++-        # From PEP302
++-        #  For backward compatibility, if the load_module() method can
++-        #  handle loading of the module, it should do so and return the
++-        #  loaded module. (Otherwise, it should raise an ImportError.)
++         if self._writing_pyc:
++             return None
++         state = self.config._assertstate
++@@ -350,7 +372,6 @@ class AssertionRewritingHook(object):
++                 else:
++                     raise mq("unexpected bytecode for %s" % name)
++ 
++-        # the comment in load_module above.)
++         co = self._read_pyc(filename)
++         if co is None:
++             if not state.trace("ignored bytecode cannot load".format(filename)):
+diff --git a/patch_remove_import_imp.diff b/patch_remove_import_imp.diff
+new file mode 100644
+index 0000000..0566353
+--- /dev/null
++++ b/patch_remove_import_imp.diff
+@@ -0,0 +1,13 @@
++diff --git a/src/_pytest/assertion/rewrite.py b/src/_pytest/assertion/rewrite.py
++index e36eb34..1111111 100644
++--- a/src/_pytest/assertion/rewrite.py
+++++ b/src/_pytest/assertion/rewrite.py
++@@ -5,7 +5,7 @@ from __future__ import division
++ from __future__ import print_function
++ 
++ import ast
++-import imp
+++from _pytest.assertion import imp_stub as imp
++ import errno
++ import itertools
++ import marshal
+diff --git a/reorder_future_imports.py b/reorder_future_imports.py
+new file mode 100644
+index 0000000..d6acdb8
+--- /dev/null
++++ b/reorder_future_imports.py
+@@ -0,0 +1,99 @@
++import sys
++
++with open("src/_pytest/assertion/rewrite.py", "r") as f:
++    lines = f.readlines()
++
++# We need to ensure the docstring, then the __future__ imports, then the rest.
++# Currently line 0: from _pytest.assertion import imp_stub as imp
++# line 1: """Rewrite assertion AST to produce nice error messages"""
++# lines 2-4: from __future__ import absolute_import, etc.
++
++# We'll reorder so that the docstring is line 0, then future imports, then the import imp_stub, then the rest.
++
++docstring_lines = []
++future_import_lines = []
++other_import_lines = []
++body_lines = []
++
++state = "docstring"  # we are reading until we see the docstring closing or a from __future__ line
++
++def is_future_import(line):
++    return ("from __future__ import" in line)
++
++def is_docstring_start(line):
++    # if it starts with triple quotes
++    l = line.strip()
++    return (l.startswith("\"\"\"") or l.startswith("'''"))
++
++# let's parse carefully.
++from_imp_stub = []
++
++i = 0
++
++# The file's first line is not a docstring but an import. We'll reorder.
++
++# We'll skip any lines that say: from _pytest.assertion import imp_stub as imp
++
++lines_buffer = []
++for line in lines:
++    if line.strip() == 'from _pytest.assertion import imp_stub as imp':
++        from_imp_stub.append(line)
++    else:
++        lines_buffer.append(line)
++
++lines = lines_buffer
++
++# Now we expect the docstring to be the first line.
++
++if len(lines) == 0:
++    # nothing to do
++    sys.exit(0)
++
++# The first line might be docstring or might be from __future__.
++
++idx = 0
++
++# The docstring is the first triple quoted string.
++# We'll collect it all until we see the closing triple quotes.
++
++if lines[idx].strip().startswith("\"\"\"") or lines[idx].strip().startswith("'''"):
++    docstring_lines.append(lines[idx])
++    idx += 1
++    # read until we see the next triple quotes.
++    while idx < len(lines):
++        docstring_lines.append(lines[idx])
++        if "\"\"\"" in lines[idx] or "'''" in lines[idx]:
++            # might be closed
++            # if it's the same line or the next
++            if docstring_lines[0].strip() in lines[idx].strip():
++                idx += 1
++                break
++        idx += 1
++
++# next lines might be from __future__ import...
++while idx < len(lines) and is_future_import(lines[idx]):
++    future_import_lines.append(lines[idx])
++    idx += 1
++
++# now if there's any blank lines or comments we can accept them in other imports or continue to parse.
++while idx < len(lines):
++    other_import_lines.append(lines[idx])
++    idx += 1
++
++# now let's rebuild the file.
++new_lines = []
++
++# docstring
++new_lines.extend(docstring_lines)
++
++# future imports
++new_lines.extend(future_import_lines)
++
++# now insert "from _pytest.assertion import imp_stub as imp" if we have it.
++new_lines.extend(from_imp_stub)
++
++# now other imports
++new_lines.extend(other_import_lines)
++
++with open("src/_pytest/assertion/rewrite.py", "w") as f:
++    f.writelines(new_lines)
+diff --git a/src/_pytest/assertion/imp_stub.py b/src/_pytest/assertion/imp_stub.py
+new file mode 100644
+index 0000000..ee9387f
+--- /dev/null
++++ b/src/_pytest/assertion/imp_stub.py
+@@ -0,0 +1,43 @@
++"""A minimal stub to replace the deprecated built-in 'imp' module in Python >= 3.12."""
++
++import sys
++
++
++def get_tag():
++    """Return a pseudo implementation tag."""
++    # Hardcode something like 'cpython-312'.
++    ver = sys.version_info
++    impl = 'cpython'
++    if hasattr(sys, 'pypy_version_info'):
++        impl = 'pypy'
++    return f"{impl}-{ver[0]}{ver[1]}"
++
++
++def find_module(name, path=None):
++    """Mimic imp.find_module using importlib."""
++    import importlib.util
++    spec = importlib.util.find_spec(name, path)
++    if spec is None:
++        raise ImportError(f"No module named '{name}'")
++    # Return a triple similar to what 'imp.find_module' returns.
++    # (file, pathname, description)
++    if spec.origin is None:  # builtin or namespace
++        return None, None, ('', '', 5)
++    # If loader can provide source, treat it as a '.py' file.
++    if spec.loader is not None and hasattr(spec.loader, 'get_source'):
++        return None, spec.origin, ('.py', 'U', 1)
++    # Otherwise, fallback.
++    return None, spec.origin, ('', '', 5)
++
++
++def load_module(name, file, filename, description):
++    """Mimic imp.load_module using importlib."""
++    import importlib.util
++    spec = importlib.util.find_spec(name)
++    if spec is None:
++        raise ImportError(f"No module named '{name}'")
++    module = importlib.util.module_from_spec(spec)
++    sys.modules[name] = module
++    if spec.loader is not None:
++        spec.loader.exec_module(module)
++    return module
+diff --git a/src/_pytest/capture.py b/src/_pytest/capture.py
+index 25eab7f..0334e8a 100644
+--- a/src/_pytest/capture.py
++++ b/src/_pytest/capture.py
+@@ -425,6 +425,11 @@ def safe_text_dupfile(f, mode, default_encoding="UTF8"):
+ class EncodedFile(object):
+     errors = "strict"  # possibly needed by py3 code (issue555)
+ 
++    @property
++    def mode(self):
++        """Advertise text mode by removing 'b'."""
++        return self.buffer.mode.replace('b', '')
++
+     def __init__(self, buffer, encoding):
+         self.buffer = buffer
+         self.encoding = encoding

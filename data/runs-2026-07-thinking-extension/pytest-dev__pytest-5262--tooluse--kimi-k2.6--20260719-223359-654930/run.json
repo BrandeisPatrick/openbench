@@ -1,0 +1,16 @@
+{
+  "run_id": "pytest-dev__pytest-5262--tooluse--kimi-k2.6--20260719-223359-654930",
+  "task_id": "pytest-dev__pytest-5262",
+  "harness": "tooluse",
+  "model": "kimi-k2.6",
+  "started_at": "2026-07-19T22:33:59.654930Z",
+  "finished_at": "2026-07-19T22:37:20.347078Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.7649774999999998,
+  "total_tokens_in": 754970,
+  "total_tokens_out": 11939,
+  "total_thinking_tokens": 8125,
+  "num_turns": 64
+}

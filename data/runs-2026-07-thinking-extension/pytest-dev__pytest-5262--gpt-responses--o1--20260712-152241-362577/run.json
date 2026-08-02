@@ -1,0 +1,16 @@
+{
+  "run_id": "pytest-dev__pytest-5262--gpt-responses--o1--20260712-152241-362577",
+  "task_id": "pytest-dev__pytest-5262",
+  "harness": "gpt-responses",
+  "model": "o1",
+  "started_at": "2026-07-12T15:22:41.362577Z",
+  "finished_at": "2026-07-12T15:23:28.918699Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.37441500000000005,
+  "total_tokens_in": 6401,
+  "total_tokens_out": 4640,
+  "total_thinking_tokens": 1856,
+  "num_turns": 3
+}

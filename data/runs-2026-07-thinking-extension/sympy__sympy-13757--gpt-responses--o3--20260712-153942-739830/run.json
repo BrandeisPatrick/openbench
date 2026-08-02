@@ -1,0 +1,16 @@
+{
+  "run_id": "sympy__sympy-13757--gpt-responses--o3--20260712-153942-739830",
+  "task_id": "sympy__sympy-13757",
+  "harness": "gpt-responses",
+  "model": "o3",
+  "started_at": "2026-07-12T15:39:42.739830Z",
+  "finished_at": "2026-07-12T15:57:54.413630Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 3.2928760000000006,
+  "total_tokens_in": 1573682,
+  "total_tokens_out": 18189,
+  "total_thinking_tokens": 9600,
+  "num_turns": 80
+}

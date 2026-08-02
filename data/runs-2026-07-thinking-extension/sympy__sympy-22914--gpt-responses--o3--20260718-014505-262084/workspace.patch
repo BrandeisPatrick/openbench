@@ -1,0 +1,21 @@
+diff --git a/sympy/printing/pycode.py b/sympy/printing/pycode.py
+index 3a72ab6..25d74eb 100644
+--- a/sympy/printing/pycode.py
++++ b/sympy/printing/pycode.py
+@@ -450,6 +450,16 @@ def _print_frac(self, expr):
+         from sympy.core.mod import Mod
+         return self._print_Mod(Mod(expr.args[0], 1))
+ 
++    def _print_Min(self, expr):
++        """Python representation of sympy.Min using the built-in min function."""
++        return 'min({})'.format(', '.join(self._print(arg) for arg in expr.args))
++
++    def _print_Max(self, expr):
++        """Python representation of sympy.Max using the built-in max function."""
++        return 'max({})'.format(', '.join(self._print(arg) for arg in expr.args))
++
++
++
+     def _print_Symbol(self, expr):
+ 
+         name = super()._print_Symbol(expr)

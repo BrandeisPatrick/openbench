@@ -1,0 +1,18 @@
+diff --git a/sympy/printing/pycode.py b/sympy/printing/pycode.py
+index 3a72ab6..708a487 100644
+--- a/sympy/printing/pycode.py
++++ b/sympy/printing/pycode.py
+@@ -288,6 +288,13 @@ def _print_Sum(self, expr):
+             function=self._print(expr.function),
+             loops=' '.join(loops))
+ 
++    def _print_MinMaxBase(self, expr):
++        op = expr.__class__.__name__.lower()
++        return "{}({})".format(op, ", ".join(self._print(arg) for arg in expr.args))
++
++    _print_Min = _print_MinMaxBase
++    _print_Max = _print_MinMaxBase
++
+     def _print_ImaginaryUnit(self, expr):
+         return '1j'
+ 

@@ -1,0 +1,26 @@
+diff --git a/sympy/core/symbol.py b/sympy/core/symbol.py
+index f4a555c..5977472 100644
+--- a/sympy/core/symbol.py
++++ b/sympy/core/symbol.py
+@@ -790,8 +790,13 @@ def literal(s):
+ 
+         return tuple(result)
+     else:
++        # ``names`` is an iterable container (e.g. tuple, list, set). Recurse
++        # on each element while *preserving* the `cls` argument. Without
++        # this, nested calls would fall back to the default `Symbol` class,
++        # leading to incorrect results like symbols(('f', 'g'), cls=Function)
++        # returning plain symbols instead of functions.
+         for name in names:
+-            result.append(symbols(name, **args))
++            result.append(symbols(name, cls=cls, **args))
+ 
+         return type(names)(result)
+ 
+@@ -922,4 +927,4 @@ def disambiguate(*iter):
+                 skip += 1
+             ki = mapping[k][i]
+             reps[ki] = Symbol(name, **ki.assumptions0)
+-    return new_iter.xreplace(reps)
++    return new_iter.xreplace(reps)
+\ No newline at end of file

@@ -1,0 +1,114 @@
+diff --git a/sympy/polys/polytools.py b/sympy/polys/polytools.py
+index d5ac051..8741c27 100644
+--- a/sympy/polys/polytools.py
++++ b/sympy/polys/polytools.py
+@@ -3,7 +3,7 @@
+ from __future__ import print_function, division
+ 
+ from sympy.core import (
+-    S, Basic, Expr, I, Integer, Add, Mul, Dummy, Tuple
++    S, Basic, Expr, I, Integer, Add, Mul, Pow, Mod, Dummy, Tuple
+ )
+ 
+ from sympy.core.mul import _keep_coeff
+@@ -107,6 +107,11 @@ class Poly(Expr):
+     is_commutative = True
+     is_Poly = True
+ 
++    # Poly should handle operations with expressions on the left side,
++    # e.g. x*Poly(x) should give Poly(x**2, x), so give it a higher
++    # priority than other expressions (see Expr._op_priority).
++    _op_priority = 10.01
++
+     def __new__(cls, rep, *gens, **args):
+         """Create a new polynomial instance out of something useful. """
+         opt = options.build_options(gens, args)
+@@ -4011,9 +4016,11 @@ def __add__(f, g):
+     def __radd__(f, g):
+         if not g.is_Poly:
+             try:
+-                g = f.__class__(g, *f.gens)
+-            except PolynomialError:
+-                return g + f.as_expr()
++                g = f.__class__(g, *f.gens, domain=f.get_domain())
++            except (PolynomialError, CoercionFailed, DomainError):
++                if isinstance(g, BooleanAtom):
++                    return NotImplemented
++                return Add(g, f)
+ 
+         return g.add(f)
+ 
+@@ -4031,9 +4038,11 @@ def __sub__(f, g):
+     def __rsub__(f, g):
+         if not g.is_Poly:
+             try:
+-                g = f.__class__(g, *f.gens)
+-            except PolynomialError:
+-                return g - f.as_expr()
++                g = f.__class__(g, *f.gens, domain=f.get_domain())
++            except (PolynomialError, CoercionFailed, DomainError):
++                if isinstance(g, BooleanAtom):
++                    return NotImplemented
++                return Add(g, -f)
+ 
+         return g.sub(f)
+ 
+@@ -4051,9 +4060,11 @@ def __mul__(f, g):
+     def __rmul__(f, g):
+         if not g.is_Poly:
+             try:
+-                g = f.__class__(g, *f.gens)
+-            except PolynomialError:
+-                return g*f.as_expr()
++                g = f.__class__(g, *f.gens, domain=f.get_domain())
++            except (PolynomialError, CoercionFailed, DomainError):
++                if isinstance(g, BooleanAtom):
++                    return NotImplemented
++                return Mul(g, f)
+ 
+         return g.mul(f)
+ 
+@@ -4088,7 +4099,12 @@ def __mod__(f, g):
+     @_sympifyit('g', NotImplemented)
+     def __rmod__(f, g):
+         if not g.is_Poly:
+-            g = f.__class__(g, *f.gens)
++            try:
++                g = f.__class__(g, *f.gens, domain=f.get_domain())
++            except (PolynomialError, CoercionFailed, DomainError):
++                if isinstance(g, BooleanAtom):
++                    return NotImplemented
++                return Mod(g, f)
+ 
+         return g.rem(f)
+ 
+@@ -4102,7 +4118,13 @@ def __floordiv__(f, g):
+     @_sympifyit('g', NotImplemented)
+     def __rfloordiv__(f, g):
+         if not g.is_Poly:
+-            g = f.__class__(g, *f.gens)
++            try:
++                g = f.__class__(g, *f.gens, domain=f.get_domain())
++            except (PolynomialError, CoercionFailed, DomainError):
++                if isinstance(g, BooleanAtom):
++                    return NotImplemented
++                from sympy.functions.elementary.integers import floor
++                return floor(Mul(g, Pow(f, S.NegativeOne)))
+ 
+         return g.quo(f)
+ 
+@@ -4112,6 +4134,14 @@ def __div__(f, g):
+ 
+     @_sympifyit('g', NotImplemented)
+     def __rdiv__(f, g):
++        if not g.is_Poly:
++            try:
++                g = f.__class__(g, *f.gens, domain=f.get_domain())
++            except (PolynomialError, CoercionFailed, DomainError):
++                if isinstance(g, BooleanAtom):
++                    return NotImplemented
++                return Mul(g, Pow(f, S.NegativeOne))
++
+         return g.as_expr()/f.as_expr()
+ 
+     __truediv__ = __div__

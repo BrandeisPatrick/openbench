@@ -1,0 +1,39 @@
+{
+  "run_id": "sympy__sympy-22914--tooluse--openrouter_deepseek_deepseek-v3.2--20260712-183551-281193",
+  "task_id": "sympy__sympy-22914",
+  "applies_cleanly": true,
+  "builds": true,
+  "f2p_passed": [],
+  "f2p_failed": [
+    "test_PythonCodePrinter"
+  ],
+  "p2p_passed": [
+    "test_PythonCodePrinter_standard",
+    "test_MpmathPrinter",
+    "test_NumPyPrinter",
+    "test_SciPyPrinter",
+    "test_pycode_reserved_words",
+    "test_sqrt",
+    "test_frac",
+    "test_printmethod",
+    "test_codegen_ast_nodes",
+    "test_issue_14283",
+    "test_NumPyPrinter_print_seq",
+    "test_issue_16535_16536",
+    "test_Integral",
+    "test_fresnel_integrals",
+    "test_beta",
+    "test_airy",
+    "test_airy_prime"
+  ],
+  "p2p_failed": [],
+  "anticheat": {
+    "test_tampering": false,
+    "tampered_files": [],
+    "skip_xfail_added": 0,
+    "conftest_hacks": [],
+    "hardcode_flags": [],
+    "assert_weakening_count": 0
+  },
+  "graded_at": "2026-07-12T19:27:26.483139Z"
+}

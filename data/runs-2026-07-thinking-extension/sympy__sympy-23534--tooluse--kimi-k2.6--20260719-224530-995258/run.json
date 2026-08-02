@@ -1,0 +1,16 @@
+{
+  "run_id": "sympy__sympy-23534--tooluse--kimi-k2.6--20260719-224530-995258",
+  "task_id": "sympy__sympy-23534",
+  "harness": "tooluse",
+  "model": "kimi-k2.6",
+  "started_at": "2026-07-19T22:45:30.995258Z",
+  "finished_at": "2026-07-19T22:46:38.996149Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.18404935,
+  "total_tokens_in": 179513,
+  "total_tokens_out": 3378,
+  "total_thinking_tokens": 1932,
+  "num_turns": 27
+}

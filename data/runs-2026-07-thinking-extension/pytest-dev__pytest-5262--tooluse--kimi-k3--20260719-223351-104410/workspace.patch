@@ -1,0 +1,53 @@
+diff --git a/changelog/5387.bugfix.rst b/changelog/5387.bugfix.rst
+new file mode 100644
+index 0000000..7505e47
+--- /dev/null
++++ b/changelog/5387.bugfix.rst
+@@ -0,0 +1 @@
++Fixed crash when code decides to write ``bytes`` based on ``"b"`` being present in the ``mode`` attribute of captured streams (for example ``youtube-dl``): ``EncodedFile.mode`` no longer includes ``b`` because it presents a text-stream interface.
+diff --git a/src/_pytest/capture.py b/src/_pytest/capture.py
+index 25eab7f..582b2c5 100644
+--- a/src/_pytest/capture.py
++++ b/src/_pytest/capture.py
+@@ -447,6 +447,13 @@ class EncodedFile(object):
+         """Ensure that file.name is a string."""
+         return repr(self.buffer)
+ 
++    @property
++    def mode(self):
++        # The underlying stream is opened in binary mode, but EncodedFile
++        # presents a text-stream interface: report a text mode so callers
++        # don't write bytes to us (see #5387).
++        return self.buffer.mode.replace("b", "")
++
+     def __getattr__(self, name):
+         return getattr(object.__getattribute__(self, "buffer"), name)
+ 
+diff --git a/testing/test_capture.py b/testing/test_capture.py
+index 5d80eb6..11b2b1a 100644
+--- a/testing/test_capture.py
++++ b/testing/test_capture.py
+@@ -952,6 +952,23 @@ def test_dupfile_on_textio():
+     assert not hasattr(f, "name")
+ 
+ 
++@needsosdup
++def test_dupfile_text_mode(tmpfile):
++    """
++    EncodedFile presents a text stream interface, so its mode should not
++    contain "b", otherwise clients might write bytes to it (#5387).
++    """
++    f = capture.safe_text_dupfile(tmpfile, "wb")
++    assert f.mode == "w"
++    assert "b" not in f.mode
++
++
++def test_encodedfile_mode(tmpfile):
++    ef = capture.EncodedFile(tmpfile, "utf-8")
++    assert "b" not in ef.mode
++    assert ef.mode == tmpfile.mode.replace("b", "")
++
++
+ @contextlib.contextmanager
+ def lsof_check():
+     pid = os.getpid()
