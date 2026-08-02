@@ -20,12 +20,13 @@
     "test_binary_symbols"
   ],
   "image_tag": "openbench/sympy__sympy-23950:base",
+  "python_version": "3.12",
   "install_cmd": "pip install -e .",
   "test_cmd": "python -m pytest",
+  "env_setup_cmds": [],
   "protected_test_files": {},
   "validation": null,
   "difficulty": "15 min - 1 hour",
   "difficulty_note": "One-line Contains.as_set fix; needs the set/relational contract.",
-  "is_impossible": false,
   "source": "swebench-verified"
 }
