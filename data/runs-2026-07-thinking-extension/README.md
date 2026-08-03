@@ -103,3 +103,26 @@ Five independent checks on the corrected table:
    never changes any pair delta sign. Caveat: the o3→gpt-5.5 SOLVE delta
    (9→12) comes entirely from sympy-13757 — cite that pair on its efficiency
    deltas, which are task-general.
+
+## Are the zeros real? (0/12-class results, audited 2026-08-03)
+
+Each zero fails in a distinct, model-shaped way — none is protocol-shaped:
+
+- **V3-0324 (0/12)**: bimodal — half its runs emit ~100% malformed actions
+  (chat-style text instead of tool calls), the rest act but grind to cap.
+  NUANCE: its one crashed run (excluded as infra per convention) had ALREADY
+  solved pytest-5262 when the OpenRouter 400 killed it — the model can solve;
+  the usable seeds didn't. Read 0/12 as "capability exists but is unreliable",
+  with a 95% binomial upper bound of ~25% on this task mix.
+- **R1-0528 (0/10)**: malformed rate ~0.1 — its tool calls parse fine and it
+  edits files (median ~5), then declares completion falsely in 12/12 usable
+  runs (and weakens 128 asserts on 22914). The pipe works; the model quits.
+- **o1 (1/11)**: malformed 0.0 in every run, 10+ edits/run, one genuine
+  resolve — fails by destructive rewrites + confabulation, not protocol.
+
+Every zero model has a same-wire-format sibling that solves (V3.2/V4 on
+tooluse, o3 on gpt-responses), so each protocol path is proven end-to-end.
+These are measurements of AUTONOMOUS agentic reliability on a deliberately
+minimal harness (single bash tool, tool_choice=auto) — they are consistent
+with, not contradicted by, higher public SWE-bench numbers that measure
+model+heavyweight scaffold.
