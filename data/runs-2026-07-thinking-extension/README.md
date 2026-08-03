@@ -126,3 +126,5 @@ These are measurements of AUTONOMOUS agentic reliability on a deliberately
 minimal harness (single bash tool, tool_choice=auto) — they are consistent
 with, not contradicted by, higher public SWE-bench numbers that measure
 model+heavyweight scaffold.
+
+Synthesis of both corpora + mechanism findings: `docs/findings-2026-07-generational-study.md`.
