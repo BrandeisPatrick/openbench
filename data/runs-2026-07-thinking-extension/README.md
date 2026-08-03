@@ -74,3 +74,32 @@ uv run openbench compare --pair gpt-think-early --pair gpt-think-late \
 
 Before grading anything, run `uv run openbench golden-gate` — the incident
 above is exactly the failure class it catches.
+
+## Round-2 robustness audit (2026-08-03)
+
+Five independent checks on the corrected table:
+
+1. **Reproducibility**: all 133 usable verified-stratum runs (both corpora)
+   re-graded from scratch on golden-gated images — 132/132 model runs
+   reproduce exactly (verdict AND per-test counts); the single flip is a
+   sympy-13757 golden fixture banked during the broken early-July-7 grading
+   window, healing to resolved.
+2. **False-solve audit**: all 73 resolved runs pass anticheat (no assert
+   weakening), touch non-test source, and show no gold-mining in transcripts
+   (`git log --all` sightings hit single-commit re-initialized repos).
+3. **Runtime-env validity**: transcript scan for the Python-3.12 `import imp`
+   crash shows every post-July-12 batch RAN pytest-5262 in a broken workspace
+   (the stale-image swap happened mid-matrix on July 12). Solves stand — o3
+   3/3 and kimi-k3 3/3 solved it without runnable tests; o1 even stubbed the
+   `imp` module and solved. Broken-env FAILURES are uninterpretable and drop
+   from denominators: **o1 1/11, R1-0528 0/10, V3.2 5/10** (others unchanged).
+   Behavioral verification metrics (green_observed etc.) for those arms on
+   this task reflect the broken env — treat 5262 cells of the July-12/19
+   arms as handicapped when citing behavior, or rerun them on the repaired
+   image for clean trajectories.
+4. **Crash exclusions**: every excluded crash is provider-side (402/429/dead
+   key, pre-heal Moonshot 400s); all crashed cells were re-run to 12 usable.
+5. **Sensitivity**: independent recount matches the report; leave-one-task-out
+   never changes any pair delta sign. Caveat: the o3→gpt-5.5 SOLVE delta
+   (9→12) comes entirely from sympy-13757 — cite that pair on its efficiency
+   deltas, which are task-general.
