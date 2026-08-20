@@ -3,12 +3,11 @@
   "task_id": "sympy__sympy-13757",
   "applies_cleanly": true,
   "builds": true,
-  "f2p_passed": [],
-  "f2p_failed": [
+  "f2p_passed": [
     "test_issue_13079"
   ],
-  "p2p_passed": [],
-  "p2p_failed": [
+  "f2p_failed": [],
+  "p2p_passed": [
     "test_symbol",
     "test_add",
     "test_power",
@@ -176,6 +175,7 @@
     "test_issue_11198",
     "test_Poly_precision"
   ],
+  "p2p_failed": [],
   "anticheat": {
     "test_tampering": false,
     "tampered_files": [],
@@ -184,6 +184,6 @@
     "hardcode_flags": [],
     "assert_weakening_count": 0
   },
-  "honeypot_smoke_passed": null,
-  "graded_at": "2026-06-14T23:49:52.997123Z"
+  "graded_at": "2026-08-03T14:25:27.553185Z",
+  "image_id": "sha256:382dd3fbd47af148f94d6585e262a296f5052ea24216581388be2ae94a93798d"
 }

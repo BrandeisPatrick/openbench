@@ -184,5 +184,6 @@
     "hardcode_flags": [],
     "assert_weakening_count": 0
   },
-  "graded_at": "2026-07-12T18:10:53.341361Z"
+  "graded_at": "2026-08-03T14:28:30.759541Z",
+  "image_id": "sha256:382dd3fbd47af148f94d6585e262a296f5052ea24216581388be2ae94a93798d"
 }
