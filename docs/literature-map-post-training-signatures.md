@@ -107,5 +107,72 @@ Requires new instrumentation (flag for the confirmatory design):
 9. Distillation probes per 2607.09692 (2a) — dedicated probe prompts, not
    agent tasks.
 
+## 4. General reasoning-dynamics literature (widened sweep, 2026-08-27)
+
+Beyond technique detection: recent empirical work on how reasoning models
+actually reason, which sharpens or corrects several of our metric designs.
+
+### a. Within-trace convergence and early exit
+- **Stop When Reasoning Converges** (PUMA) — reasoning has converged when
+  successive steps stop adding semantic novelty and only revisit
+  established conclusions — [2605.17672](https://arxiv.org/abs/2605.17672)
+- Answer-convergence early stopping — [2506.02536](https://arxiv.org/pdf/2506.02536);
+  run-jump termination test — [2509.14004](https://arxiv.org/html/2509.14004v2);
+  confidence-dynamics stopping — [2604.04930](https://arxiv.org/html/2604.04930v1)
+- **Borrowed metric**: per-step semantic-novelty decay over a trace
+  ("novelty profile"). Prediction: later generations converge (novelty
+  drops to zero) then STOP; earlier generations either loop past
+  convergence (grind) or stop before converging (premature claim). Gives
+  the grind/confabulate distinction a principled, literature-grounded
+  measure computable from reasoning_content + actions.
+
+### b. Self-correction / "aha" behaviors — a live controversy we can test
+- Pro: outcome RL elicits verification, backtracking, self-correction —
+  [Understanding Aha Moments 2504.02956](https://arxiv.org/pdf/2504.02956),
+  [Logic-RL 2502.14768](https://arxiv.org/pdf/2502.14768)
+- **Contra: "Illusion of Insight"** — across 1M+ traces, reasoning shifts
+  are rare and coincide with LOWER accuracy — [2601.00514](https://arxiv.org/html/2601.00514v2)
+- Meta-abilities can be aligned systematically instead of hoped-for —
+  [Beyond Aha, ACL 2026](https://aclanthology.org/2026.findings-acl.1981.pdf)
+- **Design consequence**: treat self-correction markers as a NULL-tested
+  variable (do shift markers predict solves in our corpus, per generation?)
+  rather than assuming they are progress.
+
+### c. Canonical taxonomies for episode coding (replaces our ad-hoc list)
+- **Four Habits** (verification, backtracking, subgoal setting, backward
+  chaining) as the behaviors enabling self-improvement —
+  [2503.01307](https://arxiv.org/html/2503.01307v1)
+- **Cognitive Foundations**: 170K traces / 17 models, span-level scheme of
+  28 cognitive elements with annotation protocol + human think-aloud
+  comparison — [2511.16660](https://arxiv.org/html/2511.16660v1)
+- Societies of Thought: internal multi-perspective debate as the
+  mechanism of strong reasoning — [2601.10825](https://arxiv.org/html/2601.10825v1)
+- PNAS: thinking traces as cognitive cost vs *performative scaffolding* —
+  [PNAS 2026](https://www.pnas.org/doi/10.1073/pnas.2604554123) —
+  reinforces the faithfulness guard rail from §2e.
+- **Design consequence**: metric-7 episode coding uses Four Habits as the
+  coarse scheme and the 28-element scheme for fine-grained work, citing
+  their protocols; do not invent a new taxonomy.
+
+### d. Length ↔ accuracy is non-monotonic
+- Accuracy peaks at intermediate reasoning length; incorrect responses
+  average LONGER — [optimal reasoning length 2602.09591](https://arxiv.org/html/2602.09591),
+  [O1-Pruner 2501.12570](https://arxiv.org/pdf/2501.12570),
+  [Concise Reasoning via RL 2504.05185](https://arxiv.org/html/2504.05185)
+- Calibration: do reasoning models know when they're right —
+  [2504.06564](https://arxiv.org/pdf/2504.06564)
+- **Design consequences**: (i) analyze length-vs-solve WITHIN model before
+  comparing across; never read raw length as effort or quality;
+  (ii) add a claim-calibration metric: confidence language at completion
+  vs actual grade, per generation.
+
+### e. Process/generative reward models (context for V4's GRM claim)
+- PRM survey (data, construction, usage) — [ACL 2026 / 2510.08049](https://arxiv.org/abs/2510.08049);
+  generative verifiers ThinkPRM/GenPRM — [2504.16828](https://arxiv.org/pdf/2504.16828);
+  length/verbosity hacking as a known PRM failure mode.
+- **Predicted signature**: models trained with step-level or generative
+  verifiers should show step-shaped verification in traces (checking
+  intermediate results), not just terminal test-running.
+
 Next step (separate doc): pre-registered analysis plan picking from these
 hypotheses with metrics and decision rules fixed before computation.
