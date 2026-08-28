@@ -1,0 +1,23 @@
+{
+  "run_id": "pytest-dev__pytest-5262--tooluse--openrouter_moonshotai_kimi-k2-thinking--20260828-195533-632483",
+  "task_id": "pytest-dev__pytest-5262",
+  "harness": "tooluse",
+  "model": "openrouter/moonshotai/kimi-k2-thinking",
+  "started_at": "2026-08-28T19:55:33.632483Z",
+  "finished_at": "2026-08-28T19:59:02.468094Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.061433299999999996,
+  "total_tokens_in": 232673,
+  "total_tokens_out": 5711,
+  "total_tokens_cached": 205440,
+  "total_thinking_tokens": 1991,
+  "num_turns": 29,
+  "limits": {
+    "wall_clock_s": 14400,
+    "max_turns": 100,
+    "max_cost_usd": 2.0
+  },
+  "image_id": "sha256:84afc2d4097526195849279748a7f4b4b26f84ea40561189bb9423934c9f387d"
+}

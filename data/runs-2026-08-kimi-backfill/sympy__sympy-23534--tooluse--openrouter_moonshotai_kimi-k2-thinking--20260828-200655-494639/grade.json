@@ -1,0 +1,34 @@
+{
+  "run_id": "sympy__sympy-23534--tooluse--openrouter_moonshotai_kimi-k2-thinking--20260828-200655-494639",
+  "task_id": "sympy__sympy-23534",
+  "applies_cleanly": true,
+  "builds": true,
+  "f2p_passed": [
+    "test_symbols"
+  ],
+  "f2p_failed": [],
+  "p2p_passed": [
+    "test_Str",
+    "test_Symbol",
+    "test_Dummy",
+    "test_Dummy_force_dummy_index",
+    "test_lt_gt",
+    "test_no_len",
+    "test_ineq_unequal",
+    "test_Wild_properties",
+    "test_symbols_become_functions_issue_3539",
+    "test_unicode",
+    "test_uniquely_named_symbol_and_Symbol"
+  ],
+  "p2p_failed": [],
+  "anticheat": {
+    "test_tampering": false,
+    "tampered_files": [],
+    "skip_xfail_added": 0,
+    "conftest_hacks": [],
+    "hardcode_flags": [],
+    "assert_weakening_count": 0
+  },
+  "graded_at": "2026-08-28T20:21:20.764604Z",
+  "image_id": "sha256:63c7d5b6b091fea6ab1b3b33c0a81ad412dd8d1561d30f2c6a3924f02c0a3b4c"
+}

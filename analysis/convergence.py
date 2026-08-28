@@ -47,6 +47,7 @@ from collections import defaultdict
 CORPORA = [
     "data/runs-2026-07-generational-study",
     "data/runs-2026-07-thinking-extension",
+    "data/runs-2026-08-kimi-backfill",
 ]
 VERIFIED = [
     "pytest-dev__pytest-5262",
@@ -59,7 +60,7 @@ VERIFIED = [
 LINEAGES = [
     ("deepseek", ["r1-0528", "v3.2", "v4-pro"]),
     ("openai", ["o1", "o3", "gpt-5.5"]),
-    ("kimi", ["kimi-k2.6", "kimi-k3"]),
+    ("kimi", ["kimi-k2-thinking", "kimi-k2.6", "kimi-k3"]),
 ]
 ORDER = [m for _, ms in LINEAGES for m in ms]
 PAIRS = [
@@ -70,7 +71,11 @@ PAIRS = [
 
 
 def short_model(model: str) -> str:
-    return model.replace("openrouter_deepseek_deepseek-", "").replace("deepseek-", "")
+    return (
+        model.replace("openrouter_deepseek_deepseek-", "")
+        .replace("openrouter_moonshotai_", "")
+        .replace("deepseek-", "")
+    )
 
 
 def resolved(g: dict) -> bool:

@@ -1,0 +1,23 @@
+{
+  "run_id": "sympy__sympy-13757--tooluse--openrouter_moonshotai_kimi-k2-thinking--20260828-195902-670934",
+  "task_id": "sympy__sympy-13757",
+  "harness": "tooluse",
+  "model": "openrouter/moonshotai/kimi-k2-thinking",
+  "started_at": "2026-08-28T19:59:02.670934Z",
+  "finished_at": "2026-08-28T20:05:23.699342Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.2363993,
+  "total_tokens_in": 1042725,
+  "total_tokens_out": 10355,
+  "total_tokens_cached": 922496,
+  "total_thinking_tokens": 4952,
+  "num_turns": 69,
+  "limits": {
+    "wall_clock_s": 14400,
+    "max_turns": 100,
+    "max_cost_usd": 2.0
+  },
+  "image_id": "sha256:382dd3fbd47af148f94d6585e262a296f5052ea24216581388be2ae94a93798d"
+}
