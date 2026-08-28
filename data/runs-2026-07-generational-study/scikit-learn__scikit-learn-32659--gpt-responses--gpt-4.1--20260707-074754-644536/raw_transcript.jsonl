@@ -1,2 +1,0 @@
-{"type": "meta", "model": "gpt-4.1", "task_id": "scikit-learn__scikit-learn-32659", "scaffold": "gpt-responses", "reasoning_summary": "auto"}
-{"type": "final", "exit_reason": "crash", "turns": 0, "usage_totals": {"cost_usd": 0.0, "tokens_in": 0, "tokens_out": 0, "tokens_thinking": 0, "num_turns": 0}}

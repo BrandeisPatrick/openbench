@@ -1,13 +1,17 @@
 # Run corpus — generational behavior study (July 2026)
 
-Frozen snapshot of the complete run corpus behind the chat-lineage
-comparison (`deepseek-chat-v3-0324 → deepseek-v4-pro`, `gpt-4.1 → gpt-5.5`):
-151 run directories (84 usable model runs — 21 per model — plus crashed
-runs kept as audit evidence, and golden-fixture control runs). Total API
-spend: ~$114. This README is provenance only — analysis and reports are
-intentionally not included. All prior analysis artifacts (per-run
-`profile.json`, the `openbench behavior`/`compare` pipeline) were removed
-2026-08-28 in an experiment restart; only raw run data and grades remain.
+Frozen snapshot of the July-2026 generational runs for the two reasoning
+gen-3 endpoints `deepseek-v4-pro` and `gpt-5.5` (21 usable runs each, plus
+crashed runs kept as audit evidence and golden-fixture control runs). This
+README is provenance only — analysis and reports are intentionally not
+included. Scope changes since the freeze:
+- 2026-08-28 experiment restart: all prior analysis artifacts (per-run
+  `profile.json`, the `openbench behavior`/`compare` pipeline) removed;
+  only raw run data and grades remain.
+- 2026-08-28 reasoning-only rescope: the two non-reasoning models
+  (`deepseek-chat-v3-0324`, `gpt-4.1` — zero reasoning_content in all
+  runs) were deleted from the corpus (73 dirs; recoverable from git
+  history). The study now covers reasoning models only.
 
 ## Contents
 

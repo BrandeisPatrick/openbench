@@ -32,9 +32,11 @@ own. Solve outcome derives from grade.json: applies & builds & F2P all pass
 & no P2P failures.
 
 Interpretation boundary (fixed in advance): comparisons are made within lab
-lineages only (v3-0324->v4-pro, gpt-4.1->gpt-5.5, o1->o3, r1->v3.2,
+lineages only (deepseek r1->v3.2->v4-pro, openai o1->o3->gpt-5.5, kimi
 k2.6->k3); cross-lab numbers are descriptive. With 4 task clusters this is
 an exploratory analysis: effect directions and sizes, no significance tests.
+Reasoning-only rescope 2026-08-28: the non-reasoning models (v3-0324,
+gpt-4.1) were deleted from the corpus and are out of scope.
 """
 
 import difflib
@@ -52,16 +54,18 @@ VERIFIED = [
     "sympy__sympy-22914",
     "sympy__sympy-23534",
 ]
-ORDER = [
-    "chat-v3-0324", "r1-0528", "o1", "gpt-4.1", "v3.2",
-    "kimi-k2.6", "o3", "kimi-k3", "gpt-5.5", "v4-pro",
+# Reasoning lineages (reasoning-only rescope 2026-08-28): per lab, models
+# ordered by generation. Successive links are the within-lab comparisons.
+LINEAGES = [
+    ("deepseek", ["r1-0528", "v3.2", "v4-pro"]),
+    ("openai", ["o1", "o3", "gpt-5.5"]),
+    ("kimi", ["kimi-k2.6", "kimi-k3"]),
 ]
+ORDER = [m for _, ms in LINEAGES for m in ms]
 PAIRS = [
-    ("deepseek chat", "chat-v3-0324", "v4-pro"),
-    ("openai chat", "gpt-4.1", "gpt-5.5"),
-    ("openai think", "o1", "o3"),
-    ("deepseek think", "r1-0528", "v3.2"),
-    ("kimi", "kimi-k2.6", "kimi-k3"),
+    (f"{lab} g{i + 1}->g{i + 2}", ms[i], ms[i + 1])
+    for lab, ms in LINEAGES
+    for i in range(len(ms) - 1)
 ]
 
 
