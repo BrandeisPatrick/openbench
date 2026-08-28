@@ -5,7 +5,9 @@ comparison (`deepseek-chat-v3-0324 → deepseek-v4-pro`, `gpt-4.1 → gpt-5.5`):
 151 run directories (84 usable model runs — 21 per model — plus crashed
 runs kept as audit evidence, and golden-fixture control runs). Total API
 spend: ~$114. This README is provenance only — analysis and reports are
-intentionally not included; regenerate them from the runs.
+intentionally not included. All prior analysis artifacts (per-run
+`profile.json`, the `openbench behavior`/`compare` pipeline) were removed
+2026-08-28 in an experiment restart; only raw run data and grades remain.
 
 ## Contents
 
@@ -13,7 +15,7 @@ intentionally not included; regenerate them from the runs.
   `run.json` (outcome, cost, tokens), `raw_transcript.jsonl` (every API turn +
   executed command + output), `events.jsonl` (normalized TraceEvents),
   `workspace.patch` (the agent's diff), `grade.json` (F2P/P2P + anti-cheat),
-  `profile.json` (behavioral metrics), `runner_error.log` (crashes only).
+  `runner_error.log` (crashes only).
 
 ## Data-quality notes (read before analyzing)
 
@@ -36,14 +38,11 @@ intentionally not included; regenerate them from the runs.
   discount) and the price table for some models differed from published
   rates — recompute from token counts if dollars matter.
 
-## Reproduce profiles/reports
+## Analysis
 
-```bash
-cp -R data/runs-2026-07-generational-study/* runs/
-uv run openbench behavior
-uv run openbench compare --pair deepseek --pair gpt --source swebench-verified \
-    --out runs/report.md
-```
+The experiment was restarted 2026-08-28: no analysis pipeline ships with
+this corpus. Analyze the raw artifacts directly; grades derive from
+`grade.json` as applies ∧ builds ∧ all F2P pass ∧ no P2P failures.
 
 Caps used for every run: 100 turns, $2.50, 2 h wall clock, `--runner native`
 (tooluse protocol for DeepSeek, gpt-responses for OpenAI — identical within

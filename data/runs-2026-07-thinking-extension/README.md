@@ -3,15 +3,17 @@
 Frozen snapshot of the thinking-lineage arms extending
 `data/runs-2026-07-generational-study/`: o1, o3, R1-0528, V3.2, kimi-k2.6,
 kimi-k3 (84 run dirs, including crashed runs kept as audit evidence and one
-2026-08-02 kimi-k3 rerun at raised caps). Pair definitions live in
-`behavior/compare.py`. This README is provenance only — analysis and
-reports are intentionally not included; regenerate them from the runs.
+2026-08-02 kimi-k3 rerun at raised caps). This README is provenance only —
+analysis and reports are intentionally not included. All prior analysis
+artifacts (per-run `profile.json`, the `openbench behavior`/`compare`
+pipeline) were removed 2026-08-28 in an experiment restart; only raw run
+data and grades remain.
 
 ## Contents
 
 `<task>--<harness>--<model>--<timestamp>/` — one run: `run.json`,
 `raw_transcript.jsonl`, `events.jsonl`, `workspace.patch`, `grade.json`,
-`profile.json`, `runner_error.log` (crashes only). Where present,
+`runner_error.log` (crashes only). Where present,
 `grade.json.orig*` are superseded grades kept as an audit trail (see
 Data-quality notes).
 
@@ -38,12 +40,8 @@ Data-quality notes).
 - Anticheat flags: check `assert_weakening_count` before interpreting
   `test_tampering` (additive test-writing also flags).
 
-## Regenerate profiles/reports
+## Analysis
 
-```bash
-cp -R data/runs-2026-07-thinking-extension/* runs/
-uv run openbench behavior
-uv run openbench compare --pair gpt-think-early --pair gpt-think-late \
-    --pair deepseek-think-early --pair deepseek-think-late --pair kimi-think \
-    --source swebench-verified --out runs/report.md
-```
+The experiment was restarted 2026-08-28: no analysis pipeline ships with
+this corpus. Analyze the raw artifacts directly; grades derive from
+`grade.json` as applies ∧ builds ∧ all F2P pass ∧ no P2P failures.

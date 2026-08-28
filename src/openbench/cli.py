@@ -204,49 +204,6 @@ def golden_gate(task_id: Optional[str] = typer.Argument(None)) -> None:
     console.print(f"[bold green]golden gate passed for all {gated} gated task(s)[/bold green]")
 
 
-@app.command()
-def behavior(
-    run_id: Optional[str] = typer.Argument(None, help="One run; omit for all runs"),
-) -> None:
-    """Normalize traces and compute per-run behavior profiles (offline)."""
-    from openbench.behavior import profile_runs
-
-    profiles = profile_runs(run_id=run_id)
-    table = Table("run_id", "model", "resolved", "test_runs", "verified", "exit")
-    for p in profiles:
-        table.add_row(
-            p.run_id,
-            p.model.split("/")[-1],
-            str(p.resolved),
-            str(p.test_run_count),
-            str(p.verified_before_done),
-            p.exit_reason or "-",
-        )
-    console.print(table)
-    console.print(f"[green]{len(profiles)} profile(s) written[/green]")
-
-
-@app.command()
-def compare(
-    pair: list[str] = typer.Option(
-        ["deepseek", "gpt"], "--pair", help="Generation pair(s) to compare"
-    ),
-    out: Path = typer.Option(Path("runs/behavior_report.md"), help="Output markdown path"),
-    source: Optional[str] = typer.Option(
-        None, help="Restrict to one task-provenance stratum (e.g. swebench-verified)"
-    ),
-) -> None:
-    """Generate the generational behavior-comparison report (offline)."""
-    from openbench.behavior import GEN_PAIRS, generate_comparison_report
-
-    unknown = [p for p in pair if p not in GEN_PAIRS]
-    if unknown:
-        console.print(f"[red]unknown pair(s) {unknown}[/red]; known: {sorted(GEN_PAIRS)}")
-        raise typer.Exit(1)
-    path = generate_comparison_report(pair, out, source=source)
-    console.print(f"[green]Report written:[/green] {path}")
-
-
 @app.command("import-swebench")
 def import_swebench(
     per_cell: int = typer.Option(1, help="Instances per (repo × difficulty) cell"),
