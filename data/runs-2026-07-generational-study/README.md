@@ -12,6 +12,13 @@ included. Scope changes since the freeze:
   (`deepseek-chat-v3-0324`, `gpt-4.1` — zero reasoning_content in all
   runs) were deleted from the corpus (73 dirs; recoverable from git
   history). The study now covers reasoning models only.
+- 2026-08-31 pruning: the 35 run dirs on the three quarantined tasks
+  (`scikit-learn__scikit-learn-32659`, `sympy__sympy-29263`,
+  `sympy__sympy-28318` — model runs and golden fixtures) were removed;
+  they measured task defects, not capability, and no analysis used them.
+  Recoverable from git history at commit 425cd54, including the one
+  `deepseek-v4-pro` run on 32659 that mined the gold solution from the
+  image's git history (the leak since fixed at image level).
 
 ## Contents
 
@@ -26,15 +33,9 @@ included. Scope changes since the freeze:
 - Exclude `run.json` `exit_reason == "crash"` from any analysis
   (infrastructure failures: an exhausted API key mid-matrix, provider rate
   limits — never model behavior).
-- Runs on the three quarantined tasks (`scikit-learn__scikit-learn-32659`,
-  `sympy__sympy-29263`, `sympy__sympy-28318`) are audit evidence only —
-  their grades measure task defects, not capability
-  (see `datasets/quarantine/README.md`). Restrict headline analysis to the
-  `source == swebench-verified` stratum.
-- One run (`scikit-learn__scikit-learn-32659--tooluse--deepseek-v4-pro--…073854`)
-  mined the gold solution from the task image's git history (leak since
-  fixed at image level); no SWE-bench-Verified run touched git history —
-  verified by transcript scan.
+- The corpus now holds only the four SWE-bench-Verified tasks (quarantined
+  task runs pruned 2026-08-31, see above). No Verified run touched git
+  history — verified by transcript scan.
 - Grades in this corpus were issued 2026-07-07 on healthy images and
   reproduced exactly in a 2026-08-03 re-grade on rebuilt, golden-gated
   images. Run `openbench golden-gate` before grading anything new.

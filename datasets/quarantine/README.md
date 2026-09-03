@@ -2,9 +2,10 @@
 
 Tasks moved out of `datasets/tasks/` after failing a fairness audit
 (2026-07-08; in-container replays of the best agent patches against the hidden
-tests). They must not be used in studies. Run traces from these tasks are kept
-under `runs/` as audit evidence but are excluded from all reported results
-(`openbench compare --source swebench-verified`).
+tests). They must not be used in studies. Their run traces were pruned from
+the frozen corpora on 2026-08-31 (never part of any reported result); the
+audit evidence remains in git history at commit 425cd54 under
+`data/runs-2026-07-generational-study/`.
 
 Common root cause: **none of the three ever passed the validation gate**
 (`validation` empty in task.json), and the gate at the time did not check the

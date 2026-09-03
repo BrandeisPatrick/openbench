@@ -1,4 +1,0 @@
-{"type": "system", "subtype": "init", "session_id": "golden", "model": "none", "tools": ["Bash", "Read", "Edit"], "cwd": "/repo"}
-{"type": "assistant", "message": {"role": "assistant", "content": [{"type": "text", "text": "Applying gold patch."}], "usage": {"input_tokens": 0, "output_tokens": 0}}}
-{"type": "assistant", "message": {"role": "assistant", "content": [{"type": "tool_use", "id": "toolu_golden_1", "name": "Bash", "input": {"command": "git apply /task/gold.patch"}}], "usage": {"input_tokens": 0, "output_tokens": 0}}}
-{"type": "result", "subtype": "success", "total_cost_usd": 0.0, "num_turns": 1, "is_error": false, "result": "gold patch applied"}

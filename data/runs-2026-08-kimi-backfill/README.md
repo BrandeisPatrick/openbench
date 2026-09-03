@@ -13,7 +13,9 @@ protocol as the July corpora.
   a named confound for cross-generation behavioral comparisons.
 - Caps: 100 turns, $2.00, 4 h wall. No run hit any cap (all exited
   `completed`); total API cost ≈ $1.55.
-- Grading: images golden-gated same day (all 4 PASS); fresh null controls
+- Grading: images golden-gated same day (all 4 PASS — the four
+  `*--golden--*` dirs here are those gate receipts; the model label in
+  their names is the runner's default stamp, not a model run); fresh null controls
   same day graded NOT RESOLVED with P2P 100% green (specificity), see
   `data/runs-2026-08-null-controls/`.
 - Leak scan: no git-history mining in any transcript (only `git stash`
