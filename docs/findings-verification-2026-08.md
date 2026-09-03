@@ -110,6 +110,25 @@ sampling-regime uncertainty. The OpenAI lineage — host-clean end to end —
 shows the same qualitative pattern (rising task-specificity margin,
 compression on solved runs o3→5.5), which anchors the cross-lab story.
 
+## Second-round cross-checks (2026-08-31, after pruning)
+
+- Reproducibility: `verify_findings.py` output byte-identical across two
+  runs and after the corpus pruning (quarantined-task runs removed).
+- Finding 2 under an alternative metric (order-free full-command Jaccard
+  instead of verb-sequence similarity): the DeepSeek and OpenAI margin
+  orderings hold (r1 0.000 → v3.2 +0.035 → v4 +0.064; o1 +0.013 → o3
+  +0.017 → gpt-5.5 +0.035). Kimi does not: k3's margin is highest under
+  verb-sequence (+0.186) but lowest in its lineage under full-command
+  overlap (+0.017) — k3 converges on the *shape* of its workflow, not on
+  literal commands. Kimi's finding-2 reading is metric-dependent; the
+  pre-registered metric for the expansion must be chosen with this known.
+- Finding 4 under billed output tokens (`run.json total_tokens_out`,
+  which includes OpenAI's hidden reasoning — a better measure for that
+  lineage than summary characters), solved runs only: v3.2 23,780 →
+  v4-pro 7,992 (3.0×); o3 15,689 → gpt-5.5 3,798 (4.1×); kimi k2.6 11,486
+  → k3 13,144 (flat). Rollout compression on solved runs appears in two
+  lineages and not the third — a lab-differentiating result.
+
 ## Status
 
 All findings remain **exploratory** (4 task clusters, no significance
