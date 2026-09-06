@@ -25,7 +25,7 @@ changes volume, not behavior. Our addition is the *discreteness* statistic.
 - Optional: DeepSeek v4-pro if its API exposes an effort level.
 - All other settings identical to the banked cells; effort recorded per run.
 
-## Measures (`analysis/effort_modes.py`)
+## Measures (`research/analysis/effort_modes.py`)
 
 - Per run, Layer-A profile: command count, X/E/V composition, edit→verify
   probability, tokens per action, reasoning volume, termination class, solve.

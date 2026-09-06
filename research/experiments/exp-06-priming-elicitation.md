@@ -25,7 +25,7 @@ correctness. Used here as a diagnostic rather than a training intervention.
 - Compared with the banked unprimed cells; primed runs are a separate
   condition, never pooled.
 
-## Measures (`analysis/priming.py`)
+## Measures (`research/analysis/priming.py`)
 
 Solve rate; Layer-A profile distance to the newer generation (JSD over verb
 histograms, ordering similarity); edit→verify probability; unsupported

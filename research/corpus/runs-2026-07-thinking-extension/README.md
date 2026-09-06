@@ -1,7 +1,7 @@
 # Run corpus — thinking-lineage extension (July 2026)
 
 Frozen snapshot of the thinking-lineage arms extending
-`data/runs-2026-07-generational-study/`: o1, o3, R1-0528, V3.2, kimi-k2.6,
+`research/corpus/runs-2026-07-generational-study/`: o1, o3, R1-0528, V3.2, kimi-k2.6,
 kimi-k3 (84 run dirs, including crashed runs kept as audit evidence and one
 2026-08-02 kimi-k3 rerun at raised caps). This README is provenance only —
 analysis and reports are intentionally not included. All prior analysis

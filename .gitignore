@@ -27,5 +27,5 @@ wheels/
 .claude/
 .DS_Store
 
-# June-era exploration runs, superseded by the data/ freezes
+# June-era exploration runs, superseded by the research/corpus/ freezes
 /runs-archive-2026-06/

@@ -6,7 +6,7 @@ before any results were inspected.
 Design
 ------
 Unit: a cell = (model, verified task) with K=3 same-condition repeats.
-  - Corpora: data/runs-2026-07-generational-study, data/runs-2026-07-thinking-extension
+  - Corpora: research/corpus/runs-2026-07-generational-study, research/corpus/runs-2026-07-thinking-extension
   - Verified tasks only: pytest-5262, sympy-13757, sympy-22914, sympy-23534
   - Excluded: crashed runs; the 2026-08-02 kimi-k3 raised-cap rerun (separate
     condition). Any cell with >3 runs keeps the 3 earliest timestamps.
@@ -45,9 +45,9 @@ import os
 from collections import defaultdict
 
 CORPORA = [
-    "data/runs-2026-07-generational-study",
-    "data/runs-2026-07-thinking-extension",
-    "data/runs-2026-08-kimi-backfill",
+    "research/corpus/runs-2026-07-generational-study",
+    "research/corpus/runs-2026-07-thinking-extension",
+    "research/corpus/runs-2026-08-kimi-backfill",
 ]
 VERIFIED = [
     "pytest-dev__pytest-5262",

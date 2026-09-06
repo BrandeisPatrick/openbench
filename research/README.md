@@ -9,19 +9,25 @@ criterion for an experiment to live here:
 > (e.g. "newer models reason more efficiently") is descriptive and is parked.
 
 Background reading, in order: the lab reports and detection literature
-([docs/literature-map-post-training-signatures.md](../docs/literature-map-post-training-signatures.md)),
+([background/literature-map-post-training-signatures.md](background/literature-map-post-training-signatures.md)),
 what has already been verified on the corpus
-([docs/findings-verification-2026-08.md](../docs/findings-verification-2026-08.md)),
+([results/exp-00-findings-verification/results.md](results/exp-00-findings-verification/results.md)),
 the reasoning-pattern taxonomy map
-([docs/reasoning-pattern-literature-map.md](../docs/reasoning-pattern-literature-map.md)),
+([background/reasoning-pattern-literature-map.md](background/reasoning-pattern-literature-map.md)),
 and the longer design proposal this folder simplifies
-([docs/research-proposal-kimi-first.md](../docs/research-proposal-kimi-first.md)).
+([proposal.md](proposal.md)).
 
 ## Layout
 
 ```
 research/
   README.md                 this guide
+  proposal.md               the longer design proposal this folder simplifies
+  background/               literature maps: reading and hypotheses, not findings
+  corpus/                   frozen run corpora, one folder + provenance README per batch
+  analysis/                 metric code; every measure an experiment names
+                            must exist here, definitions in the file header,
+                            before results are inspected
   experiments/              one file per experiment, fixed template (below)
     exp-01-passk-boundary.md
     exp-02-effort-modes.md
@@ -31,16 +37,16 @@ research/
     exp-06-priming-elicitation.md
     parked.md               considered and set aside, with the reason
   results/                  one sub-folder per experiment once it runs
+    exp-00-findings-verification/results.md
+                            exploratory verification of the 2026-08 findings;
+                            predates the experiment files
     exp-NN-<slug>/results.md  numbers, tables, corrections ledger
-analysis/                   metric code; every measure an experiment names
-                            must exist here, definitions in the file header,
-                            before results are inspected
 ```
 
 ## Corpus and lineages (what every experiment runs on)
 
 Three within-lab lineages of reasoning models under one fixed harness,
-4 SWE-bench Verified tasks × K=3 repeats per cell (frozen in `data/`):
+4 SWE-bench Verified tasks × K=3 repeats per cell (frozen in `research/corpus/`):
 
 | lineage | g1 → g2 → g3 | reasoning channel | serving host |
 |---|---|---|---|
@@ -75,8 +81,8 @@ the decisive one and it absorbs the harder-task expansion.
    protocol, measures, predictions, decision rule — before its first run or
    computation. Status moves `proposed → pre-registered → running → analyzed`.
 2. **Measures live in code.** Every measure named in an experiment file has a
-   function in `analysis/` with its definition in the file header, committed
-   before results exist (`analysis/convergence.py` is the model).
+   function in `research/analysis/` with its definition in the file header, committed
+   before results exist (`research/analysis/convergence.py` is the model).
 3. **Predictions are never edited after results.** Corrections go in the
    results file's ledger; the prediction text stays as written.
 4. **Within-lineage only.** Cross-lab numbers are descriptive. Host-crossing

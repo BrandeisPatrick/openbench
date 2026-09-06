@@ -28,7 +28,7 @@ PRICES_PER_MTOK: dict[str, tuple[float, float]] = {
     # Verified against published provider pricing 2026-08-02. Historical runs
     # keep the cost_usd computed at run time; recompute from token counts if a
     # price was wrong then (July runs priced gpt-5.5 at 3/15 and v4-pro at
-    # 1.2/4.8 — see data/ freeze READMEs).
+    # 1.2/4.8 — see research/corpus/ READMEs).
     "deepseek-v4-flash": (0.14, 0.28),
     "deepseek-v4-pro": (0.435, 0.87),
     "claude-opus-4-8": (15.0, 75.0),

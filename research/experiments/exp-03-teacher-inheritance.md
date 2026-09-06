@@ -33,7 +33,7 @@ test touching the file).
 - Repeat after the host-matched Kimi rerun (all three generations on one
   host) to remove the serving confound on k2-thinking.
 
-## Measures (`analysis/agent_echo.py`)
+## Measures (`research/analysis/agent_echo.py`)
 
 AGS components per the paper, computed per task between every model pair;
 RPS on visible messages only (summaries excluded).

@@ -17,7 +17,7 @@ protocol as the July corpora.
   `*--golden--*` dirs here are those gate receipts; the model label in
   their names is the runner's default stamp, not a model run); fresh null controls
   same day graded NOT RESOLVED with P2P 100% green (specificity), see
-  `data/runs-2026-08-null-controls/`.
+  `research/corpus/runs-2026-08-null-controls/`.
 - Leak scan: no git-history mining in any transcript (only `git stash`
   round-trips used for baseline test verification). Gold-patch similarity
   of solved runs (0.41 mean edit-set Jaccard) is in-family (k2.6 0.30,

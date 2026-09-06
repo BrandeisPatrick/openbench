@@ -5,7 +5,7 @@ reasoning-only corpora (9 models, 4 verified tasks, K=3). Finding 1 was
 already demoted in review (Pass@3 saturation → censored capability axis;
 its real test is the harder-task expansion). This pass attacked findings
 2–6 at their weakest joints. Method and decision rules are fixed in
-[analysis/verify_findings.py](../analysis/verify_findings.py) (rules
+[research/analysis/verify_findings.py](../../analysis/verify_findings.py) (rules
 written before results were inspected); everything below derives from the
 frozen corpora with zero new API spend.
 

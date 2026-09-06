@@ -3,8 +3,8 @@
 Status: proposal for pre-registration, 2026-09-04. Nothing here is a result.
 Every number quoted from our corpus is exploratory (4 task clusters) and is
 cited only to motivate a hypothesis or a control. Metrics named below are to
-be fixed in code before any result is inspected, as `analysis/convergence.py`
-and `analysis/verify_findings.py` were.
+be fixed in code before any result is inspected, as `research/analysis/convergence.py`
+and `research/analysis/verify_findings.py` were.
 
 Background documents: [literature map](literature-map-post-training-signatures.md)
 (lab-claimed techniques and detection methods), [reasoning-pattern map](reasoning-pattern-literature-map.md)
@@ -246,9 +246,9 @@ DeepSeek and Phase 3 can be trimmed independently.
 
 1. This proposal, revised into a pre-registration with thresholds filled in
    and committed before Phase 2 runs.
-2. Analysis code with definitions fixed in headers (`analysis/`), one module
+2. Analysis code with definitions fixed in headers (`research/analysis/`), one module
    per layer; the action modules must run unchanged on OpenAI data.
-3. A results document per phase in `docs/`, each labelled exploratory or
+3. A results document per phase in `research/results/`, each labelled exploratory or
    confirmatory, with a corrections ledger.
 4. The GPT-lineage port as the final chapter, reusing Layer A and the
    statistics module verbatim.

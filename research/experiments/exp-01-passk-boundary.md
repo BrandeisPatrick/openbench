@@ -39,7 +39,7 @@ advantage persist at large k (expansion) or vanish (sharpening)?
 - Repeats: K = 16 per model per task (K = 32 on a 6-task subset if budget).
 - Caps: token-based, identical across arms; provider-default sampling.
 
-## Measures (to be implemented in `analysis/passk.py` before results)
+## Measures (to be implemented in `research/analysis/passk.py` before results)
 
 - pass@k, unbiased estimator: 1 − C(n−c, k)/C(n, k) for n samples, c solved.
 - Curve per model; gap(k) = pass@k(new) − pass@k(old) at k ∈ {1, 4, 16, (32)}.

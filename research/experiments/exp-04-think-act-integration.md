@@ -21,7 +21,7 @@ literature map §2c(iii). Measures below are deterministic from the transcript.
 Existing r1, v3.2, v4-pro traces (4 tasks × 3 repeats); Kimi and OpenAI
 reported as descriptive context (OpenAI on billed tokens only).
 
-## Measures (`analysis/interleaving.py`)
+## Measures (`research/analysis/interleaving.py`)
 
 - Per-call reasoning coverage: fraction of tool calls preceded by non-empty
   reasoning in the same turn.
