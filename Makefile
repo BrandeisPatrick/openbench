@@ -1,4 +1,4 @@
-.PHONY: install test lint clean help
+.PHONY: install test lint check clean help
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -12,6 +12,9 @@ test:  ## Run the offline test suite (no Docker / network / keys)
 
 lint:  ## Lint with ruff
 	uv run ruff check src tests
+
+check:  ## Verify the frozen-corpus manifest (regenerate + invariants)
+	uv run python research/analysis/manifest.py --check
 
 clean:  ## Remove caches
 	rm -rf .pytest_cache .ruff_cache

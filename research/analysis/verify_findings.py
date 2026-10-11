@@ -66,7 +66,7 @@ from itertools import combinations
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import convergence as cv  # noqa: E402  (pre-registered definitions)
 
-TASKS_DIR = "datasets/tasks"
+TASKS_DIR = str(cv.manifest.TASKS)
 
 
 def run_extras(run_dir: str) -> dict:
@@ -168,19 +168,11 @@ def main():
                   f'   delta {margins[new] - margins[old]:+.3f}')
 
     # ---------- V3 host map ----------
-    print("\nV3  serving-host map (from run-dir model field):")
+    print("\nV3  serving-host map (host column of research/corpus/runs.csv):")
     hosts = {}
-    for corpus in cv.CORPORA:
-        for d in sorted(os.listdir(corpus)):
-            parts = d.split("--")
-            if len(parts) < 4 or parts[0] not in cv.VERIFIED:
-                continue
-            raw_model = parts[2]
-            if raw_model == "none":
-                continue
-            m = cv.short_model(raw_model)
-            hosts[m] = ("openrouter" if raw_model.startswith("openrouter_")
-                        else "first-party")
+    for row in cv.manifest.load_runs():
+        if row["included"] and row["task_id"] in cv.VERIFIED:
+            hosts[row["model"]] = row["host"]
     for lab, ms in cv.LINEAGES:
         chain = "  ->  ".join(f"{m} [{hosts.get(m, '?')}]" for m in ms)
         crossings = [f"{ms[i]}->{ms[i + 1]}" for i in range(len(ms) - 1)
