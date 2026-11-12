@@ -14,17 +14,15 @@ injectable (`chat_fn`) so tests run offline.
 from __future__ import annotations
 
 import json
-import os
 import time
 from typing import Callable
 
 import httpx
 
-from openbench import paths
+from openbench import anthropic_auth, paths
 from openbench.models import DIFFICULTY_LEVELS, Task
 
 _ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
-_ANTHROPIC_VERSION = "2023-06-01"
 _DEFAULT_MODEL = "claude-sonnet-4-6"  # difficulty triage is cheap; override for spot checks
 _MAX_GOLD_CHARS = 24000  # keep large diffs from blowing the context / cost
 
@@ -46,17 +44,7 @@ _SYSTEM = (
 
 def _default_chat(model: str) -> ChatFn:
     """A minimal Anthropic text client (mirrors runners/claude_native.py)."""
-    key = os.environ.get("ANTHROPIC_API_KEY", "")
-    if not key:
-        raise RuntimeError("ANTHROPIC_API_KEY is not set (required to assess difficulty)")
-    client = httpx.Client(
-        headers={
-            "x-api-key": key,
-            "anthropic-version": _ANTHROPIC_VERSION,
-            "content-type": "application/json",
-        },
-        timeout=120,
-    )
+    client = anthropic_auth.make_client(120, purpose="to assess difficulty")
 
     def chat(system: str, user: str) -> str:
         body = {

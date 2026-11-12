@@ -4,10 +4,9 @@ bash tool + extended thinking. Structural stop + native format + summarized CoT.
 
 from __future__ import annotations
 
-import os
-
 import httpx
 
+from openbench import anthropic_auth
 from openbench.runners.protocols.base import (
     _API_TIMEOUT_S,
     DONE_MARKER,
@@ -21,7 +20,6 @@ from openbench.runners.protocols.providers import PRICES_PER_MTOK
 from openbench.runners.protocols.tools import BASH_TOOL
 
 _ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
-_ANTHROPIC_VERSION = "2023-06-01"
 _MAX_TOKENS = 16000  # output budget per turn (covers adaptive thinking + answer)
 # output_config.effort (valid: low|medium|high|xhigh|max). Default `xhigh` — more
 # thinking budget than `high` (richer CoT on substantive steps) at lower cost than
@@ -60,17 +58,8 @@ class AnthropicToolUseProtocol(BaseProtocol):
         return {"scaffold": "claude-native", "thinking_effort": self._effort}
 
     def _make_client(self, model: str) -> httpx.Client:
-        key = os.environ.get("ANTHROPIC_API_KEY", "")
-        if not key:
-            raise RuntimeError(f"ANTHROPIC_API_KEY is not set (required for model {model})")
-        return httpx.Client(
-            headers={
-                "x-api-key": key,
-                "anthropic-version": _ANTHROPIC_VERSION,
-                "content-type": "application/json",
-            },
-            timeout=_API_TIMEOUT_S,
-        )
+        # API key, ANTHROPIC_AUTH_TOKEN, or the `ant` CLI login — see anthropic_auth.
+        return anthropic_auth.make_client(_API_TIMEOUT_S, purpose=f"for model {model}")
 
     def _send(self, client: httpx.Client, messages: list[dict], model: str) -> dict:
         body = {

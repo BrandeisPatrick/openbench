@@ -58,6 +58,13 @@ def _resolve_provider(model: str) -> tuple[str, str, str]:
     for prefix, (base_url, env) in PROVIDERS.items():
         if model.startswith(prefix):
             key = os.environ.get(env, "")
+            if not key and env == "ANTHROPIC_API_KEY":
+                # Fall back to ANTHROPIC_AUTH_TOKEN / the `ant` CLI login. Lazy
+                # import keeps this module a leaf. The token is fixed for the
+                # run here (no refresh), unlike the claude-native protocol.
+                from openbench import anthropic_auth
+
+                key = anthropic_auth.bearer_token() or ""
             if not key:
                 raise RuntimeError(f"{env} is not set (required for model {model})")
             # Strip a trailing-slash routing prefix (e.g. "openrouter/"); the
