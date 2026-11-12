@@ -1,0 +1,878 @@
+{
+ "candidates": [
+  {
+   "id": "C01",
+   "name": "Inspects code before editing",
+   "inclusion_criterion": "Before its first modification of any repository source file, the run executes at least one read-only command (grep, cat, sed -n, head, ls) on repository source files.",
+   "merged_from": [
+    "P006",
+    "P011",
+    "P046",
+    "P052",
+    "P056"
+   ]
+  },
+  {
+   "id": "C02",
+   "name": "Reproduces bug before fixing",
+   "inclusion_criterion": "Before any edit to repository source files, the run executes code whose output shows the current buggy behavior of the target functionality.",
+   "merged_from": [
+    "P053",
+    "P076",
+    "P083"
+   ]
+  },
+  {
+   "id": "C03",
+   "name": "Overwrites whole source file",
+   "inclusion_criterion": "The run replaces the entire content of an existing repository source file with newly written content (e.g. cat > existing_file.py << EOF) instead of making a targeted edit.",
+   "merged_from": [
+    "P002",
+    "P007",
+    "P012",
+    "P051",
+    "P057",
+    "P047"
+   ]
+  },
+  {
+   "id": "C04",
+   "name": "Restores source file from backup",
+   "inclusion_criterion": "The run copies a source file back from a backup copy it made (e.g. cp file.bak file) after an edit went wrong.",
+   "merged_from": [
+    "P003",
+    "P018"
+   ]
+  },
+  {
+   "id": "C05",
+   "name": "Baseline comparison on unmodified code",
+   "inclusion_criterion": "The run temporarily removes its own changes (git stash, git checkout, or equivalent), reruns tests or a reproduction on the unmodified code to see whether failures pre-exist, and then restores its changes.",
+   "merged_from": [
+    "P009",
+    "P014",
+    "P022",
+    "P026",
+    "P031",
+    "P036",
+    "P081",
+    "P086",
+    "P042"
+   ]
+  },
+  {
+   "id": "C06",
+   "name": "Retries an unavailable tool",
+   "inclusion_criterion": "The run invokes the same nonexistent command (exit 127 / 'command not found', e.g. apply_patch) two or more times.",
+   "merged_from": [
+    "P019",
+    "P023",
+    "P069",
+    "P064"
+   ]
+  },
+  {
+   "id": "C07",
+   "name": "Edit breaks module import",
+   "inclusion_criterion": "After the run edits a source file, a later command fails with a SyntaxError or IndentationError traceback that points into that edited file.",
+   "merged_from": [
+    "P024",
+    "P029"
+   ]
+  },
+  {
+   "id": "C08",
+   "name": "Prototypes fix via runtime patching",
+   "inclusion_criterion": "The run tries a candidate change by assigning a method or attribute at runtime in a Python snippet (monkey-patching, types.MethodType), either before writing it to source or instead of writing it.",
+   "merged_from": [
+    "P025",
+    "P088"
+   ]
+  },
+  {
+   "id": "C09",
+   "name": "Bulk scripted rewrite of source file",
+   "inclusion_criterion": "The run uses an inline script that changes many lines of a source file at once through regex substitution or line loops, rather than a single targeted edit.",
+   "merged_from": [
+    "P028"
+   ]
+  },
+  {
+   "id": "C10",
+   "name": "Checks failing tests for XFAIL markers",
+   "inclusion_criterion": "After seeing test failures, the run greps or views the test source around the failing test definitions to check for an @XFAIL decorator.",
+   "merged_from": [
+    "P034",
+    "P043"
+   ]
+  },
+  {
+   "id": "C11",
+   "name": "Chases XFAIL tests with extra edits",
+   "inclusion_criterion": "After the core fix works, the run makes further source edits aimed at changing the behavior of tests marked @XFAIL.",
+   "merged_from": [
+    "P020"
+   ]
+  },
+  {
+   "id": "C12",
+   "name": "Runs tests beyond the target test file",
+   "inclusion_criterion": "The run executes test files or doctests other than the primary test file for the modified module (e.g. whole package test directory, neighboring modules, other subpackages, or doctests).",
+   "merged_from": [
+    "P035",
+    "P039",
+    "P078",
+    "P082",
+    "P087",
+    "P090"
+   ]
+  },
+  {
+   "id": "C13",
+   "name": "Runs full repository test suite",
+   "inclusion_criterion": "The run invokes pytest (or the repository's test runner) without path arguments, so it runs over the whole repository.",
+   "merged_from": [
+    "P070"
+   ]
+  },
+  {
+   "id": "C14",
+   "name": "Reviews git diff",
+   "inclusion_criterion": "The run executes git diff to show its modifications.",
+   "merged_from": [
+    "P045",
+    "P080"
+   ]
+  },
+  {
+   "id": "C15",
+   "name": "Writes garbled characters into source",
+   "inclusion_criterion": "The run writes Python source containing stray corrupted or non-ASCII tokens (e.g. '\u6781') inside code.",
+   "merged_from": [
+    "P050"
+   ]
+  },
+  {
+   "id": "C16",
+   "name": "Fixes unrelated failing test",
+   "inclusion_criterion": "The run edits source code outside the task's target area to make a pre-existing failing test that is unrelated to the task pass.",
+   "merged_from": [
+    "P065",
+    "P067"
+   ]
+  },
+  {
+   "id": "C17",
+   "name": "Modifies existing test file",
+   "inclusion_criterion": "The run writes changes to a pre-existing file under a tests/ directory.",
+   "merged_from": [
+    "P066",
+    "P071"
+   ]
+  },
+  {
+   "id": "C18",
+   "name": "Hits command timeout",
+   "inclusion_criterion": "At least one command ends with exit code 124 or a harness 'timeout after' message.",
+   "merged_from": [
+    "P044"
+   ]
+  },
+  {
+   "id": "C19",
+   "name": "Enforces line-length style",
+   "inclusion_criterion": "The run checks source lines for length over 79 characters and reformats its own added code to comply.",
+   "merged_from": [
+    "P077",
+    "P084"
+   ]
+  },
+  {
+   "id": "C20",
+   "name": "Probes effects beyond reported cases",
+   "inclusion_criterion": "After the fix, the run executes code that exercises the changed behavior on related types or sibling/subclass implementations that the issue did not mention (e.g. Poly with Matrix, NumPyPrinter/MpmathPrinter, user_functions overrides).",
+   "merged_from": [
+    "P030",
+    "P079",
+    "P085"
+   ]
+  }
+ ],
+ "dropped": [
+  {
+   "name": "P001 Runs code to check its changes",
+   "reason": "Covered by M5 exec_share"
+  },
+  {
+   "name": "P004 Declares done after observing failure",
+   "reason": "Restates U unsupported_done"
+  },
+  {
+   "name": "P005 Done in two commands",
+   "reason": "Covered by M1 n_cmds"
+  },
+  {
+   "name": "P008 Runs test suite after change",
+   "reason": "Covered by M4 test_share"
+  },
+  {
+   "name": "P010 Declares done without verification",
+   "reason": "Restates U unsupported_done"
+  },
+  {
+   "name": "P013 Runs repo test suite",
+   "reason": "Covered by M4 test_share"
+  },
+  {
+   "name": "P015 Declares done despite unfixed bug",
+   "reason": "Restates U unsupported_done"
+  },
+  {
+   "name": "P016 Signals done with broken code",
+   "reason": "Restates U unsupported_done"
+  },
+  {
+   "name": "P017 Runs the project test suite",
+   "reason": "Covered by M4 test_share"
+  },
+  {
+   "name": "P021 Declares done on a broken repo",
+   "reason": "Restates U unsupported_done"
+  },
+  {
+   "name": "P027 Runs the repository test suite",
+   "reason": "Covered by M4 test_share"
+  },
+  {
+   "name": "P032 Adds a new test file",
+   "reason": "Covered by M6 wrote_new_test"
+  },
+  {
+   "name": "P033 Edits core Expr.__mul__",
+   "reason": "Task-specific; covered by M12 extra_files"
+  },
+  {
+   "name": "P037 Adds new test file",
+   "reason": "Covered by M6 wrote_new_test"
+  },
+  {
+   "name": "P038 Modifies core Expr arithmetic",
+   "reason": "Task-specific; covered by M12 extra_files"
+  },
+  {
+   "name": "P040 Calls completion signal",
+   "reason": "Near-universal and uninformative"
+  },
+  {
+   "name": "P041 Calls completion signal",
+   "reason": "Near-universal and uninformative"
+  },
+  {
+   "name": "P048 Adds new test file",
+   "reason": "Covered by M6 wrote_new_test"
+  },
+  {
+   "name": "P049 Uses pytest suite",
+   "reason": "Covered by M4 test_share"
+  },
+  {
+   "name": "P054 Declares done despite failing tests",
+   "reason": "Restates U unsupported_done"
+  },
+  {
+   "name": "P055 Verifies fix with targeted tests",
+   "reason": "Inverse of U unsupported_done"
+  },
+  {
+   "name": "P058 Runs existing test suite",
+   "reason": "Covered by M4 test_share"
+  },
+  {
+   "name": "P059 Declares done without passing check",
+   "reason": "Restates U unsupported_done"
+  },
+  {
+   "name": "P060 Adds new test file",
+   "reason": "Covered by M6 wrote_new_test"
+  },
+  {
+   "name": "P061 Modifies source files",
+   "reason": "Near-universal; covered by M2/M13"
+  },
+  {
+   "name": "P062 Signals task completion",
+   "reason": "Near-universal and uninformative"
+  },
+  {
+   "name": "P063 Repeats identical reproduction command",
+   "reason": "Covered by M8 repeat_cmd_share / M9"
+  },
+  {
+   "name": "P068 Declares done with known failing test",
+   "reason": "Restates U unsupported_done"
+  },
+  {
+   "name": "P072 Edits source code",
+   "reason": "Near-universal; covered by M2/M13"
+  },
+  {
+   "name": "P073 Signals completion",
+   "reason": "Near-universal and uninformative"
+  },
+  {
+   "name": "P074 Repetitive re-running of same reproduction",
+   "reason": "Covered by M8 repeat_cmd_share / M9"
+  },
+  {
+   "name": "P075 Broken heredoc syntax errors",
+   "reason": "Narrow command-formatting artifact; dropped to respect 20-candidate cap"
+  },
+  {
+   "name": "P089 Fix via known-functions table",
+   "reason": "Task-specific fix choice, not a general behavior"
+  }
+ ],
+ "proposals": [
+  {
+   "pid": "P001",
+   "name": "Runs code to check its changes",
+   "inclusion_criterion": "The run executes at least one command that runs Python code (a script or tests) to observe how the modified code behaves before it signals completion.",
+   "pair_id": "sympy__sympy-13757|g1|deepseek-openai"
+  },
+  {
+   "pid": "P002",
+   "name": "Overwrites whole source file",
+   "inclusion_criterion": "The run replaces an entire existing repository source file with new content (e.g. `cat > existing_file.py << EOF`) instead of editing it in place or appending to it.",
+   "pair_id": "sympy__sympy-13757|g1|deepseek-openai"
+  },
+  {
+   "pid": "P003",
+   "name": "Restores file from backup",
+   "inclusion_criterion": "The run copies or restores a source file from a backup copy (for example `cp file.bak file`) after a breakage.",
+   "pair_id": "sympy__sympy-13757|g1|deepseek-openai"
+  },
+  {
+   "pid": "P004",
+   "name": "Declares done after observing failure",
+   "inclusion_criterion": "The run's last test or script output, shown before `echo OPENBENCH_DONE`, has results that differ from the expected values written in its own test comments or printouts (e.g. `x*Poly(...)` still unevaluated), and the run then signals done.",
+   "pair_id": "sympy__sympy-13757|g1|deepseek-openai"
+  },
+  {
+   "pid": "P005",
+   "name": "Done in two commands",
+   "inclusion_criterion": "The run signals completion within two or fewer commands in total.",
+   "pair_id": "sympy__sympy-13757|g1|deepseek-openai"
+  },
+  {
+   "pid": "P006",
+   "name": "Inspects code before editing",
+   "inclusion_criterion": "Run reads or searches the relevant source files (grep/sed/cat/ls) before making any modification to the repository.",
+   "pair_id": "sympy__sympy-13757|g1|openai-kimi"
+  },
+  {
+   "pid": "P007",
+   "name": "Overwrites whole source file",
+   "inclusion_criterion": "Run replaces an entire existing source file with new content written from scratch (e.g. cat > file << EOF) rather than making a targeted edit.",
+   "pair_id": "sympy__sympy-13757|g1|openai-kimi"
+  },
+  {
+   "pid": "P008",
+   "name": "Runs test suite after change",
+   "inclusion_criterion": "Run executes pytest or another test runner on repository tests after modifying code.",
+   "pair_id": "sympy__sympy-13757|g1|openai-kimi"
+  },
+  {
+   "pid": "P009",
+   "name": "Checks failures against baseline",
+   "inclusion_criterion": "Run reverts or stashes its own change and reruns the failing tests to see whether those failures already existed before the change.",
+   "pair_id": "sympy__sympy-13757|g1|openai-kimi"
+  },
+  {
+   "pid": "P010",
+   "name": "Declares done without verification",
+   "inclusion_criterion": "Run calls echo OPENBENCH_DONE without having run any test or reproduction script after its last code change.",
+   "pair_id": "sympy__sympy-13757|g1|openai-kimi"
+  },
+  {
+   "pid": "P011",
+   "name": "Explores code before editing",
+   "inclusion_criterion": "Run inspects relevant source (grep/sed/cat of target file or related modules) before making its first modification to the repository.",
+   "pair_id": "sympy__sympy-13757|g1|kimi-deepseek"
+  },
+  {
+   "pid": "P012",
+   "name": "Overwrites source file wholesale",
+   "inclusion_criterion": "Run replaces an existing repository source file entirely with new content (e.g., cat > existing_file.py heredoc), destroying original contents.",
+   "pair_id": "sympy__sympy-13757|g1|kimi-deepseek"
+  },
+  {
+   "pid": "P013",
+   "name": "Runs repo test suite",
+   "inclusion_criterion": "Run executes the project's existing tests (e.g., pytest on sympy test files) at least once.",
+   "pair_id": "sympy__sympy-13757|g1|kimi-deepseek"
+  },
+  {
+   "pid": "P014",
+   "name": "Verifies failures pre-exist via baseline",
+   "inclusion_criterion": "Run checks whether observed test failures also occur on unmodified code (e.g., git stash, rerun failing tests, then restore).",
+   "pair_id": "sympy__sympy-13757|g1|kimi-deepseek"
+  },
+  {
+   "pid": "P015",
+   "name": "Declares done despite unfixed bug",
+   "inclusion_criterion": "Run calls the completion command after its latest reproduction output still shows the buggy behavior (e.g., x*Poly(x) printed as unevaluated Mul).",
+   "pair_id": "sympy__sympy-13757|g1|kimi-deepseek"
+  },
+  {
+   "pid": "P016",
+   "name": "Signals done with broken code",
+   "inclusion_criterion": "The run calls `echo OPENBENCH_DONE` even though its most recent import or test of the modified package failed, for example with an IndentationError.",
+   "pair_id": "sympy__sympy-13757|g2|deepseek-openai"
+  },
+  {
+   "pid": "P017",
+   "name": "Runs the project test suite",
+   "inclusion_criterion": "The run invokes pytest or bin/test on repository test files, not only ad-hoc python -c snippets.",
+   "pair_id": "sympy__sympy-13757|g2|deepseek-openai"
+  },
+  {
+   "pid": "P018",
+   "name": "Backs up and restores the source file",
+   "inclusion_criterion": "The run copies the target source file to a backup before editing, and later restores it from that backup after a failed edit.",
+   "pair_id": "sympy__sympy-13757|g2|deepseek-openai"
+  },
+  {
+   "pid": "P019",
+   "name": "Repeatedly calls an unavailable tool",
+   "inclusion_criterion": "The run invokes the same nonexistent command (apply_patch) several times and gets exit 127 each time.",
+   "pair_id": "sympy__sympy-13757|g2|deepseek-openai"
+  },
+  {
+   "pid": "P020",
+   "name": "Chases XFAIL tests with extra edits",
+   "inclusion_criterion": "After the core fix works, the run makes further source edits aimed at making tests marked @XFAIL behave differently, such as special-casing complex numbers in __mul__ or __rmul__.",
+   "pair_id": "sympy__sympy-13757|g2|deepseek-openai"
+  },
+  {
+   "pid": "P021",
+   "name": "Declares done on a broken repo",
+   "inclusion_criterion": "The run calls `echo OPENBENCH_DONE` while its most recent import or test command before that call had failed. A failed command here means a nonzero exit or a SyntaxError/IndentationError traceback.",
+   "pair_id": "sympy__sympy-13757|g2|openai-kimi"
+  },
+  {
+   "pid": "P022",
+   "name": "Baseline comparison via git stash",
+   "inclusion_criterion": "The run uses `git stash` (or a similar revert) to rerun a test or reproduction on the unmodified code, then compares that output with the patched behavior.",
+   "pair_id": "sympy__sympy-13757|g2|openai-kimi"
+  },
+  {
+   "pid": "P023",
+   "name": "Retries an unavailable tool",
+   "inclusion_criterion": "The run calls the same nonexistent command (exit 127, 'command not found') more than once.",
+   "pair_id": "sympy__sympy-13757|g2|openai-kimi"
+  },
+  {
+   "pid": "P024",
+   "name": "Edits leave module unimportable",
+   "inclusion_criterion": "After the run edits a source file with a script, a later command fails with a SyntaxError or IndentationError in that file.",
+   "pair_id": "sympy__sympy-13757|g2|openai-kimi"
+  },
+  {
+   "pid": "P025",
+   "name": "Prototypes fix via runtime patching first",
+   "inclusion_criterion": "The run tries a candidate change by assigning a class attribute or method at runtime in a Python snippet before writing that change to the source file, or instead of writing it.",
+   "pair_id": "sympy__sympy-13757|g2|openai-kimi"
+  },
+  {
+   "pid": "P026",
+   "name": "Baseline comparison via git stash",
+   "inclusion_criterion": "Run uses git stash (or equivalent revert) to rerun failing tests or behaviors on the unmodified code to check whether failures pre-exist.",
+   "pair_id": "sympy__sympy-13757|g2|kimi-deepseek"
+  },
+  {
+   "pid": "P027",
+   "name": "Runs the repository test suite",
+   "inclusion_criterion": "Run executes pytest (or another test runner) on repository test files at any point.",
+   "pair_id": "sympy__sympy-13757|g2|kimi-deepseek"
+  },
+  {
+   "pid": "P028",
+   "name": "Bulk regex rewrite of source file",
+   "inclusion_criterion": "Run uses an inline Python script that rewrites many lines of a source file at once via regex or line loops (for example, inserting decorators across many methods), rather than a single targeted edit.",
+   "pair_id": "sympy__sympy-13757|g2|kimi-deepseek"
+  },
+  {
+   "pid": "P029",
+   "name": "Edit breaks module import",
+   "inclusion_criterion": "After the run's own edit to source, importing the package fails with a SyntaxError, IndentationError, or AssertionError that comes from the modified file.",
+   "pair_id": "sympy__sympy-13757|g2|kimi-deepseek"
+  },
+  {
+   "pid": "P030",
+   "name": "Probes regressions with other types",
+   "inclusion_criterion": "Run tests how the change affects operations between Poly and other object types (for example, Matrix or ImmutableMatrix), beyond the reported Symbol and Integer cases.",
+   "pair_id": "sympy__sympy-13757|g2|kimi-deepseek"
+  },
+  {
+   "pid": "P031",
+   "name": "Checks failures on unmodified code",
+   "inclusion_criterion": "The run temporarily removes its own changes (for example with git stash) and re-runs failing tests, to see whether those failures existed before its edit.",
+   "pair_id": "sympy__sympy-13757|g3|deepseek-openai"
+  },
+  {
+   "pid": "P032",
+   "name": "Adds a new test file",
+   "inclusion_criterion": "The run creates a new test file in the repository, such as a file under sympy/*/tests/ written with cat > or a heredoc.",
+   "pair_id": "sympy__sympy-13757|g3|deepseek-openai"
+  },
+  {
+   "pid": "P033",
+   "name": "Edits core Expr.__mul__",
+   "inclusion_criterion": "The run modifies sympy/core/expr.py, for example to add Poly-specific dispatch logic in __mul__.",
+   "pair_id": "sympy__sympy-13757|g3|deepseek-openai"
+  },
+  {
+   "pid": "P034",
+   "name": "Checks failing tests for XFAIL decorator",
+   "inclusion_criterion": "After seeing test failures, the run greps the lines just before the failing test definitions (e.g. grep -B) to confirm they are marked @XFAIL.",
+   "pair_id": "sympy__sympy-13757|g3|deepseek-openai"
+  },
+  {
+   "pid": "P035",
+   "name": "Runs broad regression suites",
+   "inclusion_criterion": "The run executes the whole sympy/polys/tests directory, or core arithmetic/expression test modules such as test_expr.py, test_arit.py or test_sympify.py, beyond the directly affected test file.",
+   "pair_id": "sympy__sympy-13757|g3|deepseek-openai"
+  },
+  {
+   "pid": "P036",
+   "name": "Baseline comparison via git stash",
+   "inclusion_criterion": "Run stashes its changes (git stash) to rerun tests on the unmodified code and compare failure lists before vs after the change.",
+   "pair_id": "sympy__sympy-13757|g3|openai-kimi"
+  },
+  {
+   "pid": "P037",
+   "name": "Adds new test file",
+   "inclusion_criterion": "Run creates a new test file in the repository (e.g., under sympy/*/tests/).",
+   "pair_id": "sympy__sympy-13757|g3|openai-kimi"
+  },
+  {
+   "pid": "P038",
+   "name": "Modifies core Expr arithmetic",
+   "inclusion_criterion": "Run edits sympy/core/expr.py (e.g., changing Expr.__mul__) rather than only setting a priority attribute on Poly.",
+   "pair_id": "sympy__sympy-13757|g3|openai-kimi"
+  },
+  {
+   "pid": "P039",
+   "name": "Broad cross-module regression testing",
+   "inclusion_criterion": "Run executes test suites from multiple sympy subpackages outside polys (e.g., core, printing, matrices, simplify, solvers, series).",
+   "pair_id": "sympy__sympy-13757|g3|openai-kimi"
+  },
+  {
+   "pid": "P040",
+   "name": "Calls completion signal",
+   "inclusion_criterion": "Run executes `echo OPENBENCH_DONE`.",
+   "pair_id": "sympy__sympy-13757|g3|openai-kimi"
+  },
+  {
+   "pid": "P041",
+   "name": "Calls completion signal",
+   "inclusion_criterion": "Run executes the command `echo OPENBENCH_DONE` at some turn.",
+   "pair_id": "sympy__sympy-13757|g3|kimi-deepseek"
+  },
+  {
+   "pid": "P042",
+   "name": "Systematic before/after failure diffing",
+   "inclusion_criterion": "Run writes sorted FAILED-test lists from runs with and without the patch (via git stash) to files and diffs them, rather than just eyeballing individual test outcomes.",
+   "pair_id": "sympy__sympy-13757|g3|kimi-deepseek"
+  },
+  {
+   "pid": "P043",
+   "name": "Inspects XFAIL markers of failing tests",
+   "inclusion_criterion": "Run greps or views test source around a failing test to check whether it is decorated @XFAIL (expected failure).",
+   "pair_id": "sympy__sympy-13757|g3|kimi-deepseek"
+  },
+  {
+   "pid": "P044",
+   "name": "Hits command timeout",
+   "inclusion_criterion": "At least one command ends with exit code 124 or a 'timeout after' message from the harness.",
+   "pair_id": "sympy__sympy-13757|g3|kimi-deepseek"
+  },
+  {
+   "pid": "P045",
+   "name": "Reviews final diff before finishing",
+   "inclusion_criterion": "Run executes `git diff` on the modified source file to display the patch content.",
+   "pair_id": "sympy__sympy-13757|g3|kimi-deepseek"
+  },
+  {
+   "pid": "P046",
+   "name": "Inspects repo before editing",
+   "inclusion_criterion": "Run executes read-only inspection commands (grep, cat of an existing source file, ls) on repository source to locate definitions or diagnose import errors.",
+   "pair_id": "sympy__sympy-22914|g1|deepseek-openai"
+  },
+  {
+   "pid": "P047",
+   "name": "Rewrites unrelated core module",
+   "inclusion_criterion": "Run overwrites a repository source file other than the main target module (pycode.py) with new content, e.g. replacing codeprinter.py with a stub.",
+   "pair_id": "sympy__sympy-22914|g1|deepseek-openai"
+  },
+  {
+   "pid": "P048",
+   "name": "Adds new test file",
+   "inclusion_criterion": "Run creates a new test file under a tests directory.",
+   "pair_id": "sympy__sympy-22914|g1|deepseek-openai"
+  },
+  {
+   "pid": "P049",
+   "name": "Uses pytest suite",
+   "inclusion_criterion": "Run invokes pytest to execute the repository test suite rather than only ad hoc python -c scripts or direct script execution.",
+   "pair_id": "sympy__sympy-22914|g1|deepseek-openai"
+  },
+  {
+   "pid": "P050",
+   "name": "Writes garbled characters into source",
+   "inclusion_criterion": "Run writes source code containing stray non-ASCII/corrupted tokens (e.g. '\u6781') inside Python code.",
+   "pair_id": "sympy__sympy-22914|g1|deepseek-openai"
+  },
+  {
+   "pid": "P051",
+   "name": "Overwrites whole source files",
+   "inclusion_criterion": "Run replaces the full contents of an existing repository source file (e.g., cat > existing_file << EOF) instead of making a targeted edit.",
+   "pair_id": "sympy__sympy-22914|g1|openai-kimi"
+  },
+  {
+   "pid": "P052",
+   "name": "Inspects code before editing",
+   "inclusion_criterion": "Run reads the relevant source files (cat/head/sed/grep of the target module) before its first modification of a repository file.",
+   "pair_id": "sympy__sympy-22914|g1|openai-kimi"
+  },
+  {
+   "pid": "P053",
+   "name": "Reproduces bug before fix",
+   "inclusion_criterion": "Run executes a script showing the buggy behavior (e.g., pycode(Min(a,b))) before changing any code.",
+   "pair_id": "sympy__sympy-22914|g1|openai-kimi"
+  },
+  {
+   "pid": "P054",
+   "name": "Declares done despite failing tests",
+   "inclusion_criterion": "Run calls echo OPENBENCH_DONE even though its most recent test or import run failed, or after editing without any later run that confirms the edits work.",
+   "pair_id": "sympy__sympy-22914|g1|openai-kimi"
+  },
+  {
+   "pid": "P055",
+   "name": "Verifies fix with targeted tests",
+   "inclusion_criterion": "After modifying code, run executes relevant test files or a reproduction script and the output shows a pass or the corrected behavior.",
+   "pair_id": "sympy__sympy-22914|g1|openai-kimi"
+  },
+  {
+   "pid": "P056",
+   "name": "Reads code before editing",
+   "inclusion_criterion": "Run inspects existing source files (cat/head/sed/grep of repo files) before making its first modification to a source file.",
+   "pair_id": "sympy__sympy-22914|g1|kimi-deepseek"
+  },
+  {
+   "pid": "P057",
+   "name": "Overwrites whole source file",
+   "inclusion_criterion": "Run replaces an entire existing source file with freshly written content (e.g. cat > file << EOF) rather than applying a targeted edit.",
+   "pair_id": "sympy__sympy-22914|g1|kimi-deepseek"
+  },
+  {
+   "pid": "P058",
+   "name": "Runs existing test suite",
+   "inclusion_criterion": "Run executes the repository's existing tests (e.g. pytest on existing test files) after making changes.",
+   "pair_id": "sympy__sympy-22914|g1|kimi-deepseek"
+  },
+  {
+   "pid": "P059",
+   "name": "Declares done without passing check",
+   "inclusion_criterion": "Run issues the completion command when its most recent test or verification command before that had failed, or when it ran no successful verification after its last edit.",
+   "pair_id": "sympy__sympy-22914|g1|kimi-deepseek"
+  },
+  {
+   "pid": "P060",
+   "name": "Adds new test file",
+   "inclusion_criterion": "Run creates a new test file under a tests directory.",
+   "pair_id": "sympy__sympy-22914|g1|kimi-deepseek"
+  },
+  {
+   "pid": "P061",
+   "name": "Modifies source files",
+   "inclusion_criterion": "Run executes a command that writes changes to a repository source file (e.g., sed -i, patch) and that command succeeds.",
+   "pair_id": "sympy__sympy-22914|g2|deepseek-openai"
+  },
+  {
+   "pid": "P062",
+   "name": "Signals task completion",
+   "inclusion_criterion": "Run executes `echo OPENBENCH_DONE`.",
+   "pair_id": "sympy__sympy-22914|g2|deepseek-openai"
+  },
+  {
+   "pid": "P063",
+   "name": "Repeats identical reproduction command",
+   "inclusion_criterion": "Run executes the same (or essentially identical) Python snippet printing pycode(Min(a,b)) three or more times without any code change in between.",
+   "pair_id": "sympy__sympy-22914|g2|deepseek-openai"
+  },
+  {
+   "pid": "P064",
+   "name": "Uses nonexistent patch tool",
+   "inclusion_criterion": "Run invokes a command such as apply_patch/create_patch that fails with exit code 127 'command not found'.",
+   "pair_id": "sympy__sympy-22914|g2|deepseek-openai"
+  },
+  {
+   "pid": "P065",
+   "name": "Fixes unrelated failing test",
+   "inclusion_criterion": "Run investigates a test failure outside the task's target area (e.g., numpy diagonal in test_codegen_extra) and edits code to make it pass.",
+   "pair_id": "sympy__sympy-22914|g2|deepseek-openai"
+  },
+  {
+   "pid": "P066",
+   "name": "Modifies existing test file",
+   "inclusion_criterion": "Run issues a command that writes to an existing file under a tests/ directory (e.g., test_*.py), despite instruction not to modify existing test files.",
+   "pair_id": "sympy__sympy-22914|g2|openai-kimi"
+  },
+  {
+   "pid": "P067",
+   "name": "Fixes unrelated failing test",
+   "inclusion_criterion": "Run edits source code outside the target feature to make a pre-existing failing test (e.g., test_codegen_extra) pass.",
+   "pair_id": "sympy__sympy-22914|g2|openai-kimi"
+  },
+  {
+   "pid": "P068",
+   "name": "Declares done with known failing test",
+   "inclusion_criterion": "Run calls echo OPENBENCH_DONE after its most recent test run showed a failure that was not subsequently fixed or rerun to pass.",
+   "pair_id": "sympy__sympy-22914|g2|openai-kimi"
+  },
+  {
+   "pid": "P069",
+   "name": "Repeated unavailable tool attempts",
+   "inclusion_criterion": "Run invokes a nonexistent command (exit 127) two or more times, e.g. apply_patch.",
+   "pair_id": "sympy__sympy-22914|g2|openai-kimi"
+  },
+  {
+   "pid": "P070",
+   "name": "Runs full test suite",
+   "inclusion_criterion": "Run invokes pytest without path arguments over the whole repository.",
+   "pair_id": "sympy__sympy-22914|g2|openai-kimi"
+  },
+  {
+   "pid": "P071",
+   "name": "Modifies existing test file",
+   "inclusion_criterion": "The run writes changes to a pre-existing test file (e.g., a script or command that edits a file under a tests/ directory), despite the instruction not to modify existing tests.",
+   "pair_id": "sympy__sympy-22914|g2|kimi-deepseek"
+  },
+  {
+   "pid": "P072",
+   "name": "Edits source code",
+   "inclusion_criterion": "The run runs at least one command that modifies a non-test source file in the repository.",
+   "pair_id": "sympy__sympy-22914|g2|kimi-deepseek"
+  },
+  {
+   "pid": "P073",
+   "name": "Signals completion",
+   "inclusion_criterion": "The run executes the exact command `echo OPENBENCH_DONE`.",
+   "pair_id": "sympy__sympy-22914|g2|kimi-deepseek"
+  },
+  {
+   "pid": "P074",
+   "name": "Repetitive re-running of same reproduction",
+   "inclusion_criterion": "The run executes essentially the same reproduction snippet (pycode(Min(a,b))) five or more times without making any code change in between.",
+   "pair_id": "sympy__sympy-22914|g2|kimi-deepseek"
+  },
+  {
+   "pid": "P075",
+   "name": "Broken heredoc syntax errors",
+   "inclusion_criterion": "The run issues a heredoc command where text follows the terminator on the same line (e.g., `EOF 2>&1`), producing a here-document warning and a SyntaxError.",
+   "pair_id": "sympy__sympy-22914|g2|kimi-deepseek"
+  },
+  {
+   "pid": "P076",
+   "name": "Reproduces bug before fixing",
+   "inclusion_criterion": "Before any edit to source files, the run executes code that prints the current (buggy) output of the target functionality.",
+   "pair_id": "sympy__sympy-22914|g3|deepseek-openai"
+  },
+  {
+   "pid": "P077",
+   "name": "Enforces line-length style",
+   "inclusion_criterion": "The run checks source lines for length over 79 characters and reformats its own added code to comply.",
+   "pair_id": "sympy__sympy-22914|g3|deepseek-openai"
+  },
+  {
+   "pid": "P078",
+   "name": "Runs neighboring test suites",
+   "inclusion_criterion": "The run executes test files other than the primary test file for the modified module (e.g., test_numpy.py, test_codeprinter.py).",
+   "pair_id": "sympy__sympy-22914|g3|deepseek-openai"
+  },
+  {
+   "pid": "P079",
+   "name": "Checks subclass printer behavior",
+   "inclusion_criterion": "After the fix, the run executes code that exercises printers that subclass or are siblings of the modified class (e.g., MpmathPrinter, SymPyPrinter, NumPyPrinter) to see their output for the changed functionality.",
+   "pair_id": "sympy__sympy-22914|g3|deepseek-openai"
+  },
+  {
+   "pid": "P080",
+   "name": "Reviews git diff of change",
+   "inclusion_criterion": "The run invokes git diff to inspect its modifications before finishing.",
+   "pair_id": "sympy__sympy-22914|g3|deepseek-openai"
+  },
+  {
+   "pid": "P081",
+   "name": "Baseline comparison via git stash",
+   "inclusion_criterion": "Run uses git stash (or equivalent revert) to rerun failing tests on the unmodified code to check whether failures pre-exist",
+   "pair_id": "sympy__sympy-22914|g3|openai-kimi"
+  },
+  {
+   "pid": "P082",
+   "name": "Runs tests beyond target test file",
+   "inclusion_criterion": "Run executes test suites other than sympy/printing/tests/test_pycode.py (e.g., test_lambdify, whole printing tests, codegen/parsing tests, doctests)",
+   "pair_id": "sympy__sympy-22914|g3|openai-kimi"
+  },
+  {
+   "pid": "P083",
+   "name": "Reproduces bug before editing",
+   "inclusion_criterion": "Run executes code printing Min/Max via pycode before making any source modification, showing the original output",
+   "pair_id": "sympy__sympy-22914|g3|openai-kimi"
+  },
+  {
+   "pid": "P084",
+   "name": "Checks line-length style",
+   "inclusion_criterion": "Run checks source lines for length >79 chars and reformats the edit accordingly",
+   "pair_id": "sympy__sympy-22914|g3|openai-kimi"
+  },
+  {
+   "pid": "P085",
+   "name": "Verifies subclass printers and overrides",
+   "inclusion_criterion": "Run explicitly checks the fix's effect on other printers (NumPy/Mpmath) or user_functions override behavior",
+   "pair_id": "sympy__sympy-22914|g3|openai-kimi"
+  },
+  {
+   "pid": "P086",
+   "name": "Baseline comparison via git stash",
+   "inclusion_criterion": "Run reruns failing tests on the unmodified code (e.g., git stash, run tests, git stash pop) to check whether failures predate its change.",
+   "pair_id": "sympy__sympy-22914|g3|kimi-deepseek"
+  },
+  {
+   "pid": "P087",
+   "name": "Broad downstream test sweep",
+   "inclusion_criterion": "Run executes test suites beyond the directly edited module's tests, such as test_lambdify, the whole printing/tests directory, codegen, or parsing tests.",
+   "pair_id": "sympy__sympy-22914|g3|kimi-deepseek"
+  },
+  {
+   "pid": "P088",
+   "name": "Prototype fix by monkey-patching first",
+   "inclusion_criterion": "Run tries out the proposed printer methods at runtime (e.g., types.MethodType onto an instance) before editing any source file.",
+   "pair_id": "sympy__sympy-22914|g3|kimi-deepseek"
+  },
+  {
+   "pid": "P089",
+   "name": "Fix via known-functions table",
+   "inclusion_criterion": "Run implements the fix by adding Min/Max entries to the _known_functions dict instead of defining new _print_Min/_print_Max methods.",
+   "pair_id": "sympy__sympy-22914|g3|kimi-deepseek"
+  },
+  {
+   "pid": "P090",
+   "name": "Runs doctests",
+   "inclusion_criterion": "Run executes doctests for the edited module, e.g. with --doctest-modules or bin/doctest.",
+   "pair_id": "sympy__sympy-22914|g3|kimi-deepseek"
+  }
+ ],
+ "status": "ok"
+}
