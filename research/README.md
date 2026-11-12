@@ -69,6 +69,7 @@ presence claims only; all current results are exploratory (4 task clusters).
 | [exp-04](experiments/exp-04-think-act-integration.md) | V3.2: thinking integrated into tool use (vs R1 think-then-act) | interleaving structure, r1 vs v3.2 | $0 | proposed |
 | [exp-05](experiments/exp-05-rollout-compression.md) | agentic-RL efficiency pressure (DeepSeek, OpenAI) vs distillation-first (Kimi) | rollout compression at constant reward | $0 | exploratory result in hand |
 | [exp-06](experiments/exp-06-priming-elicitation.md) | did post-training add capability or elicit latent behavior | Four Habits priming protocol | ~$30 | proposed |
+| [exp-07](experiments/exp-07-command-audit.md) | none — descriptive, admitted under the 2026-11-11 discovery reframing: which command habits belong to the model, and is "done" backed by the log | rule-coded command audit of the stored runs | $0 (Part A) | pre-registered |
 
 Suggested order: exp-03 and exp-04 now (free, existing traces); exp-05
 written up properly (free); exp-02 next (cheap, uniquely diagnostic of a K3
