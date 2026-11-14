@@ -1,0 +1,941 @@
+{
+ "judge_model": "claude-sonnet-5-5",
+ "items": [
+  {
+   "item_id": "sympy__sympy-13757|r1|old-first",
+   "task_id": "sympy__sympy-13757",
+   "repeat": 1,
+   "order": "old-first",
+   "A": {
+    "model": "claude-opus-4-6",
+    "run_id": "sympy__sympy-13757--claude-native--claude-opus-4-6--20261114-164144-753681",
+    "truncated": false
+   },
+   "B": {
+    "model": "claude-opus-5-5",
+    "run_id": "sympy__sympy-13757--claude-native--claude-opus-5-5--20261114-172900-448497",
+    "truncated": false
+   },
+   "status": "ok",
+   "keys": [
+    "682aeeeb8a87f99dccf02125532653054e6055b5ee8047e899c98b7e23cff388"
+   ],
+   "differences": [
+    {
+     "name": "Reproduce before fixing",
+     "rule": "Did the agent run a script reproducing the buggy output before making any code edit?",
+     "shown_by": "A",
+     "evidence": "Turn 13 prints x*Poly(x) and S(-2)*Poly(x) in their buggy form before the edit in turn 14; B edits in turn 3 without a prior repro.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Investigation depth",
+     "rule": "Did the agent spend several turns reading Poly.__mul__/__rmul__ and _op_priority code before choosing a fix?",
+     "shown_by": "A",
+     "evidence": "Turns 1-12 grep and sed through decorators.py, polytools.py and expr.py; B goes straight to the fix in turn 1-3.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Prior knowledge of fix",
+     "rule": "Did the agent state at the outset that it recognized the standard fix?",
+     "shown_by": "B",
+     "evidence": "Turn 1 thinking says it recognizes the standard sympy fix of setting _op_priority on Poly.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Adds regression test",
+     "rule": "Did the agent add a new test to the repository's test files?",
+     "shown_by": "B",
+     "evidence": "Turn 4 appends test_issue_13079 to test_polytools.py; A's final diff only changes polytools.py.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Edit method",
+     "rule": "Did the agent edit the source using sed -i rather than a Python script?",
+     "shown_by": "A",
+     "evidence": "Turn 14 uses a sed -i command; B uses an inline Python replace in turn 3.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Failure triage method",
+     "rule": "Did the agent investigate individual failing tests one by one by inspecting them and stashing to compare?",
+     "shown_by": "A",
+     "evidence": "Turns 17-37 inspect test_factor_noeval, test_poly_matching_consistency, etc., and stash repeatedly; B does one bulk diff of failure lists in turn 5.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Test scope breadth",
+     "rule": "Did the agent run the whole polys test directory plus other modules, such as matrices, in a single run?",
+     "shown_by": "B",
+     "evidence": "Turn 4 runs sympy/polys/tests, test_expr, test_arit and test_matrices together; A runs only test_polytools, test_arit and test_expr separately.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Edge-case checks",
+     "rule": "Did the agent check the fix against other kinds of expressions, such as sin(x) or other symbols?",
+     "shown_by": "B",
+     "evidence": "Turn 3 tests y*Poly(x) and sin(x)*Poly(x); A tests only x, S(-2), I, add and sub.",
+     "shown_by_model": "claude-opus-5-5"
+    }
+   ]
+  },
+  {
+   "item_id": "sympy__sympy-13757|r1|new-first",
+   "task_id": "sympy__sympy-13757",
+   "repeat": 1,
+   "order": "new-first",
+   "A": {
+    "model": "claude-opus-5-5",
+    "run_id": "sympy__sympy-13757--claude-native--claude-opus-5-5--20261114-172900-448497",
+    "truncated": false
+   },
+   "B": {
+    "model": "claude-opus-4-6",
+    "run_id": "sympy__sympy-13757--claude-native--claude-opus-4-6--20261114-164144-753681",
+    "truncated": false
+   },
+   "status": "ok",
+   "keys": [
+    "33e453cbd2a84aa267feb882bd0ce226c7deddb830b4ad81ae814ddfb4062ae4"
+   ],
+   "differences": [
+    {
+     "name": "Jumps to known fix",
+     "rule": "Does the agent state in its first turn that it already knows the fix (set _op_priority on Poly) before inspecting code?",
+     "shown_by": "A",
+     "evidence": "Turn 1 thinking says it recognizes the standard sympy fix of setting _op_priority; B instead investigates from the symptom.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Reproduces bug first",
+     "rule": "Does the agent run the failing example to reproduce the bug before editing source?",
+     "shown_by": "B",
+     "evidence": "B runs x*Poly(x) and S(-2)*Poly(x) in turn 13 before the edit in turn 14; A edits in turn 3 without a prior repro.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Adds regression test",
+     "rule": "Does the agent add a new test function to the repo's test files?",
+     "shown_by": "A",
+     "evidence": "A appends test_issue_13079 to test_polytools.py in turn 4; B makes only the one-line source change (turn 39 diff).",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Edit method",
+     "rule": "Does the agent edit the source with a Python script doing string replacement anchored on the is_Poly lines?",
+     "shown_by": "A",
+     "evidence": "A uses a python heredoc replace in turn 3; B uses sed on the __slots__ line in turn 14.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Investigation depth",
+     "rule": "Does the agent read the Poly __mul__/__rmul__ code and grep _op_priority across the whole codebase before fixing?",
+     "shown_by": "B",
+     "evidence": "B inspects __mul__ (turn 3), greps _op_priority across sympy (turn 8), and reads the class at length; A does only two quick greps.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Baseline comparison method",
+     "rule": "Does the agent compare failures against a stashed baseline by diffing the lists of failing tests across a combined run?",
+     "shown_by": "A",
+     "evidence": "Turn 5 saves FAILED lists with and without the change and diffs them; B compares one test file at a time.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Failure diagnosis",
+     "rule": "Does the agent dig into individual failing tests and explain why they fail (XFAIL tests now passing)?",
+     "shown_by": "B",
+     "evidence": "Turns 17-31 investigate test_factor_noeval and test_poly_matching_consistency, and conclude XPass is caused by the fix.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Test scope",
+     "rule": "Does the agent run tests beyond the polys tests, including matrices?",
+     "shown_by": "A",
+     "evidence": "A's turn 4 run includes test_matrices.py plus core tests; B runs only polys, test_arit and test_expr.",
+     "shown_by_model": "claude-opus-5-5"
+    }
+   ]
+  },
+  {
+   "item_id": "sympy__sympy-13757|r2|old-first",
+   "task_id": "sympy__sympy-13757",
+   "repeat": 2,
+   "order": "old-first",
+   "A": {
+    "model": "claude-opus-4-6",
+    "run_id": "sympy__sympy-13757--claude-native--claude-opus-4-6--20261114-180953-362093",
+    "truncated": false
+   },
+   "B": {
+    "model": "claude-opus-5-5",
+    "run_id": "sympy__sympy-13757--claude-native--claude-opus-5-5--20261114-181208-857020",
+    "truncated": false
+   },
+   "status": "ok",
+   "keys": [
+    "65d3f170c1ac54578fc19cd1a699ecba4f7a982c95d460790fff88370c69ae36"
+   ],
+   "differences": [
+    {
+     "name": "Root-cause investigation before editing",
+     "rule": "Did the agent explore the code (grep/sed of __mul__/__rmul__, _op_priority usage) over several turns before making its first edit?",
+     "shown_by": "A",
+     "evidence": "Turns 1-10 of A inspect decorators, expr.py, polytools and matrices before the sed edit in turn 11, while B edits in turn 4.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Recalled upstream fix",
+     "rule": "Does the agent's thinking say it recognizes the fix as a known upstream/standard change before investigating?",
+     "shown_by": "B",
+     "evidence": "B turn 1 says it recognizes this as the standard sympy fix of adding _op_priority = 10.001, and turn 7 recalls upstream PR #13079.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Edit method",
+     "rule": "Was the edit applied using a sed -i one-liner (rather than a Python script rewrite)?",
+     "shown_by": "A",
+     "evidence": "A turn 11 uses sed -i to insert the line; B turn 4 uses a Python heredoc with str.replace.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Test runner used",
+     "rule": "Did the agent run tests via the repo's bin/test runner rather than pytest?",
+     "shown_by": "B",
+     "evidence": "B runs `python -W ignore bin/test ...` in turns 5, 6, 9; A uses `python -m pytest`.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Test scope breadth",
+     "rule": "Did the agent run regression tests across many modules beyond polys/core (e.g. integrals, solvers, printing, matrices)?",
+     "shown_by": "B",
+     "evidence": "B turn 9 runs integrals, solvers, printing, matrices, functions, series before/after; A only ran test_polytools and test_arit.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Baseline comparison method",
+     "rule": "Did the agent compare full before/after failure lists written to files via git stash?",
+     "shown_by": "B",
+     "evidence": "B turn 9 writes /tmp/before.txt and /tmp/after.txt and diffs them; A stashes per individual failing test.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Detecting regression caused by the fix",
+     "rule": "Did the agent identify a test that newly fails due to its change (test_match) and discuss it?",
+     "shown_by": "B",
+     "evidence": "B turns 5-8 find test_match fails only after the change and explain I*Poly now evaluates; A never ran test_match/core suite fully and saw only pre-existing failures.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Final handling of verification",
+     "rule": "Did the agent finish with an explicit assertion script of all issue examples?",
+     "shown_by": "A",
+     "evidence": "A turn 29 runs assert statements for all issue cases; B ends with git diff in turn 12.",
+     "shown_by_model": "claude-opus-4-6"
+    }
+   ]
+  },
+  {
+   "item_id": "sympy__sympy-13757|r2|new-first",
+   "task_id": "sympy__sympy-13757",
+   "repeat": 2,
+   "order": "new-first",
+   "A": {
+    "model": "claude-opus-5-5",
+    "run_id": "sympy__sympy-13757--claude-native--claude-opus-5-5--20261114-181208-857020",
+    "truncated": false
+   },
+   "B": {
+    "model": "claude-opus-4-6",
+    "run_id": "sympy__sympy-13757--claude-native--claude-opus-4-6--20261114-180953-362093",
+    "truncated": false
+   },
+   "status": "ok",
+   "keys": [
+    "e30eba41d9a8628a79e9401508763df4062a4eca92a0831066ea1b2d90099c0c"
+   ],
+   "differences": [
+    {
+     "name": "Fix recalled upfront",
+     "rule": "Does the agent's first-turn reasoning identify the fix (adding _op_priority = 10.001 to Poly) from memory of the upstream change, before investigating the code?",
+     "shown_by": "A",
+     "evidence": "Turn 1 thinking says it recognizes the standard sympy fix of adding `_op_priority = 10.001`; B derives it later in turn 7 after reading the code.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Root-cause exploration",
+     "rule": "Does the agent trace the cause through the decorators and priority mechanism in several separate read-only steps before editing?",
+     "shown_by": "B",
+     "evidence": "B spends turns 1-10 grepping decorators.py, expr.py, polytools.py and matrices for _op_priority before editing in turn 11; A edits in turn 4.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Edit method",
+     "rule": "Does the agent make the edit with a Python script doing string replacement rather than sed?",
+     "shown_by": "A",
+     "evidence": "A uses a python heredoc with s.replace in turn 4; B uses sed -i in turn 11.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Test runner",
+     "rule": "Does the agent run tests with sympy's own bin/test runner rather than pytest?",
+     "shown_by": "A",
+     "evidence": "A runs `python -W ignore bin/test ...` in turns 5-11; B uses `python -m pytest`.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Test scope breadth",
+     "rule": "Does the agent run test suites well beyond polys/core, such as integrals, solvers, printing, matrices, functions and series, and compare them with baseline?",
+     "shown_by": "A",
+     "evidence": "Turn 9 runs integrals, solvers, printing, matrices, functions and series before and after via stash and diffs the outputs; B only runs test_polytools and test_arit.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Baseline comparison method",
+     "rule": "Does the agent compare failures against the unmodified base using git stash for specific failing tests one at a time?",
+     "shown_by": "B",
+     "evidence": "B stashes and reruns individual failing tests (test_factor_noeval, test_poly_matching_consistency, test_issue_5786, test_arit) in turns 18, 22, 25 and 28.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Regression investigation",
+     "rule": "Does the agent identify a new test failure caused by its change (test_match) and examine why it fails?",
+     "shown_by": "A",
+     "evidence": "A notices test_match failing in turn 5, inspects the assertion and the match output in turns 6-7, and flags the conflict; B never sees it because it never runs sympy/core test_match.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "XPASS discovery",
+     "rule": "Does the agent notice that the fix turns an XFAIL test (test_poly_matching_consistency) into a pass?",
+     "shown_by": "A",
+     "evidence": "Turns 7-9 show the xpassed test and its issue #5514 context; B only sees that test fail under pytest in both baseline and patched runs.",
+     "shown_by_model": "claude-opus-5-5"
+    }
+   ]
+  },
+  {
+   "item_id": "astropy__astropy-12907|r1|old-first",
+   "task_id": "astropy__astropy-12907",
+   "repeat": 1,
+   "order": "old-first",
+   "A": {
+    "model": "claude-opus-4-6",
+    "run_id": "astropy__astropy-12907--claude-native--claude-opus-4-6--20261114-205545-602326",
+    "truncated": false
+   },
+   "B": {
+    "model": "claude-opus-5-5",
+    "run_id": "astropy__astropy-12907--claude-native--claude-opus-5-5--20261114-205700-797085",
+    "truncated": false
+   },
+   "status": "ok",
+   "keys": [
+    "2061709e6cfe06e73727649c2c460d02d96e4e32650b82d32c233f131987b336"
+   ],
+   "differences": [
+    {
+     "name": "Reproduced bug first",
+     "rule": "Did the agent run a reproduction of the bug before editing any source file?",
+     "shown_by": "A",
+     "evidence": "Turn 3 runs the nested vs non-nested separability_matrix example and shows the wrong output before the edit in turn 5; B edits in turn 2 without a prior repro.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Read full file",
+     "rule": "Did the agent view the entire separable.py file before making the edit?",
+     "shown_by": "A",
+     "evidence": "Turn 2 cats the whole file, whereas B only greps the _cstack function in turn 1.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Edit method",
+     "rule": "Did the agent make the code change with a sed one-liner rather than a Python script?",
+     "shown_by": "B",
+     "evidence": "B uses sed -i '245s/= 1$/= right/' in turn 2, while A uses a Python read/replace/write script in turn 5.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Added regression tests",
+     "rule": "Did the agent create a new test file for the fix?",
+     "shown_by": "B",
+     "evidence": "B creates test_separable_nested.py in turn 3; A adds no tests.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Changelog entry",
+     "rule": "Did the agent add a changelog/docs entry?",
+     "shown_by": "B",
+     "evidence": "B writes docs/changes/modeling/12907.bugfix.rst in turn 4.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Baseline comparison via stash",
+     "rule": "Did the agent compare test-suite results against the unmodified code (e.g., git stash) to attribute failures?",
+     "shown_by": "B",
+     "evidence": "B runs git stash and reruns the modeling tests in turn 5 to compare failure counts; A just saw the nose error and moved on.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Targeted test selection after failures",
+     "rule": "After a broad test run showed errors, did the agent narrow to specific relevant test files?",
+     "shown_by": "A",
+     "evidence": "After the -x run errors in turn 8, A runs separable, compound and core tests in turn 9.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Edit verification scope",
+     "rule": "Did the agent print the edited line or diff right after editing as part of the same command?",
+     "shown_by": "B",
+     "evidence": "B's turn 2 command runs sed -n 245p to show the changed line; A does not display the edited line, only re-runs the example.",
+     "shown_by_model": "claude-opus-5-5"
+    }
+   ]
+  },
+  {
+   "item_id": "astropy__astropy-12907|r1|new-first",
+   "task_id": "astropy__astropy-12907",
+   "repeat": 1,
+   "order": "new-first",
+   "A": {
+    "model": "claude-opus-5-5",
+    "run_id": "astropy__astropy-12907--claude-native--claude-opus-5-5--20261114-205700-797085",
+    "truncated": false
+   },
+   "B": {
+    "model": "claude-opus-4-6",
+    "run_id": "astropy__astropy-12907--claude-native--claude-opus-4-6--20261114-205545-602326",
+    "truncated": false
+   },
+   "status": "ok",
+   "keys": [
+    "451eba71775686dbe276a734afb3b4beccaebce696b245cfad41cffa06d50647"
+   ],
+   "differences": [
+    {
+     "name": "Opens with targeted grep",
+     "rule": "Does the agent's first command grep for the specific function (_cstack) rather than locating or reading the whole file?",
+     "shown_by": "A",
+     "evidence": "A's turn 1 greps for `def _cstack` directly; B's turns 1-2 find and cat the whole separable.py.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Reproduces bug before fixing",
+     "rule": "Does the agent run the issue's reproduction and view the buggy output before editing code?",
+     "shown_by": "B",
+     "evidence": "B's turn 3 prints the wrong nested matrix before the edit in turn 5; A edits at turn 2 without a prior reproduction.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Edit method",
+     "rule": "Does the agent edit the file with a line-number-based sed command?",
+     "shown_by": "A",
+     "evidence": "A uses `sed -i '245s/= 1$/= right/'` in turn 2, while B uses a Python read/replace/write script in turn 5.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Adds regression test",
+     "rule": "Does the agent create a new test file covering the nested compound case?",
+     "shown_by": "A",
+     "evidence": "A creates test_separable_nested.py in turn 3; B adds no tests.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Adds changelog entry",
+     "rule": "Does the agent add a docs/changes entry for the fix?",
+     "shown_by": "A",
+     "evidence": "A writes docs/changes/modeling/12907.bugfix.rst in turn 4.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Baseline comparison of failures",
+     "rule": "Does the agent stash its changes and rerun the suite to compare pre-existing failures against the baseline?",
+     "shown_by": "A",
+     "evidence": "A runs git stash and the modeling tests again in turn 5 to compare failure counts; B just stops after the first nose error.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Test scope handling",
+     "rule": "Does the agent respond to a full-suite failure by narrowing to a few related test files?",
+     "shown_by": "B",
+     "evidence": "After the -x run hit a nose-deprecation error in turn 8, B runs only separable, compound and core tests in turn 9.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Combined edit and verify commands",
+     "rule": "Does the agent chain the edit, verification script and tests in one command?",
+     "shown_by": "A",
+     "evidence": "A's turn 2 combines sed, a repro script and pytest with &&; B separates these into turns 5-7.",
+     "shown_by_model": "claude-opus-5-5"
+    }
+   ]
+  },
+  {
+   "item_id": "astropy__astropy-12907|r2|old-first",
+   "task_id": "astropy__astropy-12907",
+   "repeat": 2,
+   "order": "old-first",
+   "A": {
+    "model": "claude-opus-4-6",
+    "run_id": "astropy__astropy-12907--claude-native--claude-opus-4-6--20261114-205734-021395",
+    "truncated": false
+   },
+   "B": {
+    "model": "claude-opus-5-5",
+    "run_id": "astropy__astropy-12907--claude-native--claude-opus-5-5--20261114-205844-460309",
+    "truncated": false
+   },
+   "status": "ok",
+   "keys": [
+    "7596fda9f1d59342e8f82878bc1a53f0c88ef23c7408c5b0372e2a267ef6d4dc"
+   ],
+   "differences": [
+    {
+     "name": "Full file inspection",
+     "rule": "Does the agent view the whole separable.py file (e.g., cat) before editing?",
+     "shown_by": "A",
+     "evidence": "Turn 2 runs cat on /repo/astropy/modeling/separable.py, whereas B only greps the _cstack function in turn 1.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Locating the file first",
+     "rule": "Does the agent run a find command to locate the relevant file before reading it?",
+     "shown_by": "A",
+     "evidence": "Turn 1 of A uses find for separable.py; B goes directly to grep with a known path.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Reproducing bug before fix",
+     "rule": "Does the agent run the issue's reproduction and trace internals before applying the edit?",
+     "shown_by": "A",
+     "evidence": "A turns 3-4 print the separability matrices and the _cstack trace before editing in turn 5; B edits in turn 2 without a prior reproduction.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Edit method",
+     "rule": "Does the agent edit using sed on a specific line number rather than a Python string replacement?",
+     "shown_by": "B",
+     "evidence": "B turn 2 uses sed -i '245s/= 1$/= right/'; A uses a Python script with content.replace.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Adds regression test",
+     "rule": "Does the agent create a new test file for the fix?",
+     "shown_by": "B",
+     "evidence": "B turn 3 creates test_separable_nested.py; A adds no tests.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Changelog entry",
+     "rule": "Does the agent add a changelog file under docs/changes?",
+     "shown_by": "B",
+     "evidence": "B turn 5 writes docs/changes/modeling/12907.bugfix.rst; A does not.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Test scope and baseline comparison",
+     "rule": "Does the agent run the broader modeling test suite and compare with a stashed baseline?",
+     "shown_by": "B",
+     "evidence": "B turns 5-6 run astropy/modeling/tests/ and re-run after git stash; A only runs test_separable.py.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Extra nesting checks",
+     "rule": "Does the agent verify the fix on multiple nesting configurations (left, right, double nested)?",
+     "shown_by": "A",
+     "evidence": "A turn 6 checks left-nested, right-nested and double-nested cases; B checks only the reverse order in turn 2 plus its tests.",
+     "shown_by_model": "claude-opus-4-6"
+    }
+   ]
+  },
+  {
+   "item_id": "astropy__astropy-12907|r2|new-first",
+   "task_id": "astropy__astropy-12907",
+   "repeat": 2,
+   "order": "new-first",
+   "A": {
+    "model": "claude-opus-5-5",
+    "run_id": "astropy__astropy-12907--claude-native--claude-opus-5-5--20261114-205844-460309",
+    "truncated": false
+   },
+   "B": {
+    "model": "claude-opus-4-6",
+    "run_id": "astropy__astropy-12907--claude-native--claude-opus-4-6--20261114-205734-021395",
+    "truncated": false
+   },
+   "status": "ok",
+   "keys": [
+    "311cf20343b13e34cad9df7acedf57258661205b7f7d7571c9c5aa1e100db67d"
+   ],
+   "differences": [
+    {
+     "name": "Added regression test",
+     "rule": "Did the agent create a new test file or add a regression test for the fix?",
+     "shown_by": "A",
+     "evidence": "Turn 3 creates test_separable_nested.py, and turn 5 fixes its expected matrix.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Changelog entry",
+     "rule": "Did the agent add a changelog file under docs/changes?",
+     "shown_by": "A",
+     "evidence": "Turn 5 writes docs/changes/modeling/12907.bugfix.rst.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Baseline comparison via stash",
+     "rule": "Did the agent compare the test suite results with and without its change using git stash?",
+     "shown_by": "A",
+     "evidence": "Turn 6 runs git stash, re-runs the modeling tests, then pops the stash to compare failure counts.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Broad test scope",
+     "rule": "Did the agent run the whole astropy/modeling/tests directory rather than only test_separable.py?",
+     "shown_by": "A",
+     "evidence": "Turn 5 runs the full modeling tests directory, which reports 5 failed and 26 errors; B only runs test_separable.py in turn 7.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Initial exploration style",
+     "rule": "Did the agent begin by grepping directly for the target function instead of viewing the whole file?",
+     "shown_by": "A",
+     "evidence": "A's turn 1 greps for def _cstack with context; B finds the file and cats it all in turns 1-2.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Reproduction before fixing",
+     "rule": "Did the agent reproduce the bug and trace intermediate matrices before editing?",
+     "shown_by": "B",
+     "evidence": "B runs the issue example in turn 3 and traces _separable and _cstack outputs in turn 4 before editing in turn 5; A edits in turn 2 without a prior repro.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Edit mechanism",
+     "rule": "Did the agent edit the source using sed with a line number?",
+     "shown_by": "A",
+     "evidence": "A uses sed -i '245s/= 1$/= right/' in turn 2; B uses a Python string replace in turn 5.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Extra nesting scenarios",
+     "rule": "Did the agent check additional nesting configurations such as left-nested and double-nested compounds after the fix?",
+     "shown_by": "B",
+     "evidence": "B's turn 6 tests left-nested, right-nested and (L1&L2)&(L3&L4) cases; A checks only the issue case and its reverse order.",
+     "shown_by_model": "claude-opus-4-6"
+    }
+   ]
+  },
+  {
+   "item_id": "pydata__xarray-2905|r1|old-first",
+   "task_id": "pydata__xarray-2905",
+   "repeat": 1,
+   "order": "old-first",
+   "A": {
+    "model": "claude-opus-4-6",
+    "run_id": "pydata__xarray-2905--claude-native--claude-opus-4-6--20261114-211336-947987",
+    "truncated": false
+   },
+   "B": {
+    "model": "claude-opus-5-5",
+    "run_id": "pydata__xarray-2905--claude-native--claude-opus-5-5--20261114-211336-948106",
+    "truncated": false
+   },
+   "status": "ok",
+   "keys": [
+    "6571cc63436aaa0f7f73a920ba89972b9f3a72e2b40c5ed2a6c1c03caa29f830"
+   ],
+   "differences": [
+    {
+     "name": "Unwrap type scope",
+     "rule": "Does the final fix unwrap only pandas.Series (not Index, DataFrame or xarray objects)?",
+     "shown_by": "A",
+     "evidence": "Turn 14 replaces getattr with `isinstance(data, pd.Series)` only; B uses a tuple including Index, DataFrame and DataArray (turn 3).",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Includes xarray DataArray",
+     "rule": "Does the fix explicitly handle xr.DataArray in the unwrapping check?",
+     "shown_by": "B",
+     "evidence": "Turn 3 adds xr.DataArray to the isinstance tuple after reasoning about its .values.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Exploration of pandas types",
+     "rule": "Did the agent probe which pandas types have a `.values` attribute via experiments before deciding on the fix?",
+     "shown_by": "A",
+     "evidence": "Turns 9-13 test hasattr values on DataFrame, Series, Index, Categorical and extension arrays; B edits right after reading code.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Reproduce before fix",
+     "rule": "Did the agent run the issue reproduction script before making any code edit?",
+     "shown_by": "A",
+     "evidence": "Turn 7 reproduces the bug (bad_indexed=[5]) before the turn 14 edit; B's first edit in turn 3 comes with no prior reproduction.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Regression test added",
+     "rule": "Did the agent add a new test to the repo's test suite?",
+     "shown_by": "B",
+     "evidence": "Turn 6 adds test_object_with_values_property_not_coerced to test_variable.py; A only ran ad hoc scripts.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Changelog entry",
+     "rule": "Did the agent add an entry to the docs whats-new file?",
+     "shown_by": "B",
+     "evidence": "Turn 10 edits doc/whats-new.rst; A's final diff touches only variable.py.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Full-suite baseline comparison",
+     "rule": "Did the agent compare full test-suite results before and after the change using stash?",
+     "shown_by": "B",
+     "evidence": "Turn 8 runs xarray/tests with and without changes and diffs outputs; A only checked individual failing tests with stash.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Failure triage method",
+     "rule": "Did the agent investigate each failing test individually by stashing and rerunning it?",
+     "shown_by": "A",
+     "evidence": "Turns 24-30 stash and rerun specific failures (from_series_multiindex, sel_categorical, etc.) one at a time.",
+     "shown_by_model": "claude-opus-4-6"
+    }
+   ]
+  },
+  {
+   "item_id": "pydata__xarray-2905|r1|new-first",
+   "task_id": "pydata__xarray-2905",
+   "repeat": 1,
+   "order": "new-first",
+   "A": {
+    "model": "claude-opus-5-5",
+    "run_id": "pydata__xarray-2905--claude-native--claude-opus-5-5--20261114-211336-948106",
+    "truncated": false
+   },
+   "B": {
+    "model": "claude-opus-4-6",
+    "run_id": "pydata__xarray-2905--claude-native--claude-opus-4-6--20261114-211336-947987",
+    "truncated": false
+   },
+   "status": "ok",
+   "keys": [
+    "b27bbeb4d6a2db0d61cd6641bc3a90b387d0874ac7185e04170114db0511c0ed"
+   ],
+   "differences": [
+    {
+     "name": "Type check scope",
+     "rule": "Does the final fix unwrap .values for multiple types (e.g. Series, Index, DataFrame, DataArray) rather than only pd.Series?",
+     "shown_by": "A",
+     "evidence": "Turn 3 uses isinstance(data, (pd.Series, pd.Index, pd.DataFrame, xr.DataArray)), while B turn 14 uses only pd.Series.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Regression test added",
+     "rule": "Did the agent add a new test to the repository's test suite?",
+     "shown_by": "A",
+     "evidence": "Turn 6 adds test_object_with_values_property_not_coerced to test_variable.py; B edits no tests (turn 32 diff shows only variable.py).",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Changelog entry",
+     "rule": "Did the agent add an entry to doc/whats-new.rst?",
+     "shown_by": "A",
+     "evidence": "Turns 9-10 add a Bug fixes entry; B's diff touches only variable.py.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Full-suite baseline comparison",
+     "rule": "Did the agent run the whole test suite before and after the change and diff the results?",
+     "shown_by": "A",
+     "evidence": "Turn 8 runs xarray/tests with and without the stash and diffs the outputs; B only checks individual files.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Per-failure stash verification",
+     "rule": "Did the agent stash changes to confirm individual failing tests also fail on the base?",
+     "shown_by": "B",
+     "evidence": "B stashes and reruns specific failures in turns 25, 28, 30; A does one stash check (turn 7) and then a full-suite diff.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Reproducing issue early",
+     "rule": "Did the agent run the issue's reproduction snippet before editing code?",
+     "shown_by": "B",
+     "evidence": "B runs the HasValues repro at turn 7 and sees [5]; A edits at turn 3 and first runs the repro afterwards.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Exploring pandas types",
+     "rule": "Did the agent probe which pandas types have a .values attribute before choosing the fix?",
+     "shown_by": "B",
+     "evidence": "Turns 9-13 check DataFrame, Series, Index, Categorical, and ExtensionArray for .values.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Edge-case checks of the fix",
+     "rule": "Did the agent manually test the fix on varied Series dtypes or DataFrames?",
+     "shown_by": "B",
+     "evidence": "Turns 15-22 test Series with datetime, timedelta, int, and object dtypes, and a DataFrame.",
+     "shown_by_model": "claude-opus-4-6"
+    }
+   ]
+  },
+  {
+   "item_id": "pydata__xarray-2905|r2|old-first",
+   "task_id": "pydata__xarray-2905",
+   "repeat": 2,
+   "order": "old-first",
+   "A": {
+    "model": "claude-opus-4-6",
+    "run_id": "pydata__xarray-2905--claude-native--claude-opus-4-6--20261114-212003-275120",
+    "truncated": false
+   },
+   "B": {
+    "model": "claude-opus-5-5",
+    "run_id": "pydata__xarray-2905--claude-native--claude-opus-5-5--20261114-212007-962089",
+    "truncated": false
+   },
+   "status": "ok",
+   "keys": [
+    "f00e9fd87d579dacea2f04b7ae52fc75c870b39606b45498c1364a1386a983b2"
+   ],
+   "differences": [
+    {
+     "name": "Reproduction before fixing",
+     "rule": "Did the agent run a reproduction script of the issue before editing any code?",
+     "shown_by": "A",
+     "evidence": "Turn 9 runs the good/bad indexed reproduction before the edit at turn 14, while B edits at turn 3 with no prior reproduction.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Code exploration depth",
+     "rule": "Did the agent read the surrounding code in several separate steps (e.g. __setitem__, as_compatible_data, array types) before editing?",
+     "shown_by": "A",
+     "evidence": "Turns 2-8 grep and sed through variable.py, __setitem__ and NON_NUMPY_SUPPORTED_ARRAY_TYPES; B makes only two quick looks (turns 1-2).",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Iterating on the fix after test failure",
+     "rule": "Did the agent revise its fix after a test failure caused by its first version?",
+     "shown_by": "A",
+     "evidence": "The ExtensionArray version broke test_pandas_cateogrical_dtype (turns 16-18), and A revised the fix in turns 21 and 24.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Type set unwrapped",
+     "rule": "Does the final fix unwrap pd.Index in addition to Series and DataFrame?",
+     "shown_by": "B",
+     "evidence": "B uses (pd.Series, pd.Index, pd.DataFrame) at turn 3, while A ends with only (pd.Series, pd.DataFrame) at turn 24.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "DataArray handling change",
+     "rule": "Did the agent also change how xarray DataArray objects are unwrapped?",
+     "shown_by": "B",
+     "evidence": "B extends the Variable early-return to (Variable, xr.DataArray) in turn 3; A touches only the getattr line.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Baseline comparison of test failures",
+     "rule": "Did the agent compare failing tests against an unmodified baseline using git stash?",
+     "shown_by": "B",
+     "evidence": "B diffs the sorted FAILED lists from stash vs patched in turn 5 (505 each, no diff); A stashes only for 5 failing tests at turn 31.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Test scope",
+     "rule": "Did the agent run the full xarray test suite rather than selected test files?",
+     "shown_by": "B",
+     "evidence": "B runs pytest on all of xarray/tests (turns 4-5); A runs test_variable, test_dataarray, test_dataset and test_indexing separately.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Adding tests and docs",
+     "rule": "Did the agent add a new regression test file and a whats-new entry?",
+     "shown_by": "B",
+     "evidence": "B creates test_variable_setitem_values.py in turn 6 and edits doc/whats-new.rst in turn 8; A adds neither.",
+     "shown_by_model": "claude-opus-5-5"
+    }
+   ]
+  },
+  {
+   "item_id": "pydata__xarray-2905|r2|new-first",
+   "task_id": "pydata__xarray-2905",
+   "repeat": 2,
+   "order": "new-first",
+   "A": {
+    "model": "claude-opus-5-5",
+    "run_id": "pydata__xarray-2905--claude-native--claude-opus-5-5--20261114-212007-962089",
+    "truncated": false
+   },
+   "B": {
+    "model": "claude-opus-4-6",
+    "run_id": "pydata__xarray-2905--claude-native--claude-opus-4-6--20261114-212003-275120",
+    "truncated": false
+   },
+   "status": "ok",
+   "keys": [
+    "abf5526ca853bb4d71a76bb7a25a2ee3d04bfd9c902c17891145c02ce7ff27dd"
+   ],
+   "differences": [
+    {
+     "name": "Full-suite baseline comparison",
+     "rule": "Did the agent run the full xarray test suite with and without its change and diff the failing-test lists?",
+     "shown_by": "A",
+     "evidence": "Turn 5 collects FAILED lists for the patched and stashed trees and diffs them (505 vs 505); B only ran selected files.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Added regression tests",
+     "rule": "Did the agent add a new test file or test function to the repo?",
+     "shown_by": "A",
+     "evidence": "Turn 6 creates xarray/tests/test_variable_setitem_values.py with 3 tests; B adds no tests.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Changelog entry",
+     "rule": "Did the agent edit doc/whats-new.rst?",
+     "shown_by": "A",
+     "evidence": "Turn 8 inserts a Bug fixes entry citing issue 1924; B never touches the docs.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Index included in unwrap",
+     "rule": "Does the final isinstance check unwrap pd.Index in addition to Series and DataFrame?",
+     "shown_by": "A",
+     "evidence": "A's turn 3 uses (pd.Series, pd.Index, pd.DataFrame), while B's final check in turn 24 is only (pd.Series, pd.DataFrame).",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "DataArray handling change",
+     "rule": "Did the agent also change how DataArray inputs are handled in as_compatible_data?",
+     "shown_by": "A",
+     "evidence": "Turn 3 changes the early return to isinstance(data, (Variable, xr.DataArray)), which B never does.",
+     "shown_by_model": "claude-opus-5-5"
+    },
+    {
+     "name": "Iterative fix after test failure",
+     "rule": "Did the agent first try a broader fix, hit a test failure, and then revise the patch?",
+     "shown_by": "B",
+     "evidence": "B tried ExtensionArray in turn 14, test_pandas_cateogrical_dtype failed in turns 16-18, and it narrowed the check in turn 24.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Pandas behavior probing",
+     "rule": "Did the agent probe pandas types with small scripts to see which have .values before editing?",
+     "shown_by": "B",
+     "evidence": "Turns 10-12 and 19-20 check hasattr(..., 'values') on Series, DataFrame, Index and Categorical.",
+     "shown_by_model": "claude-opus-4-6"
+    },
+    {
+     "name": "Baseline failure verification scope",
+     "rule": "Did the agent confirm failures were pre-existing only for a few failing tests, via stash and rerun?",
+     "shown_by": "B",
+     "evidence": "Turns 30-32 stash and rerun only the 5 failing test_dataset tests; the test_from_series_multiindex failure is skipped over without a baseline check.",
+     "shown_by_model": "claude-opus-4-6"
+    }
+   ]
+  }
+ ]
+}

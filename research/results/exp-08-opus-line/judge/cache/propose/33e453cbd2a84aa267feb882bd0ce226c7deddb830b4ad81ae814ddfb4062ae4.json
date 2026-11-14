@@ -1,0 +1,41 @@
+{
+ "key": "33e453cbd2a84aa267feb882bd0ce226c7deddb830b4ad81ae814ddfb4062ae4",
+ "stage": "propose",
+ "item_id": "sympy__sympy-13757|r1|new-first",
+ "pass": 0,
+ "cost_usd": 0.037574,
+ "worst_case_usd": 0.100476,
+ "response": {
+  "model": "claude-sonnet-5-5",
+  "id": "msg_011Ch3damphaLvXN6QGPyQKg",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+   {
+    "type": "text",
+    "text": "{\"differences\": [{\"name\": \"Jumps to known fix\", \"rule\": \"Does the agent state in its first turn that it already knows the fix (set _op_priority on Poly) before inspecting code?\", \"shown_by\": \"A\", \"evidence\": \"Turn 1 thinking says it recognizes the standard sympy fix of setting _op_priority; B instead investigates from the symptom.\"}, {\"name\": \"Reproduces bug first\", \"rule\": \"Does the agent run the failing example to reproduce the bug before editing source?\", \"shown_by\": \"B\", \"evidence\": \"B runs x*Poly(x) and S(-2)*Poly(x) in turn 13 before the edit in turn 14; A edits in turn 3 without a prior repro.\"}, {\"name\": \"Adds regression test\", \"rule\": \"Does the agent add a new test function to the repo's test files?\", \"shown_by\": \"A\", \"evidence\": \"A appends test_issue_13079 to test_polytools.py in turn 4; B makes only the one-line source change (turn 39 diff).\"}, {\"name\": \"Edit method\", \"rule\": \"Does the agent edit the source with a Python script doing string replacement anchored on the is_Poly lines?\", \"shown_by\": \"A\", \"evidence\": \"A uses a python heredoc replace in turn 3; B uses sed on the __slots__ line in turn 14.\"}, {\"name\": \"Investigation depth\", \"rule\": \"Does the agent read the Poly __mul__/__rmul__ code and grep _op_priority across the whole codebase before fixing?\", \"shown_by\": \"B\", \"evidence\": \"B inspects __mul__ (turn 3), greps _op_priority across sympy (turn 8), and reads the class at length; A does only two quick greps.\"}, {\"name\": \"Baseline comparison method\", \"rule\": \"Does the agent compare failures against a stashed baseline by diffing the lists of failing tests across a combined run?\", \"shown_by\": \"A\", \"evidence\": \"Turn 5 saves FAILED lists with and without the change and diffs them; B compares one test file at a time.\"}, {\"name\": \"Failure diagnosis\", \"rule\": \"Does the agent dig into individual failing tests and explain why they fail (XFAIL tests now passing)?\", \"shown_by\": \"B\", \"evidence\": \"Turns 17-31 investigate test_factor_noeval and test_poly_matching_consistency, and conclude XPass is caused by the fix.\"}, {\"name\": \"Test scope\", \"rule\": \"Does the agent run tests beyond the polys tests, including matrices?\", \"shown_by\": \"A\", \"evidence\": \"A's turn 4 run includes test_matrices.py plus core tests; B runs only polys, test_arit and test_expr.\"}]}"
+   }
+  ],
+  "container": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "stop_details": null,
+  "usage": {
+   "input_tokens": 14337,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 890,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global",
+   "speed": "standard"
+  },
+  "diagnostics": null
+ }
+}

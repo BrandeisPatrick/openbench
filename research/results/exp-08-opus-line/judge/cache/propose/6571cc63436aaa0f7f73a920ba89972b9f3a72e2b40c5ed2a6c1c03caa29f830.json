@@ -1,0 +1,41 @@
+{
+ "key": "6571cc63436aaa0f7f73a920ba89972b9f3a72e2b40c5ed2a6c1c03caa29f830",
+ "stage": "propose",
+ "item_id": "pydata__xarray-2905|r1|old-first",
+ "pass": 0,
+ "cost_usd": 0.031642,
+ "worst_case_usd": 0.097224,
+ "response": {
+  "model": "claude-sonnet-5-5",
+  "id": "msg_011Ch3deWfjopzBRwJ5E1ofo",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+   {
+    "type": "text",
+    "text": "{\"differences\": [{\"name\": \"Unwrap type scope\", \"rule\": \"Does the final fix unwrap only pandas.Series (not Index, DataFrame or xarray objects)?\", \"shown_by\": \"A\", \"evidence\": \"Turn 14 replaces getattr with `isinstance(data, pd.Series)` only; B uses a tuple including Index, DataFrame and DataArray (turn 3).\"}, {\"name\": \"Includes xarray DataArray\", \"rule\": \"Does the fix explicitly handle xr.DataArray in the unwrapping check?\", \"shown_by\": \"B\", \"evidence\": \"Turn 3 adds xr.DataArray to the isinstance tuple after reasoning about its .values.\"}, {\"name\": \"Exploration of pandas types\", \"rule\": \"Did the agent probe which pandas types have a `.values` attribute via experiments before deciding on the fix?\", \"shown_by\": \"A\", \"evidence\": \"Turns 9-13 test hasattr values on DataFrame, Series, Index, Categorical and extension arrays; B edits right after reading code.\"}, {\"name\": \"Reproduce before fix\", \"rule\": \"Did the agent run the issue reproduction script before making any code edit?\", \"shown_by\": \"A\", \"evidence\": \"Turn 7 reproduces the bug (bad_indexed=[5]) before the turn 14 edit; B's first edit in turn 3 comes with no prior reproduction.\"}, {\"name\": \"Regression test added\", \"rule\": \"Did the agent add a new test to the repo's test suite?\", \"shown_by\": \"B\", \"evidence\": \"Turn 6 adds test_object_with_values_property_not_coerced to test_variable.py; A only ran ad hoc scripts.\"}, {\"name\": \"Changelog entry\", \"rule\": \"Did the agent add an entry to the docs whats-new file?\", \"shown_by\": \"B\", \"evidence\": \"Turn 10 edits doc/whats-new.rst; A's final diff touches only variable.py.\"}, {\"name\": \"Full-suite baseline comparison\", \"rule\": \"Did the agent compare full test-suite results before and after the change using stash?\", \"shown_by\": \"B\", \"evidence\": \"Turn 8 runs xarray/tests with and without changes and diffs outputs; A only checked individual failing tests with stash.\"}, {\"name\": \"Failure triage method\", \"rule\": \"Did the agent investigate each failing test individually by stashing and rerunning it?\", \"shown_by\": \"A\", \"evidence\": \"Turns 24-30 stash and rerun specific failures (from_series_multiindex, sel_categorical, etc.) one at a time.\"}]}"
+   }
+  ],
+  "container": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "stop_details": null,
+  "usage": {
+   "input_tokens": 11511,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 862,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global",
+   "speed": "standard"
+  },
+  "diagnostics": null
+ }
+}

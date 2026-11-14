@@ -1,0 +1,41 @@
+{
+ "key": "174b3b52a67b3873ed307cbff5419025ebc2a13162ff25c2ad7f679e1900afce",
+ "stage": "freeze",
+ "item_id": "freeze",
+ "pass": 0,
+ "cost_usd": 0.018872,
+ "worst_case_usd": 0.088126,
+ "response": {
+  "model": "claude-sonnet-5-5",
+  "id": "msg_011Ch3dh55ShQ5WP9Xt6fpuE",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+   {
+    "type": "text",
+    "text": "{\"candidates\":[{\"name\":\"Reproduces bug before editing\",\"rule\":\"Did the agent run a reproduction of the issue's bug and view the output before making any source code edit?\",\"merged_from\":[\"P001\",\"P010\",\"P033\",\"P042\",\"P051\",\"P062\",\"P068\",\"P078\",\"P081\"]},{\"name\":\"Adds regression test\",\"rule\":\"Did the agent add a new test function or new test file to the repository's tests for the fix?\",\"merged_from\":[\"P004\",\"P011\",\"P036\",\"P044\",\"P053\",\"P057\",\"P069\",\"P074\",\"P090\",\"P088\"]},{\"name\":\"Adds changelog/whats-new entry\",\"rule\":\"Did the agent add or edit a changelog, docs/changes or whats-new entry for the fix?\",\"merged_from\":[\"P037\",\"P045\",\"P054\",\"P058\",\"P070\",\"P075\",\"P091\"]},{\"name\":\"Baseline comparison via git stash\",\"rule\":\"Did the agent stash its changes (git stash) and rerun tests on the unmodified code to compare failures against the baseline?\",\"merged_from\":[\"P014\",\"P022\",\"P038\",\"P046\",\"P055\",\"P059\",\"P071\",\"P076\",\"P086\",\"P089\"]},{\"name\":\"Per-test stash verification of failures\",\"rule\":\"Did the agent investigate individual failing tests one at a time, stashing and rerunning each to confirm whether it also fails on the base?\",\"merged_from\":[\"P006\",\"P030\",\"P072\",\"P077\",\"P096\",\"P015\"]},{\"name\":\"Recalls known fix upfront\",\"rule\":\"Does the agent's first-turn reasoning state that it already recognizes or remembers the standard/upstream fix (e.g. setting _op_priority on Poly) before inspecting code?\",\"merged_from\":[\"P003\",\"P009\",\"P018\",\"P025\"]},{\"name\":\"Multi-step code exploration before editing\",\"rule\":\"Did the agent explore the relevant code over several separate read-only steps (grep/sed/cat of the relevant functions, mechanisms or usages) before making its first edit?\",\"merged_from\":[\"P002\",\"P013\",\"P017\",\"P026\",\"P082\"]},{\"name\":\"Edit via sed\",\"rule\":\"Did the agent apply the code edit with a sed -i command (including line-number-based sed) rather than a Python script or editor?\",\"merged_from\":[\"P005\",\"P019\",\"P035\",\"P043\",\"P052\",\"P063\"]},{\"name\":\"Edit via Python string replacement\",\"rule\":\"Did the agent apply the source edit using a Python script that performs string replacement rather than sed?\",\"merged_from\":[\"P012\",\"P027\"]},{\"name\":\"Broad test scope beyond the directly affected tests\",\"rule\":\"Did the agent run tests beyond the directly affected module, such as other modules (matrices, integrals, solvers) or a whole test directory, in addition to targeted tests?\",\"merged_from\":[\"P007\",\"P016\",\"P021\",\"P029\",\"P060\",\"P087\"]},{\"name\":\"Uses repo bin/test runner\",\"rule\":\"Did the agent run tests using the repository's own bin/test runner rather than pytest?\",\"merged_from\":[\"P020\",\"P028\"]},{\"name\":\"Probes pandas types and iterates on fix\",\"rule\":\"Did the agent probe which pandas types have .values via small experiments, and/or revise its fix after a test failure from its first version?\",\"merged_from\":[\"P067\",\"P079\",\"P095\",\"P083\",\"P094\"]}]}"
+   }
+  ],
+  "container": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "stop_details": null,
+  "usage": {
+   "input_tokens": 4166,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 1054,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global",
+   "speed": "standard"
+  },
+  "diagnostics": null
+ }
+}

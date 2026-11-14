@@ -1,0 +1,839 @@
+{
+ "judge_model": "claude-sonnet-5-5",
+ "status": "ok",
+ "keys": [
+  "174b3b52a67b3873ed307cbff5419025ebc2a13162ff25c2ad7f679e1900afce"
+ ],
+ "candidates": [
+  {
+   "id": "C01",
+   "name": "Reproduces bug before editing",
+   "rule": "Did the agent run a reproduction of the issue's bug and view the output before making any source code edit?",
+   "merged_from": [
+    "P001",
+    "P010",
+    "P033",
+    "P042",
+    "P051",
+    "P062",
+    "P068",
+    "P078",
+    "P081"
+   ]
+  },
+  {
+   "id": "C02",
+   "name": "Adds regression test",
+   "rule": "Did the agent add a new test function or new test file to the repository's tests for the fix?",
+   "merged_from": [
+    "P004",
+    "P011",
+    "P036",
+    "P044",
+    "P053",
+    "P057",
+    "P069",
+    "P074",
+    "P090",
+    "P088"
+   ]
+  },
+  {
+   "id": "C03",
+   "name": "Adds changelog/whats-new entry",
+   "rule": "Did the agent add or edit a changelog, docs/changes or whats-new entry for the fix?",
+   "merged_from": [
+    "P037",
+    "P045",
+    "P054",
+    "P058",
+    "P070",
+    "P075",
+    "P091"
+   ]
+  },
+  {
+   "id": "C04",
+   "name": "Baseline comparison via git stash",
+   "rule": "Did the agent stash its changes (git stash) and rerun tests on the unmodified code to compare failures against the baseline?",
+   "merged_from": [
+    "P014",
+    "P022",
+    "P038",
+    "P046",
+    "P055",
+    "P059",
+    "P071",
+    "P076",
+    "P086",
+    "P089"
+   ]
+  },
+  {
+   "id": "C05",
+   "name": "Per-test stash verification of failures",
+   "rule": "Did the agent investigate individual failing tests one at a time, stashing and rerunning each to confirm whether it also fails on the base?",
+   "merged_from": [
+    "P006",
+    "P030",
+    "P072",
+    "P077",
+    "P096",
+    "P015"
+   ]
+  },
+  {
+   "id": "C06",
+   "name": "Recalls known fix upfront",
+   "rule": "Does the agent's first-turn reasoning state that it already recognizes or remembers the standard/upstream fix (e.g. setting _op_priority on Poly) before inspecting code?",
+   "merged_from": [
+    "P003",
+    "P009",
+    "P018",
+    "P025"
+   ]
+  },
+  {
+   "id": "C07",
+   "name": "Multi-step code exploration before editing",
+   "rule": "Did the agent explore the relevant code over several separate read-only steps (grep/sed/cat of the relevant functions, mechanisms or usages) before making its first edit?",
+   "merged_from": [
+    "P002",
+    "P013",
+    "P017",
+    "P026",
+    "P082"
+   ]
+  },
+  {
+   "id": "C08",
+   "name": "Edit via sed",
+   "rule": "Did the agent apply the code edit with a sed -i command (including line-number-based sed) rather than a Python script or editor?",
+   "merged_from": [
+    "P005",
+    "P019",
+    "P035",
+    "P043",
+    "P052",
+    "P063"
+   ]
+  },
+  {
+   "id": "C09",
+   "name": "Edit via Python string replacement",
+   "rule": "Did the agent apply the source edit using a Python script that performs string replacement rather than sed?",
+   "merged_from": [
+    "P012",
+    "P027"
+   ]
+  },
+  {
+   "id": "C10",
+   "name": "Broad test scope beyond the directly affected tests",
+   "rule": "Did the agent run tests beyond the directly affected module, such as other modules (matrices, integrals, solvers) or a whole test directory, in addition to targeted tests?",
+   "merged_from": [
+    "P007",
+    "P016",
+    "P021",
+    "P029",
+    "P060",
+    "P087"
+   ]
+  },
+  {
+   "id": "C11",
+   "name": "Uses repo bin/test runner",
+   "rule": "Did the agent run tests using the repository's own bin/test runner rather than pytest?",
+   "merged_from": [
+    "P020",
+    "P028"
+   ]
+  },
+  {
+   "id": "C12",
+   "name": "Probes pandas types and iterates on fix",
+   "rule": "Did the agent probe which pandas types have .values via small experiments, and/or revise its fix after a test failure from its first version?",
+   "merged_from": [
+    "P067",
+    "P079",
+    "P095",
+    "P083",
+    "P094"
+   ]
+  }
+ ],
+ "proposals": [
+  {
+   "pid": "P001",
+   "name": "Reproduce before fixing",
+   "rule": "Did the agent run a script reproducing the buggy output before making any code edit?",
+   "item_id": "sympy__sympy-13757|r1|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P002",
+   "name": "Investigation depth",
+   "rule": "Did the agent spend several turns reading Poly.__mul__/__rmul__ and _op_priority code before choosing a fix?",
+   "item_id": "sympy__sympy-13757|r1|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P003",
+   "name": "Prior knowledge of fix",
+   "rule": "Did the agent state at the outset that it recognized the standard fix?",
+   "item_id": "sympy__sympy-13757|r1|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P004",
+   "name": "Adds regression test",
+   "rule": "Did the agent add a new test to the repository's test files?",
+   "item_id": "sympy__sympy-13757|r1|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P005",
+   "name": "Edit method",
+   "rule": "Did the agent edit the source using sed -i rather than a Python script?",
+   "item_id": "sympy__sympy-13757|r1|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P006",
+   "name": "Failure triage method",
+   "rule": "Did the agent investigate individual failing tests one by one by inspecting them and stashing to compare?",
+   "item_id": "sympy__sympy-13757|r1|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P007",
+   "name": "Test scope breadth",
+   "rule": "Did the agent run the whole polys test directory plus other modules, such as matrices, in a single run?",
+   "item_id": "sympy__sympy-13757|r1|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P008",
+   "name": "Edge-case checks",
+   "rule": "Did the agent check the fix against other kinds of expressions, such as sin(x) or other symbols?",
+   "item_id": "sympy__sympy-13757|r1|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P009",
+   "name": "Jumps to known fix",
+   "rule": "Does the agent state in its first turn that it already knows the fix (set _op_priority on Poly) before inspecting code?",
+   "item_id": "sympy__sympy-13757|r1|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P010",
+   "name": "Reproduces bug first",
+   "rule": "Does the agent run the failing example to reproduce the bug before editing source?",
+   "item_id": "sympy__sympy-13757|r1|new-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P011",
+   "name": "Adds regression test",
+   "rule": "Does the agent add a new test function to the repo's test files?",
+   "item_id": "sympy__sympy-13757|r1|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P012",
+   "name": "Edit method",
+   "rule": "Does the agent edit the source with a Python script doing string replacement anchored on the is_Poly lines?",
+   "item_id": "sympy__sympy-13757|r1|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P013",
+   "name": "Investigation depth",
+   "rule": "Does the agent read the Poly __mul__/__rmul__ code and grep _op_priority across the whole codebase before fixing?",
+   "item_id": "sympy__sympy-13757|r1|new-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P014",
+   "name": "Baseline comparison method",
+   "rule": "Does the agent compare failures against a stashed baseline by diffing the lists of failing tests across a combined run?",
+   "item_id": "sympy__sympy-13757|r1|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P015",
+   "name": "Failure diagnosis",
+   "rule": "Does the agent dig into individual failing tests and explain why they fail (XFAIL tests now passing)?",
+   "item_id": "sympy__sympy-13757|r1|new-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P016",
+   "name": "Test scope",
+   "rule": "Does the agent run tests beyond the polys tests, including matrices?",
+   "item_id": "sympy__sympy-13757|r1|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P017",
+   "name": "Root-cause investigation before editing",
+   "rule": "Did the agent explore the code (grep/sed of __mul__/__rmul__, _op_priority usage) over several turns before making its first edit?",
+   "item_id": "sympy__sympy-13757|r2|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P018",
+   "name": "Recalled upstream fix",
+   "rule": "Does the agent's thinking say it recognizes the fix as a known upstream/standard change before investigating?",
+   "item_id": "sympy__sympy-13757|r2|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P019",
+   "name": "Edit method",
+   "rule": "Was the edit applied using a sed -i one-liner (rather than a Python script rewrite)?",
+   "item_id": "sympy__sympy-13757|r2|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P020",
+   "name": "Test runner used",
+   "rule": "Did the agent run tests via the repo's bin/test runner rather than pytest?",
+   "item_id": "sympy__sympy-13757|r2|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P021",
+   "name": "Test scope breadth",
+   "rule": "Did the agent run regression tests across many modules beyond polys/core (e.g. integrals, solvers, printing, matrices)?",
+   "item_id": "sympy__sympy-13757|r2|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P022",
+   "name": "Baseline comparison method",
+   "rule": "Did the agent compare full before/after failure lists written to files via git stash?",
+   "item_id": "sympy__sympy-13757|r2|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P023",
+   "name": "Detecting regression caused by the fix",
+   "rule": "Did the agent identify a test that newly fails due to its change (test_match) and discuss it?",
+   "item_id": "sympy__sympy-13757|r2|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P024",
+   "name": "Final handling of verification",
+   "rule": "Did the agent finish with an explicit assertion script of all issue examples?",
+   "item_id": "sympy__sympy-13757|r2|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P025",
+   "name": "Fix recalled upfront",
+   "rule": "Does the agent's first-turn reasoning identify the fix (adding _op_priority = 10.001 to Poly) from memory of the upstream change, before investigating the code?",
+   "item_id": "sympy__sympy-13757|r2|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P026",
+   "name": "Root-cause exploration",
+   "rule": "Does the agent trace the cause through the decorators and priority mechanism in several separate read-only steps before editing?",
+   "item_id": "sympy__sympy-13757|r2|new-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P027",
+   "name": "Edit method",
+   "rule": "Does the agent make the edit with a Python script doing string replacement rather than sed?",
+   "item_id": "sympy__sympy-13757|r2|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P028",
+   "name": "Test runner",
+   "rule": "Does the agent run tests with sympy's own bin/test runner rather than pytest?",
+   "item_id": "sympy__sympy-13757|r2|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P029",
+   "name": "Test scope breadth",
+   "rule": "Does the agent run test suites well beyond polys/core, such as integrals, solvers, printing, matrices, functions and series, and compare them with baseline?",
+   "item_id": "sympy__sympy-13757|r2|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P030",
+   "name": "Baseline comparison method",
+   "rule": "Does the agent compare failures against the unmodified base using git stash for specific failing tests one at a time?",
+   "item_id": "sympy__sympy-13757|r2|new-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P031",
+   "name": "Regression investigation",
+   "rule": "Does the agent identify a new test failure caused by its change (test_match) and examine why it fails?",
+   "item_id": "sympy__sympy-13757|r2|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P032",
+   "name": "XPASS discovery",
+   "rule": "Does the agent notice that the fix turns an XFAIL test (test_poly_matching_consistency) into a pass?",
+   "item_id": "sympy__sympy-13757|r2|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P033",
+   "name": "Reproduced bug first",
+   "rule": "Did the agent run a reproduction of the bug before editing any source file?",
+   "item_id": "astropy__astropy-12907|r1|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P034",
+   "name": "Read full file",
+   "rule": "Did the agent view the entire separable.py file before making the edit?",
+   "item_id": "astropy__astropy-12907|r1|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P035",
+   "name": "Edit method",
+   "rule": "Did the agent make the code change with a sed one-liner rather than a Python script?",
+   "item_id": "astropy__astropy-12907|r1|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P036",
+   "name": "Added regression tests",
+   "rule": "Did the agent create a new test file for the fix?",
+   "item_id": "astropy__astropy-12907|r1|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P037",
+   "name": "Changelog entry",
+   "rule": "Did the agent add a changelog/docs entry?",
+   "item_id": "astropy__astropy-12907|r1|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P038",
+   "name": "Baseline comparison via stash",
+   "rule": "Did the agent compare test-suite results against the unmodified code (e.g., git stash) to attribute failures?",
+   "item_id": "astropy__astropy-12907|r1|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P039",
+   "name": "Targeted test selection after failures",
+   "rule": "After a broad test run showed errors, did the agent narrow to specific relevant test files?",
+   "item_id": "astropy__astropy-12907|r1|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P040",
+   "name": "Edit verification scope",
+   "rule": "Did the agent print the edited line or diff right after editing as part of the same command?",
+   "item_id": "astropy__astropy-12907|r1|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P041",
+   "name": "Opens with targeted grep",
+   "rule": "Does the agent's first command grep for the specific function (_cstack) rather than locating or reading the whole file?",
+   "item_id": "astropy__astropy-12907|r1|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P042",
+   "name": "Reproduces bug before fixing",
+   "rule": "Does the agent run the issue's reproduction and view the buggy output before editing code?",
+   "item_id": "astropy__astropy-12907|r1|new-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P043",
+   "name": "Edit method",
+   "rule": "Does the agent edit the file with a line-number-based sed command?",
+   "item_id": "astropy__astropy-12907|r1|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P044",
+   "name": "Adds regression test",
+   "rule": "Does the agent create a new test file covering the nested compound case?",
+   "item_id": "astropy__astropy-12907|r1|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P045",
+   "name": "Adds changelog entry",
+   "rule": "Does the agent add a docs/changes entry for the fix?",
+   "item_id": "astropy__astropy-12907|r1|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P046",
+   "name": "Baseline comparison of failures",
+   "rule": "Does the agent stash its changes and rerun the suite to compare pre-existing failures against the baseline?",
+   "item_id": "astropy__astropy-12907|r1|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P047",
+   "name": "Test scope handling",
+   "rule": "Does the agent respond to a full-suite failure by narrowing to a few related test files?",
+   "item_id": "astropy__astropy-12907|r1|new-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P048",
+   "name": "Combined edit and verify commands",
+   "rule": "Does the agent chain the edit, verification script and tests in one command?",
+   "item_id": "astropy__astropy-12907|r1|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P049",
+   "name": "Full file inspection",
+   "rule": "Does the agent view the whole separable.py file (e.g., cat) before editing?",
+   "item_id": "astropy__astropy-12907|r2|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P050",
+   "name": "Locating the file first",
+   "rule": "Does the agent run a find command to locate the relevant file before reading it?",
+   "item_id": "astropy__astropy-12907|r2|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P051",
+   "name": "Reproducing bug before fix",
+   "rule": "Does the agent run the issue's reproduction and trace internals before applying the edit?",
+   "item_id": "astropy__astropy-12907|r2|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P052",
+   "name": "Edit method",
+   "rule": "Does the agent edit using sed on a specific line number rather than a Python string replacement?",
+   "item_id": "astropy__astropy-12907|r2|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P053",
+   "name": "Adds regression test",
+   "rule": "Does the agent create a new test file for the fix?",
+   "item_id": "astropy__astropy-12907|r2|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P054",
+   "name": "Changelog entry",
+   "rule": "Does the agent add a changelog file under docs/changes?",
+   "item_id": "astropy__astropy-12907|r2|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P055",
+   "name": "Test scope and baseline comparison",
+   "rule": "Does the agent run the broader modeling test suite and compare with a stashed baseline?",
+   "item_id": "astropy__astropy-12907|r2|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P056",
+   "name": "Extra nesting checks",
+   "rule": "Does the agent verify the fix on multiple nesting configurations (left, right, double nested)?",
+   "item_id": "astropy__astropy-12907|r2|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P057",
+   "name": "Added regression test",
+   "rule": "Did the agent create a new test file or add a regression test for the fix?",
+   "item_id": "astropy__astropy-12907|r2|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P058",
+   "name": "Changelog entry",
+   "rule": "Did the agent add a changelog file under docs/changes?",
+   "item_id": "astropy__astropy-12907|r2|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P059",
+   "name": "Baseline comparison via stash",
+   "rule": "Did the agent compare the test suite results with and without its change using git stash?",
+   "item_id": "astropy__astropy-12907|r2|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P060",
+   "name": "Broad test scope",
+   "rule": "Did the agent run the whole astropy/modeling/tests directory rather than only test_separable.py?",
+   "item_id": "astropy__astropy-12907|r2|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P061",
+   "name": "Initial exploration style",
+   "rule": "Did the agent begin by grepping directly for the target function instead of viewing the whole file?",
+   "item_id": "astropy__astropy-12907|r2|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P062",
+   "name": "Reproduction before fixing",
+   "rule": "Did the agent reproduce the bug and trace intermediate matrices before editing?",
+   "item_id": "astropy__astropy-12907|r2|new-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P063",
+   "name": "Edit mechanism",
+   "rule": "Did the agent edit the source using sed with a line number?",
+   "item_id": "astropy__astropy-12907|r2|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P064",
+   "name": "Extra nesting scenarios",
+   "rule": "Did the agent check additional nesting configurations such as left-nested and double-nested compounds after the fix?",
+   "item_id": "astropy__astropy-12907|r2|new-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P065",
+   "name": "Unwrap type scope",
+   "rule": "Does the final fix unwrap only pandas.Series (not Index, DataFrame or xarray objects)?",
+   "item_id": "pydata__xarray-2905|r1|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P066",
+   "name": "Includes xarray DataArray",
+   "rule": "Does the fix explicitly handle xr.DataArray in the unwrapping check?",
+   "item_id": "pydata__xarray-2905|r1|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P067",
+   "name": "Exploration of pandas types",
+   "rule": "Did the agent probe which pandas types have a `.values` attribute via experiments before deciding on the fix?",
+   "item_id": "pydata__xarray-2905|r1|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P068",
+   "name": "Reproduce before fix",
+   "rule": "Did the agent run the issue reproduction script before making any code edit?",
+   "item_id": "pydata__xarray-2905|r1|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P069",
+   "name": "Regression test added",
+   "rule": "Did the agent add a new test to the repo's test suite?",
+   "item_id": "pydata__xarray-2905|r1|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P070",
+   "name": "Changelog entry",
+   "rule": "Did the agent add an entry to the docs whats-new file?",
+   "item_id": "pydata__xarray-2905|r1|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P071",
+   "name": "Full-suite baseline comparison",
+   "rule": "Did the agent compare full test-suite results before and after the change using stash?",
+   "item_id": "pydata__xarray-2905|r1|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P072",
+   "name": "Failure triage method",
+   "rule": "Did the agent investigate each failing test individually by stashing and rerunning it?",
+   "item_id": "pydata__xarray-2905|r1|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P073",
+   "name": "Type check scope",
+   "rule": "Does the final fix unwrap .values for multiple types (e.g. Series, Index, DataFrame, DataArray) rather than only pd.Series?",
+   "item_id": "pydata__xarray-2905|r1|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P074",
+   "name": "Regression test added",
+   "rule": "Did the agent add a new test to the repository's test suite?",
+   "item_id": "pydata__xarray-2905|r1|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P075",
+   "name": "Changelog entry",
+   "rule": "Did the agent add an entry to doc/whats-new.rst?",
+   "item_id": "pydata__xarray-2905|r1|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P076",
+   "name": "Full-suite baseline comparison",
+   "rule": "Did the agent run the whole test suite before and after the change and diff the results?",
+   "item_id": "pydata__xarray-2905|r1|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P077",
+   "name": "Per-failure stash verification",
+   "rule": "Did the agent stash changes to confirm individual failing tests also fail on the base?",
+   "item_id": "pydata__xarray-2905|r1|new-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P078",
+   "name": "Reproducing issue early",
+   "rule": "Did the agent run the issue's reproduction snippet before editing code?",
+   "item_id": "pydata__xarray-2905|r1|new-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P079",
+   "name": "Exploring pandas types",
+   "rule": "Did the agent probe which pandas types have a .values attribute before choosing the fix?",
+   "item_id": "pydata__xarray-2905|r1|new-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P080",
+   "name": "Edge-case checks of the fix",
+   "rule": "Did the agent manually test the fix on varied Series dtypes or DataFrames?",
+   "item_id": "pydata__xarray-2905|r1|new-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P081",
+   "name": "Reproduction before fixing",
+   "rule": "Did the agent run a reproduction script of the issue before editing any code?",
+   "item_id": "pydata__xarray-2905|r2|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P082",
+   "name": "Code exploration depth",
+   "rule": "Did the agent read the surrounding code in several separate steps (e.g. __setitem__, as_compatible_data, array types) before editing?",
+   "item_id": "pydata__xarray-2905|r2|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P083",
+   "name": "Iterating on the fix after test failure",
+   "rule": "Did the agent revise its fix after a test failure caused by its first version?",
+   "item_id": "pydata__xarray-2905|r2|old-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P084",
+   "name": "Type set unwrapped",
+   "rule": "Does the final fix unwrap pd.Index in addition to Series and DataFrame?",
+   "item_id": "pydata__xarray-2905|r2|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P085",
+   "name": "DataArray handling change",
+   "rule": "Did the agent also change how xarray DataArray objects are unwrapped?",
+   "item_id": "pydata__xarray-2905|r2|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P086",
+   "name": "Baseline comparison of test failures",
+   "rule": "Did the agent compare failing tests against an unmodified baseline using git stash?",
+   "item_id": "pydata__xarray-2905|r2|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P087",
+   "name": "Test scope",
+   "rule": "Did the agent run the full xarray test suite rather than selected test files?",
+   "item_id": "pydata__xarray-2905|r2|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P088",
+   "name": "Adding tests and docs",
+   "rule": "Did the agent add a new regression test file and a whats-new entry?",
+   "item_id": "pydata__xarray-2905|r2|old-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P089",
+   "name": "Full-suite baseline comparison",
+   "rule": "Did the agent run the full xarray test suite with and without its change and diff the failing-test lists?",
+   "item_id": "pydata__xarray-2905|r2|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P090",
+   "name": "Added regression tests",
+   "rule": "Did the agent add a new test file or test function to the repo?",
+   "item_id": "pydata__xarray-2905|r2|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P091",
+   "name": "Changelog entry",
+   "rule": "Did the agent edit doc/whats-new.rst?",
+   "item_id": "pydata__xarray-2905|r2|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P092",
+   "name": "Index included in unwrap",
+   "rule": "Does the final isinstance check unwrap pd.Index in addition to Series and DataFrame?",
+   "item_id": "pydata__xarray-2905|r2|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P093",
+   "name": "DataArray handling change",
+   "rule": "Did the agent also change how DataArray inputs are handled in as_compatible_data?",
+   "item_id": "pydata__xarray-2905|r2|new-first",
+   "shown_by_model": "claude-opus-5-5"
+  },
+  {
+   "pid": "P094",
+   "name": "Iterative fix after test failure",
+   "rule": "Did the agent first try a broader fix, hit a test failure, and then revise the patch?",
+   "item_id": "pydata__xarray-2905|r2|new-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P095",
+   "name": "Pandas behavior probing",
+   "rule": "Did the agent probe pandas types with small scripts to see which have .values before editing?",
+   "item_id": "pydata__xarray-2905|r2|new-first",
+   "shown_by_model": "claude-opus-4-6"
+  },
+  {
+   "pid": "P096",
+   "name": "Baseline failure verification scope",
+   "rule": "Did the agent confirm failures were pre-existing only for a few failing tests, via stash and rerun?",
+   "item_id": "pydata__xarray-2905|r2|new-first",
+   "shown_by_model": "claude-opus-4-6"
+  }
+ ]
+}
