@@ -1,0 +1,24 @@
+{
+  "run_id": "astropy__astropy-12907--claude-native--claude-fable-5-2--20261114-210801-031327",
+  "task_id": "astropy__astropy-12907",
+  "harness": "claude-native",
+  "model": "claude-fable-5-2",
+  "started_at": "2026-11-14T21:08:01.031327Z",
+  "finished_at": "2026-11-14T21:09:07.511613Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.2945388,
+  "total_tokens_in": 52511,
+  "total_tokens_out": 4013,
+  "total_tokens_cached": 39904,
+  "total_thinking_tokens": 484,
+  "num_turns": 7,
+  "limits": {
+    "wall_clock_s": 3600,
+    "max_turns": 100,
+    "max_cost_usd": 8.0
+  },
+  "image_id": "sha256:c86e385bbbeb3991298d8fd962b06078dc9d6382caa70bf465bf2e880014641a",
+  "effort": "high"
+}

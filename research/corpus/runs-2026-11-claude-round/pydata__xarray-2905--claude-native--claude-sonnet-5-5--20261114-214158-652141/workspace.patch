@@ -1,0 +1,42 @@
+diff --git a/xarray/core/variable.py b/xarray/core/variable.py
+index 45553eb..ebd2731 100644
+--- a/xarray/core/variable.py
++++ b/xarray/core/variable.py
+@@ -201,7 +201,7 @@ def as_compatible_data(data, fastpath=False):
+         # can't use fastpath (yet) for scalars
+         return _maybe_wrap_data(data)
+ 
+-    if isinstance(data, Variable):
++    if isinstance(data, (Variable, xr.DataArray)):
+         return data.data
+ 
+     if isinstance(data, NON_NUMPY_SUPPORTED_ARRAY_TYPES):
+@@ -218,7 +218,8 @@ def as_compatible_data(data, fastpath=False):
+         data = np.timedelta64(getattr(data, "value", data), "ns")
+ 
+     # we don't want nested self-described arrays
+-    data = getattr(data, "values", data)
++    if isinstance(data, (pd.Series, pd.Index, pd.DataFrame)):
++        data = data.values
+ 
+     if isinstance(data, np.ma.MaskedArray):
+         mask = np.ma.getmaskarray(data)
+diff --git a/xarray/tests/test_variable.py b/xarray/tests/test_variable.py
+index e1ae3e1..3c87de2 100644
+--- a/xarray/tests/test_variable.py
++++ b/xarray/tests/test_variable.py
+@@ -2388,3 +2388,14 @@ class TestBackendIndexing:
+         v = Variable(dims=("x", "y"), data=CopyOnWriteArray(DaskIndexingAdapter(da)))
+         self.check_orthogonal_indexing(v)
+         self.check_vectorized_indexing(v)
++
++
++def test_setitem_object_with_values_attribute():
++    # objects with a ``values`` attribute must not be coerced (GH1746 regression)
++    class HasValues:
++        values = 5
++
++    v = Variable(("x",), np.array([None], dtype=object))
++    obj = HasValues()
++    v[{"x": 0}] = obj
++    assert v.values[0] is obj

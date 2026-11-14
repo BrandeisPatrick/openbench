@@ -1,0 +1,69 @@
+diff --git a/CHANGES b/CHANGES
+index ed47709..69e6fdd 100644
+--- a/CHANGES
++++ b/CHANGES
+@@ -21,6 +21,8 @@ Bugs fixed
+ * #9648: autodoc: ``*args`` and ``**kwargs`` entries are duplicated when
+   ``autodoc_typehints="description"``
+ * #10443: epub: EPUB builder can't detect the mimetype of .webp file
++* #10104: gettext: Duplicated locations are shown if 3rd party extension does
++  not provide correct information
+ * #10456: py domain: ``:meta:`` fields are displayed if docstring contains two
+   or more meta-field
+ * #9096: sphinx-build: the value of progress bar for paralle build is wrong
+diff --git a/sphinx/builders/gettext.py b/sphinx/builders/gettext.py
+index e8bc547..3bba016 100644
+--- a/sphinx/builders/gettext.py
++++ b/sphinx/builders/gettext.py
+@@ -57,7 +57,12 @@ class Catalog:
+ 
+     def __iter__(self) -> Generator[Message, None, None]:
+         for message in self.messages:
+-            positions = [(source, line) for source, line, uuid in self.metadata[message]]
++            # A message may be registered several times from the very same
++            # location (e.g. nodes sharing a source line, or nodes whose line
++            # number is unknown).  Emit each location only once, keeping the
++            # order of first appearance (refs: #10104).
++            positions = list(dict.fromkeys(
++                (source, line) for source, line, uuid in self.metadata[message]))
+             uuids = [uuid for source, line, uuid in self.metadata[message]]
+             yield Message(message, positions, uuids)
+ 
+diff --git a/tests/test_build_gettext_catalog.py b/tests/test_build_gettext_catalog.py
+new file mode 100644
+index 0000000..0822046
+--- /dev/null
++++ b/tests/test_build_gettext_catalog.py
+@@ -0,0 +1,32 @@
++"""Test the message catalog of the gettext builder."""
++
++from sphinx.builders.gettext import Catalog, MsgOrigin
++
++
++def test_Catalog_duplicated_message():
++    catalog = Catalog()
++    catalog.add('hello', MsgOrigin('/path/to/filename', 1))
++    catalog.add('hello', MsgOrigin('/path/to/filename', 1))
++    catalog.add('hello', MsgOrigin('/path/to/filename', 2))
++    catalog.add('hello', MsgOrigin('/path/to/yetanother', 1))
++    catalog.add('hello', MsgOrigin('/path/to/filename', 2))
++    catalog.add('hello', MsgOrigin('/path/to/unknown-line', None))
++    catalog.add('hello', MsgOrigin('/path/to/unknown-line', None))
++    catalog.add('world', MsgOrigin('/path/to/filename', 1))
++
++    assert len(list(catalog)) == 2
++
++    msg1, msg2 = list(catalog)
++    assert msg1.text == 'hello'
++    # duplicates are dropped; the order of first appearance is kept
++    assert msg1.locations == [('/path/to/filename', 1),
++                              ('/path/to/filename', 2),
++                              ('/path/to/yetanother', 1),
++                              ('/path/to/unknown-line', None)]
++    # every origin keeps its own uuid even if the location is shared
++    assert len(msg1.uuids) == 7
++    assert len(set(msg1.uuids)) == 7
++
++    assert msg2.text == 'world'
++    assert msg2.locations == [('/path/to/filename', 1)]
++    assert len(msg2.uuids) == 1

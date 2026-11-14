@@ -1,0 +1,56 @@
+diff --git a/changelog/9877.bugfix.rst b/changelog/9877.bugfix.rst
+new file mode 100644
+index 0000000..9df695f
+--- /dev/null
++++ b/changelog/9877.bugfix.rst
+@@ -0,0 +1 @@
++Fix :meth:`caplog.get_records(when) <pytest.LogCaptureFixture.get_records>` getting out of sync with :attr:`caplog.records <pytest.LogCaptureFixture.records>` after :meth:`caplog.clear() <pytest.LogCaptureFixture.clear>` is called.
+diff --git a/src/_pytest/logging.py b/src/_pytest/logging.py
+index a4f4214..c76a04e 100644
+--- a/src/_pytest/logging.py
++++ b/src/_pytest/logging.py
+@@ -341,6 +341,10 @@ class LogCaptureHandler(logging_StreamHandler):
+         self.records.append(record)
+         super().emit(record)
+ 
++    def clear(self) -> None:
++        self.records.clear()
++        self.stream = StringIO()
++
+     def reset(self) -> None:
+         self.records = []
+         self.stream = StringIO()
+@@ -440,7 +444,7 @@ class LogCaptureFixture:
+ 
+     def clear(self) -> None:
+         """Reset the list of log records and the captured log text."""
+-        self.handler.reset()
++        self.handler.clear()
+ 
+     def set_level(self, level: Union[int, str], logger: Optional[str] = None) -> None:
+         """Set the level of a logger for the duration of a test.
+diff --git a/testing/logging/test_fixture.py b/testing/logging/test_fixture.py
+index bcb20de..3753e74 100644
+--- a/testing/logging/test_fixture.py
++++ b/testing/logging/test_fixture.py
+@@ -308,3 +308,20 @@ def test_log_report_captures_according_to_config_option_upon_failure(
+         ["*Print message*", "*INFO log message*", "*WARNING log message*"]
+     )
+     assert result.ret == 1
++
++
++def test_clear_for_call_stage(caplog, logging_during_setup_and_teardown):
++    logger.info("a_call_log")
++    assert [x.message for x in caplog.get_records("call")] == ["a_call_log"]
++    assert [x.message for x in caplog.get_records("setup")] == ["a_setup_log"]
++    assert set(caplog._item.stash[caplog_records_key]) == {"setup", "call"}
++
++    caplog.clear()
++
++    assert caplog.get_records("call") == []
++    assert [x.message for x in caplog.get_records("setup")] == ["a_setup_log"]
++    assert set(caplog._item.stash[caplog_records_key]) == {"setup", "call"}
++
++    logging.info("a_call_log2")
++    assert [x.message for x in caplog.get_records("call")] == ["a_call_log2"]
++    assert [x.message for x in caplog.get_records("setup")] == ["a_setup_log"]

@@ -1,0 +1,37 @@
+diff --git a/changelog/10040.bugfix.rst b/changelog/10040.bugfix.rst
+new file mode 100644
+index 0000000..604d107
+--- /dev/null
++++ b/changelog/10040.bugfix.rst
+@@ -0,0 +1 @@
++Fixed a bug where ``caplog.get_records()`` became decoupled from ``caplog.records`` after ``caplog.clear()`` was called. ``caplog.clear()`` now empties the existing record list in place so both stay in sync.
+diff --git a/src/_pytest/logging.py b/src/_pytest/logging.py
+index a4f4214..56e2cad 100644
+--- a/src/_pytest/logging.py
++++ b/src/_pytest/logging.py
+@@ -345,6 +345,16 @@ class LogCaptureHandler(logging_StreamHandler):
+         self.records = []
+         self.stream = StringIO()
+ 
++    def clear(self) -> None:
++        """Clear the captured records and text in place.
++
++        Unlike :meth:`reset`, the existing ``records`` list is emptied rather
++        than replaced, so that other references to it (such as the per-phase
++        lists returned by ``caplog.get_records``) stay in sync.
++        """
++        self.records.clear()
++        self.stream = StringIO()
++
+     def handleError(self, record: logging.LogRecord) -> None:
+         if logging.raiseExceptions:
+             # Fail the test if the log message is bad (emit failed).
+@@ -440,7 +450,7 @@ class LogCaptureFixture:
+ 
+     def clear(self) -> None:
+         """Reset the list of log records and the captured log text."""
+-        self.handler.reset()
++        self.handler.clear()
+ 
+     def set_level(self, level: Union[int, str], logger: Optional[str] = None) -> None:
+         """Set the level of a logger for the duration of a test.

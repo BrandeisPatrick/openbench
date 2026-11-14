@@ -1,0 +1,1799 @@
+{
+  "experiment": "exp-08-opus-line",
+  "status": "unvalidated instrument",
+  "factor": "generation",
+  "levels": [
+    "claude-opus-4-6",
+    "claude-opus-4-7",
+    "claude-opus-4-8",
+    "claude-opus-5",
+    "claude-opus-5-5"
+  ],
+  "levels_with_runs": [
+    "claude-opus-4-6",
+    "claude-opus-4-7",
+    "claude-opus-4-8",
+    "claude-opus-5",
+    "claude-opus-5-5"
+  ],
+  "tasks": [
+    "sympy__sympy-13757",
+    "astropy__astropy-12907",
+    "pydata__xarray-2905",
+    "pytest-dev__pytest-10051",
+    "scikit-learn__scikit-learn-10297",
+    "sphinx-doc__sphinx-10466"
+  ],
+  "tasks_dropped_v2": [],
+  "n_runs": 60,
+  "missing_cells": [],
+  "prediction_text_mismatch": [],
+  "V1_coverage": {
+    "claude-opus-4-6": {
+      "runs": 12,
+      "commands_other_share": 0.0,
+      "segments_other_share": 0.0,
+      "edits_unknown_share": 0.0,
+      "unreliable": false
+    },
+    "claude-opus-4-7": {
+      "runs": 12,
+      "commands_other_share": 0.0,
+      "segments_other_share": 0.0074211502782931356,
+      "edits_unknown_share": 0.0,
+      "unreliable": false
+    },
+    "claude-opus-4-8": {
+      "runs": 12,
+      "commands_other_share": 0.0,
+      "segments_other_share": 0.0033333333333333335,
+      "edits_unknown_share": 0.0,
+      "unreliable": false
+    },
+    "claude-opus-5": {
+      "runs": 12,
+      "commands_other_share": 0.0,
+      "segments_other_share": 0.021739130434782608,
+      "edits_unknown_share": 0.0,
+      "unreliable": false
+    },
+    "claude-opus-5-5": {
+      "runs": 12,
+      "commands_other_share": 0.0,
+      "segments_other_share": 0.003875968992248062,
+      "edits_unknown_share": 0.05714285714285714,
+      "unreliable": false
+    }
+  },
+  "V2_runner_start": {
+    "astropy__astropy-12907": {
+      "runs": 22,
+      "runner_start_fail": 0,
+      "after_source_edit": 0,
+      "runs_with_test": 22,
+      "dropped": false
+    },
+    "pydata__xarray-2905": {
+      "runs": 22,
+      "runner_start_fail": 0,
+      "after_source_edit": 0,
+      "runs_with_test": 22,
+      "dropped": false
+    },
+    "pytest-dev__pytest-10051": {
+      "runs": 22,
+      "runner_start_fail": 0,
+      "after_source_edit": 0,
+      "runs_with_test": 22,
+      "dropped": false
+    },
+    "scikit-learn__scikit-learn-10297": {
+      "runs": 22,
+      "runner_start_fail": 0,
+      "after_source_edit": 0,
+      "runs_with_test": 18,
+      "dropped": false
+    },
+    "sphinx-doc__sphinx-10466": {
+      "runs": 22,
+      "runner_start_fail": 0,
+      "after_source_edit": 0,
+      "runs_with_test": 22,
+      "dropped": false
+    },
+    "sympy__sympy-13757": {
+      "runs": 22,
+      "runner_start_fail": 0,
+      "after_source_edit": 0,
+      "runs_with_test": 22,
+      "dropped": false
+    }
+  },
+  "A1_variance_split": {
+    "balanced": true,
+    "note": null,
+    "tasks_used": [
+      "sympy__sympy-13757",
+      "astropy__astropy-12907",
+      "pydata__xarray-2905",
+      "pytest-dev__pytest-10051",
+      "scikit-learn__scikit-learn-10297",
+      "sphinx-doc__sphinx-10466"
+    ],
+    "tasks_dropped": [],
+    "levels_used": [
+      "claude-opus-4-6",
+      "claude-opus-4-7",
+      "claude-opus-4-8",
+      "claude-opus-5",
+      "claude-opus-5-5"
+    ],
+    "measures": {
+      "M1": {
+        "key": "n_cmds",
+        "shares": {
+          "model": 0.22936908302093156,
+          "task": 0.5175402463634212,
+          "model:task": 0.18102547453766504,
+          "repeat": 0.07206519607798202
+        },
+        "p_main": 0.0030996900309969004,
+        "p_cell": 9.999000099990002e-05,
+        "constant": false,
+        "stat_main": 6.33527086744932,
+        "stat_cell": 7.118459740165472,
+        "kendall_w": 0.6120448179271709,
+        "p_main_holm": 0.030996900309969003,
+        "p_cell_holm": 0.0013998600139986002,
+        "label": "model habit"
+      },
+      "M2": {
+        "key": "first_edit_frac",
+        "shares": {
+          "model": 0.30352485210880437,
+          "task": 0.09352816311694129,
+          "model:task": 0.42188194339156,
+          "repeat": 0.18106504138269439
+        },
+        "p_main": 0.012398760123987601,
+        "p_cell": 0.0008999100089991,
+        "constant": false,
+        "stat_main": 3.597272375166514,
+        "stat_cell": 5.007915870733734,
+        "kendall_w": 0.3611111111111111,
+        "p_main_holm": 0.09919008099190081,
+        "p_cell_holm": 0.0080991900809919,
+        "label": "task-dependent model habit"
+      },
+      "M3": {
+        "key": "early_edit_share",
+        "shares": {
+          "model": 0.43458984498679337,
+          "task": 0.1947366368540581,
+          "model:task": 0.24887387461169866,
+          "repeat": 0.12179964354744972
+        },
+        "p_main": 0.00029997000299970003,
+        "p_cell": 9.999000099990002e-05,
+        "constant": false,
+        "stat_main": 8.731126271587465,
+        "stat_cell": 7.014221262193549,
+        "kendall_w": 0.6765536723163842,
+        "p_main_holm": 0.0038996100389961006,
+        "p_cell_holm": 0.0013998600139986002,
+        "label": "model habit"
+      },
+      "M4": {
+        "key": "test_share",
+        "shares": {
+          "model": 0.28611093566720724,
+          "task": 0.2394186551432996,
+          "model:task": 0.3461788943030099,
+          "repeat": 0.12829151488648316
+        },
+        "p_main": 0.008799120087991202,
+        "p_cell": 0.00019998000199980003,
+        "constant": false,
+        "stat_main": 4.1324144882266385,
+        "stat_cell": 6.160674680333407,
+        "kendall_w": 0.49444444444444446,
+        "p_main_holm": 0.07919208079192082,
+        "p_cell_holm": 0.0021997800219978004,
+        "label": "task-dependent model habit"
+      },
+      "M5": {
+        "key": "exec_share",
+        "shares": {
+          "model": 0.27328148399750307,
+          "task": 0.38133280106746226,
+          "model:task": 0.18680987054968068,
+          "repeat": 0.1585758443853539
+        },
+        "p_main": 0.0012998700129987,
+        "p_cell": 0.0008999100089991,
+        "constant": false,
+        "stat_main": 7.314428386288772,
+        "stat_cell": 3.6267452676234844,
+        "kendall_w": 0.42777777777777776,
+        "p_main_holm": 0.0142985701429857,
+        "p_cell_holm": 0.0080991900809919,
+        "label": "task-dependent model habit"
+      },
+      "M6": {
+        "key": "wrote_new_test",
+        "shares": {
+          "model": 0.3636363636363637,
+          "task": 0.10545454545454547,
+          "model:task": 0.4218181818181817,
+          "repeat": 0.1090909090909091
+        },
+        "p_main": 0.04129587041295871,
+        "p_cell": 0.012898710128987101,
+        "constant": false,
+        "stat_main": 4.310344827586208,
+        "stat_cell": 8.99999999999998,
+        "kendall_w": 0.5,
+        "p_main_holm": 0.23937606239376064,
+        "p_cell_holm": 0.07439256074392561,
+        "label": "indeterminate"
+      },
+      "M7": {
+        "key": "wrote_scratch_script",
+        "shares": {
+          "model": 0.027777777777777766,
+          "task": 0.8333333333333334,
+          "model:task": 0.13888888888888892,
+          "repeat": 0.0
+        },
+        "p_main": 1.0,
+        "p_cell": 0.11248875112488751,
+        "constant": false,
+        "stat_main": 0.9999999999999993,
+        "stat_cell": "inf",
+        "kendall_w": 0.16666666666666666,
+        "p_main_holm": 1.0,
+        "p_cell_holm": 0.44995500449955006,
+        "label": "repeat noise"
+      },
+      "M8": {
+        "key": "repeat_cmd_share",
+        "shares": {
+          "model": 0.35188804341958596,
+          "task": 0.09234824317158222,
+          "model:task": 0.36939297268632887,
+          "repeat": 0.18637074072250295
+        },
+        "p_main": 0.039896010398960104,
+        "p_cell": 0.012398760123987601,
+        "constant": false,
+        "stat_main": 4.763058171634368,
+        "stat_cell": 4.837676057073981,
+        "kendall_w": 0.5,
+        "p_main_holm": 0.23937606239376064,
+        "p_cell_holm": 0.07439256074392561,
+        "label": "indeterminate"
+      },
+      "M9": {
+        "key": "noop_retest_share",
+        "shares": null,
+        "p_main": null,
+        "p_cell": null,
+        "constant": true,
+        "kendall_w": null,
+        "p_main_holm": null,
+        "p_cell_holm": null,
+        "label": "indeterminate"
+      },
+      "M10": {
+        "key": "reread_share",
+        "shares": {
+          "model": 0.12322969677441604,
+          "task": 0.15333834018023454,
+          "model:task": 0.6518009619432028,
+          "repeat": 0.07163100110214637
+        },
+        "p_main": 0.46685331466853314,
+        "p_cell": 0.00019998000199980003,
+        "constant": false,
+        "stat_main": 0.9453015872133228,
+        "stat_cell": 13.524707298387693,
+        "kendall_w": 0.33524904214559387,
+        "p_main_holm": 1.0,
+        "p_cell_holm": 0.0021997800219978004,
+        "label": "task-dependent model habit"
+      },
+      "M11": {
+        "key": "search_miss_share",
+        "shares": {
+          "model": 0.05754546571478612,
+          "task": 0.08195722811411063,
+          "model:task": 0.46410842236518435,
+          "repeat": 0.39638888380591886
+        },
+        "p_main": 0.6362363763623637,
+        "p_cell": 0.11538846115388461,
+        "constant": false,
+        "stat_main": 0.6199571365406766,
+        "stat_cell": 1.6450192897418128,
+        "kendall_w": 0.14351851851851852,
+        "p_main_holm": 1.0,
+        "p_cell_holm": 0.44995500449955006,
+        "label": "repeat noise"
+      },
+      "M12": {
+        "key": "extra_files",
+        "shares": {
+          "model": 0.6565874730021597,
+          "task": 0.048812095032397404,
+          "model:task": 0.17796976241900667,
+          "repeat": 0.11663066954643628
+        },
+        "p_main": 9.999000099990002e-05,
+        "p_cell": 9.999000099990002e-05,
+        "constant": false,
+        "stat_main": 18.44660194174755,
+        "stat_cell": 8.94444444444446,
+        "kendall_w": 0.7736842105263158,
+        "p_main_holm": 0.0013998600139986002,
+        "p_cell_holm": 0.0013998600139986002,
+        "label": "model habit"
+      },
+      "M13": {
+        "key": "patch_lines",
+        "shares": {
+          "model": 0.40982733280615397,
+          "task": 0.2035356585441228,
+          "model:task": 0.18190550067889097,
+          "repeat": 0.20473150797083214
+        },
+        "p_main": 0.00039996000399960006,
+        "p_cell": 0.0027997200279972004,
+        "constant": false,
+        "stat_main": 11.264841669895471,
+        "stat_cell": 3.6128588568872613,
+        "kendall_w": 0.5603174603174603,
+        "p_main_holm": 0.0047995200479952005,
+        "p_cell_holm": 0.019598040195980403,
+        "label": "task-dependent model habit"
+      },
+      "M14": {
+        "key": "backed_done",
+        "shares": {
+          "model": 0.1614906832298137,
+          "task": 0.32919254658385105,
+          "model:task": 0.22981366459627323,
+          "repeat": 0.27950310559006214
+        },
+        "p_main": 0.014098590140985901,
+        "p_cell": 0.2546745325467453,
+        "constant": false,
+        "stat_main": 3.513513513513515,
+        "stat_cell": 1.7500000000000029,
+        "kendall_w": 0.4298245614035088,
+        "p_main_holm": 0.09919008099190081,
+        "p_cell_holm": 0.44995500449955006,
+        "label": "repeat noise"
+      },
+      "M15": {
+        "key": "multi_call_share",
+        "shares": {
+          "model": 0.13935012011026227,
+          "task": 0.13669629793555674,
+          "model:task": 0.5449895060397576,
+          "repeat": 0.17896407591442348
+        },
+        "p_main": 0.39346065393460655,
+        "p_cell": 0.11758824117588242,
+        "constant": false,
+        "stat_main": 1.278466085731351,
+        "stat_cell": 4.779867290777254,
+        "kendall_w": 0.23076923076923078,
+        "p_main_holm": 1.0,
+        "p_cell_holm": 0.44995500449955006,
+        "label": "repeat noise"
+      }
+    },
+    "runs_per_cell": 2
+  },
+  "A2_A4": {
+    "M1": {
+      "levels": [
+        "claude-opus-4-6",
+        "claude-opus-4-7",
+        "claude-opus-4-8",
+        "claude-opus-5",
+        "claude-opus-5-5"
+      ],
+      "k": 5,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 233.5,
+      "E0": 270.0,
+      "direction": -1,
+      "p": 0.0029997000299970002,
+      "spearman": {
+        "sympy__sympy-13757": -0.8,
+        "astropy__astropy-12907": -0.3,
+        "pydata__xarray-2905": -0.9,
+        "pytest-dev__pytest-10051": -1.0,
+        "scikit-learn__scikit-learn-10297": -0.35909242322980395,
+        "sphinx-doc__sphinx-10466": -0.3
+      },
+      "agree": 6,
+      "disagree": 0,
+      "no_sign": 0,
+      "reason": null,
+      "stat": 36.5,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "n_cmds",
+      "level_means": {
+        "claude-opus-4-6": 2.7695111299023485,
+        "claude-opus-4-7": 2.748791252938442,
+        "claude-opus-4-8": 2.107248779236492,
+        "claude-opus-5": 2.424755944088312,
+        "claude-opus-5-5": 1.9601619391623804
+      },
+      "p_holm": 0.035996400359964,
+      "label": "trend",
+      "shape": {
+        "profile": [
+          0.3674173208367535,
+          0.34669744387284696,
+          -0.29484502982910277,
+          0.02266213502271719,
+          -0.44193186990321465
+        ],
+        "split_share": 0.7899806652657175,
+        "split_after": "claude-opus-4-7",
+        "shape": "gradual"
+      },
+      "label_name": "trend"
+    },
+    "M2": {
+      "levels": [
+        "claude-opus-4-6",
+        "claude-opus-4-7",
+        "claude-opus-4-8",
+        "claude-opus-5",
+        "claude-opus-5-5"
+      ],
+      "k": 5,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 245.0,
+      "E0": 270.0,
+      "direction": -1,
+      "p": 0.044995500449955005,
+      "spearman": {
+        "sympy__sympy-13757": -0.3,
+        "astropy__astropy-12907": -0.6,
+        "pydata__xarray-2905": -0.6,
+        "pytest-dev__pytest-10051": 0.3,
+        "scikit-learn__scikit-learn-10297": -0.7,
+        "sphinx-doc__sphinx-10466": -0.6
+      },
+      "agree": 5,
+      "disagree": 1,
+      "no_sign": 0,
+      "reason": null,
+      "stat": 25.0,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "first_edit_frac",
+      "level_means": {
+        "claude-opus-4-6": 0.3932426155328031,
+        "claude-opus-4-7": 0.38817117488992486,
+        "claude-opus-4-8": 0.4038651571739807,
+        "claude-opus-5": 0.26590458618322393,
+        "claude-opus-5-5": 0.2663089225589226
+      },
+      "p_holm": 0.31496850314968505,
+      "label": "candidate",
+      "shape": {
+        "profile": [
+          0.04974412426503208,
+          0.04467268362215384,
+          0.06036666590620963,
+          -0.07759390508454712,
+          -0.07718956870884851
+        ],
+        "split_share": 0.9936114007166251,
+        "split_after": "claude-opus-4-8",
+        "shape": "step-like"
+      },
+      "label_name": "candidate"
+    },
+    "M3": {
+      "levels": [
+        "claude-opus-4-6",
+        "claude-opus-4-7",
+        "claude-opus-4-8",
+        "claude-opus-5",
+        "claude-opus-5-5"
+      ],
+      "k": 5,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 314.0,
+      "E0": 270.0,
+      "direction": 1,
+      "p": 9.999000099990002e-05,
+      "spearman": {
+        "sympy__sympy-13757": 0.9746794344808964,
+        "astropy__astropy-12907": 0.8,
+        "pydata__xarray-2905": 0.9746794344808964,
+        "pytest-dev__pytest-10051": 0.6,
+        "scikit-learn__scikit-learn-10297": 0.5,
+        "sphinx-doc__sphinx-10466": 0.6
+      },
+      "agree": 6,
+      "disagree": 0,
+      "no_sign": 0,
+      "reason": null,
+      "stat": 44.0,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "early_edit_share",
+      "level_means": {
+        "claude-opus-4-6": 0.08968253968253968,
+        "claude-opus-4-7": 0.11223544973544974,
+        "claude-opus-4-8": 0.2222222222222222,
+        "claude-opus-5": 0.2041666666666667,
+        "claude-opus-5-5": 0.33125
+      },
+      "p_holm": 0.0014998500149985003,
+      "label": "trend",
+      "shape": {
+        "profile": [
+          -0.10222883597883596,
+          -0.07967592592592591,
+          0.030310846560846556,
+          0.012255291005291019,
+          0.13933862433862435
+        ],
+        "split_share": 0.7395949617619431,
+        "split_after": "claude-opus-4-7",
+        "shape": "gradual"
+      },
+      "label_name": "trend"
+    },
+    "M4": {
+      "levels": [
+        "claude-opus-4-6",
+        "claude-opus-4-7",
+        "claude-opus-4-8",
+        "claude-opus-5",
+        "claude-opus-5-5"
+      ],
+      "k": 5,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 302.0,
+      "E0": 270.0,
+      "direction": 1,
+      "p": 0.009999000099990002,
+      "spearman": {
+        "sympy__sympy-13757": 0.6,
+        "astropy__astropy-12907": 0.7,
+        "pydata__xarray-2905": 0.7,
+        "pytest-dev__pytest-10051": 0.3,
+        "scikit-learn__scikit-learn-10297": 0.9,
+        "sphinx-doc__sphinx-10466": 0.0
+      },
+      "agree": 5,
+      "disagree": 0,
+      "no_sign": 1,
+      "reason": null,
+      "stat": 32.0,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "test_share",
+      "level_means": {
+        "claude-opus-4-6": 0.2878712034106304,
+        "claude-opus-4-7": 0.31096093142968145,
+        "claude-opus-4-8": 0.2548008092125739,
+        "claude-opus-5": 0.39174387990177467,
+        "claude-opus-5-5": 0.47659932659932663
+      },
+      "p_holm": 0.10998900109989002,
+      "label": "candidate",
+      "shape": {
+        "profile": [
+          -0.056524026700167006,
+          -0.03343429868111598,
+          -0.08959442089822349,
+          0.04734864979097723,
+          0.13220409648852924
+        ],
+        "split_share": 0.8379963062527754,
+        "split_after": "claude-opus-4-8",
+        "shape": "gradual"
+      },
+      "label_name": "candidate"
+    },
+    "M5": {
+      "levels": [
+        "claude-opus-4-6",
+        "claude-opus-4-7",
+        "claude-opus-4-8",
+        "claude-opus-5",
+        "claude-opus-5-5"
+      ],
+      "k": 5,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 294.0,
+      "E0": 270.0,
+      "direction": 1,
+      "p": 0.051594840515948405,
+      "spearman": {
+        "sympy__sympy-13757": 0.6,
+        "astropy__astropy-12907": 0.6,
+        "pydata__xarray-2905": -0.7,
+        "pytest-dev__pytest-10051": 0.3,
+        "scikit-learn__scikit-learn-10297": 0.9,
+        "sphinx-doc__sphinx-10466": 0.7
+      },
+      "agree": 5,
+      "disagree": 1,
+      "no_sign": 0,
+      "reason": null,
+      "stat": 24.0,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "exec_share",
+      "level_means": {
+        "claude-opus-4-6": 0.4512811431675529,
+        "claude-opus-4-7": 0.4465302637177637,
+        "claude-opus-4-8": 0.3684076408341114,
+        "claude-opus-5": 0.4752606132830591,
+        "claude-opus-5-5": 0.5894360269360269
+      },
+      "p_holm": 0.31496850314968505,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M6": {
+      "levels": [
+        "claude-opus-4-6",
+        "claude-opus-4-7",
+        "claude-opus-4-8",
+        "claude-opus-5",
+        "claude-opus-5-5"
+      ],
+      "k": 5,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 285.0,
+      "E0": 270.0,
+      "direction": 1,
+      "p": 0.014998500149985002,
+      "spearman": {
+        "sympy__sympy-13757": 0.0,
+        "astropy__astropy-12907": 0.7071067811865475,
+        "pydata__xarray-2905": 0.7071067811865475,
+        "pytest-dev__pytest-10051": 0.0,
+        "scikit-learn__scikit-learn-10297": 0.0,
+        "sphinx-doc__sphinx-10466": 0.7071067811865475
+      },
+      "agree": 3,
+      "disagree": 0,
+      "no_sign": 3,
+      "reason": null,
+      "stat": 15.0,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "wrote_new_test",
+      "level_means": {
+        "claude-opus-4-6": 0.0,
+        "claude-opus-4-7": 0.0,
+        "claude-opus-4-8": 0.0,
+        "claude-opus-5": 0.0,
+        "claude-opus-5-5": 0.4166666666666667
+      },
+      "p_holm": 0.143985601439856,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M7": {
+      "levels": [
+        "claude-opus-4-6",
+        "claude-opus-4-7",
+        "claude-opus-4-8",
+        "claude-opus-5",
+        "claude-opus-5-5"
+      ],
+      "k": 5,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 265.0,
+      "E0": 270.0,
+      "direction": -1,
+      "p": 0.4006599340065993,
+      "spearman": {
+        "sympy__sympy-13757": 0.0,
+        "astropy__astropy-12907": 0.0,
+        "pydata__xarray-2905": 0.0,
+        "pytest-dev__pytest-10051": 0.0,
+        "scikit-learn__scikit-learn-10297": 0.0,
+        "sphinx-doc__sphinx-10466": -0.7071067811865475
+      },
+      "agree": 1,
+      "disagree": 0,
+      "no_sign": 5,
+      "reason": null,
+      "stat": 5.0,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "wrote_scratch_script",
+      "level_means": {
+        "claude-opus-4-6": 0.3333333333333333,
+        "claude-opus-4-7": 0.16666666666666666,
+        "claude-opus-4-8": 0.16666666666666666,
+        "claude-opus-5": 0.16666666666666666,
+        "claude-opus-5-5": 0.16666666666666666
+      },
+      "p_holm": 0.8013198680131987,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M8": {
+      "levels": [
+        "claude-opus-4-6",
+        "claude-opus-4-7",
+        "claude-opus-4-8",
+        "claude-opus-5",
+        "claude-opus-5-5"
+      ],
+      "k": 5,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 255.0,
+      "E0": 270.0,
+      "direction": -1,
+      "p": 0.0143985601439856,
+      "spearman": {
+        "sympy__sympy-13757": -0.7071067811865475,
+        "astropy__astropy-12907": 0.0,
+        "pydata__xarray-2905": -0.7071067811865475,
+        "pytest-dev__pytest-10051": -0.7071067811865475,
+        "scikit-learn__scikit-learn-10297": 0.0,
+        "sphinx-doc__sphinx-10466": 0.0
+      },
+      "agree": 3,
+      "disagree": 0,
+      "no_sign": 3,
+      "reason": null,
+      "stat": 15.0,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "repeat_cmd_share",
+      "level_means": {
+        "claude-opus-4-6": 0.013401519058846645,
+        "claude-opus-4-7": 0.0,
+        "claude-opus-4-8": 0.0,
+        "claude-opus-5": 0.0,
+        "claude-opus-5-5": 0.0
+      },
+      "p_holm": 0.143985601439856,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M9": {
+      "levels": [
+        "claude-opus-4-6",
+        "claude-opus-4-7",
+        "claude-opus-4-8",
+        "claude-opus-5",
+        "claude-opus-5-5"
+      ],
+      "k": 5,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 270.0,
+      "E0": 270.0,
+      "direction": 0,
+      "p": 1.0,
+      "spearman": {
+        "sympy__sympy-13757": 0.0,
+        "astropy__astropy-12907": 0.0,
+        "pydata__xarray-2905": 0.0,
+        "pytest-dev__pytest-10051": 0.0,
+        "scikit-learn__scikit-learn-10297": 0.0,
+        "sphinx-doc__sphinx-10466": 0.0
+      },
+      "agree": 0,
+      "disagree": 0,
+      "no_sign": 6,
+      "reason": null,
+      "stat": 0.0,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "noop_retest_share",
+      "level_means": {
+        "claude-opus-4-6": 0.0,
+        "claude-opus-4-7": 0.0,
+        "claude-opus-4-8": 0.0,
+        "claude-opus-5": 0.0,
+        "claude-opus-5-5": 0.0
+      },
+      "p_holm": 1.0,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M10": {
+      "levels": [
+        "claude-opus-4-6",
+        "claude-opus-4-7",
+        "claude-opus-4-8",
+        "claude-opus-5",
+        "claude-opus-5-5"
+      ],
+      "k": 5,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 245.5,
+      "E0": 270.0,
+      "direction": -1,
+      "p": 0.018698130186981302,
+      "spearman": {
+        "sympy__sympy-13757": -0.8944271909999159,
+        "astropy__astropy-12907": -0.33541019662496846,
+        "pydata__xarray-2905": -0.7826237921249264,
+        "pytest-dev__pytest-10051": -0.7071067811865475,
+        "scikit-learn__scikit-learn-10297": -0.7071067811865475,
+        "sphinx-doc__sphinx-10466": 0.35909242322980395
+      },
+      "agree": 5,
+      "disagree": 1,
+      "no_sign": 0,
+      "reason": null,
+      "stat": 24.5,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "reread_share",
+      "level_means": {
+        "claude-opus-4-6": 0.1369047619047619,
+        "claude-opus-4-7": 0.20716374269005847,
+        "claude-opus-4-8": 0.09722222222222221,
+        "claude-opus-5": 0.011904761904761904,
+        "claude-opus-5-5": 0.048611111111111105
+      },
+      "p_holm": 0.14958504149585042,
+      "label": "candidate",
+      "shape": {
+        "profile": [
+          0.03654344193817878,
+          0.10680242272347536,
+          -0.0031390977443609067,
+          -0.08845655806182122,
+          -0.05175020885547201
+        ],
+        "split_share": 0.7363405169284155,
+        "split_after": "claude-opus-4-7",
+        "shape": "gradual"
+      },
+      "label_name": "candidate"
+    },
+    "M11": {
+      "levels": [
+        "claude-opus-4-6",
+        "claude-opus-4-7",
+        "claude-opus-4-8",
+        "claude-opus-5",
+        "claude-opus-5-5"
+      ],
+      "k": 5,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 259.5,
+      "E0": 270.0,
+      "direction": -1,
+      "p": 0.1441855814418558,
+      "spearman": {
+        "sympy__sympy-13757": -0.8944271909999159,
+        "astropy__astropy-12907": 0.0,
+        "pydata__xarray-2905": 0.0,
+        "pytest-dev__pytest-10051": 0.0,
+        "scikit-learn__scikit-learn-10297": 0.0,
+        "sphinx-doc__sphinx-10466": -0.35355339059327373
+      },
+      "agree": 2,
+      "disagree": 0,
+      "no_sign": 4,
+      "reason": null,
+      "stat": 10.5,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "search_miss_share",
+      "level_means": {
+        "claude-opus-4-6": 0.03935185185185185,
+        "claude-opus-4-7": 0.047619047619047616,
+        "claude-opus-4-8": 0.020833333333333332,
+        "claude-opus-5": 0.0,
+        "claude-opus-5-5": 0.0
+      },
+      "p_holm": 0.5767423257674232,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M12": {
+      "levels": [
+        "claude-opus-4-6",
+        "claude-opus-4-7",
+        "claude-opus-4-8",
+        "claude-opus-5",
+        "claude-opus-5-5"
+      ],
+      "k": 5,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 314.5,
+      "E0": 270.0,
+      "direction": 1,
+      "p": 9.999000099990002e-05,
+      "spearman": {
+        "sympy__sympy-13757": 0.7905694150420948,
+        "astropy__astropy-12907": 0.8944271909999159,
+        "pydata__xarray-2905": 0.8944271909999159,
+        "pytest-dev__pytest-10051": 0.8207826816681233,
+        "scikit-learn__scikit-learn-10297": 0.7071067811865475,
+        "sphinx-doc__sphinx-10466": 0.8944271909999159
+      },
+      "agree": 6,
+      "disagree": 0,
+      "no_sign": 0,
+      "reason": null,
+      "stat": 44.5,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "extra_files",
+      "level_means": {
+        "claude-opus-4-6": 0.0,
+        "claude-opus-4-7": 0.16666666666666666,
+        "claude-opus-4-8": 0.16666666666666666,
+        "claude-opus-5": 0.8333333333333334,
+        "claude-opus-5-5": 1.75
+      },
+      "p_holm": 0.0014998500149985003,
+      "label": "trend",
+      "shape": {
+        "profile": [
+          -0.5833333333333334,
+          -0.4166666666666667,
+          -0.4166666666666667,
+          0.25,
+          1.1666666666666667
+        ],
+        "split_share": 0.805921052631579,
+        "split_after": "claude-opus-5",
+        "shape": "gradual"
+      },
+      "label_name": "trend"
+    },
+    "M13": {
+      "levels": [
+        "claude-opus-4-6",
+        "claude-opus-4-7",
+        "claude-opus-4-8",
+        "claude-opus-5",
+        "claude-opus-5-5"
+      ],
+      "k": 5,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 307.5,
+      "E0": 270.0,
+      "direction": 1,
+      "p": 0.0005999400059994001,
+      "spearman": {
+        "sympy__sympy-13757": 0.6,
+        "astropy__astropy-12907": 0.8944271909999159,
+        "pydata__xarray-2905": 0.6668859288553503,
+        "pytest-dev__pytest-10051": 0.7,
+        "scikit-learn__scikit-learn-10297": 0.7071067811865475,
+        "sphinx-doc__sphinx-10466": 0.5
+      },
+      "agree": 6,
+      "disagree": 0,
+      "no_sign": 0,
+      "reason": null,
+      "stat": 37.5,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "patch_lines",
+      "level_means": {
+        "claude-opus-4-6": 1.5106929769663502,
+        "claude-opus-4-7": 1.7158957931276788,
+        "claude-opus-4-8": 1.7240675608923632,
+        "claude-opus-5": 2.1762067153274107,
+        "claude-opus-5-5": 3.2294265202512302
+      },
+      "p_holm": 0.007799220077992201,
+      "label": "trend",
+      "shape": {
+        "profile": [
+          -0.5605649363466564,
+          -0.3553621201853279,
+          -0.3471903524206434,
+          0.10494880201440411,
+          1.1581686069382233
+        ],
+        "split_share": 0.8762783902549517,
+        "split_after": "claude-opus-5",
+        "shape": "gradual"
+      },
+      "label_name": "trend"
+    },
+    "M14": {
+      "levels": [
+        "claude-opus-4-6",
+        "claude-opus-4-7",
+        "claude-opus-4-8",
+        "claude-opus-5",
+        "claude-opus-5-5"
+      ],
+      "k": 5,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 259.5,
+      "E0": 270.0,
+      "direction": -1,
+      "p": 0.23027697230276972,
+      "spearman": {
+        "sympy__sympy-13757": -0.22360679774997896,
+        "astropy__astropy-12907": -0.35355339059327373,
+        "pydata__xarray-2905": -0.5773502691896257,
+        "pytest-dev__pytest-10051": 0.0,
+        "scikit-learn__scikit-learn-10297": 0.0,
+        "sphinx-doc__sphinx-10466": -0.11180339887498948
+      },
+      "agree": 4,
+      "disagree": 0,
+      "no_sign": 2,
+      "reason": null,
+      "stat": 10.5,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "backed_done",
+      "level_means": {
+        "claude-opus-4-6": 1.0,
+        "claude-opus-4-7": 0.6666666666666666,
+        "claude-opus-4-8": 0.8333333333333334,
+        "claude-opus-5": 0.5,
+        "claude-opus-5-5": 0.8333333333333334
+      },
+      "p_holm": 0.6908309169083091,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M15": {
+      "levels": [
+        "claude-opus-4-6",
+        "claude-opus-4-7",
+        "claude-opus-4-8",
+        "claude-opus-5",
+        "claude-opus-5-5"
+      ],
+      "k": 5,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 280.5,
+      "E0": 270.0,
+      "direction": 1,
+      "p": 0.08249175082491751,
+      "spearman": {
+        "sympy__sympy-13757": 0.0,
+        "astropy__astropy-12907": 0.0,
+        "pydata__xarray-2905": 0.8944271909999159,
+        "pytest-dev__pytest-10051": 0.35355339059327373,
+        "scikit-learn__scikit-learn-10297": 0.0,
+        "sphinx-doc__sphinx-10466": 0.0
+      },
+      "agree": 2,
+      "disagree": 0,
+      "no_sign": 4,
+      "reason": null,
+      "stat": 10.5,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "multi_call_share",
+      "level_means": {
+        "claude-opus-4-6": 0.0,
+        "claude-opus-4-7": 0.0,
+        "claude-opus-4-8": 0.0,
+        "claude-opus-5": 0.025850611376927166,
+        "claude-opus-5-5": 0.006944444444444444
+      },
+      "p_holm": 0.41245875412458755,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    }
+  },
+  "U_by_level": {
+    "claude-opus-4-6": {
+      "completed": 12,
+      "no_edit": 0,
+      "U_unknown": 0,
+      "U": 0,
+      "n_defined": 12,
+      "ci95": [
+        0.0,
+        0.2646484693970512
+      ]
+    },
+    "claude-opus-4-7": {
+      "completed": 11,
+      "no_edit": 0,
+      "U_unknown": 0,
+      "U": 3,
+      "n_defined": 11,
+      "ci95": [
+        0.06021773417290781,
+        0.6097425595724213
+      ]
+    },
+    "claude-opus-4-8": {
+      "completed": 12,
+      "no_edit": 0,
+      "U_unknown": 0,
+      "U": 2,
+      "n_defined": 12,
+      "ci95": [
+        0.020862525460092193,
+        0.48413774868596715
+      ]
+    },
+    "claude-opus-5": {
+      "completed": 12,
+      "no_edit": 0,
+      "U_unknown": 0,
+      "U": 6,
+      "n_defined": 12,
+      "ci95": [
+        0.21094463823929638,
+        0.7890553617607032
+      ]
+    },
+    "claude-opus-5-5": {
+      "completed": 12,
+      "no_edit": 0,
+      "U_unknown": 0,
+      "U": 2,
+      "n_defined": 12,
+      "ci95": [
+        0.020862525460092193,
+        0.48413774868596715
+      ]
+    }
+  },
+  "context_by_level": {
+    "runs": {
+      "claude-opus-4-6": 12,
+      "claude-opus-4-7": 12,
+      "claude-opus-4-8": 12,
+      "claude-opus-5": 12,
+      "claude-opus-5-5": 12
+    },
+    "resolved": {
+      "claude-opus-4-6": "12/12",
+      "claude-opus-4-7": "12/12",
+      "claude-opus-4-8": "12/12",
+      "claude-opus-5": "12/12",
+      "claude-opus-5-5": "12/12"
+    },
+    "exit_reasons": {
+      "claude-opus-4-6": {
+        "completed": 12
+      },
+      "claude-opus-4-7": {
+        "completed": 11,
+        "timeout": 1
+      },
+      "claude-opus-4-8": {
+        "completed": 12
+      },
+      "claude-opus-5": {
+        "completed": 12
+      },
+      "claude-opus-5-5": {
+        "completed": 12
+      }
+    },
+    "turns": {
+      "claude-opus-4-6": 20.25,
+      "claude-opus-4-7": 20.25,
+      "claude-opus-4-8": 12.166666666666666,
+      "claude-opus-5": 14.75,
+      "claude-opus-5-5": 8.583333333333334
+    },
+    "thinking_tokens_per_reply": {
+      "claude-opus-4-6": 15.439318864318864,
+      "claude-opus-4-7": 64.30504079648453,
+      "claude-opus-4-8": 47.00088823544706,
+      "claude-opus-5": 139.7271653969476,
+      "claude-opus-5-5": 46.13642144892145
+    },
+    "output_tokens_per_reply": {
+      "claude-opus-4-6": 159.27576417326418,
+      "claude-opus-4-7": 239.71292443054645,
+      "claude-opus-4-8": 184.9504029143735,
+      "claude-opus-5": 310.5034454278329,
+      "claude-opus-5-5": 283.25501628001626
+    },
+    "cost_usd": {
+      "claude-opus-4-6": 0.2673895,
+      "claude-opus-4-7": 0.4432429166666667,
+      "claude-opus-4-8": 0.14284964583333334,
+      "claude-opus-5": 0.3318765,
+      "claude-opus-5-5": 0.09097238333333334
+    },
+    "max_tokens_replies_total": {
+      "claude-opus-4-6": 0,
+      "claude-opus-4-7": 0,
+      "claude-opus-4-8": 0,
+      "claude-opus-5": 0,
+      "claude-opus-5-5": 0
+    },
+    "cost_usd_total": {
+      "claude-opus-4-6": 3.208674,
+      "claude-opus-4-7": 5.3189150000000005,
+      "claude-opus-4-8": 1.71419575,
+      "claude-opus-5": 3.9825180000000002,
+      "claude-opus-5-5": 1.0916686
+    }
+  },
+  "A5_profile_drift": {
+    "tested": true,
+    "n_runs": 60,
+    "n_dropped_undefined": 0,
+    "features": 14,
+    "chance": 0.2,
+    "accuracy": 0.55,
+    "null_acc_q95": 0.3,
+    "p_accuracy": 9.999000099990002e-05,
+    "rank_error": 0.55,
+    "null_rank_error_mean": 1.601985,
+    "p_rank_error": 9.999000099990002e-05,
+    "above_chance": true,
+    "identification": true,
+    "draws": 10000
+  },
+  "A6_outcome": {
+    "per_level": {
+      "claude-opus-4-6": {
+        "graded": 12,
+        "resolved": 12
+      },
+      "claude-opus-4-7": {
+        "graded": 12,
+        "resolved": 12
+      },
+      "claude-opus-4-8": {
+        "graded": 12,
+        "resolved": 12
+      },
+      "claude-opus-5": {
+        "graded": 12,
+        "resolved": 12
+      },
+      "claude-opus-5-5": {
+        "graded": 12,
+        "resolved": 12
+      }
+    },
+    "per_cell": {
+      "claude-opus-4-6|sympy__sympy-13757": "2/2",
+      "claude-opus-4-6|astropy__astropy-12907": "2/2",
+      "claude-opus-4-6|pydata__xarray-2905": "2/2",
+      "claude-opus-4-6|pytest-dev__pytest-10051": "2/2",
+      "claude-opus-4-6|scikit-learn__scikit-learn-10297": "2/2",
+      "claude-opus-4-6|sphinx-doc__sphinx-10466": "2/2",
+      "claude-opus-4-7|sympy__sympy-13757": "2/2",
+      "claude-opus-4-7|astropy__astropy-12907": "2/2",
+      "claude-opus-4-7|pydata__xarray-2905": "2/2",
+      "claude-opus-4-7|pytest-dev__pytest-10051": "2/2",
+      "claude-opus-4-7|scikit-learn__scikit-learn-10297": "2/2",
+      "claude-opus-4-7|sphinx-doc__sphinx-10466": "2/2",
+      "claude-opus-4-8|sympy__sympy-13757": "2/2",
+      "claude-opus-4-8|astropy__astropy-12907": "2/2",
+      "claude-opus-4-8|pydata__xarray-2905": "2/2",
+      "claude-opus-4-8|pytest-dev__pytest-10051": "2/2",
+      "claude-opus-4-8|scikit-learn__scikit-learn-10297": "2/2",
+      "claude-opus-4-8|sphinx-doc__sphinx-10466": "2/2",
+      "claude-opus-5|sympy__sympy-13757": "2/2",
+      "claude-opus-5|astropy__astropy-12907": "2/2",
+      "claude-opus-5|pydata__xarray-2905": "2/2",
+      "claude-opus-5|pytest-dev__pytest-10051": "2/2",
+      "claude-opus-5|scikit-learn__scikit-learn-10297": "2/2",
+      "claude-opus-5|sphinx-doc__sphinx-10466": "2/2",
+      "claude-opus-5-5|sympy__sympy-13757": "2/2",
+      "claude-opus-5-5|astropy__astropy-12907": "2/2",
+      "claude-opus-5-5|pydata__xarray-2905": "2/2",
+      "claude-opus-5-5|pytest-dev__pytest-10051": "2/2",
+      "claude-opus-5-5|scikit-learn__scikit-learn-10297": "2/2",
+      "claude-opus-5-5|sphinx-doc__sphinx-10466": "2/2"
+    },
+    "differs": false,
+    "resolved_only": {}
+  },
+  "A7_bridge": {
+    "note": "descriptive only; different providers, settings and dates; analysis scale",
+    "round2": {
+      "claude-opus-4-6": {
+        "n": 2,
+        "n_cmds": 3.51542873805806,
+        "first_edit_frac": 0.3390804597701149,
+        "early_edit_share": 0.0,
+        "test_share": 0.38196286472148544,
+        "exec_share": 0.497789566755084,
+        "wrote_new_test": 0.0,
+        "wrote_scratch_script": 0.0,
+        "repeat_cmd_share": 0.030061892130857647,
+        "noop_retest_share": 0.0,
+        "reread_share": 0.125,
+        "search_miss_share": 0.2361111111111111,
+        "extra_files": 0.0,
+        "patch_lines": 0.8958797346140275,
+        "backed_done": 1.0,
+        "multi_call_share": 0.0,
+        "resolved": 1.0,
+        "unsupported_done": 0.0
+      },
+      "claude-opus-4-7": {
+        "n": 2,
+        "n_cmds": 3.7455437967674374,
+        "first_edit_frac": 0.2957589285714286,
+        "early_edit_share": 0.0,
+        "test_share": 0.3404017857142857,
+        "exec_share": 0.5290178571428572,
+        "wrote_new_test": 0.0,
+        "wrote_scratch_script": 0.0,
+        "repeat_cmd_share": 0.0,
+        "noop_retest_share": 0.0,
+        "reread_share": 0.02631578947368421,
+        "search_miss_share": 0.03571428571428571,
+        "extra_files": 0.0,
+        "patch_lines": 0.6931471805599453,
+        "backed_done": 0.0,
+        "multi_call_share": 0.0,
+        "resolved": 1.0,
+        "unsupported_done": 1.0
+      },
+      "claude-opus-4-8": {
+        "n": 2,
+        "n_cmds": 3.3140206880897667,
+        "first_edit_frac": 0.3670634920634921,
+        "early_edit_share": 0.05,
+        "test_share": 0.29563492063492064,
+        "exec_share": 0.4642857142857143,
+        "wrote_new_test": 0.0,
+        "wrote_scratch_script": 0.0,
+        "repeat_cmd_share": 0.0,
+        "noop_retest_share": 0.0,
+        "reread_share": 0.0,
+        "search_miss_share": 0.0,
+        "extra_files": 0.5,
+        "patch_lines": 1.9756218592907138,
+        "backed_done": 0.0,
+        "multi_call_share": 0.0,
+        "resolved": 1.0,
+        "unsupported_done": 1.0
+      },
+      "claude-opus-5": {
+        "n": 2,
+        "n_cmds": 3.4292825173956825,
+        "first_edit_frac": 0.21323529411764708,
+        "early_edit_share": 0.15000000000000002,
+        "test_share": 0.4464285714285714,
+        "exec_share": 0.6029411764705883,
+        "wrote_new_test": 0.0,
+        "wrote_scratch_script": 0.0,
+        "repeat_cmd_share": 0.0,
+        "noop_retest_share": 0.0,
+        "reread_share": 0.0,
+        "search_miss_share": 0.0,
+        "extra_files": 1.0,
+        "patch_lines": 2.1910133173369406,
+        "backed_done": 0.0,
+        "multi_call_share": 0.0,
+        "resolved": 1.0,
+        "unsupported_done": 1.0
+      },
+      "claude-opus-5-5": {
+        "n": 2,
+        "n_cmds": 2.04717228111105,
+        "first_edit_frac": 0.325,
+        "early_edit_share": 0.25,
+        "test_share": 0.45,
+        "exec_share": 0.5916666666666667,
+        "wrote_new_test": 0.0,
+        "wrote_scratch_script": 0.0,
+        "repeat_cmd_share": 0.0,
+        "noop_retest_share": 0.0,
+        "reread_share": 0.0,
+        "search_miss_share": 0.0,
+        "extra_files": 0.5,
+        "patch_lines": 1.4978661367769956,
+        "backed_done": 0.5,
+        "multi_call_share": 0.0,
+        "resolved": 1.0,
+        "unsupported_done": 0.5
+      }
+    },
+    "round1": {
+      "gpt-5.5": {
+        "n": 3,
+        "n_cmds": 3.7503037130890085,
+        "first_edit_frac": 0.3450292397660819,
+        "early_edit_share": 0.0,
+        "test_share": 0.19473684210526318,
+        "exec_share": 0.36179337231968806,
+        "wrote_new_test": 1.0,
+        "wrote_scratch_script": 0.0,
+        "repeat_cmd_share": 0.024951267056530214,
+        "noop_retest_share": 0.047619047619047616,
+        "reread_share": 0.03333333333333333,
+        "search_miss_share": 0.11363636363636365,
+        "extra_files": 1.3333333333333333,
+        "patch_lines": 2.9094213871653927,
+        "backed_done": 1.0,
+        "multi_call_share": null,
+        "resolved": 1.0,
+        "unsupported_done": 0.0
+      },
+      "kimi-k2-thinking": {
+        "n": 3,
+        "n_cmds": 4.10706181754356,
+        "first_edit_frac": 0.4245098039215687,
+        "early_edit_share": 0.0,
+        "test_share": 0.21782531194295898,
+        "exec_share": 0.4317587641117053,
+        "wrote_new_test": 0.0,
+        "wrote_scratch_script": 0.3333333333333333,
+        "repeat_cmd_share": 0.05986333927510398,
+        "noop_retest_share": 0.027777777777777776,
+        "reread_share": 0.21536796536796535,
+        "search_miss_share": 0.17677224736048266,
+        "extra_files": 0.0,
+        "patch_lines": 0.6931471805599453,
+        "backed_done": 0.6666666666666666,
+        "multi_call_share": null,
+        "resolved": 1.0,
+        "unsupported_done": 0.3333333333333333
+      },
+      "kimi-k2.6": {
+        "n": 3,
+        "n_cmds": 4.601820074036925,
+        "first_edit_frac": 0.2738383838383838,
+        "early_edit_share": 0.0,
+        "test_share": 0.09367003367003367,
+        "exec_share": 0.4784175084175084,
+        "wrote_new_test": 0.0,
+        "wrote_scratch_script": 0.6666666666666666,
+        "repeat_cmd_share": 0.02676767676767677,
+        "noop_retest_share": 0.0,
+        "reread_share": 0.23423558897243105,
+        "search_miss_share": 0.13656084656084655,
+        "extra_files": 0.0,
+        "patch_lines": 1.3862943611198906,
+        "backed_done": 0.0,
+        "multi_call_share": null,
+        "resolved": 0.6666666666666666,
+        "unsupported_done": null
+      },
+      "kimi-k3": {
+        "n": 3,
+        "n_cmds": 3.688045077374563,
+        "first_edit_frac": 0.5948412698412698,
+        "early_edit_share": 0.0,
+        "test_share": 0.19072681704260652,
+        "exec_share": 0.350062656641604,
+        "wrote_new_test": 0.0,
+        "wrote_scratch_script": 0.3333333333333333,
+        "repeat_cmd_share": 0.008333333333333333,
+        "noop_retest_share": 0.0,
+        "reread_share": 0.0,
+        "search_miss_share": 0.12698412698412698,
+        "extra_files": 0.0,
+        "patch_lines": 1.3647815207407001,
+        "backed_done": 0.0,
+        "multi_call_share": null,
+        "resolved": 0.6666666666666666,
+        "unsupported_done": null
+      },
+      "o1": {
+        "n": 3,
+        "n_cmds": 2.3981456170334448,
+        "first_edit_frac": 0.1363863863863864,
+        "early_edit_share": 0.5666666666666667,
+        "test_share": 0.08283283283283284,
+        "exec_share": 0.08283283283283284,
+        "wrote_new_test": 0.3333333333333333,
+        "wrote_scratch_script": 0.3333333333333333,
+        "repeat_cmd_share": 0.10085085085085084,
+        "noop_retest_share": 0.0,
+        "reread_share": 0.0,
+        "search_miss_share": 0.20000000000000004,
+        "extra_files": 2.6666666666666665,
+        "patch_lines": 6.7483552290049955,
+        "backed_done": 0.0,
+        "multi_call_share": null,
+        "resolved": 0.0,
+        "unsupported_done": 1.0
+      },
+      "o3": {
+        "n": 3,
+        "n_cmds": 4.19677137239557,
+        "first_edit_frac": 0.3372534332084894,
+        "early_edit_share": 0.0,
+        "test_share": 0.11857223924639655,
+        "exec_share": 0.4955589603904211,
+        "wrote_new_test": 0.0,
+        "wrote_scratch_script": 0.0,
+        "repeat_cmd_share": 0.0680354102826013,
+        "noop_retest_share": 0.0,
+        "reread_share": 0.0949074074074074,
+        "search_miss_share": 0.15787545787545787,
+        "extra_files": 0.6666666666666666,
+        "patch_lines": 2.7065654176524165,
+        "backed_done": 0.0,
+        "multi_call_share": null,
+        "resolved": 0.0,
+        "unsupported_done": 1.0
+      },
+      "r1-0528": {
+        "n": 3,
+        "n_cmds": 1.7079879931344195,
+        "first_edit_frac": 0.14285714285714285,
+        "early_edit_share": 0.7103174603174603,
+        "test_share": 0.0,
+        "exec_share": 0.5515873015873015,
+        "wrote_new_test": 0.6666666666666666,
+        "wrote_scratch_script": 0.3333333333333333,
+        "repeat_cmd_share": 0.0,
+        "noop_retest_share": 0.0,
+        "reread_share": 0.0,
+        "search_miss_share": 0.3333333333333333,
+        "extra_files": 2.0,
+        "patch_lines": 7.16323462369606,
+        "backed_done": 0.0,
+        "multi_call_share": null,
+        "resolved": 0.0,
+        "unsupported_done": 1.0
+      },
+      "v3.2": {
+        "n": 3,
+        "n_cmds": 4.605170185988092,
+        "first_edit_frac": 0.7066666666666667,
+        "early_edit_share": 0.0,
+        "test_share": 0.04,
+        "exec_share": 0.3666666666666667,
+        "wrote_new_test": 0.3333333333333333,
+        "wrote_scratch_script": 0.6666666666666666,
+        "repeat_cmd_share": 0.023333333333333334,
+        "noop_retest_share": 0.0,
+        "reread_share": 0.3444444444444444,
+        "search_miss_share": 0.1629131233841074,
+        "extra_files": 1.6666666666666667,
+        "patch_lines": 8.876185557495035,
+        "backed_done": 0.0,
+        "multi_call_share": null,
+        "resolved": 0.3333333333333333,
+        "unsupported_done": null
+      },
+      "v4-pro": {
+        "n": 3,
+        "n_cmds": 4.0748699221761955,
+        "first_edit_frac": 0.3924047733571543,
+        "early_edit_share": 0.0,
+        "test_share": 0.18846056941295034,
+        "exec_share": 0.42396756682470965,
+        "wrote_new_test": 0.0,
+        "wrote_scratch_script": 0.3333333333333333,
+        "repeat_cmd_share": 0.014830848164181497,
+        "noop_retest_share": 0.0,
+        "reread_share": 0.13675213675213674,
+        "search_miss_share": 0.0928743961352657,
+        "extra_files": 0.0,
+        "patch_lines": 1.81557912388877,
+        "backed_done": 0.3333333333333333,
+        "multi_call_share": null,
+        "resolved": 1.0,
+        "unsupported_done": 0.5
+      }
+    },
+    "n_round1": 27
+  },
+  "predictions": {
+    "P1": {
+      "text": "`backed_done` rises with generation (trend or candidate).",
+      "verdict": "not held",
+      "why": "label none, direction -1, p 0.2303"
+    },
+    "P2": {
+      "text": "`test_share` rises with generation (trend or candidate).",
+      "verdict": "held",
+      "why": "label candidate, direction +1, p 0.009999"
+    },
+    "P3": {
+      "text": "`n_cmds` shows no trend: run length is a per-model quirk, as in exp-07.",
+      "verdict": "not held",
+      "why": "label trend"
+    },
+    "P4": {
+      "text": "`early_edit_share` is near zero for all five models, so it cannot show a trend.",
+      "verdict": "not held",
+      "why": "max generation mean 0.331 (near zero <= 0.05); label trend"
+    },
+    "P5": {
+      "text": "`multi_call_share` falls with generation (older models in the settings check sent two calls in one reply more often).",
+      "verdict": "not held",
+      "why": "label none, direction +1, p 0.08249"
+    },
+    "P6": {
+      "text": "At least one and at most three of the 15 measures are labelled trend.",
+      "verdict": "not held",
+      "why": "4 labelled trend of 15 tested"
+    },
+    "P7": {
+      "text": "A5: identification is above chance, and the rank error is below its null (p < 0.05).",
+      "verdict": "held",
+      "why": "accuracy 0.550 vs null q95 0.300; rank error p 9.999e-05"
+    }
+  },
+  "load_report": {
+    "runs_root": "research/corpus/runs-2026-11-claude-round",
+    "ledger": "/Users/patrickli/Documents/claudecode/openbench/research/corpus/runs-2026-11-claude-round/ledger.jsonl",
+    "notes": [],
+    "source": "ledger",
+    "n_runs": 132,
+    "missing_run_folders": [],
+    "ungraded_runs": [],
+    "grade_ledger_mismatch": []
+  }
+}

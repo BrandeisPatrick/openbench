@@ -1,0 +1,24 @@
+{
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "task_id": "pytest-dev__pytest-10051",
+  "harness": "claude-native",
+  "model": "claude-opus-5-5",
+  "started_at": "2026-11-14T22:18:45.356831Z",
+  "finished_at": "2026-11-14T22:19:13.904476Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.06985559999999999,
+  "total_tokens_in": 24732,
+  "total_tokens_out": 2295,
+  "total_tokens_cached": 20768,
+  "total_thinking_tokens": 244,
+  "num_turns": 7,
+  "limits": {
+    "wall_clock_s": 3600,
+    "max_turns": 100,
+    "max_cost_usd": 6.0
+  },
+  "image_id": "sha256:8fcb172471e888c937a246ff993556db71c1b4eea00a072655bf594daa34a24a",
+  "effort": "high"
+}

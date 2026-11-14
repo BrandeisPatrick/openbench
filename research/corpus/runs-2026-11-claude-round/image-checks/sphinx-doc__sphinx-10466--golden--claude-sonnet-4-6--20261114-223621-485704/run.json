@@ -1,0 +1,24 @@
+{
+  "run_id": "sphinx-doc__sphinx-10466--golden--claude-sonnet-4-6--20261114-223621-485704",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "harness": "golden",
+  "model": "claude-sonnet-4-6",
+  "started_at": "2026-11-14T22:36:21.485704Z",
+  "finished_at": "2026-11-14T22:36:22.031229Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.0,
+  "total_tokens_in": 0,
+  "total_tokens_out": 0,
+  "total_tokens_cached": 0,
+  "total_thinking_tokens": 0,
+  "num_turns": 0,
+  "limits": {
+    "wall_clock_s": 5400,
+    "max_turns": 200,
+    "max_cost_usd": 15.0
+  },
+  "image_id": "sha256:14aa6980c2d2f9167822b72cdf67478dc1dc74f382208420f90bf2289528559e",
+  "effort": null
+}

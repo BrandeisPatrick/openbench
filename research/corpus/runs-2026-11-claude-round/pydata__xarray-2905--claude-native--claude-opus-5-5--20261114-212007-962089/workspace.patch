@@ -1,0 +1,86 @@
+diff --git a/doc/whats-new.rst b/doc/whats-new.rst
+index 277c32b..85bc198 100644
+--- a/doc/whats-new.rst
++++ b/doc/whats-new.rst
+@@ -90,6 +90,9 @@ New Features
+ 
+ Bug fixes
+ ~~~~~~~~~
++- :py:meth:`Variable.__setitem__` and related assignment (e.g. ``DataArray.loc``) no longer
++  coerce arbitrary objects that happen to have a ``values`` attribute; only pandas and
++  xarray objects are unwrapped (:issue:`1924`).
+ - :py:meth:`DataArray.resample` and :py:meth:`Dataset.resample` do not trigger computations anymore if :py:meth:`Dataset.weighted` or :py:meth:`DataArray.weighted` are applied (:issue:`4625`, :pull:`4668`). By `Julius Busecke <https://github.com/jbusecke>`_.
+ - :py:func:`merge` with ``combine_attrs='override'`` makes a copy of the attrs (:issue:`4627`).
+ - By default, when possible, xarray will now always use values of type ``int64`` when encoding
+diff --git a/xarray/core/variable.py b/xarray/core/variable.py
+index 45553eb..ebd2731 100644
+--- a/xarray/core/variable.py
++++ b/xarray/core/variable.py
+@@ -201,7 +201,7 @@ def as_compatible_data(data, fastpath=False):
+         # can't use fastpath (yet) for scalars
+         return _maybe_wrap_data(data)
+ 
+-    if isinstance(data, Variable):
++    if isinstance(data, (Variable, xr.DataArray)):
+         return data.data
+ 
+     if isinstance(data, NON_NUMPY_SUPPORTED_ARRAY_TYPES):
+@@ -218,7 +218,8 @@ def as_compatible_data(data, fastpath=False):
+         data = np.timedelta64(getattr(data, "value", data), "ns")
+ 
+     # we don't want nested self-described arrays
+-    data = getattr(data, "values", data)
++    if isinstance(data, (pd.Series, pd.Index, pd.DataFrame)):
++        data = data.values
+ 
+     if isinstance(data, np.ma.MaskedArray):
+         mask = np.ma.getmaskarray(data)
+diff --git a/xarray/tests/test_variable_setitem_values.py b/xarray/tests/test_variable_setitem_values.py
+new file mode 100644
+index 0000000..df86ea4
+--- /dev/null
++++ b/xarray/tests/test_variable_setitem_values.py
+@@ -0,0 +1,43 @@
++import numpy as np
++import pandas as pd
++
++import xarray as xr
++from xarray import Variable
++from xarray.core.variable import as_compatible_data
++
++
++class CustomWithValuesAttr:
++    def __init__(self, array):
++        self.values = array
++
++
++def test_as_compatible_data_does_not_unwrap_arbitrary_values_attr():
++    obj = CustomWithValuesAttr(np.arange(3))
++    result = as_compatible_data(obj)
++    assert isinstance(result, np.ndarray)
++    assert result.dtype == object
++    assert result.shape == ()
++    assert result.item() is obj
++
++
++def test_as_compatible_data_unwraps_pandas_and_xarray():
++    np.testing.assert_array_equal(as_compatible_data(pd.Series([1, 2])), [1, 2])
++    np.testing.assert_array_equal(
++        as_compatible_data(pd.DataFrame({"a": [1, 2]})), [[1], [2]]
++    )
++    np.testing.assert_array_equal(as_compatible_data(xr.DataArray([1, 2])), [1, 2])
++
++
++def test_setitem_object_with_values_property():
++    class HasValues:
++        values = 5
++
++    obj = HasValues()
++    v = Variable(["x"], [None])
++    v[0] = obj
++    assert v.values[0] is obj
++
++    da = xr.DataArray([None])
++    da.loc[{"dim_0": 0}] = obj
++    assert da.values.dtype == object
++    assert da.values[0] is obj

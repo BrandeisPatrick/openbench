@@ -1,0 +1,24 @@
+{
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-haiku-5-5--20261114-223228-006036",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "harness": "claude-native",
+  "model": "claude-haiku-5-5",
+  "started_at": "2026-11-14T22:32:28.006036Z",
+  "finished_at": "2026-11-14T22:33:00.314900Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.004239470000000001,
+  "total_tokens_in": 66606,
+  "total_tokens_out": 4463,
+  "total_tokens_cached": 54932,
+  "total_thinking_tokens": 960,
+  "num_turns": 10,
+  "limits": {
+    "wall_clock_s": 3600,
+    "max_turns": 100,
+    "max_cost_usd": 1.0
+  },
+  "image_id": "sha256:810ab5096855a8ccb05cdfe0c864e2a43afdba50974e04ec36b936f2ed79fa6f",
+  "effort": "high"
+}

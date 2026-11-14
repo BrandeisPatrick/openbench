@@ -1,0 +1,24 @@
+{
+  "run_id": "sympy__sympy-13757--claude-native--claude-sonnet-5-5--20261114-182157-858021",
+  "task_id": "sympy__sympy-13757",
+  "harness": "claude-native",
+  "model": "claude-sonnet-5-5",
+  "started_at": "2026-11-14T18:21:57.858021Z",
+  "finished_at": "2026-11-14T18:24:36.044283Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.0647645,
+  "total_tokens_in": 68619,
+  "total_tokens_out": 3728,
+  "total_tokens_cached": 60020,
+  "total_thinking_tokens": 1284,
+  "num_turns": 13,
+  "limits": {
+    "wall_clock_s": 3600,
+    "max_turns": 100,
+    "max_cost_usd": 3.0
+  },
+  "image_id": "sha256:d27ab838beb6493637f36a085285a8426403ff6a01cf1e7a149176e89e9feaa6",
+  "effort": "high"
+}

@@ -1,0 +1,67 @@
+diff --git a/sympy/polys/polytools.py b/sympy/polys/polytools.py
+index d5ac051..32b7027 100644
+--- a/sympy/polys/polytools.py
++++ b/sympy/polys/polytools.py
+@@ -106,6 +106,7 @@ class Poly(Expr):
+ 
+     is_commutative = True
+     is_Poly = True
++    _op_priority = 10.001
+ 
+     def __new__(cls, rep, *gens, **args):
+         """Create a new polynomial instance out of something useful. """
+diff --git a/sympy/polys/tests/test_poly_op_priority.py b/sympy/polys/tests/test_poly_op_priority.py
+new file mode 100644
+index 0000000..6fa408b
+--- /dev/null
++++ b/sympy/polys/tests/test_poly_op_priority.py
+@@ -0,0 +1,49 @@
++"""Tests for operator dispatch between Poly and other Expr objects.
++
++Poly must take precedence over generic expressions regardless of which side of
++the operator it appears on (see ``Expr._op_priority``).
++"""
++
++from sympy import S, Poly, Rational, I, sin, symbols
++
++
++x, y = symbols('x y')
++
++
++def test_poly_op_priority():
++    assert Poly._op_priority > x._op_priority
++
++
++def test_expr_times_poly():
++    assert x*Poly(x) == Poly(x)*x == Poly(x**2, x)
++    assert isinstance(x*Poly(x), Poly)
++    assert -2*Poly(x) == Poly(x)*-2 == Poly(-2*x, x)
++    assert isinstance(S(-2)*Poly(x), Poly)
++    assert S(-2)*Poly(x) == Poly(x)*S(-2) == Poly(-2*x, x)
++    assert Rational(1, 2)*Poly(x) == Poly(x)*Rational(1, 2)
++    assert isinstance(Rational(1, 2)*Poly(x), Poly)
++    assert y*Poly(x) == Poly(x)*y == Poly(x*y, x)
++    assert isinstance(I*Poly(x, x), Poly)
++    assert I*Poly(x, x) == Poly(x, x)*I
++
++
++def test_expr_plus_minus_poly():
++    assert isinstance(x + Poly(x), Poly)
++    assert x + Poly(x) == Poly(x) + x == Poly(2*x, x)
++    assert isinstance(S(2) + Poly(x), Poly)
++    assert S(2) + Poly(x) == Poly(x) + S(2) == Poly(x + 2, x)
++    assert isinstance(x - Poly(x), Poly)
++    assert x - Poly(x) == Poly(0, x)
++    assert S(2) - Poly(x) == Poly(-x + 2, x)
++    assert Poly(x) - S(2) == Poly(x - 2, x)
++
++
++def test_expr_div_poly():
++    assert x/Poly(x) == Poly(x)/x == 1
++
++
++def test_non_polynomial_expr_with_poly():
++    # expressions that cannot be turned into a Poly fall back to Expr
++    # arithmetic, from either side
++    assert not isinstance(sin(x)*Poly(x), Poly)
++    assert sin(x)*Poly(x) == Poly(x)*sin(x) == x*sin(x)

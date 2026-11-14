@@ -1,0 +1,53 @@
+diff --git a/astropy/modeling/separable.py b/astropy/modeling/separable.py
+index a308e27..45bea36 100644
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -242,7 +242,7 @@ def _cstack(left, right):
+         cright = _coord_matrix(right, 'right', noutp)
+     else:
+         cright = np.zeros((noutp, right.shape[1]))
+-        cright[-right.shape[0]:, -right.shape[1]:] = 1
++        cright[-right.shape[0]:, -right.shape[1]:] = right
+ 
+     return np.hstack([cleft, cright])
+ 
+diff --git a/astropy/modeling/tests/test_separable.py b/astropy/modeling/tests/test_separable.py
+index 8dfe5c8..1dd349b 100644
+--- a/astropy/modeling/tests/test_separable.py
++++ b/astropy/modeling/tests/test_separable.py
+@@ -148,3 +148,25 @@ def test_custom_model_separable():
+ 
+     assert not model_c().separable
+     assert np.all(separability_matrix(model_c()) == [True, True])
++
++
++def test_nested_compound_model_separability():
++    """
++    Regression test: a nested compound model on the right-hand side of ``&``
++    must keep its own separability structure.
++    """
++    cm = models.Linear1D(10) & models.Linear1D(5)
++
++    expected = np.array([[True, True, False, False],
++                         [True, True, False, False],
++                         [False, False, True, False],
++                         [False, False, False, True]])
++    assert_allclose(separability_matrix(models.Pix2Sky_TAN() & cm), expected)
++    assert_allclose(separability_matrix(models.Pix2Sky_TAN() & models.Linear1D(10)
++                                        & models.Linear1D(5)), expected)
++
++    expected = np.array([[True, False, False, False],
++                         [False, True, False, False],
++                         [False, False, True, True],
++                         [False, False, True, True]])
++    assert_allclose(separability_matrix(cm & models.Pix2Sky_TAN()), expected)
+diff --git a/docs/changes/modeling/12907.bugfix.rst b/docs/changes/modeling/12907.bugfix.rst
+new file mode 100644
+index 0000000..003a927
+--- /dev/null
++++ b/docs/changes/modeling/12907.bugfix.rst
+@@ -0,0 +1,4 @@
++Fixed a bug in ``astropy.modeling.separable.separability_matrix`` where the
++separability of nested compound models combined with ``&`` was computed
++incorrectly, because the right-hand compound model's separability matrix was
++replaced with an all-ones block.

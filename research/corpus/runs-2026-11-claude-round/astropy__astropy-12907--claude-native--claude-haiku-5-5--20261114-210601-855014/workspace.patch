@@ -1,0 +1,64 @@
+diff --git a/astropy/modeling/separable.py b/astropy/modeling/separable.py
+index a308e27..45bea36 100644
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -242,7 +242,7 @@ def _cstack(left, right):
+         cright = _coord_matrix(right, 'right', noutp)
+     else:
+         cright = np.zeros((noutp, right.shape[1]))
+-        cright[-right.shape[0]:, -right.shape[1]:] = 1
++        cright[-right.shape[0]:, -right.shape[1]:] = right
+ 
+     return np.hstack([cleft, cright])
+ 
+diff --git a/astropy/modeling/tests/test_separable_nested.py b/astropy/modeling/tests/test_separable_nested.py
+new file mode 100644
+index 0000000..12a1da3
+--- /dev/null
++++ b/astropy/modeling/tests/test_separable_nested.py
+@@ -0,0 +1,45 @@
++# Licensed under a 3-clause BSD style license - see LICENSE.rst
++"""
++Regression tests for the separability of nested compound models.
++"""
++
++import numpy as np
++
++from astropy.modeling import models as m
++from astropy.modeling.separable import separability_matrix
++
++
++def test_nested_compound_model_separability():
++    cm = m.Linear1D(10) & m.Linear1D(5)
++
++    # Flat and nested forms of the same model must agree.
++    flat = m.Pix2Sky_TAN() & m.Linear1D(10) & m.Linear1D(5)
++    nested = m.Pix2Sky_TAN() & cm
++    expected = np.array([[True, True, False, False],
++                         [True, True, False, False],
++                         [False, False, True, False],
++                         [False, False, False, True]])
++    assert np.array_equal(separability_matrix(flat), expected)
++    assert np.array_equal(separability_matrix(nested), expected)
++
++
++def test_nested_compound_model_separability_left():
++    cm = m.Linear1D(10) & m.Linear1D(5)
++
++    flat = m.Linear1D(10) & m.Linear1D(5) & m.Pix2Sky_TAN()
++    nested = cm & m.Pix2Sky_TAN()
++    expected = np.array([[True, False, False, False],
++                         [False, True, False, False],
++                         [False, False, True, True],
++                         [False, False, True, True]])
++    assert np.array_equal(separability_matrix(flat), expected)
++    assert np.array_equal(separability_matrix(nested), expected)
++
++
++def test_deeply_nested_compound_model_separability():
++    cm = m.Linear1D(10) & m.Linear1D(5)
++    model = m.Pix2Sky_TAN() & (cm & cm)
++    expected = np.zeros((6, 6), dtype=bool)
++    expected[:2, :2] = True
++    expected[2:, 2:] = np.eye(4, dtype=bool)
++    assert np.array_equal(separability_matrix(model), expected)

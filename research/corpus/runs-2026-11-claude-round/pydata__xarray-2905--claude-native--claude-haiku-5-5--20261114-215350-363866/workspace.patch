@@ -1,0 +1,52 @@
+diff --git a/doc/whats-new.rst b/doc/whats-new.rst
+index 277c32b..b44ba99 100644
+--- a/doc/whats-new.rst
++++ b/doc/whats-new.rst
+@@ -90,6 +90,9 @@ New Features
+ 
+ Bug fixes
+ ~~~~~~~~~
++- Assigning an arbitrary object that has a ``values`` attribute into an object-dtype
++  :py:class:`Variable` / :py:class:`DataArray` no longer unwraps that attribute; only
++  pandas containers are unwrapped (regression introduced in :pull:`1746`).
+ - :py:meth:`DataArray.resample` and :py:meth:`Dataset.resample` do not trigger computations anymore if :py:meth:`Dataset.weighted` or :py:meth:`DataArray.weighted` are applied (:issue:`4625`, :pull:`4668`). By `Julius Busecke <https://github.com/jbusecke>`_.
+ - :py:func:`merge` with ``combine_attrs='override'`` makes a copy of the attrs (:issue:`4627`).
+ - By default, when possible, xarray will now always use values of type ``int64`` when encoding
+diff --git a/xarray/core/variable.py b/xarray/core/variable.py
+index 45553eb..7ca90d6 100644
+--- a/xarray/core/variable.py
++++ b/xarray/core/variable.py
+@@ -218,7 +218,8 @@ def as_compatible_data(data, fastpath=False):
+         data = np.timedelta64(getattr(data, "value", data), "ns")
+ 
+     # we don't want nested self-described arrays
+-    data = getattr(data, "values", data)
++    if isinstance(data, (pd.Series, pd.Index, pd.DataFrame)):
++        data = data.values
+ 
+     if isinstance(data, np.ma.MaskedArray):
+         mask = np.ma.getmaskarray(data)
+diff --git a/xarray/tests/test_setitem_values_attr.py b/xarray/tests/test_setitem_values_attr.py
+new file mode 100644
+index 0000000..402d494
+--- /dev/null
++++ b/xarray/tests/test_setitem_values_attr.py
+@@ -0,0 +1,18 @@
++import xarray as xr
++
++
++class HasValues:
++    values = 5
++
++
++def test_setitem_object_with_values_attribute_is_not_unwrapped():
++    arr = xr.DataArray([None])
++    arr.loc[{"dim_0": 0}] = HasValues()
++    assert arr.values.dtype == object
++    assert isinstance(arr.values[0], HasValues)
++
++
++def test_setitem_set_with_values_attribute_object_dtype():
++    arr = xr.DataArray([None])
++    arr.loc[{"dim_0": 0}] = set()
++    assert arr.values[0] == set()

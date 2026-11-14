@@ -1,0 +1,24 @@
+{
+  "run_id": "astropy__astropy-12907--claude-native--claude-sonnet-5-5--20261114-210210-042439",
+  "task_id": "astropy__astropy-12907",
+  "harness": "claude-native",
+  "model": "claude-sonnet-5-5",
+  "started_at": "2026-11-14T21:02:10.042439Z",
+  "finished_at": "2026-11-14T21:02:20.056937Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.0106796,
+  "total_tokens_in": 6734,
+  "total_tokens_out": 470,
+  "total_tokens_cached": 4521,
+  "total_thinking_tokens": 0,
+  "num_turns": 4,
+  "limits": {
+    "wall_clock_s": 3600,
+    "max_turns": 100,
+    "max_cost_usd": 3.0
+  },
+  "image_id": "sha256:c86e385bbbeb3991298d8fd962b06078dc9d6382caa70bf465bf2e880014641a",
+  "effort": "medium"
+}

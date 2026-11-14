@@ -1,0 +1,120 @@
+diff --git a/doc/whats-new.rst b/doc/whats-new.rst
+index 277c32b..321cbb3 100644
+--- a/doc/whats-new.rst
++++ b/doc/whats-new.rst
+@@ -92,6 +92,10 @@ Bug fixes
+ ~~~~~~~~~
+ - :py:meth:`DataArray.resample` and :py:meth:`Dataset.resample` do not trigger computations anymore if :py:meth:`Dataset.weighted` or :py:meth:`DataArray.weighted` are applied (:issue:`4625`, :pull:`4668`). By `Julius Busecke <https://github.com/jbusecke>`_.
+ - :py:func:`merge` with ``combine_attrs='override'`` makes a copy of the attrs (:issue:`4627`).
++- Fix a regression where objects that merely have a ``values`` attribute (e.g. results of curve
++  fitting libraries) were coerced to their ``values`` when stored in an ``object`` array, for example
++  by ``Variable.__setitem__`` or ``DataArray.loc[...] = obj``.
++  Only pandas and xarray objects are now unwrapped.
+ - By default, when possible, xarray will now always use values of type ``int64`` when encoding
+   and decoding ``numpy.datetime64[ns]`` datetimes.  This ensures that maximum
+   precision and accuracy are maintained in the round-tripping process
+diff --git a/xarray/core/variable.py b/xarray/core/variable.py
+index 45553eb..95db4c4 100644
+--- a/xarray/core/variable.py
++++ b/xarray/core/variable.py
+@@ -197,11 +197,13 @@ def as_compatible_data(data, fastpath=False):
+ 
+     Finally, wrap it up with an adapter if necessary.
+     """
++    from .dataarray import DataArray
++
+     if fastpath and getattr(data, "ndim", 0) > 0:
+         # can't use fastpath (yet) for scalars
+         return _maybe_wrap_data(data)
+ 
+-    if isinstance(data, Variable):
++    if isinstance(data, (Variable, DataArray)):
+         return data.data
+ 
+     if isinstance(data, NON_NUMPY_SUPPORTED_ARRAY_TYPES):
+@@ -218,7 +220,8 @@ def as_compatible_data(data, fastpath=False):
+         data = np.timedelta64(getattr(data, "value", data), "ns")
+ 
+     # we don't want nested self-described arrays
+-    data = getattr(data, "values", data)
++    if isinstance(data, (pd.Series, pd.DataFrame)):
++        data = data.values
+ 
+     if isinstance(data, np.ma.MaskedArray):
+         mask = np.ma.getmaskarray(data)
+diff --git a/xarray/tests/test_variable_object_values.py b/xarray/tests/test_variable_object_values.py
+new file mode 100644
+index 0000000..6550b82
+--- /dev/null
++++ b/xarray/tests/test_variable_object_values.py
+@@ -0,0 +1,70 @@
++"""Objects with a ``values`` attribute must not be coerced to that attribute."""
++import numpy as np
++import pandas as pd
++
++import xarray as xr
++from xarray import DataArray, Variable
++from xarray.core.variable import as_compatible_data
++
++
++class HasValues:
++    values = 5
++
++
++def test_as_compatible_data_object_with_values_property():
++    obj = HasValues()
++    actual = as_compatible_data(obj)
++    assert actual.dtype == object
++    assert actual.shape == ()
++    assert actual.item() is obj
++
++
++def test_as_compatible_data_dict():
++    d = {"a": 1}
++    actual = as_compatible_data(d)
++    assert actual.dtype == object
++    assert actual.item() is d
++
++
++def test_as_compatible_data_pandas_and_xarray_unwrapped():
++    expected = np.arange(3)
++    for obj in [
++        pd.Series(expected),
++        pd.DataFrame({"a": expected}),
++        DataArray(expected),
++        Variable("x", expected),
++    ]:
++        actual = as_compatible_data(obj)
++        assert np.asarray(actual).shape == (3,) or np.asarray(actual).shape == (3, 1)
++        np.testing.assert_array_equal(np.asarray(actual).ravel(), expected)
++
++
++def test_variable_setitem_object_with_values_property():
++    obj = HasValues()
++    v = Variable(("x",), np.array([None, None], dtype=object))
++    v[0] = obj
++    assert v.values[0] is obj
++    assert v.values[1] is None
++
++
++def test_variable_init_object_with_values_property():
++    obj = HasValues()
++    v = Variable((), obj)
++    assert v.dtype == object
++    assert v.values.item() is obj
++
++
++def test_dataarray_loc_setitem_object_with_values_property():
++    good = xr.DataArray([None])
++    bad = xr.DataArray([None])
++    obj = HasValues()
++    good.loc[{"dim_0": 0}] = set()
++    bad.loc[{"dim_0": 0}] = obj
++    assert good.values[0] == set()
++    assert bad.values[0] is obj
++
++
++def test_variable_setitem_dataarray_value():
++    v = Variable(("x",), np.zeros(3))
++    v[:] = DataArray([1.0, 2.0, 3.0], dims="x")
++    np.testing.assert_array_equal(v.values, [1.0, 2.0, 3.0])

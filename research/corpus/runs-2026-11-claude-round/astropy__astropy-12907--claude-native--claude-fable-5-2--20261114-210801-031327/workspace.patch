@@ -1,0 +1,161 @@
+diff --git a/astropy/modeling/separable.py b/astropy/modeling/separable.py
+index a308e27..45bea36 100644
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -242,7 +242,7 @@ def _cstack(left, right):
+         cright = _coord_matrix(right, 'right', noutp)
+     else:
+         cright = np.zeros((noutp, right.shape[1]))
+-        cright[-right.shape[0]:, -right.shape[1]:] = 1
++        cright[-right.shape[0]:, -right.shape[1]:] = right
+ 
+     return np.hstack([cleft, cright])
+ 
+diff --git a/astropy/modeling/tests/test_separable_nested.py b/astropy/modeling/tests/test_separable_nested.py
+new file mode 100644
+index 0000000..7f9d5fc
+--- /dev/null
++++ b/astropy/modeling/tests/test_separable_nested.py
+@@ -0,0 +1,132 @@
++# Licensed under a 3-clause BSD style license - see LICENSE.rst
++"""
++Test separability of nested compound models.
++
++Regression tests for a bug where the separability matrix of the right-hand
++operand of ``&`` was discarded (replaced by a block of ones) whenever that
++operand was itself a compound model.
++"""
++# pylint: disable=invalid-name
++import numpy as np
++import pytest
++from numpy.testing import assert_allclose, assert_array_equal
++
++from astropy.modeling import models
++from astropy.modeling.separable import (_cstack, is_separable,
++                                        separability_matrix)
++
++sh1 = models.Shift(1, name='shift1')
++sh2 = models.Shift(2, name='sh2')
++scl1 = models.Scale(1, name='scl1')
++rot = models.Rotation2D(2, name='rotation')
++map1 = models.Mapping((0, 1, 0, 1), name='map1')
++p2 = models.Polynomial2D(1, name='p2')
++
++
++cm_4d_expected = (np.array([False, False, True, True]),
++                  np.array([[True, True, False, False],
++                            [True, True, False, False],
++                            [False, False, True, False],
++                            [False, False, False, True]]))
++
++
++nested_compound_models = {
++    'right_nested': (rot & (sh1 & sh2), cm_4d_expected),
++    'right_nested_chained': (
++        rot & sh1 & (scl1 & sh2),
++        (np.array([False, False, True, True, True]),
++         np.array([[True, True, False, False, False],
++                   [True, True, False, False, False],
++                   [False, False, True, False, False],
++                   [False, False, False, True, False],
++                   [False, False, False, False, True]]))
++    ),
++    'right_nested_pipe': (rot & (sh1 & sh2 | scl1 & sh2), cm_4d_expected),
++    'left_nested': ((rot & sh1) & sh2, cm_4d_expected),
++    'right_nested_nonseparable_last': (
++        sh1 & (sh2 & rot),
++        (np.array([True, True, False, False]),
++         np.array([[True, False, False, False],
++                   [False, True, False, False],
++                   [False, False, True, True],
++                   [False, False, True, True]]))
++    ),
++    'deeply_nested': (
++        sh1 & (sh2 & (scl1 & (rot & sh1))),
++        (np.array([True, True, True, False, False, True]),
++         np.array([[True, False, False, False, False, False],
++                   [False, True, False, False, False, False],
++                   [False, False, True, False, False, False],
++                   [False, False, False, True, True, False],
++                   [False, False, False, True, True, False],
++                   [False, False, False, False, False, True]]))
++    ),
++    'right_nested_mapping': (
++        sh1 & (models.Mapping((1, 0)) | sh1 & sh2),
++        (np.array([True, True, True]),
++         np.array([[True, False, False],
++                   [False, False, True],
++                   [False, True, False]]))
++    ),
++    'right_nested_non_square': (
++        sh1 & (map1 | p2 & p2),
++        (np.array([True, False, False]),
++         np.array([[True, False, False],
++                   [False, True, True],
++                   [False, True, True]]))
++    ),
++}
++
++
++@pytest.mark.parametrize(('compound_model', 'result'),
++                         nested_compound_models.values(),
++                         ids=nested_compound_models.keys())
++def test_separable_nested(compound_model, result):
++    assert_allclose(is_separable(compound_model), result[0])
++    assert_allclose(separability_matrix(compound_model), result[1])
++
++
++def test_nested_matches_flat():
++    """The example from the original bug report."""
++    cm = models.Linear1D(10) & models.Linear1D(5)
++    flat = models.Pix2Sky_TAN() & models.Linear1D(10) & models.Linear1D(5)
++    nested = models.Pix2Sky_TAN() & cm
++
++    expected = np.array([[True, True, False, False],
++                         [True, True, False, False],
++                         [False, False, True, False],
++                         [False, False, False, True]])
++
++    assert_array_equal(separability_matrix(cm), np.eye(2, dtype=bool))
++    assert_array_equal(separability_matrix(flat), expected)
++    assert_array_equal(separability_matrix(nested), expected)
++    assert_array_equal(is_separable(nested), is_separable(flat))
++
++
++def test_cstack_ndarray_operands():
++    """``_cstack`` must preserve the contents of coord_matrix operands."""
++    left = np.array([[1, 0], [0, 1]])
++    right = np.array([[0, 1], [1, 0]])
++
++    # ndarray on the right
++    assert_allclose(_cstack(sh1, right),
++                    np.array([[1, 0, 0],
++                              [0, 0, 1],
++                              [0, 1, 0]]))
++    # ndarray on the left
++    assert_allclose(_cstack(left, sh1),
++                    np.array([[1, 0, 0],
++                              [0, 1, 0],
++                              [0, 0, 1]]))
++    # ndarray on both sides
++    assert_allclose(_cstack(left, right),
++                    np.array([[1, 0, 0, 0],
++                              [0, 1, 0, 0],
++                              [0, 0, 0, 1],
++                              [0, 0, 1, 0]]))
++    # non-square ndarray on the right
++    assert_allclose(_cstack(sh1, np.array([[1, 1], [1, 1], [0, 1]])),
++                    np.array([[1, 0, 0],
++                              [0, 1, 1],
++                              [0, 1, 1],
++                              [0, 0, 1]]))
+diff --git a/docs/changes/modeling/12907.bugfix.rst b/docs/changes/modeling/12907.bugfix.rst
+new file mode 100644
+index 0000000..bda392c
+--- /dev/null
++++ b/docs/changes/modeling/12907.bugfix.rst
+@@ -0,0 +1,4 @@
++Fixed a bug in ``astropy.modeling.separable.separability_matrix`` (and
++``is_separable``) which caused the separability of a compound model to be
++computed incorrectly when the right-hand operand of the ``&`` operator was
++itself a compound model.

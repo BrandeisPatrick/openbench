@@ -1,0 +1,55 @@
+diff --git a/astropy/modeling/separable.py b/astropy/modeling/separable.py
+index a308e27..45bea36 100644
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -242,7 +242,7 @@ def _cstack(left, right):
+         cright = _coord_matrix(right, 'right', noutp)
+     else:
+         cright = np.zeros((noutp, right.shape[1]))
+-        cright[-right.shape[0]:, -right.shape[1]:] = 1
++        cright[-right.shape[0]:, -right.shape[1]:] = right
+ 
+     return np.hstack([cleft, cright])
+ 
+diff --git a/astropy/modeling/tests/test_separable_nested.py b/astropy/modeling/tests/test_separable_nested.py
+new file mode 100644
+index 0000000..9fcbafa
+--- /dev/null
++++ b/astropy/modeling/tests/test_separable_nested.py
+@@ -0,0 +1,29 @@
++# Licensed under a 3-clause BSD style license - see LICENSE.rst
++"""Regression tests for separability of nested compound models."""
++import numpy as np
++from numpy.testing import assert_allclose
++
++from astropy.modeling import models as m
++from astropy.modeling.separable import separability_matrix, is_separable
++
++
++def test_nested_compound_cstack():
++    cm = m.Linear1D(10) & m.Linear1D(5)
++    expected = np.array([[True, True, False, False],
++                         [True, True, False, False],
++                         [False, False, True, False],
++                         [False, False, False, True]])
++    flat = m.Pix2Sky_TAN() & m.Linear1D(10) & m.Linear1D(5)
++    nested = m.Pix2Sky_TAN() & cm
++    assert_allclose(separability_matrix(flat), expected)
++    assert_allclose(separability_matrix(nested), expected)
++    assert_allclose(is_separable(nested), [False, False, True, True])
++
++
++def test_nested_compound_cstack_right_nonseparable():
++    cm = m.Shift(1) & m.Shift(2) | m.Rotation2D(30)
++    model = m.Linear1D(1) & cm
++    expected = np.array([[True, False, False],
++                         [False, True, True],
++                         [False, True, True]])
++    assert_allclose(separability_matrix(model), expected)
+diff --git a/docs/changes/modeling/12907.bugfix.rst b/docs/changes/modeling/12907.bugfix.rst
+new file mode 100644
+index 0000000..ea4a89b
+--- /dev/null
++++ b/docs/changes/modeling/12907.bugfix.rst
+@@ -0,0 +1 @@
++Fixed a bug where ``separability_matrix`` computed incorrect results for nested ``CompoundModel`` instances combined with the ``&`` operator.

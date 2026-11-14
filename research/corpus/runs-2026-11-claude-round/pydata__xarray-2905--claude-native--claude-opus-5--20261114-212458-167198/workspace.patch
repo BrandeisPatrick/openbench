@@ -1,0 +1,64 @@
+diff --git a/doc/whats-new.rst b/doc/whats-new.rst
+index 277c32b..5ea0640 100644
+--- a/doc/whats-new.rst
++++ b/doc/whats-new.rst
+@@ -90,6 +90,10 @@ New Features
+ 
+ Bug fixes
+ ~~~~~~~~~
++- Objects with a ``values`` property (e.g. instances of third-party classes)
++  are no longer coerced to arrays when assigned into an object-dtype
++  :py:class:`Variable`, :py:class:`DataArray` or :py:class:`Dataset`
++  (:issue:`1746`).
+ - :py:meth:`DataArray.resample` and :py:meth:`Dataset.resample` do not trigger computations anymore if :py:meth:`Dataset.weighted` or :py:meth:`DataArray.weighted` are applied (:issue:`4625`, :pull:`4668`). By `Julius Busecke <https://github.com/jbusecke>`_.
+ - :py:func:`merge` with ``combine_attrs='override'`` makes a copy of the attrs (:issue:`4627`).
+ - By default, when possible, xarray will now always use values of type ``int64`` when encoding
+diff --git a/xarray/core/variable.py b/xarray/core/variable.py
+index 45553eb..ebd2731 100644
+--- a/xarray/core/variable.py
++++ b/xarray/core/variable.py
+@@ -201,7 +201,7 @@ def as_compatible_data(data, fastpath=False):
+         # can't use fastpath (yet) for scalars
+         return _maybe_wrap_data(data)
+ 
+-    if isinstance(data, Variable):
++    if isinstance(data, (Variable, xr.DataArray)):
+         return data.data
+ 
+     if isinstance(data, NON_NUMPY_SUPPORTED_ARRAY_TYPES):
+@@ -218,7 +218,8 @@ def as_compatible_data(data, fastpath=False):
+         data = np.timedelta64(getattr(data, "value", data), "ns")
+ 
+     # we don't want nested self-described arrays
+-    data = getattr(data, "values", data)
++    if isinstance(data, (pd.Series, pd.Index, pd.DataFrame)):
++        data = data.values
+ 
+     if isinstance(data, np.ma.MaskedArray):
+         mask = np.ma.getmaskarray(data)
+diff --git a/xarray/tests/test_variable.py b/xarray/tests/test_variable.py
+index e1ae3e1..f3ea22b 100644
+--- a/xarray/tests/test_variable.py
++++ b/xarray/tests/test_variable.py
+@@ -1872,6 +1872,21 @@ class TestVariable(VariableSubclassobjects):
+         expected = Variable(["x", "y"], [[2, 3], [3, 4], [4, 5]])
+         assert_identical(v, expected)
+ 
++    def test_setitem_object_dtype_no_coercion(self):
++        # regression test for GH1746: objects with a `values` property
++        # should not be coerced when assigned into an object array
++        class HasValues:
++            values = 5
++
++        v = self.cls(["x"], np.array([None, None], dtype=object))
++        v[0] = set()
++        obj = HasValues()
++        v[1] = obj
++
++        assert v.dtype == object
++        assert v.values[0] == set()
++        assert v.values[1] is obj
++
+     def test_coarsen(self):
+         v = self.cls(["x"], [0, 1, 2, 3, 4])
+         actual = v.coarsen({"x": 2}, boundary="pad", func="mean")

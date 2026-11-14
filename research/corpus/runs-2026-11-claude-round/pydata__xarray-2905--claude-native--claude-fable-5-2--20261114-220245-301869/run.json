@@ -1,0 +1,24 @@
+{
+  "run_id": "pydata__xarray-2905--claude-native--claude-fable-5-2--20261114-220245-301869",
+  "task_id": "pydata__xarray-2905",
+  "harness": "claude-native",
+  "model": "claude-fable-5-2",
+  "started_at": "2026-11-14T22:02:45.301869Z",
+  "finished_at": "2026-11-14T22:09:24.603017Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.5372243999999999,
+  "total_tokens_in": 109523,
+  "total_tokens_out": 5502,
+  "total_tokens_cached": 79392,
+  "total_thinking_tokens": 1724,
+  "num_turns": 10,
+  "limits": {
+    "wall_clock_s": 3600,
+    "max_turns": 100,
+    "max_cost_usd": 8.0
+  },
+  "image_id": "sha256:3787ac1fb3ea685597d2c687418ce1085fae7f496894818beedb7f2b75c9bc92",
+  "effort": "high"
+}

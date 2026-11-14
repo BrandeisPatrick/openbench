@@ -1,0 +1,24 @@
+{
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-fable-5-2--20261114-224108-446646",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "harness": "claude-native",
+  "model": "claude-fable-5-2",
+  "started_at": "2026-11-14T22:41:08.446646Z",
+  "finished_at": "2026-11-14T22:41:53.050596Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.26893219999999995,
+  "total_tokens_in": 42692,
+  "total_tokens_out": 3781,
+  "total_tokens_cached": 31551,
+  "total_thinking_tokens": 1430,
+  "num_turns": 6,
+  "limits": {
+    "wall_clock_s": 3600,
+    "max_turns": 100,
+    "max_cost_usd": 8.0
+  },
+  "image_id": "sha256:14aa6980c2d2f9167822b72cdf67478dc1dc74f382208420f90bf2289528559e",
+  "effort": "high"
+}

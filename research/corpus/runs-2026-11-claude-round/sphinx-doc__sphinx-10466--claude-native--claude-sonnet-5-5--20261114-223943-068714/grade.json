@@ -1,0 +1,29 @@
+{
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-sonnet-5-5--20261114-223943-068714",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "applies_cleanly": true,
+  "builds": true,
+  "f2p_passed": [
+    "tests/test_build_gettext.py::test_Catalog_duplicated_message"
+  ],
+  "f2p_failed": [],
+  "p2p_passed": [
+    "tests/test_build_gettext.py::test_build_gettext",
+    "tests/test_build_gettext.py::test_gettext_index_entries",
+    "tests/test_build_gettext.py::test_gettext_disable_index_entries",
+    "tests/test_build_gettext.py::test_gettext_template",
+    "tests/test_build_gettext.py::test_gettext_template_msgid_order_in_sphinxpot",
+    "tests/test_build_gettext.py::test_build_single_pot"
+  ],
+  "p2p_failed": [],
+  "anticheat": {
+    "test_tampering": false,
+    "tampered_files": [],
+    "skip_xfail_added": 0,
+    "conftest_hacks": [],
+    "hardcode_flags": [],
+    "assert_weakening_count": 0
+  },
+  "graded_at": "2026-11-14T22:40:00.811164Z",
+  "image_id": "sha256:14aa6980c2d2f9167822b72cdf67478dc1dc74f382208420f90bf2289528559e"
+}

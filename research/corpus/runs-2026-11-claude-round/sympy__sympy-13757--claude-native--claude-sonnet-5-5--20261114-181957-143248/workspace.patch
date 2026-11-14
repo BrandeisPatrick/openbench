@@ -1,0 +1,12 @@
+diff --git a/sympy/polys/polytools.py b/sympy/polys/polytools.py
+index d5ac051..247efd7 100644
+--- a/sympy/polys/polytools.py
++++ b/sympy/polys/polytools.py
+@@ -105,6 +105,7 @@ class Poly(Expr):
+     __slots__ = ['rep', 'gens']
+ 
+     is_commutative = True
++    _op_priority = 10.001
+     is_Poly = True
+ 
+     def __new__(cls, rep, *gens, **args):

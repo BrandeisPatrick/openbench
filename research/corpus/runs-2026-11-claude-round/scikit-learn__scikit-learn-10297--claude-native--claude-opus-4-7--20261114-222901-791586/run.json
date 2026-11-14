@@ -1,0 +1,24 @@
+{
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "harness": "claude-native",
+  "model": "claude-opus-4-7",
+  "started_at": "2026-11-14T22:29:01.791586Z",
+  "finished_at": "2026-11-14T22:29:25.322354Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.1240025,
+  "total_tokens_in": 42509,
+  "total_tokens_out": 1868,
+  "total_tokens_cached": 31970,
+  "total_thinking_tokens": 28,
+  "num_turns": 9,
+  "limits": {
+    "wall_clock_s": 3600,
+    "max_turns": 100,
+    "max_cost_usd": 6.0
+  },
+  "image_id": "sha256:810ab5096855a8ccb05cdfe0c864e2a43afdba50974e04ec36b936f2ed79fa6f",
+  "effort": "high"
+}

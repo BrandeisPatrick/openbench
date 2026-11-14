@@ -1,0 +1,24 @@
+{
+  "run_id": "sympy__sympy-13757--claude-native--claude-opus-5-5--20261114-181208-857020",
+  "task_id": "sympy__sympy-13757",
+  "harness": "claude-native",
+  "model": "claude-opus-5-5",
+  "started_at": "2026-11-14T18:12:08.857020Z",
+  "finished_at": "2026-11-14T18:15:26.057596Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.14322400000000002,
+  "total_tokens_in": 77216,
+  "total_tokens_out": 3863,
+  "total_tokens_cached": 66685,
+  "total_thinking_tokens": 1759,
+  "num_turns": 13,
+  "limits": {
+    "wall_clock_s": 3600,
+    "max_turns": 100,
+    "max_cost_usd": 6.0
+  },
+  "image_id": "sha256:d27ab838beb6493637f36a085285a8426403ff6a01cf1e7a149176e89e9feaa6",
+  "effort": "high"
+}

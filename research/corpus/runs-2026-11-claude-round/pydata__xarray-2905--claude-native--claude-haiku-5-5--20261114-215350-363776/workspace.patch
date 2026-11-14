@@ -1,0 +1,36 @@
+diff --git a/xarray/core/variable.py b/xarray/core/variable.py
+index 45553eb..4bed5bc 100644
+--- a/xarray/core/variable.py
++++ b/xarray/core/variable.py
+@@ -218,7 +218,8 @@ def as_compatible_data(data, fastpath=False):
+         data = np.timedelta64(getattr(data, "value", data), "ns")
+ 
+     # we don't want nested self-described arrays
+-    data = getattr(data, "values", data)
++    if isinstance(data, (xr.DataArray, pd.Series, pd.DataFrame)):
++        data = data.values
+ 
+     if isinstance(data, np.ma.MaskedArray):
+         mask = np.ma.getmaskarray(data)
+diff --git a/xarray/tests/test_variable.py b/xarray/tests/test_variable.py
+index e1ae3e1..c8561f7 100644
+--- a/xarray/tests/test_variable.py
++++ b/xarray/tests/test_variable.py
+@@ -1779,6 +1779,17 @@ class TestVariable(VariableSubclassobjects):
+         v[dict(x=[True, False], y=[False, True, False])] = 1
+         assert v[0, 1] == 1
+ 
++    def test_setitem_object_with_values_attr(self):
++        # regression test: objects with a ``values`` attribute should be
++        # stored as-is in object arrays, not unwrapped
++        class HasValues:
++            values = 5
++
++        v = Variable(["x"], np.array([None]))
++        obj = HasValues()
++        v[{"x": 0}] = obj
++        assert v.values[0] is obj
++
+     def test_setitem_fancy(self):
+         # assignment which should work as np.ndarray does
+         def assert_assigned_2d(array, key_x, key_y, values):

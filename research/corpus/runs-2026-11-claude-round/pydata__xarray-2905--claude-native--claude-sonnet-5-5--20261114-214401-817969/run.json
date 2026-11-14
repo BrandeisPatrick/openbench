@@ -1,0 +1,24 @@
+{
+  "run_id": "pydata__xarray-2905--claude-native--claude-sonnet-5-5--20261114-214401-817969",
+  "task_id": "pydata__xarray-2905",
+  "harness": "claude-native",
+  "model": "claude-sonnet-5-5",
+  "started_at": "2026-11-14T21:44:01.817969Z",
+  "finished_at": "2026-11-14T21:53:41.616985Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.1555675,
+  "total_tokens_in": 223455,
+  "total_tokens_out": 6514,
+  "total_tokens_cached": 195080,
+  "total_thinking_tokens": 2246,
+  "num_turns": 17,
+  "limits": {
+    "wall_clock_s": 3600,
+    "max_turns": 100,
+    "max_cost_usd": 3.0
+  },
+  "image_id": "sha256:3787ac1fb3ea685597d2c687418ce1085fae7f496894818beedb7f2b75c9bc92",
+  "effort": "xhigh"
+}

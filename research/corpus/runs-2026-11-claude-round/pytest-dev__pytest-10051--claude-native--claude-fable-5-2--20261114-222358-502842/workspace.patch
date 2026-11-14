@@ -1,0 +1,150 @@
+diff --git a/changelog/9877.bugfix.rst b/changelog/9877.bugfix.rst
+new file mode 100644
+index 0000000..1d2264c
+--- /dev/null
++++ b/changelog/9877.bugfix.rst
+@@ -0,0 +1 @@
++Ensure ``caplog.get_records(when)`` returns current/correct data after invoking ``caplog.clear()``.
+diff --git a/src/_pytest/logging.py b/src/_pytest/logging.py
+index a4f4214..3e79dd1 100644
+--- a/src/_pytest/logging.py
++++ b/src/_pytest/logging.py
+@@ -342,9 +342,25 @@ class LogCaptureHandler(logging_StreamHandler):
+         super().emit(record)
+ 
+     def reset(self) -> None:
++        """Start a fresh capture, leaving previously captured records untouched.
++
++        A new records list is created, so references to the old list (e.g.
++        the per-phase lists returned by ``caplog.get_records()``) keep their
++        contents.
++        """
+         self.records = []
+         self.stream = StringIO()
+ 
++    def clear(self) -> None:
++        """Discard the captured records and log text.
++
++        Unlike :meth:`reset`, the records list is emptied in place, so every
++        reference to it (e.g. ``caplog.get_records()`` for the current phase)
++        stays in sync with ``caplog.records``.
++        """
++        self.records.clear()
++        self.stream = StringIO()
++
+     def handleError(self, record: logging.LogRecord) -> None:
+         if logging.raiseExceptions:
+             # Fail the test if the log message is bad (emit failed).
+@@ -440,7 +456,7 @@ class LogCaptureFixture:
+ 
+     def clear(self) -> None:
+         """Reset the list of log records and the captured log text."""
+-        self.handler.reset()
++        self.handler.clear()
+ 
+     def set_level(self, level: Union[int, str], logger: Optional[str] = None) -> None:
+         """Set the level of a logger for the duration of a test.
+diff --git a/testing/logging/test_caplog_clear.py b/testing/logging/test_caplog_clear.py
+new file mode 100644
+index 0000000..dde65ae
+--- /dev/null
++++ b/testing/logging/test_caplog_clear.py
+@@ -0,0 +1,98 @@
++"""Tests for the interaction between ``caplog.clear()`` and ``caplog.get_records()``."""
++import logging
++from typing import Generator
++
++import pytest
++from _pytest.logging import caplog_records_key
++from _pytest.pytester import Pytester
++
++logger = logging.getLogger(__name__)
++
++
++def test_clear_keeps_get_records_in_sync(caplog: pytest.LogCaptureFixture) -> None:
++    caplog.set_level(logging.INFO)
++
++    def assert_consistent() -> None:
++        assert caplog.get_records("call") == caplog.records
++        assert caplog.get_records("call") is caplog.records
++
++    assert_consistent()
++    logger.info("first")
++    assert_consistent()
++    assert [r.getMessage() for r in caplog.get_records("call")] == ["first"]
++
++    caplog.clear()
++    assert caplog.records == []
++    assert caplog.get_records("call") == []
++    assert caplog.text == ""
++    assert_consistent()
++
++    # Records logged after clear() must show up in get_records() too.
++    logger.info("second")
++    assert [r.getMessage() for r in caplog.get_records("call")] == ["second"]
++    assert "second" in caplog.text
++    assert "first" not in caplog.text
++    assert_consistent()
++
++
++@pytest.fixture
++def logging_during_setup_and_teardown(
++    caplog: pytest.LogCaptureFixture,
++) -> Generator[None, None, None]:
++    caplog.set_level("INFO")
++    logger.info("a_setup_log")
++    yield
++    logger.info("a_teardown_log")
++    # clear() during the call phase must not bleed into other phases.
++    assert [x.message for x in caplog.get_records("setup")] == ["a_setup_log"]
++    assert [x.message for x in caplog.get_records("call")] == ["b_call_log"]
++    assert [x.message for x in caplog.get_records("teardown")] == ["a_teardown_log"]
++    caplog.clear()
++    assert caplog.get_records("teardown") == []
++    assert [x.message for x in caplog.get_records("setup")] == ["a_setup_log"]
++    assert [x.message for x in caplog.get_records("call")] == ["b_call_log"]
++
++
++def test_clear_only_affects_current_stage(
++    caplog: pytest.LogCaptureFixture, logging_during_setup_and_teardown: None
++) -> None:
++    assert not caplog.records
++    assert not caplog.get_records("call")
++    logger.info("a_call_log")
++    assert [x.message for x in caplog.get_records("call")] == ["a_call_log"]
++    assert [x.message for x in caplog.get_records("setup")] == ["a_setup_log"]
++
++    caplog.clear()
++
++    assert caplog.records == []
++    assert caplog.get_records("call") == []
++    # Records of earlier stages are preserved.
++    assert [x.message for x in caplog.get_records("setup")] == ["a_setup_log"]
++
++    logger.info("b_call_log")
++    assert [x.message for x in caplog.get_records("call")] == ["b_call_log"]
++    assert [x.message for x in caplog.records] == ["b_call_log"]
++
++    # This reaches into private API, don't use this type of thing in real tests!
++    assert set(caplog._item.stash[caplog_records_key]) == {"setup", "call"}
++
++
++def test_clear_does_not_affect_report_sections(pytester: Pytester) -> None:
++    """caplog.clear() only resets the fixture's view, not the reported log."""
++    pytester.makepyfile(
++        """
++        import logging
++
++        def test_it(caplog):
++            logging.warning("before clear")
++            caplog.clear()
++            logging.warning("after clear")
++            assert [r.getMessage() for r in caplog.get_records("call")] == [
++                "after clear"
++            ]
++            assert 0
++        """
++    )
++    result = pytester.runpytest()
++    result.stdout.fnmatch_lines(["*before clear*", "*after clear*"])
++    assert result.ret == 1

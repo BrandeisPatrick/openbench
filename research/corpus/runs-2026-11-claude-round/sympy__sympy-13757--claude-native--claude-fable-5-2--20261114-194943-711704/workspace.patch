@@ -1,0 +1,147 @@
+diff --git a/sympy/polys/polytools.py b/sympy/polys/polytools.py
+index d5ac051..92257fd 100644
+--- a/sympy/polys/polytools.py
++++ b/sympy/polys/polytools.py
+@@ -107,6 +107,11 @@ class Poly(Expr):
+     is_commutative = True
+     is_Poly = True
+ 
++    # Higher than Expr._op_priority, so that ``expr <op> poly`` is handled by
++    # the reflected Poly method (e.g. ``__rmul__``) in the same way that
++    # ``poly <op> expr`` is handled by the Poly method (e.g. ``__mul__``).
++    _op_priority = 10.001
++
+     def __new__(cls, rep, *gens, **args):
+         """Create a new polynomial instance out of something useful. """
+         opt = options.build_options(gens, args)
+diff --git a/sympy/polys/tests/test_polytools_op_priority.py b/sympy/polys/tests/test_polytools_op_priority.py
+new file mode 100644
+index 0000000..fc80c46
+--- /dev/null
++++ b/sympy/polys/tests/test_polytools_op_priority.py
+@@ -0,0 +1,107 @@
++"""Tests for binary operations with an Expr on the left and a Poly on the right.
++
++``Poly`` has a higher ``_op_priority`` than ``Expr`` so that ``expr <op> poly``
++is dispatched to the reflected ``Poly`` method and gives the same kind of
++result as ``poly <op> expr``. See issue 13079.
++"""
++
++from sympy.polys.polytools import Poly, PurePoly
++
++from sympy import S, I, Integer, Rational, Float, Mul, Add, Symbol, sin, sqrt, pi
++
++from sympy.abc import x, y
++
++
++def test_issue_13079():
++    assert Poly(x)*x == Poly(x**2, x, domain='ZZ')
++    assert x*Poly(x) == Poly(x**2, x, domain='ZZ')
++    assert -2*Poly(x) == Poly(-2*x, x, domain='ZZ')
++    assert S(-2)*Poly(x) == Poly(-2*x, x, domain='ZZ')
++    assert Poly(x)*S(-2) == Poly(-2*x, x, domain='ZZ')
++
++
++def test_Poly_op_priority():
++    assert Poly._op_priority > Symbol._op_priority
++    assert PurePoly._op_priority == Poly._op_priority
++
++
++def test_Poly_left_mul():
++    f = Poly(x**2 + 1, x)
++
++    for c in (x, y, x + 1, x*y, Integer(3), Rational(1, 2), Float(1.5),
++              S.Zero, S.One, S.NegativeOne, S.Half, pi, I, sqrt(2)):
++        res = c*f
++        assert res.is_Poly
++        assert res.gens == f.gens
++        assert res == f*c
++        assert res.get_domain() == (f*c).get_domain()
++        assert res.as_expr().expand() == (c*f.as_expr()).expand()
++
++    assert x*f == Poly(x**3 + x, x)
++    assert y*f == Poly(y*x**2 + y, x)
++    assert Rational(1, 2)*f == Poly(x**2/2 + S.Half, x, domain='QQ')
++    assert (I*f).get_domain().is_EX
++
++    assert x*PurePoly(x) == PurePoly(x**2, x)
++    assert isinstance(x*PurePoly(x), PurePoly)
++    assert S(3)*PurePoly(x) == PurePoly(3*x, x)
++
++
++def test_Poly_left_add_sub():
++    f = Poly(x**2 + 1, x)
++
++    for c in (x, y, x + 1, x*y, Integer(3), Rational(1, 2), Float(1.5),
++              S.Zero, S.One, S.Half, pi, I, sqrt(2)):
++        assert (c + f).is_Poly and c + f == f + c
++        assert (c - f).is_Poly and c - f == -(f - c)
++
++    assert x + f == Poly(x**2 + x + 1, x)
++    assert x - f == Poly(-x**2 + x - 1, x)
++    assert S(2) + f == Poly(x**2 + 3, x)
++    assert S(2) - f == Poly(-x**2 + 1, x)
++    assert y + f == Poly(x**2 + y + 1, x)
++    assert y - f == Poly(-x**2 + y - 1, x)
++
++
++def test_Poly_left_div():
++    f = Poly(x**2 + 1, x)
++
++    # true division always gives an expression, as it does for poly/expr
++    for c in (x, y, S(2), S.Half, sin(x)):
++        assert not (c/f).is_Poly
++        assert c/f == c/f.as_expr()
++
++    assert x**3 // f == Poly(x, x)
++    assert x**3 % f == Poly(-x, x)
++    assert divmod(Poly(x**3, x), f) == (x**3 // f, x**3 % f)
++
++
++def test_Poly_left_non_polynomial():
++    f = Poly(x**2 + 1, x)
++
++    # if the expression cannot be converted to a polynomial in the
++    # generators of the Poly, an ordinary expression is returned
++    assert sin(x)*f == sin(x)*(x**2 + 1)
++    assert sin(x)*f == f*sin(x)
++    assert sin(x) + f == x**2 + sin(x) + 1
++    assert sin(x) + f == f + sin(x)
++    assert sin(x) - f == -x**2 + sin(x) - 1
++    assert sin(x) - f == -(f - sin(x))
++
++    A = Symbol('A', commutative=False)
++
++    assert not (A*f).is_Poly
++    assert A*f == A*(x**2 + 1)
++    assert f*A == (x**2 + 1)*A
++
++
++def test_Poly_unevaluated():
++    f = Poly(x**2 + 1, x)
++
++    # Mul and Add do not combine their arguments with a Poly
++    assert Mul(x, f).is_Mul and Mul(x, f).args == (x, f)
++    assert Add(x, f).is_Add and set(Add(x, f).args) == {x, f}
++
++    # there is no reflected power for Poly
++    assert (x**f).is_Pow and (x**f).exp == f
++    assert (S(2)**f).is_Pow and (S(2)**f).exp == f
+diff --git a/wrapper_module_0.pyx b/wrapper_module_0.pyx
+new file mode 100644
+index 0000000..0bd4cba
+--- /dev/null
++++ b/wrapper_module_0.pyx
+@@ -0,0 +1,11 @@
++import numpy as np
++cimport numpy as np
++
++cdef extern from 'wrapped_code_0.h':
++    void test(double x, double y, double *z)
++
++def test_c(double x, double y):
++
++    cdef double z = 0
++    test(x, y, &z)
++    return z
+\ No newline at end of file

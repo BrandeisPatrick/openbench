@@ -1,0 +1,24 @@
+{
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-sonnet-5-5--20261114-223050-861952",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "harness": "claude-native",
+  "model": "claude-sonnet-5-5",
+  "started_at": "2026-11-14T22:30:50.861952Z",
+  "finished_at": "2026-11-14T22:31:11.026427Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.038313799999999995,
+  "total_tokens_in": 43330,
+  "total_tokens_out": 1715,
+  "total_tokens_cached": 36313,
+  "total_thinking_tokens": 0,
+  "num_turns": 9,
+  "limits": {
+    "wall_clock_s": 3600,
+    "max_turns": 100,
+    "max_cost_usd": 3.0
+  },
+  "image_id": "sha256:810ab5096855a8ccb05cdfe0c864e2a43afdba50974e04ec36b936f2ed79fa6f",
+  "effort": "high"
+}

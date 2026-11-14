@@ -1,0 +1,86 @@
+diff --git a/sympy/polys/polytools.py b/sympy/polys/polytools.py
+index d5ac051..32b7027 100644
+--- a/sympy/polys/polytools.py
++++ b/sympy/polys/polytools.py
+@@ -106,6 +106,7 @@ class Poly(Expr):
+ 
+     is_commutative = True
+     is_Poly = True
++    _op_priority = 10.001
+ 
+     def __new__(cls, rep, *gens, **args):
+         """Create a new polynomial instance out of something useful. """
+diff --git a/sympy/polys/tests/test_polytools_priority.py b/sympy/polys/tests/test_polytools_priority.py
+new file mode 100644
+index 0000000..9c03f17
+--- /dev/null
++++ b/sympy/polys/tests/test_polytools_priority.py
+@@ -0,0 +1,50 @@
++"""Tests for the interaction of Poly with other Expr in binary operations."""
++
++from sympy import Poly, S, sin, symbols, Rational
++
++x, y = symbols('x y')
++
++
++def test_Poly_op_priority():
++    # Poly must win over a plain Expr, so that the operation is evaluated
++    # regardless of which side of the operator the Poly is on.
++    assert Poly._op_priority > x._op_priority
++
++
++def test_Poly_rmul_expr():
++    # issue: Expr*Poly stayed unevaluated while Poly*Expr was evaluated
++    assert x*Poly(x) == Poly(x**2, x)
++    assert isinstance(x*Poly(x), Poly)
++    assert x*Poly(x) == Poly(x)*x
++
++    assert S(-2)*Poly(x) == Poly(-2*x, x)
++    assert isinstance(S(-2)*Poly(x), Poly)
++    assert S(-2)*Poly(x) == Poly(x)*S(-2)
++    assert -2*Poly(x) == Poly(-2*x, x)
++
++    assert Rational(1, 2)*Poly(x) == Poly(x/2, x)
++    assert y*Poly(x) == Poly(x)*y == Poly(x*y, x, domain='ZZ[y]')
++    assert (x + 1)*Poly(x) == Poly(x**2 + x, x)
++
++    # not representable as a Poly in the generators of the Poly
++    assert sin(x)*Poly(x) == x*sin(x)
++    assert sin(x)*Poly(x) == Poly(x)*sin(x)
++
++
++def test_Poly_radd_rsub_expr():
++    assert x + Poly(x) == Poly(2*x, x)
++    assert x + Poly(x) == Poly(x) + x
++    assert x - Poly(x) == Poly(0, x)
++    assert x - Poly(x) == Poly(x) - x
++    assert 1 - Poly(x) == Poly(1 - x, x)
++    assert S(1) - Poly(x) == Poly(1 - x, x)
++    assert S(1) + Poly(x) == Poly(x + 1, x)
++
++    assert sin(x) + Poly(x) == x + sin(x)
++    assert sin(x) - Poly(x) == sin(x) - x
++
++
++def test_Poly_div_expr():
++    # division and powers are not evaluated as Poly operations
++    assert x/Poly(x) == S.One
++    assert Poly(x)/x == S.One
+diff --git a/wrapper_module_0.pyx b/wrapper_module_0.pyx
+new file mode 100644
+index 0000000..0bd4cba
+--- /dev/null
++++ b/wrapper_module_0.pyx
+@@ -0,0 +1,11 @@
++import numpy as np
++cimport numpy as np
++
++cdef extern from 'wrapped_code_0.h':
++    void test(double x, double y, double *z)
++
++def test_c(double x, double y):
++
++    cdef double z = 0
++    test(x, y, &z)
++    return z
+\ No newline at end of file

@@ -1,0 +1,28 @@
+diff --git a/sphinx/builders/gettext.py b/sphinx/builders/gettext.py
+index e8bc547..7d87c79 100644
+--- a/sphinx/builders/gettext.py
++++ b/sphinx/builders/gettext.py
+@@ -32,9 +32,22 @@ class Message:
+     """An entry of translatable message."""
+     def __init__(self, text: str, locations: List[Tuple[str, int]], uuids: List[str]):
+         self.text = text
+-        self.locations = locations
++        self.locations = self.unique_locations(locations)
+         self.uuids = uuids
+ 
++    def unique_locations(
++        self, locations: List[Tuple[str, int]]
++    ) -> List[Tuple[str, int]]:
++        """Remove duplicate locations while keeping their original order."""
++        seen: Set[Tuple[str, int]] = set()
++        ret: List[Tuple[str, int]] = []
++        for location in locations:
++            if location in seen:
++                continue
++            seen.add(location)
++            ret.append(location)
++        return ret
++
+ 
+ class Catalog:
+     """Catalog of translatable messages."""

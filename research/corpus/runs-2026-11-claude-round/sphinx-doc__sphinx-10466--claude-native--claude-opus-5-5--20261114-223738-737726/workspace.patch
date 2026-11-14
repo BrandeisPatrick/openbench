@@ -1,0 +1,57 @@
+diff --git a/CHANGES b/CHANGES
+index ed47709..6d357f2 100644
+--- a/CHANGES
++++ b/CHANGES
+@@ -16,6 +16,7 @@ Features added
+ Bugs fixed
+ ----------
+ 
++* #10107: gettext: Duplicated locations are shown in .pot file
+ * #9575: autodoc: The annotation of return value should not be shown when
+   ``autodoc_typehints="description"``
+ * #9648: autodoc: ``*args`` and ``**kwargs`` entries are duplicated when
+diff --git a/sphinx/builders/gettext.py b/sphinx/builders/gettext.py
+index e8bc547..be491a6 100644
+--- a/sphinx/builders/gettext.py
++++ b/sphinx/builders/gettext.py
+@@ -57,7 +57,10 @@ class Catalog:
+ 
+     def __iter__(self) -> Generator[Message, None, None]:
+         for message in self.messages:
+-            positions = [(source, line) for source, line, uuid in self.metadata[message]]
++            # remove duplicated locations while retaining their original order
++            positions = list(OrderedDict.fromkeys(
++                (source, line) for source, line, uuid in self.metadata[message]
++            ))
+             uuids = [uuid for source, line, uuid in self.metadata[message]]
+             yield Message(message, positions, uuids)
+ 
+diff --git a/tests/test_build_gettext_catalog.py b/tests/test_build_gettext_catalog.py
+new file mode 100644
+index 0000000..760533a
+--- /dev/null
++++ b/tests/test_build_gettext_catalog.py
+@@ -0,0 +1,23 @@
++"""Test the gettext builder's message catalog."""
++
++from sphinx.builders.gettext import Catalog, MsgOrigin
++
++
++def test_Catalog_duplicated_message():
++    catalog = Catalog()
++    catalog.add('hello', MsgOrigin('/path/to/filename', 1))
++    catalog.add('hello', MsgOrigin('/path/to/filename', 1))
++    catalog.add('hello', MsgOrigin('/path/to/filename', 2))
++    catalog.add('hello', MsgOrigin('/path/to/yetanother', 1))
++    catalog.add('world', MsgOrigin('/path/to/filename', 1))
++
++    assert len(list(catalog)) == 2
++
++    msg1, msg2 = list(catalog)
++    assert msg1.text == 'hello'
++    assert msg1.locations == [('/path/to/filename', 1),
++                              ('/path/to/filename', 2),
++                              ('/path/to/yetanother', 1)]
++    assert len(msg1.uuids) == 4
++    assert msg2.text == 'world'
++    assert msg2.locations == [('/path/to/filename', 1)]

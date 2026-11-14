@@ -1,0 +1,24 @@
+{
+  "run_id": "sympy__sympy-13757--claude-native--claude-fable-5-2--20261114-164455-742077",
+  "task_id": "sympy__sympy-13757",
+  "harness": "claude-native",
+  "model": "claude-fable-5-2",
+  "started_at": "2026-11-14T16:44:55.742077Z",
+  "finished_at": "2026-11-14T17:46:49.023146Z",
+  "exit_reason": "timeout",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 3.5343296,
+  "total_tokens_in": 992254,
+  "total_tokens_out": 19993,
+  "total_tokens_cached": 733448,
+  "total_thinking_tokens": 11470,
+  "num_turns": 34,
+  "limits": {
+    "wall_clock_s": 3600,
+    "max_turns": 100,
+    "max_cost_usd": 8.0
+  },
+  "image_id": "sha256:d27ab838beb6493637f36a085285a8426403ff6a01cf1e7a149176e89e9feaa6",
+  "effort": "high"
+}

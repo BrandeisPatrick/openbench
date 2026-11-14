@@ -1,0 +1,74 @@
+diff --git a/astropy/modeling/separable.py b/astropy/modeling/separable.py
+index a308e27..45bea36 100644
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -242,7 +242,7 @@ def _cstack(left, right):
+         cright = _coord_matrix(right, 'right', noutp)
+     else:
+         cright = np.zeros((noutp, right.shape[1]))
+-        cright[-right.shape[0]:, -right.shape[1]:] = 1
++        cright[-right.shape[0]:, -right.shape[1]:] = right
+ 
+     return np.hstack([cleft, cright])
+ 
+diff --git a/astropy/modeling/tests/test_separable_nested.py b/astropy/modeling/tests/test_separable_nested.py
+new file mode 100644
+index 0000000..79dd8b7
+--- /dev/null
++++ b/astropy/modeling/tests/test_separable_nested.py
+@@ -0,0 +1,46 @@
++# Licensed under a 3-clause BSD style license - see LICENSE.rst
++"""Regression tests for ``separability_matrix`` with nested compound models."""
++
++import numpy as np
++from numpy.testing import assert_allclose
++
++from astropy.modeling import models as m
++from astropy.modeling.separable import separability_matrix
++
++
++def test_nested_compound_right_stack():
++    cm = m.Linear1D(10) & m.Linear1D(5)
++
++    expected = np.array([[True, True, False, False],
++                         [True, True, False, False],
++                         [False, False, True, False],
++                         [False, False, False, True]])
++
++    assert_allclose(separability_matrix(m.Pix2Sky_TAN() & cm), expected)
++    assert_allclose(
++        separability_matrix(m.Pix2Sky_TAN() & m.Linear1D(10) & m.Linear1D(5)),
++        expected)
++
++
++def test_nested_compound_left_stack():
++    cm = m.Linear1D(10) & m.Linear1D(5)
++
++    expected = np.array([[True, False, False, False],
++                         [False, True, False, False],
++                         [False, False, True, True],
++                         [False, False, True, True]])
++
++    assert_allclose(separability_matrix(cm & m.Pix2Sky_TAN()), expected)
++
++
++def test_doubly_nested_compound():
++    cm = m.Linear1D(10) & m.Linear1D(5)
++    expected = np.array([[True, True, False, False, False, False],
++                         [True, True, False, False, False, False],
++                         [False, False, True, False, False, False],
++                         [False, False, False, True, False, False],
++                         [False, False, False, False, True, False],
++                         [False, False, False, False, False, True]])
++    assert_allclose(
++        separability_matrix(m.Pix2Sky_TAN() & (cm & (m.Linear1D(1) & m.Linear1D(2)))),
++        expected)
+diff --git a/docs/changes/modeling/12907.bugfix.rst b/docs/changes/modeling/12907.bugfix.rst
+new file mode 100644
+index 0000000..58fa27c
+--- /dev/null
++++ b/docs/changes/modeling/12907.bugfix.rst
+@@ -0,0 +1,3 @@
++Fixed a bug in ``astropy.modeling.separable.separability_matrix`` where nested
++``CompoundModel`` objects combined with the ``&`` operator on the right-hand
++side were reported as non-separable.

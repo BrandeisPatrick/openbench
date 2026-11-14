@@ -1,0 +1,189 @@
+diff --git a/sympy/core/tests/test_match.py b/sympy/core/tests/test_match.py
+index 60e3709..34f5c1d 100644
+--- a/sympy/core/tests/test_match.py
++++ b/sympy/core/tests/test_match.py
+@@ -133,8 +133,11 @@ def test_mul():
+     e = exp(x)
+     assert e.match(x**p*exp(x*q)) == {p: 0, q: 1}
+ 
++    # issue 13079: multiplying an expression by a Poly evaluates, even when
++    # the expression is on the left side of the multiplication
+     e = I*Poly(x, x)
+-    assert e.match(I*p) == {p: Poly(x, x)}
++    assert e == Poly(I*x, x)
++    assert e.match(I*p) == {p: x}
+ 
+ 
+ def test_mul_noncommutative():
+diff --git a/sympy/polys/polytools.py b/sympy/polys/polytools.py
+index d5ac051..6ec79e2 100644
+--- a/sympy/polys/polytools.py
++++ b/sympy/polys/polytools.py
+@@ -11,7 +11,7 @@
+ from sympy.core.basic import preorder_traversal
+ from sympy.core.relational import Relational
+ from sympy.core.sympify import sympify
+-from sympy.core.decorators import _sympifyit
++from sympy.core.decorators import _sympifyit, call_highest_priority
+ from sympy.core.function import Derivative
+ 
+ from sympy.logic.boolalg import BooleanAtom
+@@ -106,6 +106,7 @@ class Poly(Expr):
+ 
+     is_commutative = True
+     is_Poly = True
++    _op_priority = 10.001
+ 
+     def __new__(cls, rep, *gens, **args):
+         """Create a new polynomial instance out of something useful. """
+@@ -3997,6 +3998,7 @@ def __abs__(f):
+     def __neg__(f):
+         return f.neg()
+ 
++    @call_highest_priority('__radd__')
+     @_sympifyit('g', NotImplemented)
+     def __add__(f, g):
+         if not g.is_Poly:
+@@ -4007,6 +4009,7 @@ def __add__(f, g):
+ 
+         return f.add(g)
+ 
++    @call_highest_priority('__add__')
+     @_sympifyit('g', NotImplemented)
+     def __radd__(f, g):
+         if not g.is_Poly:
+@@ -4017,6 +4020,7 @@ def __radd__(f, g):
+ 
+         return g.add(f)
+ 
++    @call_highest_priority('__rsub__')
+     @_sympifyit('g', NotImplemented)
+     def __sub__(f, g):
+         if not g.is_Poly:
+@@ -4027,6 +4031,7 @@ def __sub__(f, g):
+ 
+         return f.sub(g)
+ 
++    @call_highest_priority('__sub__')
+     @_sympifyit('g', NotImplemented)
+     def __rsub__(f, g):
+         if not g.is_Poly:
+@@ -4037,6 +4042,7 @@ def __rsub__(f, g):
+ 
+         return g.sub(f)
+ 
++    @call_highest_priority('__rmul__')
+     @_sympifyit('g', NotImplemented)
+     def __mul__(f, g):
+         if not g.is_Poly:
+@@ -4047,6 +4053,7 @@ def __mul__(f, g):
+ 
+         return f.mul(g)
+ 
++    @call_highest_priority('__mul__')
+     @_sympifyit('g', NotImplemented)
+     def __rmul__(f, g):
+         if not g.is_Poly:
+@@ -4057,6 +4064,7 @@ def __rmul__(f, g):
+ 
+         return g.mul(f)
+ 
++    @call_highest_priority('__rpow__')
+     @_sympifyit('n', NotImplemented)
+     def __pow__(f, n):
+         if n.is_Integer and n >= 0:
+@@ -4064,6 +4072,7 @@ def __pow__(f, n):
+         else:
+             return f.as_expr()**n
+ 
++    @call_highest_priority('__rdivmod__')
+     @_sympifyit('g', NotImplemented)
+     def __divmod__(f, g):
+         if not g.is_Poly:
+@@ -4071,6 +4080,7 @@ def __divmod__(f, g):
+ 
+         return f.div(g)
+ 
++    @call_highest_priority('__divmod__')
+     @_sympifyit('g', NotImplemented)
+     def __rdivmod__(f, g):
+         if not g.is_Poly:
+@@ -4078,6 +4088,7 @@ def __rdivmod__(f, g):
+ 
+         return g.div(f)
+ 
++    @call_highest_priority('__rmod__')
+     @_sympifyit('g', NotImplemented)
+     def __mod__(f, g):
+         if not g.is_Poly:
+@@ -4085,6 +4096,7 @@ def __mod__(f, g):
+ 
+         return f.rem(g)
+ 
++    @call_highest_priority('__mod__')
+     @_sympifyit('g', NotImplemented)
+     def __rmod__(f, g):
+         if not g.is_Poly:
+@@ -4092,6 +4104,7 @@ def __rmod__(f, g):
+ 
+         return g.rem(f)
+ 
++    @call_highest_priority('__rfloordiv__')
+     @_sympifyit('g', NotImplemented)
+     def __floordiv__(f, g):
+         if not g.is_Poly:
+@@ -4099,6 +4112,7 @@ def __floordiv__(f, g):
+ 
+         return f.quo(g)
+ 
++    @call_highest_priority('__floordiv__')
+     @_sympifyit('g', NotImplemented)
+     def __rfloordiv__(f, g):
+         if not g.is_Poly:
+@@ -4106,10 +4120,12 @@ def __rfloordiv__(f, g):
+ 
+         return g.quo(f)
+ 
++    @call_highest_priority('__rdiv__')
+     @_sympifyit('g', NotImplemented)
+     def __div__(f, g):
+         return f.as_expr()/g.as_expr()
+ 
++    @call_highest_priority('__div__')
+     @_sympifyit('g', NotImplemented)
+     def __rdiv__(f, g):
+         return g.as_expr()/f.as_expr()
+diff --git a/sympy/polys/tests/test_polytools.py b/sympy/polys/tests/test_polytools.py
+index 1f889e9..282da90 100644
+--- a/sympy/polys/tests/test_polytools.py
++++ b/sympy/polys/tests/test_polytools.py
+@@ -3195,7 +3195,6 @@ def test_keep_coeff():
+     assert _keep_coeff(x + 1, S(2)) == u
+ 
+ 
+-@XFAIL
+ def test_poly_matching_consistency():
+     # Test for this issue:
+     # https://github.com/sympy/sympy/issues/5514
+@@ -3203,6 +3202,21 @@ def test_poly_matching_consistency():
+     assert Poly(x, x) * I == Poly(I*x, x)
+ 
+ 
++def test_issue_13079():
++    # Multiplication (and the other binary operations) must evaluate
++    # regardless of the side the Poly is on
++    assert Poly(x)*x == Poly(x**2, x, domain='ZZ')
++    assert x*Poly(x) == Poly(x**2, x, domain='ZZ')
++    assert -2*Poly(x) == Poly(-2*x, x, domain='ZZ')
++    assert S(-2)*Poly(x) == Poly(-2*x, x, domain='ZZ')
++    assert Poly(x)*S(-2) == Poly(-2*x, x, domain='ZZ')
++
++    assert x + Poly(x) == Poly(2*x, x, domain='ZZ')
++    assert Poly(x) + x == Poly(2*x, x, domain='ZZ')
++    assert x - Poly(x) == Poly(0, x, domain='ZZ')
++    assert Poly(x) - x == Poly(0, x, domain='ZZ')
++
++
+ @XFAIL
+ def test_issue_5786():
+     assert expand(factor(expand(

@@ -1,0 +1,24 @@
+{
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "harness": "claude-native",
+  "model": "claude-opus-4-7",
+  "started_at": "2026-11-14T22:38:25.649696Z",
+  "finished_at": "2026-11-14T22:39:09.449248Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.177446,
+  "total_tokens_in": 102350,
+  "total_tokens_out": 2965,
+  "total_tokens_cached": 93277,
+  "total_thinking_tokens": 363,
+  "num_turns": 14,
+  "limits": {
+    "wall_clock_s": 3600,
+    "max_turns": 100,
+    "max_cost_usd": 6.0
+  },
+  "image_id": "sha256:14aa6980c2d2f9167822b72cdf67478dc1dc74f382208420f90bf2289528559e",
+  "effort": "high"
+}

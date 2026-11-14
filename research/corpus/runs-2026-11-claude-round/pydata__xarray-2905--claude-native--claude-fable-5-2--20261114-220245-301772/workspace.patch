@@ -1,0 +1,115 @@
+diff --git a/doc/whats-new.rst b/doc/whats-new.rst
+index 277c32b..d6d346c 100644
+--- a/doc/whats-new.rst
++++ b/doc/whats-new.rst
+@@ -90,6 +90,11 @@ New Features
+ 
+ Bug fixes
+ ~~~~~~~~~
++- Objects with a ``values`` attribute that are not pandas or xarray objects are no longer
++  coerced to the contents of that attribute when they are used to create a
++  :py:class:`Variable` or :py:class:`DataArray`, or are assigned into one via indexing.
++  This makes it possible again to store arbitrary objects in arrays of ``dtype=object``
++  (:issue:`2097`).
+ - :py:meth:`DataArray.resample` and :py:meth:`Dataset.resample` do not trigger computations anymore if :py:meth:`Dataset.weighted` or :py:meth:`DataArray.weighted` are applied (:issue:`4625`, :pull:`4668`). By `Julius Busecke <https://github.com/jbusecke>`_.
+ - :py:func:`merge` with ``combine_attrs='override'`` makes a copy of the attrs (:issue:`4627`).
+ - By default, when possible, xarray will now always use values of type ``int64`` when encoding
+diff --git a/xarray/core/variable.py b/xarray/core/variable.py
+index 45553eb..b52dbf3 100644
+--- a/xarray/core/variable.py
++++ b/xarray/core/variable.py
+@@ -217,8 +217,11 @@ def as_compatible_data(data, fastpath=False):
+     if isinstance(data, timedelta):
+         data = np.timedelta64(getattr(data, "value", data), "ns")
+ 
+-    # we don't want nested self-described arrays
+-    data = getattr(data, "values", data)
++    # we don't want nested self-described arrays; only unwrap the pandas and
++    # xarray containers we know about, rather than anything that happens to
++    # have a ``values`` attribute (GH2097)
++    if isinstance(data, (pd.Series, pd.Index, pd.DataFrame, xr.DataArray)):
++        data = data.values
+ 
+     if isinstance(data, np.ma.MaskedArray):
+         mask = np.ma.getmaskarray(data)
+diff --git a/xarray/tests/test_variable.py b/xarray/tests/test_variable.py
+index e1ae3e1..a2924ed 100644
+--- a/xarray/tests/test_variable.py
++++ b/xarray/tests/test_variable.py
+@@ -8,7 +8,7 @@ import pandas as pd
+ import pytest
+ import pytz
+ 
+-from xarray import Coordinate, Dataset, IndexVariable, Variable, set_options
++from xarray import Coordinate, DataArray, Dataset, IndexVariable, Variable, set_options
+ from xarray.core import dtypes, duck_array_ops, indexing
+ from xarray.core.common import full_like, ones_like, zeros_like
+ from xarray.core.indexing import (
+@@ -1779,6 +1779,29 @@ class TestVariable(VariableSubclassobjects):
+         v[dict(x=[True, False], y=[False, True, False])] = 1
+         assert v[0, 1] == 1
+ 
++    def test_setitem_object_with_values_attribute(self):
++        # regression test for GH2097
++        class HasValues:
++            values = 5
++
++        obj = HasValues()
++
++        v = Variable("x", np.array([None, None], dtype=object))
++        v[0] = obj
++        assert v.dtype == object
++        assert v.values[0] is obj
++        assert v.values[1] is None
++
++        v = Variable(("x", "y"), np.full((2, 2), None, dtype=object))
++        v[dict(x=0, y=1)] = obj
++        assert v.values[0, 1] is obj
++        assert [item for item in v.values.ravel() if item is not None] == [obj]
++
++        da = DataArray([None])
++        da.loc[{"dim_0": 0}] = obj
++        assert da.dtype == object
++        assert da.values[0] is obj
++
+     def test_setitem_fancy(self):
+         # assignment which should work as np.ndarray does
+         def assert_assigned_2d(array, key_x, key_y, values):
+@@ -2186,6 +2209,37 @@ class TestAsCompatibleData:
+             assert np.ndarray == type(actual)
+             assert np.asarray(input_array).dtype == actual.dtype
+ 
++    def test_converted_pandas_and_xarray_objects(self):
++        expected = np.array([0, 1, 2])
++        for input_array in [
++            pd.Series([0, 1, 2]),
++            pd.Index([0, 1, 2]),
++            DataArray([0, 1, 2], dims="x"),
++            Variable("x", [0, 1, 2]),
++        ]:
++            actual = as_compatible_data(input_array)
++            assert_array_equal(expected, np.asarray(actual))
++            assert expected.dtype == actual.dtype
++            assert not isinstance(actual, (pd.Series, DataArray, Variable))
++
++    def test_object_with_values_attribute_is_not_unwrapped(self):
++        # regression test for GH2097
++        class HasValues:
++            values = 5
++
++        obj = HasValues()
++        actual = as_compatible_data(obj)
++        assert np.ndarray == type(actual)
++        assert actual.dtype == object
++        assert actual.shape == ()
++        assert actual.item() is obj
++
++        # ``values`` is a method here rather than the wrapped data
++        mapping = {"a": 1}
++        actual = as_compatible_data(mapping)
++        assert actual.dtype == object
++        assert actual.item() is mapping
++
+     def test_masked_array(self):
+         original = np.ma.MaskedArray(np.arange(5))
+         expected = np.arange(5)

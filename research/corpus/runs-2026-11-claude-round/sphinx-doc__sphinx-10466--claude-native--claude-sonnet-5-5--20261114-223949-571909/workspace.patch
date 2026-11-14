@@ -1,0 +1,50 @@
+diff --git a/CHANGES b/CHANGES
+index ed47709..a2c0b70 100644
+--- a/CHANGES
++++ b/CHANGES
+@@ -20,6 +20,7 @@ Bugs fixed
+   ``autodoc_typehints="description"``
+ * #9648: autodoc: ``*args`` and ``**kwargs`` entries are duplicated when
+   ``autodoc_typehints="description"``
++* #10000: gettext: Duplicated locations are shown in the message catalogs
+ * #10443: epub: EPUB builder can't detect the mimetype of .webp file
+ * #10456: py domain: ``:meta:`` fields are displayed if docstring contains two
+   or more meta-field
+diff --git a/sphinx/builders/gettext.py b/sphinx/builders/gettext.py
+index e8bc547..0d7d0ac 100644
+--- a/sphinx/builders/gettext.py
++++ b/sphinx/builders/gettext.py
+@@ -57,7 +57,8 @@ class Catalog:
+ 
+     def __iter__(self) -> Generator[Message, None, None]:
+         for message in self.messages:
+-            positions = [(source, line) for source, line, uuid in self.metadata[message]]
++            positions = sorted(set((source, line) for source, line, uuid
++                                   in self.metadata[message]))
+             uuids = [uuid for source, line, uuid in self.metadata[message]]
+             yield Message(message, positions, uuids)
+ 
+diff --git a/tests/test_builders_gettext_catalog.py b/tests/test_builders_gettext_catalog.py
+new file mode 100644
+index 0000000..8939f96
+--- /dev/null
++++ b/tests/test_builders_gettext_catalog.py
+@@ -0,0 +1,18 @@
++"""Test the Catalog class of the gettext builder."""
++
++from sphinx.builders.gettext import Catalog, MsgOrigin
++
++
++def test_catalog_locations_are_unique():
++    catalog = Catalog()
++    catalog.add('Type', MsgOrigin('b.rst', 0))
++    catalog.add('Type', MsgOrigin('a.rst', 3))
++    catalog.add('Type', MsgOrigin('b.rst', 0))
++    catalog.add('Type', MsgOrigin('b.rst', 0))
++
++    messages = list(catalog)
++    assert len(messages) == 1
++    assert messages[0].text == 'Type'
++    assert messages[0].locations == [('a.rst', 3), ('b.rst', 0)]
++    # every origin keeps its own uuid
++    assert len(messages[0].uuids) == 4

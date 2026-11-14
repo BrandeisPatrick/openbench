@@ -1,0 +1,1424 @@
+{
+  "experiment": "exp-10-size-ladder",
+  "status": "unvalidated instrument",
+  "factor": "size",
+  "levels": [
+    "claude-haiku-5-5",
+    "claude-sonnet-5-5",
+    "claude-opus-5-5",
+    "claude-fable-5-2"
+  ],
+  "levels_with_runs": [
+    "claude-haiku-5-5",
+    "claude-sonnet-5-5",
+    "claude-opus-5-5",
+    "claude-fable-5-2"
+  ],
+  "tasks": [
+    "sympy__sympy-13757",
+    "astropy__astropy-12907",
+    "pydata__xarray-2905",
+    "pytest-dev__pytest-10051",
+    "scikit-learn__scikit-learn-10297",
+    "sphinx-doc__sphinx-10466"
+  ],
+  "tasks_dropped_v2": [],
+  "n_runs": 48,
+  "missing_cells": [],
+  "prediction_text_mismatch": [],
+  "V1_coverage": {
+    "claude-haiku-5-5": {
+      "runs": 12,
+      "commands_other_share": 0.0,
+      "segments_other_share": 0.048638132295719845,
+      "edits_unknown_share": 0.0,
+      "unreliable": false
+    },
+    "claude-sonnet-5-5": {
+      "runs": 12,
+      "commands_other_share": 0.0,
+      "segments_other_share": 0.019704433497536946,
+      "edits_unknown_share": 0.0,
+      "unreliable": false
+    },
+    "claude-opus-5-5": {
+      "runs": 12,
+      "commands_other_share": 0.0,
+      "segments_other_share": 0.003875968992248062,
+      "edits_unknown_share": 0.05714285714285714,
+      "unreliable": false
+    },
+    "claude-fable-5-2": {
+      "runs": 12,
+      "commands_other_share": 0.013071895424836602,
+      "segments_other_share": 0.1278538812785388,
+      "edits_unknown_share": 0.041666666666666664,
+      "unreliable": false
+    }
+  },
+  "V2_runner_start": {
+    "astropy__astropy-12907": {
+      "runs": 22,
+      "runner_start_fail": 0,
+      "after_source_edit": 0,
+      "runs_with_test": 22,
+      "dropped": false
+    },
+    "pydata__xarray-2905": {
+      "runs": 22,
+      "runner_start_fail": 0,
+      "after_source_edit": 0,
+      "runs_with_test": 22,
+      "dropped": false
+    },
+    "pytest-dev__pytest-10051": {
+      "runs": 22,
+      "runner_start_fail": 0,
+      "after_source_edit": 0,
+      "runs_with_test": 22,
+      "dropped": false
+    },
+    "scikit-learn__scikit-learn-10297": {
+      "runs": 22,
+      "runner_start_fail": 0,
+      "after_source_edit": 0,
+      "runs_with_test": 18,
+      "dropped": false
+    },
+    "sphinx-doc__sphinx-10466": {
+      "runs": 22,
+      "runner_start_fail": 0,
+      "after_source_edit": 0,
+      "runs_with_test": 22,
+      "dropped": false
+    },
+    "sympy__sympy-13757": {
+      "runs": 22,
+      "runner_start_fail": 0,
+      "after_source_edit": 0,
+      "runs_with_test": 22,
+      "dropped": false
+    }
+  },
+  "A1_variance_split": {
+    "balanced": true,
+    "note": null,
+    "tasks_used": [
+      "sympy__sympy-13757",
+      "astropy__astropy-12907",
+      "pydata__xarray-2905",
+      "pytest-dev__pytest-10051",
+      "scikit-learn__scikit-learn-10297",
+      "sphinx-doc__sphinx-10466"
+    ],
+    "tasks_dropped": [],
+    "levels_used": [
+      "claude-haiku-5-5",
+      "claude-sonnet-5-5",
+      "claude-opus-5-5",
+      "claude-fable-5-2"
+    ],
+    "measures": {
+      "M1": {
+        "key": "n_cmds",
+        "shares": {
+          "model": 0.1735388626918734,
+          "task": 0.5308372165199563,
+          "model:task": 0.23443970974390269,
+          "repeat": 0.06118421104426767
+        },
+        "p_main": 0.026197380261973803,
+        "p_cell": 9.999000099990002e-05,
+        "constant": false,
+        "stat_main": 3.7011405380394775,
+        "stat_cell": 8.890715768497778,
+        "kendall_w": 0.5777777777777777,
+        "p_main_holm": 0.261973802619738,
+        "p_cell_holm": 0.0012998700129987003,
+        "label": "task-dependent model habit"
+      },
+      "M2": {
+        "key": "first_edit_frac",
+        "shares": {
+          "model": 0.15987420636926253,
+          "task": 0.28743794043407567,
+          "model:task": 0.46918788072292966,
+          "repeat": 0.08349997247373218
+        },
+        "p_main": 0.2081791820817918,
+        "p_cell": 0.0005999400059994001,
+        "constant": false,
+        "stat_main": 1.703733333040558,
+        "stat_cell": 10.044906897665319,
+        "kendall_w": 0.2777777777777778,
+        "p_main_holm": 0.8327167283271673,
+        "p_cell_holm": 0.0053994600539946005,
+        "label": "task-dependent model habit"
+      },
+      "M3": {
+        "key": "early_edit_share",
+        "shares": {
+          "model": 0.18746000234907792,
+          "task": 0.18400610196969777,
+          "model:task": 0.37794221877915785,
+          "repeat": 0.25059167690206635
+        },
+        "p_main": 0.10188981101889812,
+        "p_cell": 0.012098790120987902,
+        "constant": false,
+        "stat_main": 2.4800087557645427,
+        "stat_cell": 3.008358607479214,
+        "kendall_w": 0.20056497175141244,
+        "p_main_holm": 0.5094490550944906,
+        "p_cell_holm": 0.0695930406959304,
+        "label": "indeterminate"
+      },
+      "M4": {
+        "key": "test_share",
+        "shares": {
+          "model": 0.038239328003848334,
+          "task": 0.38839398163014566,
+          "model:task": 0.3793792143318037,
+          "repeat": 0.19398747603420247
+        },
+        "p_main": 0.6781321867813219,
+        "p_cell": 0.008999100089991,
+        "constant": false,
+        "stat_main": 0.5039723653706072,
+        "stat_cell": 2.870415835587385,
+        "kendall_w": 0.03333333333333333,
+        "p_main_holm": 1.0,
+        "p_cell_holm": 0.062993700629937,
+        "label": "indeterminate"
+      },
+      "M5": {
+        "key": "exec_share",
+        "shares": {
+          "model": 0.1719335785438481,
+          "task": 0.3313367419022347,
+          "model:task": 0.28944351575573923,
+          "repeat": 0.20728616379817785
+        },
+        "p_main": 0.06369363063693631,
+        "p_cell": 0.0115988401159884,
+        "constant": false,
+        "stat_main": 2.9700713469937003,
+        "stat_cell": 2.967730444686457,
+        "kendall_w": 0.2111111111111111,
+        "p_main_holm": 0.384961503849615,
+        "p_cell_holm": 0.0695930406959304,
+        "label": "indeterminate"
+      },
+      "M6": {
+        "key": "wrote_new_test",
+        "shares": {
+          "model": 0.3037037037037037,
+          "task": 0.15555555555555556,
+          "model:task": 0.36296296296296304,
+          "repeat": 0.17777777777777778
+        },
+        "p_main": 0.042495750424957505,
+        "p_cell": 0.0036996300369963003,
+        "constant": false,
+        "stat_main": 4.183673469387754,
+        "stat_cell": 5.000000000000001,
+        "kendall_w": 0.40476190476190477,
+        "p_main_holm": 0.37796220377962203,
+        "p_cell_holm": 0.029597040295970403,
+        "label": "task-dependent model habit"
+      },
+      "M7": {
+        "key": "wrote_scratch_script",
+        "shares": {
+          "model": 0.010526315789473686,
+          "task": 0.4631578947368421,
+          "model:task": 0.4,
+          "repeat": 0.12631578947368421
+        },
+        "p_main": 1.0,
+        "p_cell": 0.06509349065093491,
+        "constant": false,
+        "stat_main": 0.13157894736842107,
+        "stat_cell": 4.333333333333323,
+        "kendall_w": 0.07142857142857142,
+        "p_main_holm": 1.0,
+        "p_cell_holm": 0.13018698130186981,
+        "label": "repeat noise"
+      },
+      "M8": {
+        "key": "repeat_cmd_share",
+        "shares": null,
+        "p_main": null,
+        "p_cell": null,
+        "constant": true,
+        "kendall_w": null,
+        "p_main_holm": null,
+        "p_cell_holm": null,
+        "label": "indeterminate"
+      },
+      "M9": {
+        "key": "noop_retest_share",
+        "shares": null,
+        "p_main": null,
+        "p_cell": null,
+        "constant": true,
+        "kendall_w": null,
+        "p_main_holm": null,
+        "p_cell_holm": null,
+        "label": "indeterminate"
+      },
+      "M10": {
+        "key": "reread_share",
+        "shares": {
+          "model": 0.27993154938993275,
+          "task": 0.14988652525553925,
+          "model:task": 0.4432322884363587,
+          "repeat": 0.1269496369181693
+        },
+        "p_main": 0.05499450054994501,
+        "p_cell": 0.00019998000199980003,
+        "constant": false,
+        "stat_main": 3.157842475527667,
+        "stat_cell": 7.59528324650967,
+        "kendall_w": 0.3814102564102564,
+        "p_main_holm": 0.384961503849615,
+        "p_cell_holm": 0.0021997800219978004,
+        "label": "task-dependent model habit"
+      },
+      "M11": {
+        "key": "search_miss_share",
+        "shares": {
+          "model": 0.027115554662131575,
+          "task": 0.07133757490476196,
+          "model:task": 0.37088262752154183,
+          "repeat": 0.5306642429115646
+        },
+        "p_main": 1.0,
+        "p_cell": 1.0,
+        "constant": false,
+        "stat_main": 0.3655543917402364,
+        "stat_cell": 1.0,
+        "kendall_w": 0.05555555555555555,
+        "p_main_holm": 1.0,
+        "p_cell_holm": 1.0,
+        "label": "repeat noise"
+      },
+      "M12": {
+        "key": "extra_files",
+        "shares": {
+          "model": 0.4543987086359969,
+          "task": 0.06537530266343826,
+          "model:task": 0.3446327683615818,
+          "repeat": 0.13559322033898305
+        },
+        "p_main": 0.0086991300869913,
+        "p_cell": 9.999000099990002e-05,
+        "constant": false,
+        "stat_main": 6.592505854800941,
+        "stat_cell": 7.857142857142856,
+        "kendall_w": 0.6481481481481481,
+        "p_main_holm": 0.09569043095690431,
+        "p_cell_holm": 0.0012998700129987003,
+        "label": "task-dependent model habit"
+      },
+      "M13": {
+        "key": "patch_lines",
+        "shares": {
+          "model": 0.51503544029193,
+          "task": 0.11565097133473005,
+          "model:task": 0.22506251480386666,
+          "repeat": 0.14425107356947317
+        },
+        "p_main": 0.0007999200079992001,
+        "p_cell": 0.00039996000399960006,
+        "constant": false,
+        "stat_main": 11.442052905628547,
+        "stat_cell": 6.840831399329636,
+        "kendall_w": 0.7,
+        "p_main_holm": 0.010398960103989602,
+        "p_cell_holm": 0.003999600039996,
+        "label": "model habit"
+      },
+      "M14": {
+        "key": "backed_done",
+        "shares": {
+          "model": 0.22323049001814887,
+          "task": 0.24863883847549909,
+          "model:task": 0.31034482758620685,
+          "repeat": 0.2177858439201452
+        },
+        "p_main": 0.041995800419958006,
+        "p_cell": 0.0187981201879812,
+        "constant": false,
+        "stat_main": 3.596491228070177,
+        "stat_cell": 3.2666666666666666,
+        "kendall_w": 0.45634920634920634,
+        "p_main_holm": 0.37796220377962203,
+        "p_cell_holm": 0.0751924807519248,
+        "label": "indeterminate"
+      },
+      "M15": {
+        "key": "multi_call_share",
+        "shares": {
+          "model": 0.42909052199784664,
+          "task": 0.07392199518408431,
+          "model:task": 0.25925862203123246,
+          "repeat": 0.23772886078683664
+        },
+        "p_main": 0.0045995400459954,
+        "p_cell": 0.021497850214978503,
+        "constant": false,
+        "stat_main": 8.275337549741252,
+        "stat_cell": 3.860695986459959,
+        "kendall_w": 0.7083333333333334,
+        "p_main_holm": 0.0551944805519448,
+        "p_cell_holm": 0.0751924807519248,
+        "label": "indeterminate"
+      }
+    },
+    "runs_per_cell": 2
+  },
+  "A2_A4": {
+    "M1": {
+      "levels": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5",
+        "claude-opus-5-5",
+        "claude-fable-5-2"
+      ],
+      "k": 4,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 148.0,
+      "E0": 150.0,
+      "direction": -1,
+      "p": 0.833916608339166,
+      "spearman": {
+        "sympy__sympy-13757": 0.2,
+        "astropy__astropy-12907": -0.2,
+        "pydata__xarray-2905": 0.4,
+        "pytest-dev__pytest-10051": -0.4,
+        "scikit-learn__scikit-learn-10297": -0.4,
+        "sphinx-doc__sphinx-10466": 0.0
+      },
+      "agree": 3,
+      "disagree": 2,
+      "no_sign": 1,
+      "reason": null,
+      "stat": 2.0,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "n_cmds",
+      "level_means": {
+        "claude-haiku-5-5": 2.210610483277893,
+        "claude-sonnet-5-5": 1.5946218570771087,
+        "claude-opus-5-5": 1.9601619391623804,
+        "claude-fable-5-2": 2.145122435055875
+      },
+      "p_holm": 1.0,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M2": {
+      "levels": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5",
+        "claude-opus-5-5",
+        "claude-fable-5-2"
+      ],
+      "k": 4,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 143.0,
+      "E0": 150.0,
+      "direction": -1,
+      "p": 0.37416258374162586,
+      "spearman": {
+        "sympy__sympy-13757": -0.2,
+        "astropy__astropy-12907": -0.8,
+        "pydata__xarray-2905": -0.6,
+        "pytest-dev__pytest-10051": 0.4,
+        "scikit-learn__scikit-learn-10297": -0.4,
+        "sphinx-doc__sphinx-10466": 0.2
+      },
+      "agree": 4,
+      "disagree": 2,
+      "no_sign": 0,
+      "reason": null,
+      "stat": 7.0,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "first_edit_frac",
+      "level_means": {
+        "claude-haiku-5-5": 0.3719557267351385,
+        "claude-sonnet-5-5": 0.3917748917748918,
+        "claude-opus-5-5": 0.2663089225589226,
+        "claude-fable-5-2": 0.48847455648926236
+      },
+      "p_holm": 1.0,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M3": {
+      "levels": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5",
+        "claude-opus-5-5",
+        "claude-fable-5-2"
+      ],
+      "k": 4,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 159.5,
+      "E0": 150.0,
+      "direction": 1,
+      "p": 0.18898110188981102,
+      "spearman": {
+        "sympy__sympy-13757": -0.4,
+        "astropy__astropy-12907": 0.4,
+        "pydata__xarray-2905": 1.0,
+        "pytest-dev__pytest-10051": -0.8,
+        "scikit-learn__scikit-learn-10297": 0.9486832980505138,
+        "sphinx-doc__sphinx-10466": 0.8
+      },
+      "agree": 4,
+      "disagree": 2,
+      "no_sign": 0,
+      "reason": null,
+      "stat": 9.5,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "early_edit_share",
+      "level_means": {
+        "claude-haiku-5-5": 0.2265542328042328,
+        "claude-sonnet-5-5": 0.3738095238095238,
+        "claude-opus-5-5": 0.33125,
+        "claude-fable-5-2": 0.3061507936507936
+      },
+      "p_holm": 1.0,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M4": {
+      "levels": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5",
+        "claude-opus-5-5",
+        "claude-fable-5-2"
+      ],
+      "k": 4,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 150.0,
+      "E0": 150.0,
+      "direction": 0,
+      "p": 1.0,
+      "spearman": {
+        "sympy__sympy-13757": -0.4,
+        "astropy__astropy-12907": 0.8,
+        "pydata__xarray-2905": -0.8,
+        "pytest-dev__pytest-10051": -0.4,
+        "scikit-learn__scikit-learn-10297": 0.4,
+        "sphinx-doc__sphinx-10466": 0.4
+      },
+      "agree": 0,
+      "disagree": 6,
+      "no_sign": 0,
+      "reason": null,
+      "stat": 0.0,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "test_share",
+      "level_means": {
+        "claude-haiku-5-5": 0.46099245253657023,
+        "claude-sonnet-5-5": 0.40904581529581524,
+        "claude-opus-5-5": 0.47659932659932663,
+        "claude-fable-5-2": 0.4085453625894802
+      },
+      "p_holm": 1.0,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M5": {
+      "levels": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5",
+        "claude-opus-5-5",
+        "claude-fable-5-2"
+      ],
+      "k": 4,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 142.0,
+      "E0": 150.0,
+      "direction": -1,
+      "p": 0.29527047295270475,
+      "spearman": {
+        "sympy__sympy-13757": -0.8,
+        "astropy__astropy-12907": 0.0,
+        "pydata__xarray-2905": -0.8,
+        "pytest-dev__pytest-10051": -0.4,
+        "scikit-learn__scikit-learn-10297": 0.8,
+        "sphinx-doc__sphinx-10466": -0.4
+      },
+      "agree": 4,
+      "disagree": 1,
+      "no_sign": 1,
+      "reason": null,
+      "stat": 8.0,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "exec_share",
+      "level_means": {
+        "claude-haiku-5-5": 0.5952828353563647,
+        "claude-sonnet-5-5": 0.4374549062049062,
+        "claude-opus-5-5": 0.5894360269360269,
+        "claude-fable-5-2": 0.5006691565515095
+      },
+      "p_holm": 1.0,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M6": {
+      "levels": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5",
+        "claude-opus-5-5",
+        "claude-fable-5-2"
+      ],
+      "k": 4,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 159.0,
+      "E0": 150.0,
+      "direction": 1,
+      "p": 0.18098190180981902,
+      "spearman": {
+        "sympy__sympy-13757": 0.0,
+        "astropy__astropy-12907": 0.2581988897471611,
+        "pydata__xarray-2905": -0.4472135954999579,
+        "pytest-dev__pytest-10051": 0.7745966692414834,
+        "scikit-learn__scikit-learn-10297": 0.7745966692414834,
+        "sphinx-doc__sphinx-10466": 0.8944271909999159
+      },
+      "agree": 4,
+      "disagree": 1,
+      "no_sign": 1,
+      "reason": null,
+      "stat": 9.0,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "wrote_new_test",
+      "level_means": {
+        "claude-haiku-5-5": 0.3333333333333333,
+        "claude-sonnet-5-5": 0.0,
+        "claude-opus-5-5": 0.4166666666666667,
+        "claude-fable-5-2": 0.75
+      },
+      "p_holm": 1.0,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M7": {
+      "levels": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5",
+        "claude-opus-5-5",
+        "claude-fable-5-2"
+      ],
+      "k": 4,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 151.5,
+      "E0": 150.0,
+      "direction": 1,
+      "p": 0.7604239576042395,
+      "spearman": {
+        "sympy__sympy-13757": 0.31622776601683794,
+        "astropy__astropy-12907": 0.0,
+        "pydata__xarray-2905": 0.7745966692414834,
+        "pytest-dev__pytest-10051": -0.7745966692414834,
+        "scikit-learn__scikit-learn-10297": 0.0,
+        "sphinx-doc__sphinx-10466": 0.0
+      },
+      "agree": 2,
+      "disagree": 1,
+      "no_sign": 3,
+      "reason": null,
+      "stat": 1.5,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "wrote_scratch_script",
+      "level_means": {
+        "claude-haiku-5-5": 0.25,
+        "claude-sonnet-5-5": 0.16666666666666666,
+        "claude-opus-5-5": 0.16666666666666666,
+        "claude-fable-5-2": 0.25
+      },
+      "p_holm": 1.0,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M8": {
+      "levels": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5",
+        "claude-opus-5-5",
+        "claude-fable-5-2"
+      ],
+      "k": 4,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 150.0,
+      "E0": 150.0,
+      "direction": 0,
+      "p": 1.0,
+      "spearman": {
+        "sympy__sympy-13757": 0.0,
+        "astropy__astropy-12907": 0.0,
+        "pydata__xarray-2905": 0.0,
+        "pytest-dev__pytest-10051": 0.0,
+        "scikit-learn__scikit-learn-10297": 0.0,
+        "sphinx-doc__sphinx-10466": 0.0
+      },
+      "agree": 0,
+      "disagree": 0,
+      "no_sign": 6,
+      "reason": null,
+      "stat": 0.0,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "repeat_cmd_share",
+      "level_means": {
+        "claude-haiku-5-5": 0.0,
+        "claude-sonnet-5-5": 0.0,
+        "claude-opus-5-5": 0.0,
+        "claude-fable-5-2": 0.0
+      },
+      "p_holm": 1.0,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M9": {
+      "levels": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5",
+        "claude-opus-5-5",
+        "claude-fable-5-2"
+      ],
+      "k": 4,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 150.0,
+      "E0": 150.0,
+      "direction": 0,
+      "p": 1.0,
+      "spearman": {
+        "sympy__sympy-13757": 0.0,
+        "astropy__astropy-12907": 0.0,
+        "pydata__xarray-2905": 0.0,
+        "pytest-dev__pytest-10051": 0.0,
+        "scikit-learn__scikit-learn-10297": 0.0,
+        "sphinx-doc__sphinx-10466": 0.0
+      },
+      "agree": 0,
+      "disagree": 0,
+      "no_sign": 6,
+      "reason": null,
+      "stat": 0.0,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "noop_retest_share",
+      "level_means": {
+        "claude-haiku-5-5": 0.0,
+        "claude-sonnet-5-5": 0.0,
+        "claude-opus-5-5": 0.0,
+        "claude-fable-5-2": 0.0
+      },
+      "p_holm": 1.0,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M10": {
+      "levels": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5",
+        "claude-opus-5-5",
+        "claude-fable-5-2"
+      ],
+      "k": 4,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 153.5,
+      "E0": 150.0,
+      "direction": 1,
+      "p": 0.6315368463153684,
+      "spearman": {
+        "sympy__sympy-13757": 0.31622776601683794,
+        "astropy__astropy-12907": 0.31622776601683794,
+        "pydata__xarray-2905": 0.21081851067789195,
+        "pytest-dev__pytest-10051": 0.7745966692414834,
+        "scikit-learn__scikit-learn-10297": -0.31622776601683794,
+        "sphinx-doc__sphinx-10466": -0.4
+      },
+      "agree": 4,
+      "disagree": 2,
+      "no_sign": 0,
+      "reason": null,
+      "stat": 3.5,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "reread_share",
+      "level_means": {
+        "claude-haiku-5-5": 0.24652777777777776,
+        "claude-sonnet-5-5": 0.041666666666666664,
+        "claude-opus-5-5": 0.048611111111111105,
+        "claude-fable-5-2": 0.3136111111111111
+      },
+      "p_holm": 1.0,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M11": {
+      "levels": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5",
+        "claude-opus-5-5",
+        "claude-fable-5-2"
+      ],
+      "k": 4,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 149.0,
+      "E0": 150.0,
+      "direction": -1,
+      "p": 1.0,
+      "spearman": {
+        "sympy__sympy-13757": 0.7745966692414834,
+        "astropy__astropy-12907": 0.0,
+        "pydata__xarray-2905": 0.0,
+        "pytest-dev__pytest-10051": 0.0,
+        "scikit-learn__scikit-learn-10297": -0.2581988897471611,
+        "sphinx-doc__sphinx-10466": -0.7745966692414834
+      },
+      "agree": 2,
+      "disagree": 1,
+      "no_sign": 3,
+      "reason": null,
+      "stat": 1.0,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "search_miss_share",
+      "level_means": {
+        "claude-haiku-5-5": 0.027777777777777776,
+        "claude-sonnet-5-5": 0.020833333333333332,
+        "claude-opus-5-5": 0.0,
+        "claude-fable-5-2": 0.013333333333333334
+      },
+      "p_holm": 1.0,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M12": {
+      "levels": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5",
+        "claude-opus-5-5",
+        "claude-fable-5-2"
+      ],
+      "k": 4,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 172.0,
+      "E0": 150.0,
+      "direction": 1,
+      "p": 0.00029997000299970003,
+      "spearman": {
+        "sympy__sympy-13757": 0.4472135954999579,
+        "astropy__astropy-12907": 0.7378647873726218,
+        "pydata__xarray-2905": 0.8,
+        "pytest-dev__pytest-10051": 0.9486832980505138,
+        "scikit-learn__scikit-learn-10297": 0.9486832980505138,
+        "sphinx-doc__sphinx-10466": 0.7378647873726218
+      },
+      "agree": 6,
+      "disagree": 0,
+      "no_sign": 0,
+      "reason": null,
+      "stat": 22.0,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "extra_files",
+      "level_means": {
+        "claude-haiku-5-5": 0.9166666666666666,
+        "claude-sonnet-5-5": 1.0,
+        "claude-opus-5-5": 1.75,
+        "claude-fable-5-2": 2.0833333333333335
+      },
+      "p_holm": 0.0044995500449955,
+      "label": "trend",
+      "shape": {
+        "profile": [
+          -0.5208333333333334,
+          -0.4375,
+          0.3125,
+          0.6458333333333334
+        ],
+        "split_share": 0.9396092362344584,
+        "split_after": "claude-sonnet-5-5",
+        "shape": "step-like"
+      },
+      "label_name": "moves with size"
+    },
+    "M13": {
+      "levels": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5",
+        "claude-opus-5-5",
+        "claude-fable-5-2"
+      ],
+      "k": 4,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 171.0,
+      "E0": 150.0,
+      "direction": 1,
+      "p": 0.0021997800219978004,
+      "spearman": {
+        "sympy__sympy-13757": 0.4,
+        "astropy__astropy-12907": 0.4,
+        "pydata__xarray-2905": 0.8,
+        "pytest-dev__pytest-10051": 1.0,
+        "scikit-learn__scikit-learn-10297": 0.8,
+        "sphinx-doc__sphinx-10466": 0.8
+      },
+      "agree": 6,
+      "disagree": 0,
+      "no_sign": 0,
+      "reason": null,
+      "stat": 21.0,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "patch_lines",
+      "level_means": {
+        "claude-haiku-5-5": 2.6716705512793837,
+        "claude-sonnet-5-5": 2.3261084360042776,
+        "claude-opus-5-5": 3.2294265202512302,
+        "claude-fable-5-2": 4.434568670280221
+      },
+      "p_holm": 0.030796920307969204,
+      "label": "trend",
+      "shape": {
+        "profile": [
+          -0.49377299317439444,
+          -0.8393351084495003,
+          0.06398297579745223,
+          1.2691251258264427
+        ],
+        "split_share": 0.8378910674427147,
+        "split_after": "claude-opus-5-5",
+        "shape": "gradual"
+      },
+      "label_name": "moves with size"
+    },
+    "M14": {
+      "levels": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5",
+        "claude-opus-5-5",
+        "claude-fable-5-2"
+      ],
+      "k": 4,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 141.5,
+      "E0": 150.0,
+      "direction": -1,
+      "p": 0.1643835616438356,
+      "spearman": {
+        "sympy__sympy-13757": 0.2581988897471611,
+        "astropy__astropy-12907": -0.7745966692414834,
+        "pydata__xarray-2905": -0.31622776601683794,
+        "pytest-dev__pytest-10051": -0.7745966692414834,
+        "scikit-learn__scikit-learn-10297": 0.2581988897471611,
+        "sphinx-doc__sphinx-10466": -0.6324555320336759
+      },
+      "agree": 4,
+      "disagree": 2,
+      "no_sign": 0,
+      "reason": null,
+      "stat": 8.5,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "backed_done",
+      "level_means": {
+        "claude-haiku-5-5": 0.8333333333333334,
+        "claude-sonnet-5-5": 0.4166666666666667,
+        "claude-opus-5-5": 0.8333333333333334,
+        "claude-fable-5-2": 0.3333333333333333
+      },
+      "p_holm": 1.0,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    },
+    "M15": {
+      "levels": [
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5",
+        "claude-opus-5-5",
+        "claude-fable-5-2"
+      ],
+      "k": 4,
+      "blocks": [
+        "sympy__sympy-13757",
+        "astropy__astropy-12907",
+        "pydata__xarray-2905",
+        "pytest-dev__pytest-10051",
+        "scikit-learn__scikit-learn-10297",
+        "sphinx-doc__sphinx-10466"
+      ],
+      "dropped_blocks": [],
+      "n_blocks": 6,
+      "tested": true,
+      "L": 147.5,
+      "E0": 150.0,
+      "direction": -1,
+      "p": 0.6856314368563143,
+      "spearman": {
+        "sympy__sympy-13757": 0.21081851067789195,
+        "astropy__astropy-12907": 0.0,
+        "pydata__xarray-2905": -0.10540925533894598,
+        "pytest-dev__pytest-10051": -0.2581988897471611,
+        "scikit-learn__scikit-learn-10297": -0.2581988897471611,
+        "sphinx-doc__sphinx-10466": -0.2581988897471611
+      },
+      "agree": 4,
+      "disagree": 1,
+      "no_sign": 1,
+      "reason": null,
+      "stat": 2.5,
+      "draws": 10000,
+      "seed": 20261113,
+      "key": "multi_call_share",
+      "level_means": {
+        "claude-haiku-5-5": 0.0,
+        "claude-sonnet-5-5": 0.08947903947903947,
+        "claude-opus-5-5": 0.006944444444444444,
+        "claude-fable-5-2": 0.0020833333333333333
+      },
+      "p_holm": 1.0,
+      "label": "none",
+      "shape": null,
+      "label_name": "none"
+    }
+  },
+  "U_by_level": {
+    "claude-haiku-5-5": {
+      "completed": 10,
+      "no_edit": 0,
+      "U_unknown": 0,
+      "U": 0,
+      "n_defined": 10,
+      "ci95": [
+        0.0,
+        0.30849710781876083
+      ]
+    },
+    "claude-sonnet-5-5": {
+      "completed": 12,
+      "no_edit": 0,
+      "U_unknown": 0,
+      "U": 7,
+      "n_defined": 12,
+      "ci95": [
+        0.27666968568210515,
+        0.8483477701915698
+      ]
+    },
+    "claude-opus-5-5": {
+      "completed": 12,
+      "no_edit": 0,
+      "U_unknown": 0,
+      "U": 2,
+      "n_defined": 12,
+      "ci95": [
+        0.020862525460092193,
+        0.48413774868596715
+      ]
+    },
+    "claude-fable-5-2": {
+      "completed": 10,
+      "no_edit": 2,
+      "U_unknown": 0,
+      "U": 4,
+      "n_defined": 8,
+      "ci95": [
+        0.15701277048705842,
+        0.8429872295129421
+      ]
+    }
+  },
+  "context_by_level": {
+    "runs": {
+      "claude-haiku-5-5": 12,
+      "claude-sonnet-5-5": 12,
+      "claude-opus-5-5": 12,
+      "claude-fable-5-2": 12
+    },
+    "resolved": {
+      "claude-haiku-5-5": "11/12",
+      "claude-sonnet-5-5": "12/12",
+      "claude-opus-5-5": "12/12",
+      "claude-fable-5-2": "12/12"
+    },
+    "exit_reasons": {
+      "claude-haiku-5-5": {
+        "completed": 10,
+        "turn_cap": 2
+      },
+      "claude-sonnet-5-5": {
+        "completed": 12
+      },
+      "claude-opus-5-5": {
+        "completed": 12
+      },
+      "claude-fable-5-2": {
+        "completed": 10,
+        "timeout": 2
+      }
+    },
+    "turns": {
+      "claude-haiku-5-5": 24.75,
+      "claude-sonnet-5-5": 7.0,
+      "claude-opus-5-5": 8.583333333333334,
+      "claude-fable-5-2": 12.75
+    },
+    "thinking_tokens_per_reply": {
+      "claude-haiku-5-5": 159.38616642616643,
+      "claude-sonnet-5-5": 37.977793040293044,
+      "claude-opus-5-5": 46.13642144892145,
+      "claude-fable-5-2": 172.69895541549954
+    },
+    "output_tokens_per_reply": {
+      "claude-haiku-5-5": 407.53253006253004,
+      "claude-sonnet-5-5": 221.17389092389092,
+      "claude-opus-5-5": 283.25501628001626,
+      "claude-fable-5-2": 583.9800799486461
+    },
+    "cost_usd": {
+      "claude-haiku-5-5": 0.011544271250000002,
+      "claude-sonnet-5-5": 0.036464108333333335,
+      "claude-opus-5-5": 0.09097238333333334,
+      "claude-fable-5-2": 0.7175724166666667
+    },
+    "max_tokens_replies_total": {
+      "claude-haiku-5-5": 0,
+      "claude-sonnet-5-5": 0,
+      "claude-opus-5-5": 0,
+      "claude-fable-5-2": 0
+    },
+    "cost_usd_total": {
+      "claude-haiku-5-5": 0.13853125500000002,
+      "claude-sonnet-5-5": 0.4375693,
+      "claude-opus-5-5": 1.0916686,
+      "claude-fable-5-2": 8.610869000000001
+    }
+  },
+  "A5_generation_vs_size": {
+    "M1": {
+      "key": "n_cmds",
+      "exp08": "trend",
+      "exp08_dir": -1,
+      "exp10": "none",
+      "exp10_dir": -1,
+      "reading": "follows the generation"
+    },
+    "M2": {
+      "key": "first_edit_frac",
+      "exp08": "candidate",
+      "exp08_dir": -1,
+      "exp10": "none",
+      "exp10_dir": -1,
+      "reading": "not classified (candidate)"
+    },
+    "M3": {
+      "key": "early_edit_share",
+      "exp08": "trend",
+      "exp08_dir": 1,
+      "exp10": "none",
+      "exp10_dir": 1,
+      "reading": "follows the generation"
+    },
+    "M4": {
+      "key": "test_share",
+      "exp08": "candidate",
+      "exp08_dir": 1,
+      "exp10": "none",
+      "exp10_dir": 0,
+      "reading": "not classified (candidate)"
+    },
+    "M5": {
+      "key": "exec_share",
+      "exp08": "none",
+      "exp08_dir": 1,
+      "exp10": "none",
+      "exp10_dir": -1,
+      "reading": "no ordered pattern found"
+    },
+    "M6": {
+      "key": "wrote_new_test",
+      "exp08": "none",
+      "exp08_dir": 1,
+      "exp10": "none",
+      "exp10_dir": 1,
+      "reading": "no ordered pattern found"
+    },
+    "M7": {
+      "key": "wrote_scratch_script",
+      "exp08": "none",
+      "exp08_dir": -1,
+      "exp10": "none",
+      "exp10_dir": 1,
+      "reading": "no ordered pattern found"
+    },
+    "M8": {
+      "key": "repeat_cmd_share",
+      "exp08": "none",
+      "exp08_dir": -1,
+      "exp10": "none",
+      "exp10_dir": 0,
+      "reading": "no ordered pattern found"
+    },
+    "M9": {
+      "key": "noop_retest_share",
+      "exp08": "none",
+      "exp08_dir": 0,
+      "exp10": "none",
+      "exp10_dir": 0,
+      "reading": "no ordered pattern found"
+    },
+    "M10": {
+      "key": "reread_share",
+      "exp08": "candidate",
+      "exp08_dir": -1,
+      "exp10": "none",
+      "exp10_dir": 1,
+      "reading": "not classified (candidate)"
+    },
+    "M11": {
+      "key": "search_miss_share",
+      "exp08": "none",
+      "exp08_dir": -1,
+      "exp10": "none",
+      "exp10_dir": -1,
+      "reading": "no ordered pattern found"
+    },
+    "M12": {
+      "key": "extra_files",
+      "exp08": "trend",
+      "exp08_dir": 1,
+      "exp10": "trend",
+      "exp10_dir": 1,
+      "reading": "follows capability; generation and size cannot be separated"
+    },
+    "M13": {
+      "key": "patch_lines",
+      "exp08": "trend",
+      "exp08_dir": 1,
+      "exp10": "trend",
+      "exp10_dir": 1,
+      "reading": "follows capability; generation and size cannot be separated"
+    },
+    "M14": {
+      "key": "backed_done",
+      "exp08": "none",
+      "exp08_dir": -1,
+      "exp10": "none",
+      "exp10_dir": -1,
+      "reading": "no ordered pattern found"
+    },
+    "M15": {
+      "key": "multi_call_share",
+      "exp08": "none",
+      "exp08_dir": 1,
+      "exp10": "none",
+      "exp10_dir": -1,
+      "reading": "no ordered pattern found"
+    }
+  },
+  "predictions": {
+    "P1": {
+      "text": "`backed_done` rises with size (moves or candidate).",
+      "verdict": "not held",
+      "why": "label none, direction -1, p 0.1644"
+    },
+    "P2": {
+      "text": "`repeat_cmd_share` falls with size (moves or candidate).",
+      "verdict": "not held",
+      "why": "label none, direction +0, p 1"
+    },
+    "P3": {
+      "text": "`n_cmds` shows no ordered pattern.",
+      "verdict": "held",
+      "why": "label none"
+    },
+    "P4": {
+      "text": "Haiku 5.5 has the lowest `backed_done` of the four.",
+      "verdict": "not held",
+      "why": "means claude-haiku-5-5 0.833, claude-sonnet-5-5 0.417, claude-opus-5-5 0.833, claude-fable-5-2 0.333"
+    },
+    "P5": {
+      "text": "At least one of the 15 measures moves with size.",
+      "verdict": "held",
+      "why": "2 labelled trend of 15 tested"
+    }
+  },
+  "load_report": {
+    "runs_root": "research/corpus/runs-2026-11-claude-round",
+    "ledger": "/Users/patrickli/Documents/claudecode/openbench/research/corpus/runs-2026-11-claude-round/ledger.jsonl",
+    "notes": [],
+    "source": "ledger",
+    "n_runs": 132,
+    "missing_run_folders": [],
+    "ungraded_runs": [],
+    "grade_ledger_mismatch": []
+  }
+}

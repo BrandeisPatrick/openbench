@@ -1,0 +1,37 @@
+diff --git a/xarray/core/variable.py b/xarray/core/variable.py
+index 45553eb..8ddba33 100644
+--- a/xarray/core/variable.py
++++ b/xarray/core/variable.py
+@@ -218,7 +218,12 @@ def as_compatible_data(data, fastpath=False):
+         data = np.timedelta64(getattr(data, "value", data), "ns")
+ 
+     # we don't want nested self-described arrays
+-    data = getattr(data, "values", data)
++    # (only unwrap known pandas/xarray types; arbitrary objects that happen to
++    # have a ``values`` attribute must be stored as-is)
++    from .dataarray import DataArray
++
++    if isinstance(data, (pd.Series, pd.DataFrame, DataArray)):
++        data = data.values
+ 
+     if isinstance(data, np.ma.MaskedArray):
+         mask = np.ma.getmaskarray(data)
+diff --git a/xarray/tests/test_variable.py b/xarray/tests/test_variable.py
+index e1ae3e1..02d1b09 100644
+--- a/xarray/tests/test_variable.py
++++ b/xarray/tests/test_variable.py
+@@ -2388,3 +2388,14 @@ class TestBackendIndexing:
+         v = Variable(dims=("x", "y"), data=CopyOnWriteArray(DaskIndexingAdapter(da)))
+         self.check_orthogonal_indexing(v)
+         self.check_vectorized_indexing(v)
++
++
++def test_setitem_object_with_values_attribute():
++    # objects with a ``values`` attribute must not be coerced on assignment
++    class HasValues:
++        values = 5
++
++    v = Variable(("x",), np.array([None], dtype=object))
++    obj = HasValues()
++    v[{"x": 0}] = obj
++    assert v.values[0] is obj

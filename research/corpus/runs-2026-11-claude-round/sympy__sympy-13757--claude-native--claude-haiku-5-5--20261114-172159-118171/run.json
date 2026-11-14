@@ -1,0 +1,24 @@
+{
+  "run_id": "sympy__sympy-13757--claude-native--claude-haiku-5-5--20261114-172159-118171",
+  "task_id": "sympy__sympy-13757",
+  "harness": "claude-native",
+  "model": "claude-haiku-5-5",
+  "started_at": "2026-11-14T17:21:59.118171Z",
+  "finished_at": "2026-11-14T18:07:09.361419Z",
+  "exit_reason": "turn_cap",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.051025705000000005,
+  "total_tokens_in": 2660058,
+  "total_tokens_out": 22907,
+  "total_tokens_cached": 2547183,
+  "total_thinking_tokens": 8827,
+  "num_turns": 100,
+  "limits": {
+    "wall_clock_s": 3600,
+    "max_turns": 100,
+    "max_cost_usd": 1.0
+  },
+  "image_id": "sha256:d27ab838beb6493637f36a085285a8426403ff6a01cf1e7a149176e89e9feaa6",
+  "effort": "high"
+}

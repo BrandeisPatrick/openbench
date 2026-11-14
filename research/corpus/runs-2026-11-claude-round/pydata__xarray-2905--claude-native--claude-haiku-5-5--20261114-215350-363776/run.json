@@ -1,0 +1,24 @@
+{
+  "run_id": "pydata__xarray-2905--claude-native--claude-haiku-5-5--20261114-215350-363776",
+  "task_id": "pydata__xarray-2905",
+  "harness": "claude-native",
+  "model": "claude-haiku-5-5",
+  "started_at": "2026-11-14T21:53:50.363776Z",
+  "finished_at": "2026-11-14T22:02:36.813984Z",
+  "exit_reason": "completed",
+  "raw_transcript_path": "raw_transcript.jsonl",
+  "workspace_patch_path": "workspace.patch",
+  "total_cost_usd": 0.00476226,
+  "total_tokens_in": 73085,
+  "total_tokens_out": 4321,
+  "total_tokens_cached": 56811,
+  "total_thinking_tokens": 1865,
+  "num_turns": 10,
+  "limits": {
+    "wall_clock_s": 3600,
+    "max_turns": 100,
+    "max_cost_usd": 1.0
+  },
+  "image_id": "sha256:3787ac1fb3ea685597d2c687418ce1085fae7f496894818beedb7f2b75c9bc92",
+  "effort": "high"
+}

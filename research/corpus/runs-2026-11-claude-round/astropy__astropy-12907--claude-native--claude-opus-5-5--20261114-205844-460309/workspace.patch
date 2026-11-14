@@ -1,0 +1,61 @@
+diff --git a/astropy/modeling/separable.py b/astropy/modeling/separable.py
+index a308e27..45bea36 100644
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -242,7 +242,7 @@ def _cstack(left, right):
+         cright = _coord_matrix(right, 'right', noutp)
+     else:
+         cright = np.zeros((noutp, right.shape[1]))
+-        cright[-right.shape[0]:, -right.shape[1]:] = 1
++        cright[-right.shape[0]:, -right.shape[1]:] = right
+ 
+     return np.hstack([cleft, cright])
+ 
+diff --git a/astropy/modeling/tests/test_separable_nested.py b/astropy/modeling/tests/test_separable_nested.py
+new file mode 100644
+index 0000000..8a786d1
+--- /dev/null
++++ b/astropy/modeling/tests/test_separable_nested.py
+@@ -0,0 +1,34 @@
++# Licensed under a 3-clause BSD style license - see LICENSE.rst
++"""Regression tests for separability of nested compound models."""
++import numpy as np
++
++from astropy.modeling import models as m
++from astropy.modeling.separable import separability_matrix, is_separable
++
++
++def test_nested_compound_model_separability():
++    cm = m.Linear1D(10) & m.Linear1D(5)
++    expected = np.array([[True, True, False, False],
++                         [True, True, False, False],
++                         [False, False, True, False],
++                         [False, False, False, True]])
++    assert np.array_equal(separability_matrix(m.Pix2Sky_TAN() & cm), expected)
++    assert np.array_equal(
++        separability_matrix(m.Pix2Sky_TAN() & m.Linear1D(10) & m.Linear1D(5)),
++        expected)
++    assert np.array_equal(is_separable(m.Pix2Sky_TAN() & cm),
++                          np.array([False, False, True, True]))
++
++    expected_rev = np.array([[True, False, False, False],
++                             [False, True, False, False],
++                             [False, False, True, True],
++                             [False, False, True, True]])
++    assert np.array_equal(separability_matrix(cm & m.Pix2Sky_TAN()), expected_rev)
++
++    nested = (m.Shift(1) & m.Shift(2)) & (m.Shift(3) & m.Rotation2D(2))
++    expected_nested = np.array([[True, False, False, False, False],
++                                [False, True, False, False, False],
++                                [False, False, True, False, False],
++                                [False, False, False, True, True],
++                                [False, False, False, True, True]])
++    assert np.array_equal(separability_matrix(nested), expected_nested)
+diff --git a/docs/changes/modeling/12907.bugfix.rst b/docs/changes/modeling/12907.bugfix.rst
+new file mode 100644
+index 0000000..64d42a2
+--- /dev/null
++++ b/docs/changes/modeling/12907.bugfix.rst
+@@ -0,0 +1,2 @@
++Fix computation of the separability of a ``CompoundModel`` where another
++``CompoundModel`` is on the right hand side of the ``&`` operator.

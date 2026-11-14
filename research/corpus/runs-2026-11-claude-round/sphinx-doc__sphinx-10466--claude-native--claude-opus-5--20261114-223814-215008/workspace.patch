@@ -1,0 +1,27 @@
+diff --git a/CHANGES b/CHANGES
+index ed47709..e57d30d 100644
+--- a/CHANGES
++++ b/CHANGES
+@@ -21,6 +21,7 @@ Bugs fixed
+ * #9648: autodoc: ``*args`` and ``**kwargs`` entries are duplicated when
+   ``autodoc_typehints="description"``
+ * #10443: epub: EPUB builder can't detect the mimetype of .webp file
++* #10122: gettext: Duplicated locations are removed from the message catalogs
+ * #10456: py domain: ``:meta:`` fields are displayed if docstring contains two
+   or more meta-field
+ * #9096: sphinx-build: the value of progress bar for paralle build is wrong
+diff --git a/sphinx/builders/gettext.py b/sphinx/builders/gettext.py
+index e8bc547..653946f 100644
+--- a/sphinx/builders/gettext.py
++++ b/sphinx/builders/gettext.py
+@@ -57,7 +57,9 @@ class Catalog:
+ 
+     def __iter__(self) -> Generator[Message, None, None]:
+         for message in self.messages:
+-            positions = [(source, line) for source, line, uuid in self.metadata[message]]
++            positions = sorted(set((source, line) for source, line, uuid
++                                   in self.metadata[message]),
++                               key=lambda position: (position[0], position[1] or 0))
+             uuids = [uuid for source, line, uuid in self.metadata[message]]
+             yield Message(message, positions, uuids)
+ 

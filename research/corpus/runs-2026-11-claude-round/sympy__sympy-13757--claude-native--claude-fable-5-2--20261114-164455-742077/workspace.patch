@@ -1,0 +1,82 @@
+diff --git a/sympy/polys/polytools.py b/sympy/polys/polytools.py
+index d5ac051..32b7027 100644
+--- a/sympy/polys/polytools.py
++++ b/sympy/polys/polytools.py
+@@ -106,6 +106,7 @@ class Poly(Expr):
+ 
+     is_commutative = True
+     is_Poly = True
++    _op_priority = 10.001
+ 
+     def __new__(cls, rep, *gens, **args):
+         """Create a new polynomial instance out of something useful. """
+diff --git a/sympy/polys/tests/test_polytools.py b/sympy/polys/tests/test_polytools.py
+index 1f889e9..f227ec6 100644
+--- a/sympy/polys/tests/test_polytools.py
++++ b/sympy/polys/tests/test_polytools.py
+@@ -3243,3 +3243,47 @@ def test_issue_12400():
+     # Correction of check for negative exponents
+     assert poly(1/(1+sqrt(2)), x) == \
+             Poly(1/(1+sqrt(2)), x , domain='EX')
++
++
++def test_issue_13079():
++    # A Poly must take over binary operations with a plain expression no
++    # matter on which side of the operator it stands.  The results are
++    # compared strictly because ``Mul(x, Poly(x)) == Poly(x**2)`` is true
++    # as well (``Poly.__eq__`` converts the unevaluated product).
++    def same(f, g):
++        return type(f) is type(g) and f.eq(g, strict=True)
++
++    f = Poly(x)
++
++    assert same(f*x, Poly(x**2, x, domain='ZZ'))
++    assert same(x*f, Poly(x**2, x, domain='ZZ'))
++    assert same(-2*f, Poly(-2*x, x, domain='ZZ'))
++    assert same(S(-2)*f, Poly(-2*x, x, domain='ZZ'))
++    assert same(f*S(-2), Poly(-2*x, x, domain='ZZ'))
++
++    assert same(S(1)/2*f, Poly(x/2, x, domain='QQ'))
++    assert same(y*f, Poly(x*y, x, domain='ZZ[y]'))
++    assert same((x + 1)*f, Poly(x**2 + x, x, domain='ZZ'))
++    assert same(I*f, f*I)
++
++    assert same(x + f, Poly(2*x, x, domain='ZZ'))
++    assert same(S(1) + f, Poly(x + 1, x, domain='ZZ'))
++    assert same(y + f, Poly(x + y, x, domain='ZZ[y]'))
++    assert same(x - f, Poly(0, x, domain='ZZ'))
++    assert same(S(1) - f, Poly(-x + 1, x, domain='ZZ'))
++
++    # same fallback to Expr as with the Poly on the left-hand side
++    assert sin(x)*f == f*sin(x) == x*sin(x)
++    assert sin(x) + f == f + sin(x) == x + sin(x)
++    assert sin(x) - f == sin(x) - x
++
++    assert (x**2 + 1)/f == (x**2 + 1)/x
++    assert same((x**2 + 1) % f, Poly(1, x, domain='ZZ'))
++    assert same((x**2 + 1) // f, Poly(x, x, domain='ZZ'))
++    assert divmod(x**2 + 1, f) == (Poly(x, x), Poly(1, x))
++
++    g = PurePoly(x)
++
++    assert same(x*g, PurePoly(x**2, x, domain='ZZ'))
++    assert same(S(-2)*g, PurePoly(-2*x, x, domain='ZZ'))
++    assert same(S(1) + g, PurePoly(x + 1, x, domain='ZZ'))
+diff --git a/wrapper_module_0.pyx b/wrapper_module_0.pyx
+new file mode 100644
+index 0000000..0bd4cba
+--- /dev/null
++++ b/wrapper_module_0.pyx
+@@ -0,0 +1,11 @@
++import numpy as np
++cimport numpy as np
++
++cdef extern from 'wrapped_code_0.h':
++    void test(double x, double y, double *z)
++
++def test_c(double x, double y):
++
++    cdef double z = 0
++    test(x, y, &z)
++    return z
+\ No newline at end of file

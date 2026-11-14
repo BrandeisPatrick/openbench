@@ -1,0 +1,57 @@
+diff --git a/doc/whats-new.rst b/doc/whats-new.rst
+index 277c32b..74496fe 100644
+--- a/doc/whats-new.rst
++++ b/doc/whats-new.rst
+@@ -90,6 +90,9 @@ New Features
+ 
+ Bug fixes
+ ~~~~~~~~~
++- Objects with a ``values`` attribute are no longer unwrapped when stored in a
++  :py:class:`Variable` (e.g. via ``__setitem__`` on object arrays); only pandas
++  and xarray objects are unwrapped (:issue:`1746`).
+ - :py:meth:`DataArray.resample` and :py:meth:`Dataset.resample` do not trigger computations anymore if :py:meth:`Dataset.weighted` or :py:meth:`DataArray.weighted` are applied (:issue:`4625`, :pull:`4668`). By `Julius Busecke <https://github.com/jbusecke>`_.
+ - :py:func:`merge` with ``combine_attrs='override'`` makes a copy of the attrs (:issue:`4627`).
+ - By default, when possible, xarray will now always use values of type ``int64`` when encoding
+diff --git a/xarray/core/variable.py b/xarray/core/variable.py
+index 45553eb..cfeea07 100644
+--- a/xarray/core/variable.py
++++ b/xarray/core/variable.py
+@@ -218,7 +218,8 @@ def as_compatible_data(data, fastpath=False):
+         data = np.timedelta64(getattr(data, "value", data), "ns")
+ 
+     # we don't want nested self-described arrays
+-    data = getattr(data, "values", data)
++    if isinstance(data, (pd.Series, pd.Index, pd.DataFrame, xr.DataArray)):
++        data = data.values
+ 
+     if isinstance(data, np.ma.MaskedArray):
+         mask = np.ma.getmaskarray(data)
+diff --git a/xarray/tests/test_variable.py b/xarray/tests/test_variable.py
+index e1ae3e1..892feb5 100644
+--- a/xarray/tests/test_variable.py
++++ b/xarray/tests/test_variable.py
+@@ -2308,6 +2308,24 @@ class TestAsCompatibleData:
+         orig = Variable(dims=("x"), data=array, attrs={"foo": "bar"})
+         assert isinstance(orig._data, CustomIndexable)
+ 
++    def test_object_with_values_property_not_coerced(self):
++        # GH2097: objects with a ``values`` attribute should not be unwrapped
++        class HasValues:
++            values = 5
++
++        obj = HasValues()
++        v = Variable(dims=(), data=obj)
++        assert v.values.item() is obj
++
++        v = Variable(dims=("x",), data=np.array([None], dtype=object))
++        v[0] = obj
++        assert v.values[0] is obj
++
++        # pandas / xarray objects are still unwrapped
++        series = pd.Series([1, 2, 3])
++        v = Variable(dims=("x",), data=series)
++        assert isinstance(v._data, np.ndarray)
++
+ 
+ def test_raise_no_warning_for_nan_in_binary_ops():
+     with pytest.warns(None) as record:
