@@ -39,7 +39,14 @@ def resolve_runner(name: str, model: str) -> str:
     return name
 
 
-def get_runner(name: str) -> AgentRunner:
+# Sentinel: "effort not given" (None is a real value: no extended thinking).
+_DEFAULT_EFFORT = object()
+
+
+def get_runner(name: str, effort: object = _DEFAULT_EFFORT) -> AgentRunner:
+    """Build a runner by name. ``effort`` (claude-native only) overrides the
+    protocol's default thinking effort; None sends no thinking params at all.
+    Omitted, every runner is built exactly as before."""
     from openbench.runners.fixtures import GoldenRunner, NullRunner
     from openbench.runners.harness import Harness
     from openbench.runners.protocols import (
@@ -49,6 +56,8 @@ def get_runner(name: str) -> AgentRunner:
         TextFenceProtocol,
     )
 
+    if effort is not _DEFAULT_EFFORT and name != "claude-native":
+        raise ValueError(f"runner {name!r} takes no effort setting (only claude-native does)")
     if name in ("mini-swe", "text-fence"):
         return Harness(TextFenceProtocol())
     if name == "tooluse":
@@ -56,7 +65,9 @@ def get_runner(name: str) -> AgentRunner:
     if name == "gpt-responses":
         return Harness(OpenAIResponsesProtocol())
     if name == "claude-native":
-        return Harness(AnthropicToolUseProtocol())
+        if effort is _DEFAULT_EFFORT:
+            return Harness(AnthropicToolUseProtocol())
+        return Harness(AnthropicToolUseProtocol(effort=effort))  # type: ignore[arg-type]
     if name == "golden":
         return GoldenRunner()
     if name == "null":

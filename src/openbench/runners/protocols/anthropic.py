@@ -16,7 +16,7 @@ from openbench.runners.protocols.base import (
     _post_with_retry,
 )
 from openbench.runners.protocols.prompts import SYSTEM_PROMPT_TOOLUSE
-from openbench.runners.protocols.providers import PRICES_PER_MTOK
+from openbench.runners.protocols.providers import claude_cost, claude_price
 from openbench.runners.protocols.tools import BASH_TOOL
 
 _ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
@@ -26,6 +26,7 @@ _MAX_TOKENS = 16000  # output budget per turn (covers adaptive thinking + answer
 # `max`. Thinking is adaptive, so truly trivial steps may still skip; only `max`
 # forces a thinking block even on easy steps (at higher token cost).
 _EFFORT = "xhigh"
+_SKIPPED = "skipped: the harness executes only the first tool call per turn"
 
 
 def _parse_blocks(content: list[dict]) -> tuple[str, str, dict | None]:
@@ -57,6 +58,13 @@ class AnthropicToolUseProtocol(BaseProtocol):
     def meta(self) -> dict:
         return {"scaffold": "claude-native", "thinking_effort": self._effort}
 
+    def chat(self, messages: list[dict], model: str) -> dict:
+        # Refuse an unpriced model BEFORE any request: priced at $0 the cost
+        # cap would never fire. Checked on every call (a dict lookup) so an
+        # injected chat_fn is held to the same rule.
+        claude_price(model)
+        return super().chat(messages, model)
+
     def _make_client(self, model: str) -> httpx.Client:
         # API key, ANTHROPIC_AUTH_TOKEN, or the `ant` CLI login — see anthropic_auth.
         return anthropic_auth.make_client(_API_TIMEOUT_S, purpose=f"for model {model}")
@@ -68,6 +76,15 @@ class AnthropicToolUseProtocol(BaseProtocol):
             "system": SYSTEM_PROMPT_TOOLUSE,
             "messages": messages,
             "tools": [BASH_TOOL],
+            # Prompt caching, automatic form (shared/prompt-caching.md, "Automatic
+            # vs explicit breakpoints"): the API puts the breakpoint on the last
+            # cacheable block and moves it forward each turn, so every request
+            # reads the prior conversation from cache and writes only the new
+            # tail. It changes no content and no order (system stays the same
+            # string, messages are not touched). 5-minute TTL: turns start well
+            # under 5 minutes apart. No explicit system breakpoint: system +
+            # tool are far below every model's minimum cacheable prefix.
+            "cache_control": {"type": "ephemeral"},
         }
         # effort=None omits thinking params entirely (lets a factorial isolate
         # protocol from thinking). display:"summarized" — Opus 4.8/4.7 omit
@@ -86,6 +103,7 @@ class AnthropicToolUseProtocol(BaseProtocol):
             command=command, text=text, reasoning=thinking,
             well_formed=tool_use is not None,
             tool_call_id=tool_use.get("id") if tool_use else None,
+            n_tool_calls=sum(1 for b in blocks if b.get("type") == "tool_use"),
             # Preserve the raw content blocks (incl. thinking signatures) when
             # passing the assistant turn back — required for thinking+tool-use.
             raw_assistant={"role": "assistant", "content": blocks},
@@ -94,27 +112,43 @@ class AnthropicToolUseProtocol(BaseProtocol):
     def usage(self, resp: dict, model: str) -> dict:
         u = resp.get("usage") or {}
         details = u.get("output_tokens_details") or {}
-        tin = int(u.get("input_tokens") or 0)
-        tout = int(u.get("output_tokens") or 0)
-        price_in, price_out = PRICES_PER_MTOK.get(model, (0.0, 0.0))
+        uncached = int(u.get("input_tokens") or 0)
+        written = int(u.get("cache_creation_input_tokens") or 0)
+        read = int(u.get("cache_read_input_tokens") or 0)
         return {
-            "tokens_in": tin,
-            "tokens_out": tout,
+            # Same meaning as the OpenAI-style protocols: tokens_in is the whole
+            # prompt and tokens_cached the part served from cache (a subset).
+            # Anthropic's input_tokens is only the uncached remainder, so add
+            # the cache writes and reads back in.
+            "tokens_in": uncached + written + read,
+            "tokens_out": int(u.get("output_tokens") or 0),
+            "tokens_cached": read,
             # Exact thinking-token count; billed within output_tokens (a subset).
             "tokens_thinking": int(details.get("thinking_tokens") or 0),
-            "cost_usd": (tin * price_in + tout * price_out) / 1e6,
+            # Writes, reads, uncached input and output each at their own rate.
+            "cost_usd": claude_cost(u, model),
         }
 
     def result_message(self, action: Action, output: str, exit_code: int) -> dict:
-        # Every tool_use block needs a matching tool_result or the API errors.
-        return {
-            "role": "user",
-            "content": [{
-                "type": "tool_result",
-                "tool_use_id": action.tool_call_id,
-                "content": f"exit_code: {exit_code}\n{output}",
-            }],
-        }
+        # Every tool_use block needs a matching tool_result or the API 400s the
+        # next request. The harness runs only the FIRST command of a turn, so
+        # any further tool_use blocks in the same reply (parallel tool use) are
+        # answered with the same "skipped" stub the OpenAI tool-use protocol
+        # uses (_heal_tool_calls): the one-command-per-turn contract holds, the
+        # run does not crash, and the model is told what did not run.
+        results = [{
+            "type": "tool_result",
+            "tool_use_id": action.tool_call_id,
+            "content": f"exit_code: {exit_code}\n{output}",
+        }]
+        for block in (action.raw_assistant or {}).get("content") or []:
+            if block.get("type") == "tool_use" and block.get("id") != action.tool_call_id:
+                results.append({
+                    "type": "tool_result",
+                    "tool_use_id": block.get("id"),
+                    "content": _SKIPPED,
+                })
+        return {"role": "user", "content": results}
 
     def nudge(self) -> dict:
         return {"role": "user",

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import re
+from collections.abc import Callable
 from datetime import UTC, datetime
 
 from openbench import dockerutil, paths
@@ -23,6 +24,16 @@ def slugify_model(model: str) -> str:
     return re.sub(r"[^A-Za-z0-9_.-]", "_", model)
 
 
+def _runner_effort(runner: AgentRunner) -> str | None:
+    """The thinking effort a Harness's protocol sends (None if it has none)."""
+    proto = getattr(runner, "protocol", None)
+    meta = getattr(proto, "meta", None)
+    if meta is None:
+        return None
+    effort = meta().get("thinking_effort")
+    return str(effort) if effort is not None else None
+
+
 def execute_run(
     task_id: str,
     runner: AgentRunner,
@@ -30,7 +41,11 @@ def execute_run(
     limits: RunLimits,
     cpus: int = 4,
     memory: str = "8g",
+    on_start: Callable[[str], None] | None = None,
 ) -> RunResult:
+    """Run one agent attempt. ``on_start(run_id)`` is called once the run dir
+    exists and before the container starts or any API call is made (the round
+    runner logs it so an interrupted, paid attempt can be found again)."""
     task_json = paths.task_dir(task_id) / "task.json"
     if not task_json.exists():
         raise FileNotFoundError(f"no task.json at {task_json}; run build-task first")
@@ -48,6 +63,8 @@ def execute_run(
     )
     run_path = paths.run_dir(run_id)
     run_path.mkdir(parents=True, exist_ok=True)
+    if on_start is not None:
+        on_start(run_id)
 
     env: dict[str, str] = {}
     if runner.needs_network and os.environ.get("ANTHROPIC_API_KEY"):
@@ -101,6 +118,7 @@ def execute_run(
         num_turns=int(usage.get("num_turns", 0)),
         limits=limits,
         image_id=dockerutil.image_id(task.image_tag),
+        effort=_runner_effort(runner),
     )
     (run_path / "run.json").write_text(result.model_dump_json(indent=2))
     return result

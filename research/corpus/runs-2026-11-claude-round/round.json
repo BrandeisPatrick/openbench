@@ -1,0 +1,33 @@
+{
+  "round": "runs-2026-11-claude-round",
+  "spec": "research/experiments/exp-08-opus-line.md (Design shared by round 2; Round budget rule), exp-09, exp-10",
+  "tasks": [
+    "sympy__sympy-13757",
+    "astropy__astropy-12907",
+    "pydata__xarray-2905",
+    "pytest-dev__pytest-10051",
+    "scikit-learn__scikit-learn-10297",
+    "sphinx-doc__sphinx-10466"
+  ],
+  "bridge_task": "sympy__sympy-13757",
+  "seed": 20261113,
+  "ceiling_usd": 125.0,
+  "judge_reserve_usd": 10.0,
+  "spend_before_freeze_usd": 0.09,
+  "cap_usd_by_family": {"opus": 6.0, "fable": 8.0, "sonnet": 3.0, "haiku": 1.0},
+  "max_turns": 100,
+  "wall_clock_s": 3600,
+  "concurrency": 3,
+  "cpus": 2,
+  "memory": "3g",
+  "repeats": 2,
+  "pilot_effort": "high",
+  "opus_models": ["claude-opus-4-6", "claude-opus-4-7", "claude-opus-4-8", "claude-opus-5", "claude-opus-5-5"],
+  "opus_effort": "high",
+  "sonnet_model": "claude-sonnet-5-5",
+  "sonnet_efforts": ["low", "medium", "high", "xhigh"],
+  "haiku_model": "claude-haiku-5-5",
+  "fable_model": "claude-fable-5-2",
+  "ladder_effort": "high",
+  "drops": []
+}

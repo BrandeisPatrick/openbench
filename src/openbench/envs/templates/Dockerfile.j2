@@ -6,8 +6,18 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PYTHONUNBUFFERED=1
 
+# GCC 14 (Debian trixie, the current python:*-slim base) turned three old
+# warnings into hard errors, which breaks C extensions of older commits
+# (astropy 4.x wcslib wrappers). Demote them back to warnings; modern code is
+# unaffected. ENV, so grading's offline reinstall compiles the same way.
+ENV CFLAGS="-Wno-error=incompatible-pointer-types -Wno-error=int-conversion -Wno-error=implicit-function-declaration"
+
+# pkg-config + freetype/libpng headers: older matplotlib (< 3.3ish) builds its
+# ft2font/_png extensions against the system libraries, and grading reinstalls
+# offline, so they must be in the image (apt cannot run at grade time).
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git build-essential \
+        pkg-config libfreetype-dev libpng-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Contamination control: clone and truncate in ONE layer, so no layer of the

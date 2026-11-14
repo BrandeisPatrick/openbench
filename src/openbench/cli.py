@@ -87,6 +87,9 @@ def run(
     max_turns: int = typer.Option(200),
     max_cost_usd: float = typer.Option(15.0),
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Stream each turn (reasoning, command, result) live."),
+    effort: Optional[str] = typer.Option(
+        None, help="claude-native thinking effort (low|medium|high|xhigh|max, or 'none' for no thinking); default: the protocol default"
+    ),
 ) -> None:
     """Run an agent harness against a task and capture the raw transcript."""
     from openbench.models import RunLimits
@@ -96,7 +99,11 @@ def run(
     if verbose:
         _enable_verbose_logging()
     limits = RunLimits(wall_clock_s=wall_clock_s, max_turns=max_turns, max_cost_usd=max_cost_usd)
-    runner_obj = get_runner(resolve_runner(runner, model))
+    name = resolve_runner(runner, model)
+    if effort is None:
+        runner_obj = get_runner(name)
+    else:
+        runner_obj = get_runner(name, effort=None if effort.lower() == "none" else effort)
     result = execute_run(task_id=task_id, runner=runner_obj, model=model, limits=limits)
     console.print(f"[green]Run finished:[/green] {result.run_id} ({result.exit_reason})")
     console.print(f"  cost: ${result.total_cost_usd:.2f}  turns: {result.num_turns}")
@@ -138,6 +145,55 @@ def run_matrix_cmd(
 
     run_matrix(cells, limits, max_concurrency=concurrency, on_done=_done)
     console.print("[bold green]matrix done[/bold green] — grade with `openbench grade <run_id>`")
+
+
+@app.command("run-round")
+def run_round_cmd(
+    config: Path = typer.Option(..., help="Round config (round.json); the ledger is ledger.jsonl beside it"),
+    stage: Optional[str] = typer.Option(None, help="pilot | exp08 | exp09 | exp10-haiku | exp10-fable"),
+    task: Optional[str] = typer.Option(None, "--task", help="With --stage: run (or --dry-run) only this task's cells of the stage, in plan order; preflight checks only its image"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Print the stage's ordered schedule and worst-case spend; touch nothing"),
+    status: bool = typer.Option(False, "--status", help="Counts per stage, spend so far, spend by model"),
+    project: bool = typer.Option(False, "--project", help="Pilot cost per model, projected remaining cost and the pre-registered drops"),
+    add_spend: Optional[float] = typer.Option(None, help="Append a manual spend entry (USD) to the ledger"),
+    source: str = typer.Option("manual", help="With --add-spend: manual | judge | prefreeze"),
+    note: str = typer.Option("", help="With --add-spend: what the money was spent on"),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Stream each turn of every run."),
+) -> None:
+    """Run one stage of a pre-registered round under the fixed-credit start rule.
+
+    Exit codes (run mode): 0 done, 3 start rule refused a run (budget), 4 setup
+    error, 5 ledger locked by another run-round, 130 interrupted.
+    """
+    from openbench.runners import round_runner as rr
+
+    cfg = rr.RoundConfig.load(config)
+    if add_spend is not None:
+        rr.add_spend(cfg, add_spend, source, note)
+        console.print(f"logged ${add_spend:.2f} ({source}) in {cfg.ledger_path}")
+        return
+    if status:
+        print(rr.status(cfg))
+        return
+    if project:
+        print(rr.projection(cfg))
+        return
+    if stage is None:
+        console.print("[red]--stage is required[/red] (or use --status / --project / --add-spend)")
+        raise typer.Exit(2)
+    task_err = rr.task_error(cfg, task)
+    if task_err:
+        console.print(f"[red]{task_err}[/red]", highlight=False)
+        raise typer.Exit(rr.EXIT_SETUP)
+    if dry_run:
+        print(rr.dry_run(cfg, stage, task=task))
+        return
+    if verbose:
+        _enable_verbose_logging()
+    outcome = rr.run_stage(cfg, stage, task=task, say=lambda m: console.print(m, markup=False, highlight=False))
+    color = "green" if outcome.exit_code == 0 else "red"
+    console.print(f"[{color}]{outcome.message}[/{color}]", highlight=False)
+    raise typer.Exit(outcome.exit_code)
 
 
 @app.command()

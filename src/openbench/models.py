@@ -146,6 +146,9 @@ class RunResult(BaseModel):
     # was undiagnosable from run.json alone — these two fields fix that.
     limits: RunLimits | None = None
     image_id: str | None = None
+    # Thinking effort sent with every request (claude-native output_config.effort);
+    # None when the protocol has no effort setting or thinking was off.
+    effort: str | None = None
 
 
 EventType = Literal[

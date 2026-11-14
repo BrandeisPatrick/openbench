@@ -115,7 +115,7 @@ def test_transcript_normalizes_via_mini_swe_adapter(tmp_path, monkeypatch):
 def test_cost_cap_binds(tmp_path, monkeypatch):
     monkeypatch.setattr(paths, "TASKS", tmp_path / "tasks")
     task = _task(tmp_path)
-    # opus price 15/75 per Mtok; 1M out tokens/turn => $75/turn, cap 5.0 -> stop fast
+    # opus-4-8 output $25/Mtok; 1M out tokens/turn => $25/turn, cap 5.0 -> stop fast
     big = _assistant([_tool_use("ls")], in_tok=0, out_tok=1_000_000)
     monkeypatch.setattr(
         "openbench.runners.harness.dockerutil.exec_in",
@@ -128,7 +128,7 @@ def test_cost_cap_binds(tmp_path, monkeypatch):
         task, "c", run_path, "claude-opus-4-8", RunLimits(max_turns=50, max_cost_usd=5.0)
     )
     assert exit_reason == "cost_cap"
-    assert usage["num_turns"] <= 2  # one $75 turn already crosses $5
+    assert usage["num_turns"] <= 2  # one $25 turn already crosses $5
 
 
 def test_registered_in_get_runner():

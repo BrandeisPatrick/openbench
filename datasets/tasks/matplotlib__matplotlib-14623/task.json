@@ -416,12 +416,13 @@
     "lib/matplotlib/tests/test_axes.py::test_bar_errbar_zorder"
   ],
   "image_tag": null,
-  "install_cmd": "pip install -e .",
+  "python_version": "3.8",
+  "install_cmd": "pip install 'numpy<1.24' 'pyparsing<3' && pip install -e .",
   "test_cmd": "python -m pytest",
+  "env_setup_cmds": [],
   "protected_test_files": {},
   "validation": null,
   "difficulty": "15 min - 1 hour",
   "difficulty_note": null,
-  "is_impossible": false,
   "source": "swebench-verified"
 }

@@ -127,12 +127,16 @@
     "lib/matplotlib/tests/test_image.py::test_nonuniform_and_pcolor[png]"
   ],
   "image_tag": null,
-  "install_cmd": "pip install -e .",
+  "python_version": "3.8",
+  "install_cmd": "pip install 'numpy<1.24' 'pyparsing<3' 'pillow<10' certifi 'setuptools_scm<8' && pip install -e .",
   "test_cmd": "python -m pytest",
+  "env_setup_cmds": [
+    "pip install 'numpy<1.24' 'pyparsing<3' 'pillow<10' 'pytest==7.4.0'",
+    "apt-get update && apt-get install -y --no-install-recommends ghostscript && rm -rf /var/lib/apt/lists/*"
+  ],
   "protected_test_files": {},
   "validation": null,
   "difficulty": "15 min - 1 hour",
   "difficulty_note": null,
-  "is_impossible": false,
   "source": "swebench-verified"
 }

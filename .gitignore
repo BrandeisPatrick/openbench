@@ -29,3 +29,6 @@ wheels/
 
 # June-era exploration runs, superseded by the research/corpus/ freezes
 /runs-archive-2026-06/
+
+# Batch-runner lock file (round runs)
+/research/corpus/*/ledger.lock

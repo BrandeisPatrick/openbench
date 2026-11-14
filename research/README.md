@@ -17,6 +17,20 @@ the reasoning-pattern taxonomy map
 and the longer design proposal this folder simplifies
 ([proposal.md](proposal.md)).
 
+## Rounds
+
+- **Round 1 (exp-00 to exp-07), closed 2026-11-13.** Nine models from three labs, three
+  generations per lab, four tasks. It was built to read post-training recipes off behavior
+  (the selection criterion above). exp-07 audited it for command habits and found habits of
+  single models but no trend across generations; with three generations per lab an ordered
+  line appears by chance one time in three, so none could have been established. Its
+  corpus, experiment files and results stay as they are.
+- **Round 2 (exp-08 to exp-10), pre-registered 2026-11-14.** One lab, one API, one request
+  shape: five Opus generations, an effort dial on one model, and a size ladder, on six tasks
+  from six libraries. Descriptive on purpose, under the owner's reframing of 2026-11-11:
+  openbench is for discovering agent behavior patterns, not for ranking models. The shared
+  design is in [exp-08](experiments/exp-08-opus-line.md).
+
 ## Layout
 
 ```
@@ -69,7 +83,10 @@ presence claims only; all current results are exploratory (4 task clusters).
 | [exp-04](experiments/exp-04-think-act-integration.md) | V3.2: thinking integrated into tool use (vs R1 think-then-act) | interleaving structure, r1 vs v3.2 | $0 | proposed |
 | [exp-05](experiments/exp-05-rollout-compression.md) | agentic-RL efficiency pressure (DeepSeek, OpenAI) vs distillation-first (Kimi) | rollout compression at constant reward | $0 | exploratory result in hand |
 | [exp-06](experiments/exp-06-priming-elicitation.md) | did post-training add capability or elicit latent behavior | Four Habits priming protocol | ~$30 | proposed |
-| [exp-07](experiments/exp-07-command-audit.md) | none — descriptive, admitted under the 2026-11-11 discovery reframing: which command habits belong to the model, and is "done" backed by the log | rule-coded command audit of the stored runs | $0 (Part A) | pre-registered |
+| [exp-07](experiments/exp-07-command-audit.md) | none — descriptive, admitted under the 2026-11-11 discovery reframing: which command habits belong to the model, and is "done" backed by the log | rule-coded command audit of the stored runs | $0 (Part A), $7.16 (Part B) | analyzed; hand-label validation pending |
+| [exp-08](experiments/exp-08-opus-line.md) | none — descriptive (round 2): which command habits move steadily across five Opus generations | rule-coded command audit + ordered-trend test; open contrast of the endpoints | round 2 budget, $125 for exp-08 to exp-10 | pre-registered |
+| [exp-09](experiments/exp-09-effort-dial.md) | none — descriptive (round 2): which measures respond to the effort setting on one model | same measures over four effort levels | (round 2 budget) | pre-registered |
+| [exp-10](experiments/exp-10-size-ladder.md) | none — descriptive (round 2): does a habit follow the generation or the size of the model | same measures over four current models of different size | (round 2 budget) | pre-registered |
 
 Suggested order: exp-03 and exp-04 now (free, existing traces); exp-05
 written up properly (free); exp-02 next (cheap, uniquely diagnostic of a K3

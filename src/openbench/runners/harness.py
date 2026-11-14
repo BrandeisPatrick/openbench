@@ -118,6 +118,10 @@ class Harness:
                         # normalized dict drops. July 2026 cost audits needed
                         # exactly this and it wasn't there.
                         "usage_raw": resp.get("usage"),
+                        # Why the reply ended (Anthropic: tool_use / end_turn /
+                        # max_tokens / refusal); None where the API has no such field.
+                        "stop_reason": resp.get("stop_reason"),
+                        "n_tool_calls": action.n_tool_calls,
                     })
                     + "\n"
                 )

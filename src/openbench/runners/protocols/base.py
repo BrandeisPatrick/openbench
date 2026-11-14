@@ -12,6 +12,7 @@ protocol — so it must not import them back (keeps the import graph acyclic).
 
 from __future__ import annotations
 
+import random
 import time
 from dataclasses import dataclass
 from typing import Callable, Protocol, runtime_checkable
@@ -31,39 +32,79 @@ _API_TIMEOUT_S = 1200
 ChatFn = Callable[[list[dict]], dict]
 
 
+# Retry policy. 429 (rate limit), 529 (Anthropic overloaded) and 5xx are
+# transient; any other 4xx (400 bad request, 401, 404, 413...) is the request's
+# own fault and is raised at once. Backoff doubles from 1s to a 60s ceiling with
+# jitter (three concurrent runs must not retry in lockstep), and a server
+# `retry-after` is honored up to _MAX_RETRY_AFTER_S. 10 attempts wait ~4 minutes
+# in total without a retry-after, enough to ride out a minute-level window.
+_RETRY_STATUS = (429, 500, 502, 503, 504, 529)
+_MAX_ATTEMPTS = 10
+_MAX_BACKOFF_S = 60.0
+_MAX_RETRY_AFTER_S = 300.0
+_sleep = time.sleep  # indirection so tests can skip real waits
+
+
+def _retry_after_s(headers: httpx.Headers) -> float | None:
+    """Seconds from a `retry-after` header (delta-seconds or HTTP-date), capped.
+
+    A malformed value is ignored rather than raised: it used to be passed to
+    float() unguarded, so an HTTP-date retry-after crashed the run.
+    """
+    raw = (headers.get("retry-after") or "").strip()
+    if not raw:
+        return None
+    try:
+        secs = float(raw)
+    except ValueError:
+        try:
+            from email.utils import parsedate_to_datetime
+
+            when = parsedate_to_datetime(raw)
+            secs = when.timestamp() - time.time()
+        except (TypeError, ValueError, IndexError):
+            return None
+    return min(max(secs, 0.0), _MAX_RETRY_AFTER_S)
+
+
+def _backoff_s(attempt: int) -> float:
+    return min(_MAX_BACKOFF_S, 2.0**attempt) * random.uniform(0.75, 1.0)
+
+
 def _post_with_retry(client: httpx.Client, url: str, body: dict) -> dict:
     last_err: str | None = None
-    for attempt in range(6):
+    for attempt in range(_MAX_ATTEMPTS):
+        wait: float | None = None
         try:
             resp = client.post(url, json=body)
-            if resp.status_code in (429, 500, 502, 503, 529):
+            if resp.status_code in _RETRY_STATUS:
                 # Record WHAT failed (a 429 storm used to exit as "None") and
                 # wait long enough to matter: TPM windows are 60s, so honor
-                # Retry-After and back off toward a minute, not 8 seconds.
+                # Retry-After and back off toward a minute.
                 last_err = f"HTTP {resp.status_code}: {resp.text[:300]}"
-                retry_after = float(resp.headers.get("retry-after") or 0)
-                time.sleep(max(retry_after, min(60.0, 2.0**attempt)))
-                continue
-            resp.raise_for_status()
-            try:
-                return resp.json()
-            except ValueError as exc:
-                # A 200 with a malformed/truncated body (flaky OpenRouter host)
-                # is as retryable as a 5xx — one bad body must not kill a run.
-                last_err = f"malformed JSON body: {exc}"
-                time.sleep(min(60.0, 2.0**attempt))
-                continue
+                wait = max(_retry_after_s(resp.headers) or 0.0, _backoff_s(attempt))
+            else:
+                resp.raise_for_status()
+                try:
+                    return resp.json()
+                except ValueError as exc:
+                    # A 200 with a malformed/truncated body (flaky OpenRouter host)
+                    # is as retryable as a 5xx — one bad body must not kill a run.
+                    last_err = f"malformed JSON body: {exc}"
+                    wait = _backoff_s(attempt)
         except httpx.HTTPStatusError as exc:
             detail = f"HTTP {exc.response.status_code}: {exc.response.text[:300]}"
             if exc.response.status_code < 500:
                 # 4xx (not 429): the request itself is bad — retrying is futile.
                 raise RuntimeError(f"API rejected request: {detail}") from exc
             last_err = detail
-            time.sleep(min(60.0, 2.0**attempt))
+            wait = _backoff_s(attempt)
         except httpx.HTTPError as exc:
-            last_err = str(exc)
-            time.sleep(min(60.0, 2.0**attempt))
-    raise RuntimeError(f"API failed after retries: {last_err}")
+            last_err = str(exc) or type(exc).__name__
+            wait = _backoff_s(attempt)
+        if attempt < _MAX_ATTEMPTS - 1:
+            _sleep(wait or 0.0)
+    raise RuntimeError(f"API failed after {_MAX_ATTEMPTS} attempts: {last_err}")
 
 
 @dataclass
@@ -84,6 +125,9 @@ class Action:
     well_formed: bool
     tool_call_id: str | None = None
     raw_assistant: dict | None = None
+    # Tool calls in this reply (the harness runs only the first). None where
+    # the protocol does not count them.
+    n_tool_calls: int | None = None
 
 
 @runtime_checkable
