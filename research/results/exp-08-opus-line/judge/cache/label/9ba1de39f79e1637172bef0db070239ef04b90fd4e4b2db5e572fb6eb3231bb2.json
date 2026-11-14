@@ -1,0 +1,41 @@
+{
+ "key": "9ba1de39f79e1637172bef0db070239ef04b90fd4e4b2db5e572fb6eb3231bb2",
+ "stage": "label",
+ "item_id": "scikit-learn__scikit-learn-10297|claude-opus-5-5|r2",
+ "pass": 1,
+ "cost_usd": 0.011142,
+ "worst_case_usd": 0.087852,
+ "response": {
+  "model": "claude-sonnet-5-5",
+  "id": "msg_011Ch3dootqbtWDRqdDR9MwW",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+   {
+    "type": "text",
+    "text": "{\"answers\": {\"C01\": \"no\", \"C02\": \"yes\", \"C03\": \"yes\", \"C04\": \"no\", \"C05\": \"no\", \"C06\": \"no\", \"C07\": \"yes\", \"C08\": \"no\", \"C09\": \"yes\", \"C10\": \"yes\", \"C11\": \"no\", \"C12\": \"no\"}}"
+   }
+  ],
+  "container": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "stop_details": null,
+  "usage": {
+   "input_tokens": 5076,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 99,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global",
+   "speed": "standard"
+  },
+  "diagnostics": null
+ }
+}

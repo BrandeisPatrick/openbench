@@ -1,0 +1,41 @@
+{
+ "key": "ee91b04b7d5917e8e7e27c6e5939d9a8f0189d1a99b09d30fc8f9bfa947d6977",
+ "stage": "label",
+ "item_id": "scikit-learn__scikit-learn-10297|claude-opus-4-8|r2",
+ "pass": 1,
+ "cost_usd": 0.00683,
+ "worst_case_usd": 0.08499,
+ "response": {
+  "model": "claude-sonnet-5-5",
+  "id": "msg_011Ch3dnjwBbcgsLypq3TYfs",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+   {
+    "type": "text",
+    "text": "{\"answers\":{\"C01\":\"no\",\"C02\":\"no\",\"C03\":\"no\",\"C04\":\"no\",\"C05\":\"no\",\"C06\":\"no\",\"C07\":\"yes\",\"C08\":\"no\",\"C09\":\"yes\",\"C10\":\"no\",\"C11\":\"no\",\"C12\":\"no\"}}"
+   }
+  ],
+  "container": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "stop_details": null,
+  "usage": {
+   "input_tokens": 2990,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 85,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global",
+   "speed": "standard"
+  },
+  "diagnostics": null
+ }
+}

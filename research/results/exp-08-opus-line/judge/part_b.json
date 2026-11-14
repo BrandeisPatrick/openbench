@@ -1,0 +1,578 @@
+{
+ "C01": {
+  "kappa": 1.0,
+  "n_runs": 30,
+  "reliable": true,
+  "count_table": {
+   "claude-opus-4-6": "0/12",
+   "claude-opus-4-7": "4/12",
+   "claude-opus-4-8": "0/12",
+   "claude-opus-5": "0/12",
+   "claude-opus-5-5": "0/12"
+  },
+  "trend": {
+   "levels": [
+    "claude-opus-4-6",
+    "claude-opus-4-7",
+    "claude-opus-4-8",
+    "claude-opus-5",
+    "claude-opus-5-5"
+   ],
+   "k": 5,
+   "blocks": [
+    "pytest-dev__pytest-10051",
+    "scikit-learn__scikit-learn-10297",
+    "sphinx-doc__sphinx-10466"
+   ],
+   "dropped_blocks": [],
+   "n_blocks": 3,
+   "tested": true,
+   "L": 132.5,
+   "E0": 135.0,
+   "direction": -1,
+   "p": 0.7999200079992,
+   "spearman": {
+    "pytest-dev__pytest-10051": -0.35355339059327373,
+    "scikit-learn__scikit-learn-10297": 0.0,
+    "sphinx-doc__sphinx-10466": 0.0
+   },
+   "agree": 1,
+   "disagree": 0,
+   "no_sign": 2,
+   "reason": null,
+   "stat": 2.5,
+   "draws": 10000,
+   "seed": 20261113,
+   "p_holm": 1.0
+  },
+  "label": "none"
+ },
+ "C02": {
+  "kappa": 1.0,
+  "n_runs": 30,
+  "reliable": true,
+  "count_table": {
+   "claude-opus-4-6": "0/12",
+   "claude-opus-4-7": "0/12",
+   "claude-opus-4-8": "0/12",
+   "claude-opus-5": "0/12",
+   "claude-opus-5-5": "12/12"
+  },
+  "trend": {
+   "levels": [
+    "claude-opus-4-6",
+    "claude-opus-4-7",
+    "claude-opus-4-8",
+    "claude-opus-5",
+    "claude-opus-5-5"
+   ],
+   "k": 5,
+   "blocks": [
+    "pytest-dev__pytest-10051",
+    "scikit-learn__scikit-learn-10297",
+    "sphinx-doc__sphinx-10466"
+   ],
+   "dropped_blocks": [],
+   "n_blocks": 3,
+   "tested": true,
+   "L": 150.0,
+   "E0": 135.0,
+   "direction": 1,
+   "p": 0.017298270172982702,
+   "spearman": {
+    "pytest-dev__pytest-10051": 0.7071067811865475,
+    "scikit-learn__scikit-learn-10297": 0.7071067811865475,
+    "sphinx-doc__sphinx-10466": 0.7071067811865475
+   },
+   "agree": 3,
+   "disagree": 0,
+   "no_sign": 0,
+   "reason": null,
+   "stat": 15.0,
+   "draws": 10000,
+   "seed": 20261113,
+   "p_holm": 0.19028097190280974
+  },
+  "label": "candidate"
+ },
+ "C03": {
+  "kappa": 1.0,
+  "n_runs": 30,
+  "reliable": true,
+  "count_table": {
+   "claude-opus-4-6": "0/12",
+   "claude-opus-4-7": "4/12",
+   "claude-opus-4-8": "2/12",
+   "claude-opus-5": "8/12",
+   "claude-opus-5-5": "12/12"
+  },
+  "trend": {
+   "levels": [
+    "claude-opus-4-6",
+    "claude-opus-4-7",
+    "claude-opus-4-8",
+    "claude-opus-5",
+    "claude-opus-5-5"
+   ],
+   "k": 5,
+   "blocks": [
+    "pytest-dev__pytest-10051",
+    "scikit-learn__scikit-learn-10297",
+    "sphinx-doc__sphinx-10466"
+   ],
+   "dropped_blocks": [],
+   "n_blocks": 3,
+   "tested": true,
+   "L": 153.5,
+   "E0": 135.0,
+   "direction": 1,
+   "p": 0.006399360063993601,
+   "spearman": {
+    "pytest-dev__pytest-10051": 0.6708203932499369,
+    "scikit-learn__scikit-learn-10297": 0.7071067811865475,
+    "sphinx-doc__sphinx-10466": 0.8660254037844386
+   },
+   "agree": 3,
+   "disagree": 0,
+   "no_sign": 0,
+   "reason": null,
+   "stat": 18.5,
+   "draws": 10000,
+   "seed": 20261113,
+   "p_holm": 0.07679232076792321
+  },
+  "label": "candidate"
+ },
+ "C04": {
+  "kappa": 1.0,
+  "n_runs": 30,
+  "reliable": true,
+  "count_table": {
+   "claude-opus-4-6": "8/12",
+   "claude-opus-4-7": "4/12",
+   "claude-opus-4-8": "0/12",
+   "claude-opus-5": "6/12",
+   "claude-opus-5-5": "8/12"
+  },
+  "trend": {
+   "levels": [
+    "claude-opus-4-6",
+    "claude-opus-4-7",
+    "claude-opus-4-8",
+    "claude-opus-5",
+    "claude-opus-5-5"
+   ],
+   "k": 5,
+   "blocks": [
+    "pytest-dev__pytest-10051",
+    "scikit-learn__scikit-learn-10297",
+    "sphinx-doc__sphinx-10466"
+   ],
+   "dropped_blocks": [],
+   "n_blocks": 3,
+   "tested": true,
+   "L": 136.5,
+   "E0": 135.0,
+   "direction": 1,
+   "p": 0.8351164883511649,
+   "spearman": {
+    "pytest-dev__pytest-10051": 0.15811388300841897,
+    "scikit-learn__scikit-learn-10297": 0.0,
+    "sphinx-doc__sphinx-10466": 0.0
+   },
+   "agree": 1,
+   "disagree": 0,
+   "no_sign": 2,
+   "reason": null,
+   "stat": 1.5,
+   "draws": 10000,
+   "seed": 20261113,
+   "p_holm": 1.0
+  },
+  "label": "none"
+ },
+ "C05": {
+  "kappa": 1.0,
+  "n_runs": 30,
+  "reliable": true,
+  "count_table": {
+   "claude-opus-4-6": "6/12",
+   "claude-opus-4-7": "4/12",
+   "claude-opus-4-8": "0/12",
+   "claude-opus-5": "0/12",
+   "claude-opus-5-5": "0/12"
+  },
+  "trend": {
+   "levels": [
+    "claude-opus-4-6",
+    "claude-opus-4-7",
+    "claude-opus-4-8",
+    "claude-opus-5",
+    "claude-opus-5-5"
+   ],
+   "k": 5,
+   "blocks": [
+    "pytest-dev__pytest-10051",
+    "scikit-learn__scikit-learn-10297",
+    "sphinx-doc__sphinx-10466"
+   ],
+   "dropped_blocks": [],
+   "n_blocks": 3,
+   "tested": true,
+   "L": 123.0,
+   "E0": 135.0,
+   "direction": -1,
+   "p": 0.0370962903709629,
+   "spearman": {
+    "pytest-dev__pytest-10051": -0.7071067811865475,
+    "scikit-learn__scikit-learn-10297": 0.0,
+    "sphinx-doc__sphinx-10466": -0.7826237921249264
+   },
+   "agree": 2,
+   "disagree": 0,
+   "no_sign": 1,
+   "reason": null,
+   "stat": 12.0,
+   "draws": 10000,
+   "seed": 20261113,
+   "p_holm": 0.37096290370962903
+  },
+  "label": "candidate"
+ },
+ "C06": {
+  "kappa": 1.0,
+  "n_runs": 30,
+  "reliable": true,
+  "count_table": {
+   "claude-opus-4-6": "0/12",
+   "claude-opus-4-7": "0/12",
+   "claude-opus-4-8": "0/12",
+   "claude-opus-5": "0/12",
+   "claude-opus-5-5": "0/12"
+  },
+  "trend": {
+   "levels": [
+    "claude-opus-4-6",
+    "claude-opus-4-7",
+    "claude-opus-4-8",
+    "claude-opus-5",
+    "claude-opus-5-5"
+   ],
+   "k": 5,
+   "blocks": [
+    "pytest-dev__pytest-10051",
+    "scikit-learn__scikit-learn-10297",
+    "sphinx-doc__sphinx-10466"
+   ],
+   "dropped_blocks": [],
+   "n_blocks": 3,
+   "tested": true,
+   "L": 135.0,
+   "E0": 135.0,
+   "direction": 0,
+   "p": 1.0,
+   "spearman": {
+    "pytest-dev__pytest-10051": 0.0,
+    "scikit-learn__scikit-learn-10297": 0.0,
+    "sphinx-doc__sphinx-10466": 0.0
+   },
+   "agree": 0,
+   "disagree": 0,
+   "no_sign": 3,
+   "reason": null,
+   "stat": 0.0,
+   "draws": 10000,
+   "seed": 20261113,
+   "p_holm": 1.0
+  },
+  "label": "none"
+ },
+ "C07": {
+  "kappa": 0.8305084745762712,
+  "n_runs": 30,
+  "reliable": true,
+  "count_table": {
+   "claude-opus-4-6": "10/12",
+   "claude-opus-4-7": "12/12",
+   "claude-opus-4-8": "6/12",
+   "claude-opus-5": "6/12",
+   "claude-opus-5-5": "10/12"
+  },
+  "trend": {
+   "levels": [
+    "claude-opus-4-6",
+    "claude-opus-4-7",
+    "claude-opus-4-8",
+    "claude-opus-5",
+    "claude-opus-5-5"
+   ],
+   "k": 5,
+   "blocks": [
+    "pytest-dev__pytest-10051",
+    "scikit-learn__scikit-learn-10297",
+    "sphinx-doc__sphinx-10466"
+   ],
+   "dropped_blocks": [],
+   "n_blocks": 3,
+   "tested": true,
+   "L": 129.0,
+   "E0": 135.0,
+   "direction": -1,
+   "p": 0.3825617438256174,
+   "spearman": {
+    "pytest-dev__pytest-10051": 0.0,
+    "scikit-learn__scikit-learn-10297": -0.28867513459481287,
+    "sphinx-doc__sphinx-10466": -0.3689323936863109
+   },
+   "agree": 2,
+   "disagree": 0,
+   "no_sign": 1,
+   "reason": null,
+   "stat": 6.0,
+   "draws": 10000,
+   "seed": 20261113,
+   "p_holm": 1.0
+  },
+  "label": "none"
+ },
+ "C08": {
+  "kappa": 1.0,
+  "n_runs": 30,
+  "reliable": true,
+  "count_table": {
+   "claude-opus-4-6": "0/12",
+   "claude-opus-4-7": "0/12",
+   "claude-opus-4-8": "2/12",
+   "claude-opus-5": "0/12",
+   "claude-opus-5-5": "0/12"
+  },
+  "trend": {
+   "levels": [
+    "claude-opus-4-6",
+    "claude-opus-4-7",
+    "claude-opus-4-8",
+    "claude-opus-5",
+    "claude-opus-5-5"
+   ],
+   "k": 5,
+   "blocks": [
+    "pytest-dev__pytest-10051",
+    "scikit-learn__scikit-learn-10297",
+    "sphinx-doc__sphinx-10466"
+   ],
+   "dropped_blocks": [],
+   "n_blocks": 3,
+   "tested": true,
+   "L": 135.0,
+   "E0": 135.0,
+   "direction": 0,
+   "p": 1.0,
+   "spearman": {
+    "pytest-dev__pytest-10051": 0.0,
+    "scikit-learn__scikit-learn-10297": 0.0,
+    "sphinx-doc__sphinx-10466": 0.0
+   },
+   "agree": 0,
+   "disagree": 0,
+   "no_sign": 3,
+   "reason": null,
+   "stat": 0.0,
+   "draws": 10000,
+   "seed": 20261113,
+   "p_holm": 1.0
+  },
+  "label": "none"
+ },
+ "C09": {
+  "kappa": 1.0,
+  "n_runs": 30,
+  "reliable": true,
+  "count_table": {
+   "claude-opus-4-6": "12/12",
+   "claude-opus-4-7": "12/12",
+   "claude-opus-4-8": "12/12",
+   "claude-opus-5": "12/12",
+   "claude-opus-5-5": "12/12"
+  },
+  "trend": {
+   "levels": [
+    "claude-opus-4-6",
+    "claude-opus-4-7",
+    "claude-opus-4-8",
+    "claude-opus-5",
+    "claude-opus-5-5"
+   ],
+   "k": 5,
+   "blocks": [
+    "pytest-dev__pytest-10051",
+    "scikit-learn__scikit-learn-10297",
+    "sphinx-doc__sphinx-10466"
+   ],
+   "dropped_blocks": [],
+   "n_blocks": 3,
+   "tested": true,
+   "L": 135.0,
+   "E0": 135.0,
+   "direction": 0,
+   "p": 1.0,
+   "spearman": {
+    "pytest-dev__pytest-10051": 0.0,
+    "scikit-learn__scikit-learn-10297": 0.0,
+    "sphinx-doc__sphinx-10466": 0.0
+   },
+   "agree": 0,
+   "disagree": 0,
+   "no_sign": 3,
+   "reason": null,
+   "stat": 0.0,
+   "draws": 10000,
+   "seed": 20261113,
+   "p_holm": 1.0
+  },
+  "label": "none"
+ },
+ "C10": {
+  "kappa": 1.0,
+  "n_runs": 30,
+  "reliable": true,
+  "count_table": {
+   "claude-opus-4-6": "8/12",
+   "claude-opus-4-7": "4/12",
+   "claude-opus-4-8": "2/12",
+   "claude-opus-5": "6/12",
+   "claude-opus-5-5": "12/12"
+  },
+  "trend": {
+   "levels": [
+    "claude-opus-4-6",
+    "claude-opus-4-7",
+    "claude-opus-4-8",
+    "claude-opus-5",
+    "claude-opus-5-5"
+   ],
+   "k": 5,
+   "blocks": [
+    "pytest-dev__pytest-10051",
+    "scikit-learn__scikit-learn-10297",
+    "sphinx-doc__sphinx-10466"
+   ],
+   "dropped_blocks": [],
+   "n_blocks": 3,
+   "tested": true,
+   "L": 140.0,
+   "E0": 135.0,
+   "direction": 1,
+   "p": 0.6259374062593741,
+   "spearman": {
+    "pytest-dev__pytest-10051": -0.28867513459481287,
+    "scikit-learn__scikit-learn-10297": 0.8660254037844386,
+    "sphinx-doc__sphinx-10466": 0.0
+   },
+   "agree": 1,
+   "disagree": 1,
+   "no_sign": 1,
+   "reason": null,
+   "stat": 5.0,
+   "draws": 10000,
+   "seed": 20261113,
+   "p_holm": 1.0
+  },
+  "label": "none"
+ },
+ "C11": {
+  "kappa": 1.0,
+  "n_runs": 30,
+  "reliable": true,
+  "count_table": {
+   "claude-opus-4-6": "0/12",
+   "claude-opus-4-7": "0/12",
+   "claude-opus-4-8": "0/12",
+   "claude-opus-5": "0/12",
+   "claude-opus-5-5": "0/12"
+  },
+  "trend": {
+   "levels": [
+    "claude-opus-4-6",
+    "claude-opus-4-7",
+    "claude-opus-4-8",
+    "claude-opus-5",
+    "claude-opus-5-5"
+   ],
+   "k": 5,
+   "blocks": [
+    "pytest-dev__pytest-10051",
+    "scikit-learn__scikit-learn-10297",
+    "sphinx-doc__sphinx-10466"
+   ],
+   "dropped_blocks": [],
+   "n_blocks": 3,
+   "tested": true,
+   "L": 135.0,
+   "E0": 135.0,
+   "direction": 0,
+   "p": 1.0,
+   "spearman": {
+    "pytest-dev__pytest-10051": 0.0,
+    "scikit-learn__scikit-learn-10297": 0.0,
+    "sphinx-doc__sphinx-10466": 0.0
+   },
+   "agree": 0,
+   "disagree": 0,
+   "no_sign": 3,
+   "reason": null,
+   "stat": 0.0,
+   "draws": 10000,
+   "seed": 20261113,
+   "p_holm": 1.0
+  },
+  "label": "none"
+ },
+ "C12": {
+  "kappa": 1.0,
+  "n_runs": 30,
+  "reliable": true,
+  "count_table": {
+   "claude-opus-4-6": "4/12",
+   "claude-opus-4-7": "0/12",
+   "claude-opus-4-8": "0/12",
+   "claude-opus-5": "0/12",
+   "claude-opus-5-5": "0/12"
+  },
+  "trend": {
+   "levels": [
+    "claude-opus-4-6",
+    "claude-opus-4-7",
+    "claude-opus-4-8",
+    "claude-opus-5",
+    "claude-opus-5-5"
+   ],
+   "k": 5,
+   "blocks": [
+    "pytest-dev__pytest-10051",
+    "scikit-learn__scikit-learn-10297",
+    "sphinx-doc__sphinx-10466"
+   ],
+   "dropped_blocks": [],
+   "n_blocks": 3,
+   "tested": true,
+   "L": 130.0,
+   "E0": 135.0,
+   "direction": -1,
+   "p": 0.4006599340065993,
+   "spearman": {
+    "pytest-dev__pytest-10051": -0.7071067811865475,
+    "scikit-learn__scikit-learn-10297": 0.0,
+    "sphinx-doc__sphinx-10466": 0.0
+   },
+   "agree": 1,
+   "disagree": 0,
+   "no_sign": 2,
+   "reason": null,
+   "stat": 5.0,
+   "draws": 10000,
+   "seed": 20261113,
+   "p_holm": 1.0
+  },
+  "label": "none"
+ }
+}

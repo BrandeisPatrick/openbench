@@ -71,6 +71,41 @@ See also [exp-09](../exp-09-effort-dial/results.md) and [exp-10](../exp-10-size-
 - The six cap-ended runs are all on the sympy task. A run that hits the wall clock scores 0 on `backed_done` by definition.
 - One harness, one prompt, one tool, one command per turn.
 
-## Part B
+## Part B — open contrast between the endpoints
 
-Not yet run when this file was written; its results are appended below when it is.
+Run 2026-11-14 after Part A above was committed (`c71b4c6`). Judge `claude-sonnet-5-5`, effort medium, model identities hidden. Code: `research/analysis/claude_round_judge.py`. Files in `judge/`: `proposals.json` (B1, 12 calls), `candidates.json` (B2, frozen in commit `1e933de` before any labelling), `labels.json` (B3, 60 calls, 720 labels), `part_b.json` (B4). Judge spend: $0.89 of the $10 reserve; 73 calls, none refused, none unparsed.
+
+Discovery tasks: sympy, astropy, xarray (Opus 4.6 against Opus 5.5). Held-out tasks: pytest, scikit-learn, sphinx, all five generations, 30 runs, two labelling passes.
+
+Agreement between the two passes: Cohen's kappa is 1.00 for eleven candidates and 0.83 for C07, so all twelve are tested.
+
+Yes answers out of 12 per generation (3 tasks x 2 runs x 2 passes):
+
+| | candidate | 4.6 | 4.7 | 4.8 | 5 | 5.5 | p | p (Holm) | label |
+|---|---|---|---|---|---|---|---|---|---|
+| C02 | adds a regression test | 0 | 0 | 0 | 0 | 12 | 0.017 | 0.19 | candidate |
+| C03 | adds a changelog or whats-new entry | 0 | 4 | 2 | 8 | 12 | 0.006 | 0.077 | candidate |
+| C05 | checks failing tests one by one against the base with git stash | 6 | 4 | 0 | 0 | 0 | 0.037 | 0.37 | candidate |
+| C01 | reproduces the bug before editing | 0 | 4 | 0 | 0 | 0 | 0.80 | 1 | none |
+| C04 | compares against the base with git stash | 8 | 4 | 0 | 6 | 8 | 0.84 | 1 | none |
+| C07 | explores the code over several steps before editing | 10 | 12 | 6 | 6 | 10 | 0.38 | 1 | none |
+| C10 | runs tests beyond the affected module | 8 | 4 | 2 | 6 | 12 | 0.63 | 1 | none |
+| C12 | probes types and revises its fix | 4 | 0 | 0 | 0 | 0 | 0.40 | 1 | none |
+| C08 | edits with sed | 0 | 0 | 2 | 0 | 0 | 1 | 1 | none |
+| C09 | edits with a Python string replacement | 12 | 12 | 12 | 12 | 12 | 1 | 1 | none |
+| C06 | says up front that it recalls the known fix | 0 | 0 | 0 | 0 | 0 | 1 | 1 | none |
+| C11 | uses the repository's own bin/test runner | 0 | 0 | 0 | 0 | 0 | 1 | 1 | none |
+
+No candidate is labelled trend: with three blocks the smallest attainable Holm-adjusted p over twelve candidates is close to the threshold, as the spec said. Three are candidates, and in all three no held-out task disagrees with the direction.
+
+Reading, as candidates for a later round and not as findings:
+
+- **What the newer Opus adds to its patch.** A changelog entry appears step by step across the generations (0, 4, 2, 8, 12 of 12), and a regression test appears only with Opus 5.5 (12 of 12 against 0 of 48). This is what Part A's rule-based measures saw as larger patches and more files changed, found here by a reader that was not told what to look for and checked on tasks it had not seen.
+- **What the older Opus did and the newer does not.** Checking each failing test against the unmodified code with `git stash` is seen only in Opus 4.6 and 4.7 (6 and 4 of 12).
+- C06, C11 and C12 were proposed from one discovery task each (sympy's known fix, sympy's test runner, pandas types in xarray) and have almost no yes answers on the held-out tasks: they are properties of those tasks, not habits.
+
+Part A counted a new test *file* in 5 of 12 Opus 5.5 runs (M6); the judge's C02 also counts a new test function in an existing file, which is why it reads 12 of 12 on the held-out tasks.
+
+## Spend of the round
+
+$27.22 of $125.00: runs $26.24, judge $0.89, checks before the freeze $0.09.

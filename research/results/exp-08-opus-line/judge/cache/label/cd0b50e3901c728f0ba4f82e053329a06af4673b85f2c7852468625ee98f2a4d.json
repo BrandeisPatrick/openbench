@@ -1,0 +1,41 @@
+{
+ "key": "cd0b50e3901c728f0ba4f82e053329a06af4673b85f2c7852468625ee98f2a4d",
+ "stage": "label",
+ "item_id": "pytest-dev__pytest-10051|claude-opus-5-5|r2",
+ "pass": 1,
+ "cost_usd": 0.006834,
+ "worst_case_usd": 0.085118,
+ "response": {
+  "model": "claude-sonnet-5-5",
+  "id": "msg_011Ch3dkzwmKXZJHSKG8V7EX",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+   {
+    "type": "text",
+    "text": "{\"answers\": {\"C01\": \"no\", \"C02\": \"yes\", \"C03\": \"yes\", \"C04\": \"yes\", \"C05\": \"no\", \"C06\": \"no\", \"C07\": \"yes\", \"C08\": \"no\", \"C09\": \"yes\", \"C10\": \"yes\", \"C11\": \"no\", \"C12\": \"no\"}}"
+   }
+  ],
+  "container": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "stop_details": null,
+  "usage": {
+   "input_tokens": 2917,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 100,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global",
+   "speed": "standard"
+  },
+  "diagnostics": null
+ }
+}

@@ -1,0 +1,41 @@
+{
+ "key": "44e25709deabd1da218dd0afcc21693406d11063f1c4a9b939bd8ea09d53c3f6",
+ "stage": "label",
+ "item_id": "pytest-dev__pytest-10051|claude-opus-5|r2",
+ "pass": 2,
+ "cost_usd": 0.007318,
+ "worst_case_usd": 0.085796,
+ "response": {
+  "model": "claude-sonnet-5-5",
+  "id": "msg_011Ch3dkY2mRn8Pdh3MhtWMU",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+   {
+    "type": "text",
+    "text": "{\"answers\":{\"C01\":\"no\",\"C02\":\"no\",\"C03\":\"yes\",\"C04\":\"no\",\"C05\":\"no\",\"C06\":\"no\",\"C07\":\"yes\",\"C08\":\"no\",\"C09\":\"yes\",\"C10\":\"no\",\"C11\":\"no\",\"C12\":\"no\"}}"
+   }
+  ],
+  "container": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "stop_details": null,
+  "usage": {
+   "input_tokens": 3229,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 86,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global",
+   "speed": "standard"
+  },
+  "diagnostics": null
+ }
+}

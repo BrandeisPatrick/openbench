@@ -1,0 +1,6482 @@
+[
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-221738-600678",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-6--20261114-222000-032322",
+  "level": "claude-opus-4-6",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221738-600520",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-7--20261114-221923-123375",
+  "level": "claude-opus-4-7",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-221813-480299",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-4-8--20261114-222115-608467",
+  "level": "claude-opus-4-8",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221843-281462",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5--20261114-221919-683831",
+  "level": "claude-opus-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221738-600409",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "pytest-dev__pytest-10051--claude-native--claude-opus-5-5--20261114-221845-356831",
+  "level": "claude-opus-5-5",
+  "task_id": "pytest-dev__pytest-10051",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222834-635319",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-6--20261114-222957-415993",
+  "level": "claude-opus-4-6",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222901-791586",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-7--20261114-222924-930212",
+  "level": "claude-opus-4-7",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222834-635396",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-4-8--20261114-222950-408916",
+  "level": "claude-opus-4-8",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-222917-760216",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5--20261114-223017-365144",
+  "level": "claude-opus-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222834-635198",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "scikit-learn__scikit-learn-10297--claude-native--claude-opus-5-5--20261114-222932-827810",
+  "level": "claude-opus-5-5",
+  "task_id": "scikit-learn__scikit-learn-10297",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223651-163701",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-6--20261114-223730-464535",
+  "level": "claude-opus-4-6",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223635-030384",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-7--20261114-223825-649696",
+  "level": "claude-opus-4-7",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223635-030480",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-4-8--20261114-223714-651331",
+  "level": "claude-opus-4-8",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223708-260881",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5--20261114-223814-215008",
+  "level": "claude-opus-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223635-030278",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 1,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 1,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 1,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C01",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C02",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C03",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C04",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C05",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C06",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C07",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C08",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C09",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C10",
+  "pass": 2,
+  "value": 1
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C11",
+  "pass": 2,
+  "value": 0
+ },
+ {
+  "run_id": "sphinx-doc__sphinx-10466--claude-native--claude-opus-5-5--20261114-223738-737726",
+  "level": "claude-opus-5-5",
+  "task_id": "sphinx-doc__sphinx-10466",
+  "repeat": 2,
+  "candidate": "C12",
+  "pass": 2,
+  "value": 0
+ }
+]

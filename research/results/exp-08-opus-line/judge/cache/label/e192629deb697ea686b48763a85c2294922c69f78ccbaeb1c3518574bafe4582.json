@@ -1,0 +1,41 @@
+{
+ "key": "e192629deb697ea686b48763a85c2294922c69f78ccbaeb1c3518574bafe4582",
+ "stage": "label",
+ "item_id": "sphinx-doc__sphinx-10466|claude-opus-5-5|r2",
+ "pass": 2,
+ "cost_usd": 0.01016,
+ "worst_case_usd": 0.08733,
+ "response": {
+  "model": "claude-sonnet-5-5",
+  "id": "msg_011Ch3drnByxREMdftmh6BmV",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+   {
+    "type": "text",
+    "text": "{\"answers\": {\"C01\": \"no\", \"C02\": \"yes\", \"C03\": \"yes\", \"C04\": \"yes\", \"C05\": \"no\", \"C06\": \"no\", \"C07\": \"yes\", \"C08\": \"no\", \"C09\": \"yes\", \"C10\": \"yes\", \"C11\": \"no\", \"C12\": \"no\"}}"
+   }
+  ],
+  "container": null,
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "stop_details": null,
+  "usage": {
+   "input_tokens": 4580,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 100,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global",
+   "speed": "standard"
+  },
+  "diagnostics": null
+ }
+}
