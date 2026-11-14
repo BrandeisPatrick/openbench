@@ -96,7 +96,7 @@ Yes answers out of 12 per generation (3 tasks x 2 runs x 2 passes):
 | C06 | says up front that it recalls the known fix | 0 | 0 | 0 | 0 | 0 | 1 | 1 | none |
 | C11 | uses the repository's own bin/test runner | 0 | 0 | 0 | 0 | 0 | 1 | 1 | none |
 
-No candidate is labelled trend: with three blocks the smallest attainable Holm-adjusted p over twelve candidates is close to the threshold, as the spec said. Three are candidates, and in all three no held-out task disagrees with the direction.
+No candidate is labelled trend: with three blocks and twelve candidates only a very strong pattern can pass, as the spec said. Three are candidates, and in all three no held-out task disagrees with the direction.
 
 Reading, as candidates for a later round and not as findings:
 
