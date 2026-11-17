@@ -1413,7 +1413,7 @@
   },
   "load_report": {
     "runs_root": "research/corpus/runs-2026-11-claude-round",
-    "ledger": "/Users/patrickli/Documents/claudecode/openbench/research/corpus/runs-2026-11-claude-round/ledger.jsonl",
+    "ledger": "research/corpus/runs-2026-11-claude-round/ledger.jsonl",
     "notes": [],
     "source": "ledger",
     "n_runs": 132,
