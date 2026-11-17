@@ -6,7 +6,11 @@ Generates two CSV files next to the corpora and verifies them:
   research/corpus/tasks.csv  one row per task that appears in the corpus
 
 Both files are GENERATED. To change them: edit the constants below, re-run
-this script, commit the result.  `--check` regenerates both in memory and
+this script, commit the result.
+
+Scope: the round 1 batches. A batch folder that carries its own ledger.jsonl
+(round 2 onward, written by `openbench run-round`) is indexed by that ledger
+and skipped here; its analysis reads the ledger, never runs.csv.  `--check` regenerates both in memory and
 exits 1 if the committed files differ or if any invariant listed under
 "Invariants" is broken.  Analysis code reads runs.csv and never parses
 directory names.
@@ -170,6 +174,8 @@ def scan() -> tuple[list[dict], list[dict]]:
     golden_by_task: dict[str, list[str]] = {}
 
     for batch_dir in sorted(p for p in CORPUS.iterdir() if p.is_dir()):
+        if (batch_dir / "ledger.jsonl").is_file():
+            continue  # indexed by its own ledger (see "Scope" above)
         for run_dir in sorted(p for p in batch_dir.iterdir() if p.is_dir()):
             run_id = run_dir.name
             files = {p.name for p in run_dir.iterdir()}

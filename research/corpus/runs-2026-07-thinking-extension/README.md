@@ -12,7 +12,7 @@ data and grades remain.
 ## Contents
 
 `<task>--<harness>--<model>--<timestamp>/` — one run: `run.json`,
-`raw_transcript.jsonl`, `events.jsonl`, `workspace.patch`, `grade.json`,
+`raw_transcript.jsonl`, `workspace.patch`, `grade.json`,
 `runner_error.log` (crashes only). Where present,
 `grade.json.orig*` are superseded grades kept as an audit trail (see
 Data-quality notes).
@@ -45,3 +45,10 @@ Data-quality notes).
 The experiment was restarted 2026-08-28: no analysis pipeline ships with
 this corpus. Analyze the raw artifacts directly; grades derive from
 `grade.json` as applies ∧ builds ∧ all F2P pass ∧ no P2P failures.
+
+## 2026-11-16: derived files removed
+
+The per-run `events.jsonl` files (normalized trace events derived from
+`raw_transcript.jsonl` by the old trace adapters) were deleted together with
+that code: nothing read them any more. They are in git history before
+this change. `raw_transcript.jsonl` is the source and is unchanged.

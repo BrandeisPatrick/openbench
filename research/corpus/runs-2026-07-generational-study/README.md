@@ -24,7 +24,7 @@ included. Scope changes since the freeze:
 
 - `<task>--<harness>--<model>--<timestamp>/` — one run:
   `run.json` (outcome, cost, tokens), `raw_transcript.jsonl` (every API turn +
-  executed command + output), `events.jsonl` (normalized TraceEvents),
+  executed command + output),
   `workspace.patch` (the agent's diff), `grade.json` (F2P/P2P + anti-cheat),
   `runner_error.log` (crashes only).
 
@@ -52,3 +52,10 @@ this corpus. Analyze the raw artifacts directly; grades derive from
 Caps used for every run: 100 turns, $2.50, 2 h wall clock, `--runner native`
 (tooluse protocol for DeepSeek, gpt-responses for OpenAI — identical within
 each generation pair).
+
+## 2026-11-16: derived files removed
+
+The per-run `events.jsonl` files (normalized trace events derived from
+`raw_transcript.jsonl` by the old trace adapters) were deleted together with
+that code: nothing read them any more. They are in git history before
+this change. `raw_transcript.jsonl` is the source and is unchanged.
