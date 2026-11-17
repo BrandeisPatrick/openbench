@@ -1,8 +1,7 @@
 """claude-native runner: native tool-use scaffold (the Claude scaffold fix).
 
 Offline tests with an injected fake Anthropic client — verifies the tool_use
-loop, thinking capture, DONE handling, cost cap, and that the transcript is in
-mini-swe schema so the existing adapter+metrics normalize it unchanged.
+loop, thinking capture, DONE handling and the cost cap.
 """
 
 from __future__ import annotations
@@ -78,38 +77,6 @@ def test_tooluse_loop_executes_and_completes(tmp_path, monkeypatch):
     api = [r for r in lines if r["type"] == "api_response"]
     assert api[0]["reasoning_content"] == "let me look at the repo first"
     assert "ls src/" in [r["command"] for r in lines if r["type"] == "exec"]
-
-
-def test_transcript_normalizes_via_mini_swe_adapter(tmp_path, monkeypatch):
-    """The whole point: claude-native output flows through the mini-swe adapter
-    and the standard metrics with zero special-casing."""
-    monkeypatch.setattr(paths, "TASKS", tmp_path / "tasks")
-    monkeypatch.setattr(
-        "openbench.runners.harness.dockerutil.exec_in",
-        lambda *a, **k: type("R", (), {"exit_code": 1, "stdout": "", "stderr": "boom"})(),
-    )
-    task = _task(tmp_path)
-    replies = iter([
-        _assistant([{"type": "text", "text": "run tests"}, _tool_use("pytest tests/")]),
-        _assistant([_tool_use("echo OPENBENCH_DONE")]),
-    ])
-    runner = Harness(AnthropicToolUseProtocol(chat_fn=lambda m: next(replies)))
-    run_path = tmp_path / "run"
-    run_path.mkdir()
-    runner.run(task, "c", run_path, "claude-fable-5", RunLimits(max_turns=10, max_cost_usd=5.0))
-
-    from openbench.models import RunResult
-    from openbench.traces.adapters.mini_swe import normalize
-
-    run = RunResult(
-        run_id="r", task_id="demo__repo-1", harness="claude-native",
-        model="claude-fable-5", started_at=datetime(2026, 6, 1, tzinfo=UTC),
-    )
-    events = normalize(run, run_path / "raw_transcript.jsonl")
-    types = {e.type for e in events}
-    assert "thinking" not in types or True  # thinking optional
-    assert "assistant_msg" in types
-    assert any(e.type in ("test_run", "shell") for e in events)  # pytest classified
 
 
 def test_cost_cap_binds(tmp_path, monkeypatch):

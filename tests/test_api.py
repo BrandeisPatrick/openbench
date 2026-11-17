@@ -10,7 +10,7 @@ def test_all_verbs_and_models_exported():
     for name in [
         "build_task", "build_env", "validate",
         "run", "grade",
-        "Task", "RunResult", "TraceEvent", "GradeReport",
+        "Task", "RunResult", "GradeReport",
     ]:
         assert hasattr(ob, name), f"openbench.{name} missing from public API"
 

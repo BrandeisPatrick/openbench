@@ -11,9 +11,7 @@ CANDIDATES = DATASETS / "candidates"
 TASKS = DATASETS / "tasks"
 RUNS = ROOT / "runs"
 CONFIGS = ROOT / "configs"
-DB_PATH = DATASETS / "openbench.duckdb"
 GH_CACHE = DATASETS / "candidates" / ".gh_cache"
-REPO_CACHE = DATASETS / ".repo_cache"
 
 
 def task_dir(task_id: str) -> Path:

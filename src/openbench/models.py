@@ -151,44 +151,6 @@ class RunResult(BaseModel):
     effort: str | None = None
 
 
-EventType = Literal[
-    "run_start",
-    "run_end",
-    "thinking",
-    "assistant_msg",
-    "tool_call",
-    "tool_result",
-    "file_edit",
-    "test_run",
-    "search",
-    "shell",
-    "error",
-]
-
-
-class TraceEvent(BaseModel):
-    """One normalized step in an agent trace. JSONL at runs/<run_id>/events.jsonl."""
-
-    event_id: str
-    run_id: str
-    task_id: str
-    harness: str
-    model: str
-    step_idx: int
-    ts: datetime | None = None
-    type: EventType
-    content: str | None = None
-    tool_name: str | None = None
-    tool_args_digest: dict[str, Any] = Field(default_factory=dict)
-    files_touched: list[str] = Field(default_factory=list)
-    exit_code: int | None = None
-    tokens_in: int = 0
-    tokens_out: int = 0
-    tokens_thinking: int = 0
-    cum_cost_usd: float = 0.0
-    derived: dict[str, Any] = Field(default_factory=dict)
-
-
 class AntiCheatReport(BaseModel):
     test_tampering: bool = False
     tampered_files: list[str] = Field(default_factory=list)

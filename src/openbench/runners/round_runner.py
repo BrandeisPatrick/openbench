@@ -374,10 +374,6 @@ class Budget:
             self.in_flight -= cap
             self.spent += cost
 
-    def headroom(self) -> float:
-        with self._lock:
-            return self.limit - self.spent - self.in_flight
-
 
 # ------------------------------------------------------------------ run / grade
 

@@ -27,7 +27,6 @@ from openbench.models import (
     RunLimits,
     RunResult,
     Task,
-    TraceEvent,
 )
 
 __all__ = [
@@ -35,6 +34,6 @@ __all__ = [
     "build_task", "build_env", "validate",
     "run", "grade",
     # core models (the unified data contracts)
-    "Task", "RunResult", "TraceEvent", "GradeReport",
+    "Task", "RunResult", "GradeReport",
     "RunLimits", "PRCandidate", "HardnessTier",
 ]
