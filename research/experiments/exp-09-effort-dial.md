@@ -12,7 +12,7 @@ Why it is in the round. exp-08 can only find a trend the measures are able to se
 
 ## Protocol source
 
-- Effort as a manipulated condition: round 1 [exp-02](exp-02-effort-modes.md) (proposed, never run), here on one model only.
+- Effort as a manipulated condition: round 1 [exp-02](https://github.com/BrandeisPatrick/openbench/blob/bd1fdf58e00ab2549b73bd7228a591df50148fba/research/experiments/exp-02-effort-modes.md) (proposed, never run), here on one model only.
 - Known-cause check of a measuring instrument: planted-pattern recall as used in exp-07 Part B and reviewed in `reports/Agent pattern discovery experiments.md`.
 
 ## Design
