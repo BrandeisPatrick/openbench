@@ -1,0 +1,67 @@
+{
+ "status": "ok",
+ "answer": {
+  "differences": [
+   {
+    "name": "Calls completion signal",
+    "inclusion_criterion": "Run executes the command `echo OPENBENCH_DONE` at some turn.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     55
+    ]
+   },
+   {
+    "name": "Systematic before/after failure diffing",
+    "inclusion_criterion": "Run writes sorted FAILED-test lists from runs with and without the patch (via git stash) to files and diffs them, rather than just eyeballing individual test outcomes.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     23,
+     27,
+     28,
+     31,
+     32,
+     36,
+     37,
+     38,
+     39,
+     40,
+     41
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Inspects XFAIL markers of failing tests",
+    "inclusion_criterion": "Run greps or views test source around a failing test to check whether it is decorated @XFAIL (expected failure).",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     30,
+     32,
+     34,
+     37
+    ]
+   },
+   {
+    "name": "Hits command timeout",
+    "inclusion_criterion": "At least one command ends with exit code 124 or a 'timeout after' message from the harness.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     29
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Reviews final diff before finishing",
+    "inclusion_criterion": "Run executes `git diff` on the modified source file to display the patch content.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     39,
+     54
+    ]
+   }
+  ]
+ },
+ "raw_text": "{\"differences\":[{\"name\":\"Calls completion signal\",\"inclusion_criterion\":\"Run executes the command `echo OPENBENCH_DONE` at some turn.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[55]},{\"name\":\"Systematic before/after failure diffing\",\"inclusion_criterion\":\"Run writes sorted FAILED-test lists from runs with and without the patch (via git stash) to files and diffs them, rather than just eyeballing individual test outcomes.\",\"shown_by\":\"A\",\"evidence_turns_A\":[23,27,28,31,32,36,37,38,39,40,41],\"evidence_turns_B\":[]},{\"name\":\"Inspects XFAIL markers of failing tests\",\"inclusion_criterion\":\"Run greps or views test source around a failing test to check whether it is decorated @XFAIL (expected failure).\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[30,32,34,37]},{\"name\":\"Hits command timeout\",\"inclusion_criterion\":\"At least one command ends with exit code 124 or a 'timeout after' message from the harness.\",\"shown_by\":\"A\",\"evidence_turns_A\":[29],\"evidence_turns_B\":[]},{\"name\":\"Reviews final diff before finishing\",\"inclusion_criterion\":\"Run executes `git diff` on the modified source file to display the patch content.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[39,54]}]}"
+}

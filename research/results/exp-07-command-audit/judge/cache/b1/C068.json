@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "search",
+  "reason": "The command runs a recursive grep through the sympy directory and pipes it to head, so it is a search."
+ },
+ "raw_text": "{\"label\":\"search\",\"reason\":\"The command runs a recursive grep through the sympy directory and pipes it to head, so it is a search.\"}"
+}

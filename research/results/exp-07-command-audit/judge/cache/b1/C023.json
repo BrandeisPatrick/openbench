@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "read",
+  "reason": "Uses head to print file content (piped through grep to filter), and read outranks search in the priority order."
+ },
+ "raw_text": "{\"label\":\"read\",\"reason\":\"Uses head to print file content (piped through grep to filter), and read outranks search in the priority order.\"}"
+}

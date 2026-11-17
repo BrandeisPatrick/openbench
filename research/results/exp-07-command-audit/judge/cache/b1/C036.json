@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "search",
+  "reason": "The command is a recursive grep for printer class names, piped through grep filters, with no edits, tests or execution."
+ },
+ "raw_text": "{\"label\":\"search\",\"reason\":\"The command is a recursive grep for printer class names, piped through grep filters, with no edits, tests or execution.\"}"
+}

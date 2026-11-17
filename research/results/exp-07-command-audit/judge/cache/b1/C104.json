@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "read",
+  "reason": "The command uses sed -n to print lines 210-230 of a repo source file. That is reading file content, and nothing in it edits, tests or runs code."
+ },
+ "raw_text": "{\"label\":\"read\",\"reason\":\"The command uses sed -n to print lines 210-230 of a repo source file. That is reading file content, and nothing in it edits, tests or runs code.\"}"
+}

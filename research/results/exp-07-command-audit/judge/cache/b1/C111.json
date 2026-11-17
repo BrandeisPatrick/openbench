@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "Runs an inline python -c snippet that prints Poly's _op_priority and writes no repo file."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"Runs an inline python -c snippet that prints Poly's _op_priority and writes no repo file.\"}"
+}

@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "search",
+  "reason": "The command is a single grep for a function definition in a repo file, so it counts as a search."
+ },
+ "raw_text": "{\"label\":\"search\",\"reason\":\"The command is a single grep for a function definition in a repo file, so it counts as a search.\"}"
+}

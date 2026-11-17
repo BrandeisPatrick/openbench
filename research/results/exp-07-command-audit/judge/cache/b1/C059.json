@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "test",
+  "reason": "The command invokes pytest, a test runner, to run the test suite; it exited 1 on a collection error."
+ },
+ "raw_text": "{\"label\":\"test\",\"reason\":\"The command invokes pytest, a test runner, to run the test suite; it exited 1 on a collection error.\"}"
+}

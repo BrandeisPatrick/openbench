@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "read",
+  "reason": "The command combines git log, grep and a sed -n print of file content, and read (sed -n) ranks higher in priority than search and vcs."
+ },
+ "raw_text": "{\"label\":\"read\",\"reason\":\"The command combines git log, grep and a sed -n print of file content, and read (sed -n) ranks higher in priority than search and vcs.\"}"
+}

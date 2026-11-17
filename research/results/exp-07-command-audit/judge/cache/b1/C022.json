@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "Writes a scratch script to /tmp and then executes it with python outside a test runner; run outranks scratch."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"Writes a scratch script to /tmp and then executes it with python outside a test runner; run outranks scratch.\"}"
+}

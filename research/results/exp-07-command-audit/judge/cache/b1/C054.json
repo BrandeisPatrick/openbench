@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "search",
+  "reason": "The command is only a grep for a function definition in a repo file, so search is the highest class present."
+ },
+ "raw_text": "{\"label\":\"search\",\"reason\":\"The command is only a grep for a function definition in a repo file, so search is the highest class present.\"}"
+}

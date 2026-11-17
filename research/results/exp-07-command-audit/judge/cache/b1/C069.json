@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "edit",
+  "reason": "Uses a heredoc redirection to create a new test file inside the repo (sympy/core/tests/), which counts as writing a file under /repo."
+ },
+ "raw_text": "{\"label\":\"edit\",\"reason\":\"Uses a heredoc redirection to create a new test file inside the repo (sympy/core/tests/), which counts as writing a file under /repo.\"}"
+}

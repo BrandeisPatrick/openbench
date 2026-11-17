@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "test",
+  "reason": "The command runs pytest on a test file, which makes it a test-runner invocation; piping the output through tail does not change that."
+ },
+ "raw_text": "{\"label\":\"test\",\"reason\":\"The command runs pytest on a test file, which makes it a test-runner invocation; piping the output through tail does not change that.\"}"
+}

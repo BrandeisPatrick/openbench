@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "search",
+  "reason": "The command greps the sympy source for symbols() calls that pass cls, and the trailing echo is not the completion marker."
+ },
+ "raw_text": "{\"label\":\"search\",\"reason\":\"The command greps the sympy source for symbols() calls that pass cls, and the trailing echo is not the completion marker.\"}"
+}

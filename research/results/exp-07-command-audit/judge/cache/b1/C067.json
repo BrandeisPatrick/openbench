@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "test",
+  "reason": "The command invokes pytest on the sympy core tests (piped to tail), which makes it a test-runner invocation even though it failed on an unrecognized argument."
+ },
+ "raw_text": "{\"label\":\"test\",\"reason\":\"The command invokes pytest on the sympy core tests (piped to tail), which makes it a test-runner invocation even though it failed on an unrecognized argument.\"}"
+}

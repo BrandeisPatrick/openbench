@@ -1,0 +1,60 @@
+{
+ "status": "ok",
+ "answer": {
+  "differences": [
+   {
+    "name": "Runs code to check its changes",
+    "inclusion_criterion": "The run executes at least one command that runs Python code (a script or tests) to observe how the modified code behaves before it signals completion.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     3,
+     8,
+     9,
+     10
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Overwrites whole source file",
+    "inclusion_criterion": "The run replaces an entire existing repository source file with new content (e.g. `cat > existing_file.py << EOF`) instead of editing it in place or appending to it.",
+    "shown_by": "B",
+    "evidence_turns_A": [
+     5
+    ],
+    "evidence_turns_B": [
+     1
+    ]
+   },
+   {
+    "name": "Restores file from backup",
+    "inclusion_criterion": "The run copies or restores a source file from a backup copy (for example `cp file.bak file`) after a breakage.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     9
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Declares done after observing failure",
+    "inclusion_criterion": "The run's last test or script output, shown before `echo OPENBENCH_DONE`, has results that differ from the expected values written in its own test comments or printouts (e.g. `x*Poly(...)` still unevaluated), and the run then signals done.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     10,
+     12
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Done in two commands",
+    "inclusion_criterion": "The run signals completion within two or fewer commands in total.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     1,
+     2
+    ]
+   }
+  ]
+ },
+ "raw_text": "{\"differences\":[{\"name\":\"Runs code to check its changes\",\"inclusion_criterion\":\"The run executes at least one command that runs Python code (a script or tests) to observe how the modified code behaves before it signals completion.\",\"shown_by\":\"A\",\"evidence_turns_A\":[3,8,9,10],\"evidence_turns_B\":[]},{\"name\":\"Overwrites whole source file\",\"inclusion_criterion\":\"The run replaces an entire existing repository source file with new content (e.g. `cat > existing_file.py << EOF`) instead of editing it in place or appending to it.\",\"shown_by\":\"B\",\"evidence_turns_A\":[5],\"evidence_turns_B\":[1]},{\"name\":\"Restores file from backup\",\"inclusion_criterion\":\"The run copies or restores a source file from a backup copy (for example `cp file.bak file`) after a breakage.\",\"shown_by\":\"A\",\"evidence_turns_A\":[9],\"evidence_turns_B\":[]},{\"name\":\"Declares done after observing failure\",\"inclusion_criterion\":\"The run's last test or script output, shown before `echo OPENBENCH_DONE`, has results that differ from the expected values written in its own test comments or printouts (e.g. `x*Poly(...)` still unevaluated), and the run then signals done.\",\"shown_by\":\"A\",\"evidence_turns_A\":[10,12],\"evidence_turns_B\":[]},{\"name\":\"Done in two commands\",\"inclusion_criterion\":\"The run signals completion within two or fewer commands in total.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[1,2]}]}"
+}

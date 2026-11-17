@@ -1,0 +1,64 @@
+{
+ "status": "ok",
+ "answer": {
+  "differences": [
+   {
+    "name": "Baseline comparison via git stash",
+    "inclusion_criterion": "Run uses git stash (or equivalent revert) to rerun failing tests on the unmodified code to check whether failures pre-exist",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     25,
+     27,
+     30
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Runs tests beyond target test file",
+    "inclusion_criterion": "Run executes test suites other than sympy/printing/tests/test_pycode.py (e.g., test_lambdify, whole printing tests, codegen/parsing tests, doctests)",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     24,
+     26,
+     29,
+     31,
+     32,
+     33,
+     36
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Reproduces bug before editing",
+    "inclusion_criterion": "Run executes code printing Min/Max via pycode before making any source modification, showing the original output",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     15
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Checks line-length style",
+    "inclusion_criterion": "Run checks source lines for length >79 chars and reformats the edit accordingly",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     13,
+     14,
+     15
+    ]
+   },
+   {
+    "name": "Verifies subclass printers and overrides",
+    "inclusion_criterion": "Run explicitly checks the fix's effect on other printers (NumPy/Mpmath) or user_functions override behavior",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     22,
+     34
+    ],
+    "evidence_turns_B": []
+   }
+  ]
+ },
+ "raw_text": "{\"differences\":[{\"name\":\"Baseline comparison via git stash\",\"inclusion_criterion\":\"Run uses git stash (or equivalent revert) to rerun failing tests on the unmodified code to check whether failures pre-exist\",\"shown_by\":\"A\",\"evidence_turns_A\":[25,27,30],\"evidence_turns_B\":[]},{\"name\":\"Runs tests beyond target test file\",\"inclusion_criterion\":\"Run executes test suites other than sympy/printing/tests/test_pycode.py (e.g., test_lambdify, whole printing tests, codegen/parsing tests, doctests)\",\"shown_by\":\"A\",\"evidence_turns_A\":[24,26,29,31,32,33,36],\"evidence_turns_B\":[]},{\"name\":\"Reproduces bug before editing\",\"inclusion_criterion\":\"Run executes code printing Min/Max via pycode before making any source modification, showing the original output\",\"shown_by\":\"A\",\"evidence_turns_A\":[15],\"evidence_turns_B\":[]},{\"name\":\"Checks line-length style\",\"inclusion_criterion\":\"Run checks source lines for length >79 chars and reformats the edit accordingly\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[13,14,15]},{\"name\":\"Verifies subclass printers and overrides\",\"inclusion_criterion\":\"Run explicitly checks the fix's effect on other printers (NumPy/Mpmath) or user_functions override behavior\",\"shown_by\":\"A\",\"evidence_turns_A\":[22,34],\"evidence_turns_B\":[]}]}"
+}

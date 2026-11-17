@@ -1,0 +1,182 @@
+{
+ "sympy__sympy-13757|g1|deepseek-openai": {
+  "A": "sympy__sympy-13757--tooluse--openrouter_deepseek_deepseek-r1-0528--20260712-170539-939797",
+  "B": "sympy__sympy-13757--gpt-responses--o1--20260712-153310-631428",
+  "A_model": "r1-0528",
+  "B_model": "o1",
+  "truncated": [
+   false,
+   false
+  ]
+ },
+ "sympy__sympy-13757|g1|openai-kimi": {
+  "A": "sympy__sympy-13757--tooluse--openrouter_moonshotai_kimi-k2-thinking--20260828-195902-670888",
+  "B": "sympy__sympy-13757--gpt-responses--o1--20260712-153310-631428",
+  "A_model": "kimi-k2-thinking",
+  "B_model": "o1",
+  "truncated": [
+   false,
+   false
+  ]
+ },
+ "sympy__sympy-13757|g1|kimi-deepseek": {
+  "A": "sympy__sympy-13757--tooluse--openrouter_deepseek_deepseek-r1-0528--20260712-170539-939797",
+  "B": "sympy__sympy-13757--tooluse--openrouter_moonshotai_kimi-k2-thinking--20260828-195902-670888",
+  "A_model": "r1-0528",
+  "B_model": "kimi-k2-thinking",
+  "truncated": [
+   false,
+   false
+  ]
+ },
+ "sympy__sympy-13757|g2|deepseek-openai": {
+  "A": "sympy__sympy-13757--tooluse--openrouter_deepseek_deepseek-v3.2--20260712-174258-968246",
+  "B": "sympy__sympy-13757--gpt-responses--o3--20260712-153942-739830",
+  "A_model": "v3.2",
+  "B_model": "o3",
+  "truncated": [
+   false,
+   false
+  ]
+ },
+ "sympy__sympy-13757|g2|openai-kimi": {
+  "A": "sympy__sympy-13757--gpt-responses--o3--20260712-153942-739830",
+  "B": "sympy__sympy-13757--tooluse--kimi-k2.6--20260719-223352-976838",
+  "A_model": "o3",
+  "B_model": "kimi-k2.6",
+  "truncated": [
+   false,
+   false
+  ]
+ },
+ "sympy__sympy-13757|g2|kimi-deepseek": {
+  "A": "sympy__sympy-13757--tooluse--kimi-k2.6--20260719-223352-976838",
+  "B": "sympy__sympy-13757--tooluse--openrouter_deepseek_deepseek-v3.2--20260712-174258-968246",
+  "A_model": "kimi-k2.6",
+  "B_model": "v3.2",
+  "truncated": [
+   false,
+   false
+  ]
+ },
+ "sympy__sympy-13757|g3|deepseek-openai": {
+  "A": "sympy__sympy-13757--gpt-responses--gpt-5.5--20260707-070231-330049",
+  "B": "sympy__sympy-13757--tooluse--deepseek-v4-pro--20260707-062613-347354",
+  "A_model": "gpt-5.5",
+  "B_model": "v4-pro",
+  "truncated": [
+   false,
+   false
+  ]
+ },
+ "sympy__sympy-13757|g3|openai-kimi": {
+  "A": "sympy__sympy-13757--tooluse--kimi-k3--20260719-224336-014137",
+  "B": "sympy__sympy-13757--gpt-responses--gpt-5.5--20260707-070231-330049",
+  "A_model": "kimi-k3",
+  "B_model": "gpt-5.5",
+  "truncated": [
+   false,
+   false
+  ]
+ },
+ "sympy__sympy-13757|g3|kimi-deepseek": {
+  "A": "sympy__sympy-13757--tooluse--kimi-k3--20260719-224336-014137",
+  "B": "sympy__sympy-13757--tooluse--deepseek-v4-pro--20260707-062613-347354",
+  "A_model": "kimi-k3",
+  "B_model": "v4-pro",
+  "truncated": [
+   false,
+   false
+  ]
+ },
+ "sympy__sympy-22914|g1|deepseek-openai": {
+  "A": "sympy__sympy-22914--gpt-responses--o1--20260718-014459-745642",
+  "B": "sympy__sympy-22914--tooluse--openrouter_deepseek_deepseek-r1-0528--20260712-180300-459743",
+  "A_model": "o1",
+  "B_model": "r1-0528",
+  "truncated": [
+   false,
+   false
+  ]
+ },
+ "sympy__sympy-22914|g1|openai-kimi": {
+  "A": "sympy__sympy-22914--tooluse--openrouter_moonshotai_kimi-k2-thinking--20260828-200409-639680",
+  "B": "sympy__sympy-22914--gpt-responses--o1--20260718-014459-745642",
+  "A_model": "kimi-k2-thinking",
+  "B_model": "o1",
+  "truncated": [
+   false,
+   false
+  ]
+ },
+ "sympy__sympy-22914|g1|kimi-deepseek": {
+  "A": "sympy__sympy-22914--tooluse--openrouter_moonshotai_kimi-k2-thinking--20260828-200409-639680",
+  "B": "sympy__sympy-22914--tooluse--openrouter_deepseek_deepseek-r1-0528--20260712-180300-459743",
+  "A_model": "kimi-k2-thinking",
+  "B_model": "r1-0528",
+  "truncated": [
+   false,
+   false
+  ]
+ },
+ "sympy__sympy-22914|g2|deepseek-openai": {
+  "A": "sympy__sympy-22914--gpt-responses--o3--20260718-014505-262029",
+  "B": "sympy__sympy-22914--tooluse--openrouter_deepseek_deepseek-v3.2--20260712-183401-090021",
+  "A_model": "o3",
+  "B_model": "v3.2",
+  "truncated": [
+   false,
+   false
+  ]
+ },
+ "sympy__sympy-22914|g2|openai-kimi": {
+  "A": "sympy__sympy-22914--gpt-responses--o3--20260718-014505-262029",
+  "B": "sympy__sympy-22914--tooluse--kimi-k2.6--20260719-224256-046072",
+  "A_model": "o3",
+  "B_model": "kimi-k2.6",
+  "truncated": [
+   false,
+   false
+  ]
+ },
+ "sympy__sympy-22914|g2|kimi-deepseek": {
+  "A": "sympy__sympy-22914--tooluse--openrouter_deepseek_deepseek-v3.2--20260712-183401-090021",
+  "B": "sympy__sympy-22914--tooluse--kimi-k2.6--20260719-224256-046072",
+  "A_model": "v3.2",
+  "B_model": "kimi-k2.6",
+  "truncated": [
+   false,
+   false
+  ]
+ },
+ "sympy__sympy-22914|g3|deepseek-openai": {
+  "A": "sympy__sympy-22914--gpt-responses--gpt-5.5--20260707-212719-499106",
+  "B": "sympy__sympy-22914--tooluse--deepseek-v4-pro--20260707-093629-801507",
+  "A_model": "gpt-5.5",
+  "B_model": "v4-pro",
+  "truncated": [
+   false,
+   false
+  ]
+ },
+ "sympy__sympy-22914|g3|openai-kimi": {
+  "A": "sympy__sympy-22914--tooluse--kimi-k3--20260719-225650-056756",
+  "B": "sympy__sympy-22914--gpt-responses--gpt-5.5--20260707-212719-499106",
+  "A_model": "kimi-k3",
+  "B_model": "gpt-5.5",
+  "truncated": [
+   false,
+   false
+  ]
+ },
+ "sympy__sympy-22914|g3|kimi-deepseek": {
+  "A": "sympy__sympy-22914--tooluse--kimi-k3--20260719-225650-056756",
+  "B": "sympy__sympy-22914--tooluse--deepseek-v4-pro--20260707-093629-801507",
+  "A_model": "kimi-k3",
+  "B_model": "v4-pro",
+  "truncated": [
+   false,
+   false
+  ]
+ }
+}

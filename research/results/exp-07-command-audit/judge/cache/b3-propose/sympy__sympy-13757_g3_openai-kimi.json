@@ -1,0 +1,74 @@
+{
+ "status": "ok",
+ "answer": {
+  "differences": [
+   {
+    "name": "Baseline comparison via git stash",
+    "inclusion_criterion": "Run stashes its changes (git stash) to rerun tests on the unmodified code and compare failure lists before vs after the change.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     17,
+     21,
+     23,
+     27,
+     28,
+     31,
+     32,
+     34,
+     36,
+     37,
+     39,
+     41
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Adds new test file",
+    "inclusion_criterion": "Run creates a new test file in the repository (e.g., under sympy/*/tests/).",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     20
+    ]
+   },
+   {
+    "name": "Modifies core Expr arithmetic",
+    "inclusion_criterion": "Run edits sympy/core/expr.py (e.g., changing Expr.__mul__) rather than only setting a priority attribute on Poly.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     27,
+     36,
+     42
+    ]
+   },
+   {
+    "name": "Broad cross-module regression testing",
+    "inclusion_criterion": "Run executes test suites from multiple sympy subpackages outside polys (e.g., core, printing, matrices, simplify, solvers, series).",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     22,
+     23,
+     28,
+     31,
+     32,
+     34,
+     38,
+     40,
+     42
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Calls completion signal",
+    "inclusion_criterion": "Run executes `echo OPENBENCH_DONE`.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     46
+    ]
+   }
+  ]
+ },
+ "raw_text": "{\"differences\":[{\"name\":\"Baseline comparison via git stash\",\"inclusion_criterion\":\"Run stashes its changes (git stash) to rerun tests on the unmodified code and compare failure lists before vs after the change.\",\"shown_by\":\"A\",\"evidence_turns_A\":[17,21,23,27,28,31,32,34,36,37,39,41],\"evidence_turns_B\":[]},{\"name\":\"Adds new test file\",\"inclusion_criterion\":\"Run creates a new test file in the repository (e.g., under sympy/*/tests/).\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[20]},{\"name\":\"Modifies core Expr arithmetic\",\"inclusion_criterion\":\"Run edits sympy/core/expr.py (e.g., changing Expr.__mul__) rather than only setting a priority attribute on Poly.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[27,36,42]},{\"name\":\"Broad cross-module regression testing\",\"inclusion_criterion\":\"Run executes test suites from multiple sympy subpackages outside polys (e.g., core, printing, matrices, simplify, solvers, series).\",\"shown_by\":\"A\",\"evidence_turns_A\":[22,23,28,31,32,34,38,40,42],\"evidence_turns_B\":[]},{\"name\":\"Calls completion signal\",\"inclusion_criterion\":\"Run executes `echo OPENBENCH_DONE`.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[46]}]}"
+}

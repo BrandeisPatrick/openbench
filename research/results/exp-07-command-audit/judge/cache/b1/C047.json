@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "Runs an inline Python heredoc that imports and reloads sympy without writing any file."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"Runs an inline Python heredoc that imports and reloads sympy without writing any file.\"}"
+}

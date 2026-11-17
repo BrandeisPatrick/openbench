@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "edit",
+  "reason": "A Python heredoc script rewrites a block of sympy/core/symbol.py, which is a file inside the repo."
+ },
+ "raw_text": "{\"label\":\"edit\",\"reason\":\"A Python heredoc script rewrites a block of sympy/core/symbol.py, which is a file inside the repo.\"}"
+}

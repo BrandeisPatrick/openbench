@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "search",
+  "reason": "The command uses grep to look up occurrences of _known_functions in a repo file."
+ },
+ "raw_text": "{\"label\":\"search\",\"reason\":\"The command uses grep to look up occurrences of _known_functions in a repo file.\"}"
+}

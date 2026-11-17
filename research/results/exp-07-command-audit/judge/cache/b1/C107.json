@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "edit",
+  "reason": "A Python heredoc script rewrites the __add__/__radd__ section of sympy/polys/polytools.py, so it writes a repo file."
+ },
+ "raw_text": "{\"label\":\"edit\",\"reason\":\"A Python heredoc script rewrites the __add__/__radd__ section of sympy/polys/polytools.py, so it writes a repo file.\"}"
+}

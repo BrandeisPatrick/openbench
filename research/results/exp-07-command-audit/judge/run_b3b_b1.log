@@ -1,0 +1,4 @@
+b3-label: {'ok': 27}; running total $6.50
+b1: {'ok': 120}; running total $7.16
+wrote research/results/exp-07-command-audit/judge/summary.json
+exit=0

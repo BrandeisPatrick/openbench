@@ -1,0 +1,70 @@
+{
+ "status": "ok",
+ "answer": {
+  "differences": [
+   {
+    "name": "Modifies source files",
+    "inclusion_criterion": "Run executes a command that writes changes to a repository source file (e.g., sed -i, patch) and that command succeeds.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     23,
+     55
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Signals task completion",
+    "inclusion_criterion": "Run executes `echo OPENBENCH_DONE`.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     59
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Repeats identical reproduction command",
+    "inclusion_criterion": "Run executes the same (or essentially identical) Python snippet printing pycode(Min(a,b)) three or more times without any code change in between.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     20,
+     26,
+     29,
+     31,
+     39,
+     42,
+     49,
+     78,
+     86,
+     97
+    ]
+   },
+   {
+    "name": "Uses nonexistent patch tool",
+    "inclusion_criterion": "Run invokes a command such as apply_patch/create_patch that fails with exit code 127 'command not found'.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     7,
+     10,
+     15,
+     18,
+     19
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Fixes unrelated failing test",
+    "inclusion_criterion": "Run investigates a test failure outside the task's target area (e.g., numpy diagonal in test_codegen_extra) and edits code to make it pass.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     28,
+     35,
+     55,
+     57
+    ],
+    "evidence_turns_B": []
+   }
+  ]
+ },
+ "raw_text": "{\"differences\":[{\"name\":\"Modifies source files\",\"inclusion_criterion\":\"Run executes a command that writes changes to a repository source file (e.g., sed -i, patch) and that command succeeds.\",\"shown_by\":\"A\",\"evidence_turns_A\":[23,55],\"evidence_turns_B\":[]},{\"name\":\"Signals task completion\",\"inclusion_criterion\":\"Run executes `echo OPENBENCH_DONE`.\",\"shown_by\":\"A\",\"evidence_turns_A\":[59],\"evidence_turns_B\":[]},{\"name\":\"Repeats identical reproduction command\",\"inclusion_criterion\":\"Run executes the same (or essentially identical) Python snippet printing pycode(Min(a,b)) three or more times without any code change in between.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[20,26,29,31,39,42,49,78,86,97]},{\"name\":\"Uses nonexistent patch tool\",\"inclusion_criterion\":\"Run invokes a command such as apply_patch/create_patch that fails with exit code 127 'command not found'.\",\"shown_by\":\"A\",\"evidence_turns_A\":[7,10,15,18,19],\"evidence_turns_B\":[]},{\"name\":\"Fixes unrelated failing test\",\"inclusion_criterion\":\"Run investigates a test failure outside the task's target area (e.g., numpy diagonal in test_codegen_extra) and edits code to make it pass.\",\"shown_by\":\"A\",\"evidence_turns_A\":[28,35,55,57],\"evidence_turns_B\":[]}]}"
+}

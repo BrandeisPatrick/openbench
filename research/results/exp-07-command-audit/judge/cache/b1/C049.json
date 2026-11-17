@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "Runs an inline python -c script that checks pycode output for Min/Max, uses no test runner and writes no files."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"Runs an inline python -c script that checks pycode output for Min/Max, uses no test runner and writes no files.\"}"
+}

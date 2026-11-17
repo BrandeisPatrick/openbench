@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "read",
+  "reason": "The command uses sed -n to print a line range of a repo file without modifying it."
+ },
+ "raw_text": "{\"label\":\"read\",\"reason\":\"The command uses sed -n to print a line range of a repo file without modifying it.\"}"
+}

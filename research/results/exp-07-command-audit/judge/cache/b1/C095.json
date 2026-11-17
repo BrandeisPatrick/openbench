@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "test",
+  "reason": "The command invokes the pytest test runner. It failed with a collection error."
+ },
+ "raw_text": "{\"label\":\"test\",\"reason\":\"The command invokes the pytest test runner. It failed with a collection error.\"}"
+}

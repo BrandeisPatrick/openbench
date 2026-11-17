@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "Runs a Python script directly with python, not through a test runner, and the script writes no repo file."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"Runs a Python script directly with python, not through a test runner, and the script writes no repo file.\"}"
+}

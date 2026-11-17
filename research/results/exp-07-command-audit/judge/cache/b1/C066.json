@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "read",
+  "reason": "The command uses sed -n to print lines 1-80 of a test file without changing it."
+ },
+ "raw_text": "{\"label\":\"read\",\"reason\":\"The command uses sed -n to print lines 1-80 of a test file without changing it.\"}"
+}

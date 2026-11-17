@@ -1,0 +1,5 @@
+b2: {'ok': 57}; running total $2.65
+b3-propose: {'ok': 18}; running total $4.91
+b3-synthesize: {'ok': 1}; running total $5.03
+wrote research/results/exp-07-command-audit/candidates.json (20 candidates)
+exit=0

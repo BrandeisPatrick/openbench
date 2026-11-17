@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "Executes an inline Python snippet with python -c to inspect pycode output, without writing any file or invoking a test runner."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"Executes an inline Python snippet with python -c to inspect pycode output, without writing any file or invoking a test runner.\"}"
+}

@@ -1,0 +1,61 @@
+{
+ "status": "ok",
+ "answer": {
+  "differences": [
+   {
+    "name": "Reproduces bug before fixing",
+    "inclusion_criterion": "Before any edit to source files, the run executes code that prints the current (buggy) output of the target functionality.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     7,
+     8,
+     17
+    ]
+   },
+   {
+    "name": "Enforces line-length style",
+    "inclusion_criterion": "The run checks source lines for length over 79 characters and reformats its own added code to comply.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     13,
+     14,
+     15
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Runs neighboring test suites",
+    "inclusion_criterion": "The run executes test files other than the primary test file for the modified module (e.g., test_numpy.py, test_codeprinter.py).",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     23,
+     27,
+     33
+    ]
+   },
+   {
+    "name": "Checks subclass printer behavior",
+    "inclusion_criterion": "After the fix, the run executes code that exercises printers that subclass or are siblings of the modified class (e.g., MpmathPrinter, SymPyPrinter, NumPyPrinter) to see their output for the changed functionality.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     24,
+     30,
+     31
+    ]
+   },
+   {
+    "name": "Reviews git diff of change",
+    "inclusion_criterion": "The run invokes git diff to inspect its modifications before finishing.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     12
+    ],
+    "evidence_turns_B": []
+   }
+  ]
+ },
+ "raw_text": "{\"differences\":[{\"name\":\"Reproduces bug before fixing\",\"inclusion_criterion\":\"Before any edit to source files, the run executes code that prints the current (buggy) output of the target functionality.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[7,8,17]},{\"name\":\"Enforces line-length style\",\"inclusion_criterion\":\"The run checks source lines for length over 79 characters and reformats its own added code to comply.\",\"shown_by\":\"A\",\"evidence_turns_A\":[13,14,15],\"evidence_turns_B\":[]},{\"name\":\"Runs neighboring test suites\",\"inclusion_criterion\":\"The run executes test files other than the primary test file for the modified module (e.g., test_numpy.py, test_codeprinter.py).\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[23,27,33]},{\"name\":\"Checks subclass printer behavior\",\"inclusion_criterion\":\"After the fix, the run executes code that exercises printers that subclass or are siblings of the modified class (e.g., MpmathPrinter, SymPyPrinter, NumPyPrinter) to see their output for the changed functionality.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[24,30,31]},{\"name\":\"Reviews git diff of change\",\"inclusion_criterion\":\"The run invokes git diff to inspect its modifications before finishing.\",\"shown_by\":\"A\",\"evidence_turns_A\":[12],\"evidence_turns_B\":[]}]}"
+}

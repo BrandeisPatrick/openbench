@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "read",
+  "reason": "The command uses cat to print the contents of a repo source file, and nothing in it edits, tests, or runs code."
+ },
+ "raw_text": "{\"label\":\"read\",\"reason\":\"The command uses cat to print the contents of a repo source file, and nothing in it edits, tests, or runs code.\"}"
+}

@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "Runs an inline python -c script that inspects the printer classes, and it writes no files."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"Runs an inline python -c script that inspects the printer classes, and it writes no files.\"}"
+}

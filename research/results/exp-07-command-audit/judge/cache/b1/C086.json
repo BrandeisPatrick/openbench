@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "The command runs an inline Python snippet with python -c to inspect the result of symbols, and it writes no files."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"The command runs an inline Python snippet with python -c to inspect the result of symbols, and it writes no files.\"}"
+}

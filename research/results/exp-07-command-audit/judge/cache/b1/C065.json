@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "edit",
+  "reason": "The command runs a Python script that restores sympy/polys/polytools.py from its backup with shutil.copyfile, which changes a repo file even though the script later crashes."
+ },
+ "raw_text": "{\"label\":\"edit\",\"reason\":\"The command runs a Python script that restores sympy/polys/polytools.py from its backup with shutil.copyfile, which changes a repo file even though the script later crashes.\"}"
+}

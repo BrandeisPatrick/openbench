@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "read",
+  "reason": "The highest-priority segment is sed -n, which prints part of a repo file, so this is a read. The grep segment is only search, which ranks lower."
+ },
+ "raw_text": "{\"label\":\"read\",\"reason\":\"The highest-priority segment is sed -n, which prints part of a repo file, so this is a read. The grep segment is only search, which ranks lower.\"}"
+}

@@ -1,0 +1,78 @@
+{
+ "status": "ok",
+ "answer": {
+  "differences": [
+   {
+    "name": "Baseline comparison via git stash",
+    "inclusion_criterion": "Run uses git stash (or equivalent revert) to rerun failing tests or behaviors on the unmodified code to check whether failures pre-exist.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     21,
+     24,
+     34,
+     40,
+     43
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Runs the repository test suite",
+    "inclusion_criterion": "Run executes pytest (or another test runner) on repository test files at any point.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     19,
+     20,
+     23,
+     26,
+     27,
+     30,
+     31,
+     32
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Bulk regex rewrite of source file",
+    "inclusion_criterion": "Run uses an inline Python script that rewrites many lines of a source file at once via regex or line loops (for example, inserting decorators across many methods), rather than a single targeted edit.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     77,
+     81,
+     82,
+     91,
+     98
+    ]
+   },
+   {
+    "name": "Edit breaks module import",
+    "inclusion_criterion": "After the run's own edit to source, importing the package fails with a SyntaxError, IndentationError, or AssertionError that comes from the modified file.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     78,
+     83,
+     87,
+     89
+    ]
+   },
+   {
+    "name": "Probes regressions with other types",
+    "inclusion_criterion": "Run tests how the change affects operations between Poly and other object types (for example, Matrix or ImmutableMatrix), beyond the reported Symbol and Integer cases.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     33,
+     36,
+     42,
+     53,
+     66,
+     67,
+     73,
+     74
+    ],
+    "evidence_turns_B": []
+   }
+  ]
+ },
+ "raw_text": "{\"differences\":[{\"name\":\"Baseline comparison via git stash\",\"inclusion_criterion\":\"Run uses git stash (or equivalent revert) to rerun failing tests or behaviors on the unmodified code to check whether failures pre-exist.\",\"shown_by\":\"A\",\"evidence_turns_A\":[21,24,34,40,43],\"evidence_turns_B\":[]},{\"name\":\"Runs the repository test suite\",\"inclusion_criterion\":\"Run executes pytest (or another test runner) on repository test files at any point.\",\"shown_by\":\"A\",\"evidence_turns_A\":[19,20,23,26,27,30,31,32],\"evidence_turns_B\":[]},{\"name\":\"Bulk regex rewrite of source file\",\"inclusion_criterion\":\"Run uses an inline Python script that rewrites many lines of a source file at once via regex or line loops (for example, inserting decorators across many methods), rather than a single targeted edit.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[77,81,82,91,98]},{\"name\":\"Edit breaks module import\",\"inclusion_criterion\":\"After the run's own edit to source, importing the package fails with a SyntaxError, IndentationError, or AssertionError that comes from the modified file.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[78,83,87,89]},{\"name\":\"Probes regressions with other types\",\"inclusion_criterion\":\"Run tests how the change affects operations between Poly and other object types (for example, Matrix or ImmutableMatrix), beyond the reported Symbol and Integer cases.\",\"shown_by\":\"A\",\"evidence_turns_A\":[33,36,42,53,66,67,73,74],\"evidence_turns_B\":[]}]}"
+}

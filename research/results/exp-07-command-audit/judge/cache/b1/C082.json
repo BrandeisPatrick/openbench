@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "search",
+  "reason": "The command runs grep across repo files to locate _op_priority definitions, piping to head only to limit output, and modifies nothing."
+ },
+ "raw_text": "{\"label\":\"search\",\"reason\":\"The command runs grep across repo files to locate _op_priority definitions, piping to head only to limit output, and modifies nothing.\"}"
+}

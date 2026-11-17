@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "edit",
+  "reason": "A Python heredoc script reads sympy/core/symbol.py and writes the modified lines back into this repo file."
+ },
+ "raw_text": "{\"label\":\"edit\",\"reason\":\"A Python heredoc script reads sympy/core/symbol.py and writes the modified lines back into this repo file.\"}"
+}

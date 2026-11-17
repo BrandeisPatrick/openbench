@@ -1,0 +1,74 @@
+{
+ "status": "ok",
+ "answer": {
+  "differences": [
+   {
+    "name": "Explores code before editing",
+    "inclusion_criterion": "Run inspects relevant source (grep/sed/cat of target file or related modules) before making its first modification to the repository.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     12,
+     13,
+     14,
+     16,
+     17
+    ]
+   },
+   {
+    "name": "Overwrites source file wholesale",
+    "inclusion_criterion": "Run replaces an existing repository source file entirely with new content (e.g., cat > existing_file.py heredoc), destroying original contents.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     5
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Runs repo test suite",
+    "inclusion_criterion": "Run executes the project's existing tests (e.g., pytest on sympy test files) at least once.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     26,
+     27,
+     34,
+     38,
+     51
+    ]
+   },
+   {
+    "name": "Verifies failures pre-exist via baseline",
+    "inclusion_criterion": "Run checks whether observed test failures also occur on unmodified code (e.g., git stash, rerun failing tests, then restore).",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     29,
+     31,
+     32,
+     35,
+     39,
+     52
+    ]
+   },
+   {
+    "name": "Declares done despite unfixed bug",
+    "inclusion_criterion": "Run calls the completion command after its latest reproduction output still shows the buggy behavior (e.g., x*Poly(x) printed as unevaluated Mul).",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     10,
+     12
+    ],
+    "evidence_turns_B": []
+   }
+  ]
+ },
+ "raw_text": "{\"differences\":[{\"name\":\"Explores code before editing\",\"inclusion_criterion\":\"Run inspects relevant source (grep/sed/cat of target file or related modules) before making its first modification to the repository.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[1,2,3,4,5,6,7,12,13,14,16,17]},{\"name\":\"Overwrites source file wholesale\",\"inclusion_criterion\":\"Run replaces an existing repository source file entirely with new content (e.g., cat > existing_file.py heredoc), destroying original contents.\",\"shown_by\":\"A\",\"evidence_turns_A\":[5],\"evidence_turns_B\":[]},{\"name\":\"Runs repo test suite\",\"inclusion_criterion\":\"Run executes the project's existing tests (e.g., pytest on sympy test files) at least once.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[26,27,34,38,51]},{\"name\":\"Verifies failures pre-exist via baseline\",\"inclusion_criterion\":\"Run checks whether observed test failures also occur on unmodified code (e.g., git stash, rerun failing tests, then restore).\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[29,31,32,35,39,52]},{\"name\":\"Declares done despite unfixed bug\",\"inclusion_criterion\":\"Run calls the completion command after its latest reproduction output still shows the buggy behavior (e.g., x*Poly(x) printed as unevaluated Mul).\",\"shown_by\":\"A\",\"evidence_turns_A\":[10,12],\"evidence_turns_B\":[]}]}"
+}

@@ -1,0 +1,65 @@
+{
+ "status": "ok",
+ "answer": {
+  "differences": [
+   {
+    "name": "Modifies existing test file",
+    "inclusion_criterion": "The run writes changes to a pre-existing test file (e.g., a script or command that edits a file under a tests/ directory), despite the instruction not to modify existing tests.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     19
+    ]
+   },
+   {
+    "name": "Edits source code",
+    "inclusion_criterion": "The run runs at least one command that modifies a non-test source file in the repository.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     15
+    ]
+   },
+   {
+    "name": "Signals completion",
+    "inclusion_criterion": "The run executes the exact command `echo OPENBENCH_DONE`.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     29
+    ]
+   },
+   {
+    "name": "Repetitive re-running of same reproduction",
+    "inclusion_criterion": "The run executes essentially the same reproduction snippet (pycode(Min(a,b))) five or more times without making any code change in between.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     20,
+     26,
+     29,
+     31,
+     39,
+     42,
+     49,
+     71,
+     78,
+     95,
+     97
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Broken heredoc syntax errors",
+    "inclusion_criterion": "The run issues a heredoc command where text follows the terminator on the same line (e.g., `EOF 2>&1`), producing a here-document warning and a SyntaxError.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     41,
+     65,
+     90
+    ],
+    "evidence_turns_B": []
+   }
+  ]
+ },
+ "raw_text": "{\"differences\":[{\"name\":\"Modifies existing test file\",\"inclusion_criterion\":\"The run writes changes to a pre-existing test file (e.g., a script or command that edits a file under a tests/ directory), despite the instruction not to modify existing tests.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[19]},{\"name\":\"Edits source code\",\"inclusion_criterion\":\"The run runs at least one command that modifies a non-test source file in the repository.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[15]},{\"name\":\"Signals completion\",\"inclusion_criterion\":\"The run executes the exact command `echo OPENBENCH_DONE`.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[29]},{\"name\":\"Repetitive re-running of same reproduction\",\"inclusion_criterion\":\"The run executes essentially the same reproduction snippet (pycode(Min(a,b))) five or more times without making any code change in between.\",\"shown_by\":\"A\",\"evidence_turns_A\":[20,26,29,31,39,42,49,71,78,95,97],\"evidence_turns_B\":[]},{\"name\":\"Broken heredoc syntax errors\",\"inclusion_criterion\":\"The run issues a heredoc command where text follows the terminator on the same line (e.g., `EOF 2>&1`), producing a here-document warning and a SyntaxError.\",\"shown_by\":\"A\",\"evidence_turns_A\":[41,65,90],\"evidence_turns_B\":[]}]}"
+}

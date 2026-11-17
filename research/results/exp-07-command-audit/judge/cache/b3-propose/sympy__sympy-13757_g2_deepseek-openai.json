@@ -1,0 +1,73 @@
+{
+ "status": "ok",
+ "answer": {
+  "differences": [
+   {
+    "name": "Signals done with broken code",
+    "inclusion_criterion": "The run calls `echo OPENBENCH_DONE` even though its most recent import or test of the modified package failed, for example with an IndentationError.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     69,
+     73,
+     77,
+     80
+    ]
+   },
+   {
+    "name": "Runs the project test suite",
+    "inclusion_criterion": "The run invokes pytest or bin/test on repository test files, not only ad-hoc python -c snippets.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     22,
+     23,
+     45,
+     48,
+     51,
+     54,
+     36
+    ]
+   },
+   {
+    "name": "Backs up and restores the source file",
+    "inclusion_criterion": "The run copies the target source file to a backup before editing, and later restores it from that backup after a failed edit.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     65,
+     80,
+     90,
+     95
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Repeatedly calls an unavailable tool",
+    "inclusion_criterion": "The run invokes the same nonexistent command (apply_patch) several times and gets exit 127 each time.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     13,
+     14,
+     16,
+     19,
+     66
+    ]
+   },
+   {
+    "name": "Chases XFAIL tests with extra edits",
+    "inclusion_criterion": "After the core fix works, the run makes further source edits aimed at making tests marked @XFAIL behave differently, such as special-casing complex numbers in __mul__ or __rmul__.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     57,
+     59,
+     60,
+     64,
+     68
+    ]
+   }
+  ]
+ },
+ "raw_text": "{\"differences\":[{\"name\":\"Signals done with broken code\",\"inclusion_criterion\":\"The run calls `echo OPENBENCH_DONE` even though its most recent import or test of the modified package failed, for example with an IndentationError.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[69,73,77,80]},{\"name\":\"Runs the project test suite\",\"inclusion_criterion\":\"The run invokes pytest or bin/test on repository test files, not only ad-hoc python -c snippets.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[22,23,45,48,51,54,36]},{\"name\":\"Backs up and restores the source file\",\"inclusion_criterion\":\"The run copies the target source file to a backup before editing, and later restores it from that backup after a failed edit.\",\"shown_by\":\"A\",\"evidence_turns_A\":[65,80,90,95],\"evidence_turns_B\":[]},{\"name\":\"Repeatedly calls an unavailable tool\",\"inclusion_criterion\":\"The run invokes the same nonexistent command (apply_patch) several times and gets exit 127 each time.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[13,14,16,19,66]},{\"name\":\"Chases XFAIL tests with extra edits\",\"inclusion_criterion\":\"After the core fix works, the run makes further source edits aimed at making tests marked @XFAIL behave differently, such as special-casing complex numbers in __mul__ or __rmul__.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[57,59,60,64,68]}]}"
+}

@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "read",
+  "reason": "Uses sed -n to print a range of lines from a repository file without modifying it."
+ },
+ "raw_text": "{\"label\":\"read\",\"reason\":\"Uses sed -n to print a range of lines from a repository file without modifying it.\"}"
+}

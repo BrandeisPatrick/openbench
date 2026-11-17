@@ -1,0 +1,73 @@
+{
+ "status": "ok",
+ "answer": {
+  "differences": [
+   {
+    "name": "Reads code before editing",
+    "inclusion_criterion": "Run inspects existing source files (cat/head/sed/grep of repo files) before making its first modification to a source file.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     2,
+     3,
+     4,
+     13,
+     18,
+     19
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Overwrites whole source file",
+    "inclusion_criterion": "Run replaces an entire existing source file with freshly written content (e.g. cat > file << EOF) rather than applying a targeted edit.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     1,
+     3,
+     5,
+     9,
+     12,
+     14,
+     16
+    ]
+   },
+   {
+    "name": "Runs existing test suite",
+    "inclusion_criterion": "Run executes the repository's existing tests (e.g. pytest on existing test files) after making changes.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     23,
+     30,
+     31,
+     35,
+     44,
+     45,
+     48,
+     49
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Declares done without passing check",
+    "inclusion_criterion": "Run issues the completion command when its most recent test or verification command before that had failed, or when it ran no successful verification after its last edit.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     15,
+     16,
+     17
+    ]
+   },
+   {
+    "name": "Adds new test file",
+    "inclusion_criterion": "Run creates a new test file under a tests directory.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     2
+    ]
+   }
+  ]
+ },
+ "raw_text": "{\"differences\":[{\"name\":\"Reads code before editing\",\"inclusion_criterion\":\"Run inspects existing source files (cat/head/sed/grep of repo files) before making its first modification to a source file.\",\"shown_by\":\"A\",\"evidence_turns_A\":[2,3,4,13,18,19],\"evidence_turns_B\":[]},{\"name\":\"Overwrites whole source file\",\"inclusion_criterion\":\"Run replaces an entire existing source file with freshly written content (e.g. cat > file << EOF) rather than applying a targeted edit.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[1,3,5,9,12,14,16]},{\"name\":\"Runs existing test suite\",\"inclusion_criterion\":\"Run executes the repository's existing tests (e.g. pytest on existing test files) after making changes.\",\"shown_by\":\"A\",\"evidence_turns_A\":[23,30,31,35,44,45,48,49],\"evidence_turns_B\":[]},{\"name\":\"Declares done without passing check\",\"inclusion_criterion\":\"Run issues the completion command when its most recent test or verification command before that had failed, or when it ran no successful verification after its last edit.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[15,16,17]},{\"name\":\"Adds new test file\",\"inclusion_criterion\":\"Run creates a new test file under a tests directory.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[2]}]}"
+}

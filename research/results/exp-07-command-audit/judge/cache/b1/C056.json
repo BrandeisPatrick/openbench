@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "edit",
+  "reason": "The heredoc writes a new file, /repo/test_comprehensive.py, inside the repo, and edit outranks the later python run."
+ },
+ "raw_text": "{\"label\":\"edit\",\"reason\":\"The heredoc writes a new file, /repo/test_comprehensive.py, inside the repo, and edit outranks the later python run.\"}"
+}

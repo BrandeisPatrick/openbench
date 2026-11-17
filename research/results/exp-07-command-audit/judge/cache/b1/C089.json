@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "edit",
+  "reason": "A Python heredoc script rewrites the factorial_notation function and writes the result back to sympy/parsing/sympy_parser.py, a file in the repo."
+ },
+ "raw_text": "{\"label\":\"edit\",\"reason\":\"A Python heredoc script rewrites the factorial_notation function and writes the result back to sympy/parsing/sympy_parser.py, a file in the repo.\"}"
+}

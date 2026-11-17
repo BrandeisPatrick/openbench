@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "Executes an inline Python snippet with python -c to check Poly/Matrix multiplication behavior; the grep only filters its output, and no file is written."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"Executes an inline Python snippet with python -c to check Poly/Matrix multiplication behavior; the grep only filters its output, and no file is written.\"}"
+}

@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "vcs",
+  "reason": "The command is a `git checkout --` that restores a file, and the taxonomy explicitly lists checkout/restore under vcs."
+ },
+ "raw_text": "{\"label\":\"vcs\",\"reason\":\"The command is a `git checkout --` that restores a file, and the taxonomy explicitly lists checkout/restore under vcs.\"}"
+}

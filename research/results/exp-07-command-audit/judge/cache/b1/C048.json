@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "search",
+  "reason": "The command only runs grep over repo files looking for Min/Max references, with output piped through head, so it is a search."
+ },
+ "raw_text": "{\"label\":\"search\",\"reason\":\"The command only runs grep over repo files looking for Min/Max references, with output piped through head, so it is a search.\"}"
+}

@@ -1,0 +1,74 @@
+{
+ "status": "ok",
+ "answer": {
+  "differences": [
+   {
+    "name": "Overwrites whole source files",
+    "inclusion_criterion": "Run replaces the full contents of an existing repository source file (e.g., cat > existing_file << EOF) instead of making a targeted edit.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     2,
+     4,
+     7,
+     9,
+     13,
+     14,
+     17,
+     18,
+     20,
+     22,
+     24
+    ]
+   },
+   {
+    "name": "Inspects code before editing",
+    "inclusion_criterion": "Run reads the relevant source files (cat/head/sed/grep of the target module) before its first modification of a repository file.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     2,
+     3,
+     4,
+     13,
+     18,
+     19
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Reproduces bug before fix",
+    "inclusion_criterion": "Run executes a script showing the buggy behavior (e.g., pycode(Min(a,b))) before changing any code.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     6,
+     16
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Declares done despite failing tests",
+    "inclusion_criterion": "Run calls echo OPENBENCH_DONE even though its most recent test or import run failed, or after editing without any later run that confirms the edits work.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     23,
+     25
+    ]
+   },
+   {
+    "name": "Verifies fix with targeted tests",
+    "inclusion_criterion": "After modifying code, run executes relevant test files or a reproduction script and the output shows a pass or the corrected behavior.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     22,
+     23,
+     44,
+     49,
+     51
+    ],
+    "evidence_turns_B": []
+   }
+  ]
+ },
+ "raw_text": "{\"differences\":[{\"name\":\"Overwrites whole source files\",\"inclusion_criterion\":\"Run replaces the full contents of an existing repository source file (e.g., cat > existing_file << EOF) instead of making a targeted edit.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[2,4,7,9,13,14,17,18,20,22,24]},{\"name\":\"Inspects code before editing\",\"inclusion_criterion\":\"Run reads the relevant source files (cat/head/sed/grep of the target module) before its first modification of a repository file.\",\"shown_by\":\"A\",\"evidence_turns_A\":[2,3,4,13,18,19],\"evidence_turns_B\":[]},{\"name\":\"Reproduces bug before fix\",\"inclusion_criterion\":\"Run executes a script showing the buggy behavior (e.g., pycode(Min(a,b))) before changing any code.\",\"shown_by\":\"A\",\"evidence_turns_A\":[6,16],\"evidence_turns_B\":[]},{\"name\":\"Declares done despite failing tests\",\"inclusion_criterion\":\"Run calls echo OPENBENCH_DONE even though its most recent test or import run failed, or after editing without any later run that confirms the edits work.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[23,25]},{\"name\":\"Verifies fix with targeted tests\",\"inclusion_criterion\":\"After modifying code, run executes relevant test files or a reproduction script and the output shows a pass or the corrected behavior.\",\"shown_by\":\"A\",\"evidence_turns_A\":[22,23,44,49,51],\"evidence_turns_B\":[]}]}"
+}

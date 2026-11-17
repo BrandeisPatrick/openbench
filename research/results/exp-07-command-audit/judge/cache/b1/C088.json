@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "test",
+  "reason": "The command invokes pytest on a specific sympy test, which is a test runner; the cd and tail segments rank lower."
+ },
+ "raw_text": "{\"label\":\"test\",\"reason\":\"The command invokes pytest on a specific sympy test, which is a test runner; the cd and tail segments rank lower.\"}"
+}

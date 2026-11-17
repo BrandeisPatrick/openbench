@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "search",
+  "reason": "The command runs grep over a repo file, and piping through head only trims the output, so search is the highest-priority class present."
+ },
+ "raw_text": "{\"label\":\"search\",\"reason\":\"The command runs grep over a repo file, and piping through head only trims the output, so search is the highest-priority class present.\"}"
+}

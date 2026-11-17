@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "done",
+  "reason": "The command runs exactly echo OPENBENCH_DONE, which is the completion marker."
+ },
+ "raw_text": "{\"label\":\"done\",\"reason\":\"The command runs exactly echo OPENBENCH_DONE, which is the completion marker.\"}"
+}

@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "The command runs a Python heredoc script that imports sympy and prints results without writing any file, so it counts as executing Python outside a test runner."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"The command runs a Python heredoc script that imports sympy and prints results without writing any file, so it counts as executing Python outside a test runner.\"}"
+}

@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "search",
+  "reason": "The command is a single grep that locates a class definition in a repo file; nothing in it runs code, edits files or invokes a test runner."
+ },
+ "raw_text": "{\"label\":\"search\",\"reason\":\"The command is a single grep that locates a class definition in a repo file; nothing in it runs code, edits files or invokes a test runner.\"}"
+}

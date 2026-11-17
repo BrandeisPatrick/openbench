@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "search",
+  "reason": "The command is a single recursive grep looking for printer class definitions under the repo, and it writes nothing."
+ },
+ "raw_text": "{\"label\":\"search\",\"reason\":\"The command is a single recursive grep looking for printer class definitions under the repo, and it writes nothing.\"}"
+}

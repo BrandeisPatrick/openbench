@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "search",
+  "reason": "The command is a single grep over a repo file looking for a method definition, and nothing in it writes, runs or tests anything."
+ },
+ "raw_text": "{\"label\":\"search\",\"reason\":\"The command is a single grep over a repo file looking for a method definition, and nothing in it writes, runs or tests anything.\"}"
+}

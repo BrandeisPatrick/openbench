@@ -1,0 +1,71 @@
+{
+ "status": "ok",
+ "answer": {
+  "differences": [
+   {
+    "name": "Declares done on a broken repo",
+    "inclusion_criterion": "The run calls `echo OPENBENCH_DONE` while its most recent import or test command before that call had failed. A failed command here means a nonzero exit or a SyntaxError/IndentationError traceback.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     77,
+     80
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Baseline comparison via git stash",
+    "inclusion_criterion": "The run uses `git stash` (or a similar revert) to rerun a test or reproduction on the unmodified code, then compares that output with the patched behavior.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     21,
+     24,
+     34,
+     40,
+     43
+    ]
+   },
+   {
+    "name": "Retries an unavailable tool",
+    "inclusion_criterion": "The run calls the same nonexistent command (exit 127, 'command not found') more than once.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     13,
+     14,
+     16,
+     19,
+     66
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Edits leave module unimportable",
+    "inclusion_criterion": "After the run edits a source file with a script, a later command fails with a SyntaxError or IndentationError in that file.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     61,
+     69,
+     73,
+     77
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Prototypes fix via runtime patching first",
+    "inclusion_criterion": "The run tries a candidate change by assigning a class attribute or method at runtime in a Python snippet before writing that change to the source file, or instead of writing it.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     14,
+     53,
+     65,
+     66,
+     67,
+     97,
+     98
+    ]
+   }
+  ]
+ },
+ "raw_text": "{\"differences\":[{\"name\":\"Declares done on a broken repo\",\"inclusion_criterion\":\"The run calls `echo OPENBENCH_DONE` while its most recent import or test command before that call had failed. A failed command here means a nonzero exit or a SyntaxError/IndentationError traceback.\",\"shown_by\":\"A\",\"evidence_turns_A\":[77,80],\"evidence_turns_B\":[]},{\"name\":\"Baseline comparison via git stash\",\"inclusion_criterion\":\"The run uses `git stash` (or a similar revert) to rerun a test or reproduction on the unmodified code, then compares that output with the patched behavior.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[21,24,34,40,43]},{\"name\":\"Retries an unavailable tool\",\"inclusion_criterion\":\"The run calls the same nonexistent command (exit 127, 'command not found') more than once.\",\"shown_by\":\"A\",\"evidence_turns_A\":[13,14,16,19,66],\"evidence_turns_B\":[]},{\"name\":\"Edits leave module unimportable\",\"inclusion_criterion\":\"After the run edits a source file with a script, a later command fails with a SyntaxError or IndentationError in that file.\",\"shown_by\":\"A\",\"evidence_turns_A\":[61,69,73,77],\"evidence_turns_B\":[]},{\"name\":\"Prototypes fix via runtime patching first\",\"inclusion_criterion\":\"The run tries a candidate change by assigning a class attribute or method at runtime in a Python snippet before writing that change to the source file, or instead of writing it.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[14,53,65,66,67,97,98]}]}"
+}

@@ -1,6 +1,6 @@
 # exp-07 — Command audit of the stored runs: which habits belong to the model, and is "done" backed by the log?
 
-Status: pre-registered (this file and `research/analysis/command_audit.py` are written before any metric is computed on the corpus). Cost: Part A $0; Part B up to $40 of judge tokens (budget approved by the owner 2026-11-11). Depends on: nothing new — stored runs only, no Docker, no provider keys.
+Status: analyzed 2026-11-12, Parts A and B; hand-label validation (V1, V2) pending, so the instrument is unvalidated. Frozen in commit `9704517` before any metric was computed on the corpus; results in `research/results/exp-07-command-audit/results.md`. Cost: Part A $0; Part B up to $40 of judge tokens (budget approved by the owner 2026-11-11). Depends on: nothing new — stored runs only, no Docker, no provider keys.
 
 Admission note. `research/README.md` admits an experiment only if its result differs by post-training recipe and parks descriptive ones. This experiment is descriptive on purpose. It is admitted under the owner's reframing of 2026-11-11: openbench exists to discover agent behavior patterns, not to rank models or diagnose recipes. Literature basis: `reports/Agent pattern discovery experiments.md`.
 

@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "Executes a Python snippet with python -c to check sympify behavior, without writing any files or invoking a test runner."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"Executes a Python snippet with python -c to check sympify behavior, without writing any files or invoking a test runner.\"}"
+}

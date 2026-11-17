@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "edit",
+  "reason": "Writes a scratch script to /tmp, then runs it, and the script rewrites the repo file sympy/core/symbol.py. Edit is the highest-priority class present."
+ },
+ "raw_text": "{\"label\":\"edit\",\"reason\":\"Writes a scratch script to /tmp, then runs it, and the script rewrites the repo file sympy/core/symbol.py. Edit is the highest-priority class present.\"}"
+}

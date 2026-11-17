@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "Executes an inline Python script via python -c to check printer output, writing no files."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"Executes an inline Python script via python -c to check printer output, writing no files.\"}"
+}

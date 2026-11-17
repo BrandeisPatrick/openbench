@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "edit",
+  "reason": "The command writes a script to /tmp and then runs it, and that script rewrites the repo file /repo/sympy/polys/polytools.py, so edit takes priority."
+ },
+ "raw_text": "{\"label\":\"edit\",\"reason\":\"The command writes a script to /tmp and then runs it, and that script rewrites the repo file /repo/sympy/polys/polytools.py, so edit takes priority.\"}"
+}

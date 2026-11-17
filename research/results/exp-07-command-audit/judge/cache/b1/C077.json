@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "Runs an inline python -c script that monkeypatches symbols in memory to debug its arguments, without writing any file."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"Runs an inline python -c script that monkeypatches symbols in memory to debug its arguments, without writing any file.\"}"
+}

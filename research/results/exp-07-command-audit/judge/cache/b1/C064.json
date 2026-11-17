@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "read",
+  "reason": "The command uses sed -n and echo to print line ranges of a test file, which only reads content."
+ },
+ "raw_text": "{\"label\":\"read\",\"reason\":\"The command uses sed -n and echo to print line ranges of a test file, which only reads content.\"}"
+}

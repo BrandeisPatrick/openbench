@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "edit",
+  "reason": "The Python heredoc script rewrites lines of sympy/polys/polytools.py, which is a repo file."
+ },
+ "raw_text": "{\"label\":\"edit\",\"reason\":\"The Python heredoc script rewrites lines of sympy/polys/polytools.py, which is a repo file.\"}"
+}

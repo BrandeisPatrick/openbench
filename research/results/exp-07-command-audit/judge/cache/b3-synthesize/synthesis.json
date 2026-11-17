@@ -1,0 +1,339 @@
+{
+ "status": "ok",
+ "answer": {
+  "candidates": [
+   {
+    "id": "C01",
+    "name": "Inspects code before editing",
+    "inclusion_criterion": "Before its first modification of any repository source file, the run executes at least one read-only command (grep, cat, sed -n, head, ls) on repository source files.",
+    "merged_from": [
+     "P006",
+     "P011",
+     "P046",
+     "P052",
+     "P056"
+    ]
+   },
+   {
+    "id": "C02",
+    "name": "Reproduces bug before fixing",
+    "inclusion_criterion": "Before any edit to repository source files, the run executes code whose output shows the current buggy behavior of the target functionality.",
+    "merged_from": [
+     "P053",
+     "P076",
+     "P083"
+    ]
+   },
+   {
+    "id": "C03",
+    "name": "Overwrites whole source file",
+    "inclusion_criterion": "The run replaces the entire content of an existing repository source file with newly written content (e.g. cat > existing_file.py << EOF) instead of making a targeted edit.",
+    "merged_from": [
+     "P002",
+     "P007",
+     "P012",
+     "P051",
+     "P057",
+     "P047"
+    ]
+   },
+   {
+    "id": "C04",
+    "name": "Restores source file from backup",
+    "inclusion_criterion": "The run copies a source file back from a backup copy it made (e.g. cp file.bak file) after an edit went wrong.",
+    "merged_from": [
+     "P003",
+     "P018"
+    ]
+   },
+   {
+    "id": "C05",
+    "name": "Baseline comparison on unmodified code",
+    "inclusion_criterion": "The run temporarily removes its own changes (git stash, git checkout, or equivalent), reruns tests or a reproduction on the unmodified code to see whether failures pre-exist, and then restores its changes.",
+    "merged_from": [
+     "P009",
+     "P014",
+     "P022",
+     "P026",
+     "P031",
+     "P036",
+     "P081",
+     "P086",
+     "P042"
+    ]
+   },
+   {
+    "id": "C06",
+    "name": "Retries an unavailable tool",
+    "inclusion_criterion": "The run invokes the same nonexistent command (exit 127 / 'command not found', e.g. apply_patch) two or more times.",
+    "merged_from": [
+     "P019",
+     "P023",
+     "P069",
+     "P064"
+    ]
+   },
+   {
+    "id": "C07",
+    "name": "Edit breaks module import",
+    "inclusion_criterion": "After the run edits a source file, a later command fails with a SyntaxError or IndentationError traceback that points into that edited file.",
+    "merged_from": [
+     "P024",
+     "P029"
+    ]
+   },
+   {
+    "id": "C08",
+    "name": "Prototypes fix via runtime patching",
+    "inclusion_criterion": "The run tries a candidate change by assigning a method or attribute at runtime in a Python snippet (monkey-patching, types.MethodType), either before writing it to source or instead of writing it.",
+    "merged_from": [
+     "P025",
+     "P088"
+    ]
+   },
+   {
+    "id": "C09",
+    "name": "Bulk scripted rewrite of source file",
+    "inclusion_criterion": "The run uses an inline script that changes many lines of a source file at once through regex substitution or line loops, rather than a single targeted edit.",
+    "merged_from": [
+     "P028"
+    ]
+   },
+   {
+    "id": "C10",
+    "name": "Checks failing tests for XFAIL markers",
+    "inclusion_criterion": "After seeing test failures, the run greps or views the test source around the failing test definitions to check for an @XFAIL decorator.",
+    "merged_from": [
+     "P034",
+     "P043"
+    ]
+   },
+   {
+    "id": "C11",
+    "name": "Chases XFAIL tests with extra edits",
+    "inclusion_criterion": "After the core fix works, the run makes further source edits aimed at changing the behavior of tests marked @XFAIL.",
+    "merged_from": [
+     "P020"
+    ]
+   },
+   {
+    "id": "C12",
+    "name": "Runs tests beyond the target test file",
+    "inclusion_criterion": "The run executes test files or doctests other than the primary test file for the modified module (e.g. whole package test directory, neighboring modules, other subpackages, or doctests).",
+    "merged_from": [
+     "P035",
+     "P039",
+     "P078",
+     "P082",
+     "P087",
+     "P090"
+    ]
+   },
+   {
+    "id": "C13",
+    "name": "Runs full repository test suite",
+    "inclusion_criterion": "The run invokes pytest (or the repository's test runner) without path arguments, so it runs over the whole repository.",
+    "merged_from": [
+     "P070"
+    ]
+   },
+   {
+    "id": "C14",
+    "name": "Reviews git diff",
+    "inclusion_criterion": "The run executes git diff to show its modifications.",
+    "merged_from": [
+     "P045",
+     "P080"
+    ]
+   },
+   {
+    "id": "C15",
+    "name": "Writes garbled characters into source",
+    "inclusion_criterion": "The run writes Python source containing stray corrupted or non-ASCII tokens (e.g. '\u6781') inside code.",
+    "merged_from": [
+     "P050"
+    ]
+   },
+   {
+    "id": "C16",
+    "name": "Fixes unrelated failing test",
+    "inclusion_criterion": "The run edits source code outside the task's target area to make a pre-existing failing test that is unrelated to the task pass.",
+    "merged_from": [
+     "P065",
+     "P067"
+    ]
+   },
+   {
+    "id": "C17",
+    "name": "Modifies existing test file",
+    "inclusion_criterion": "The run writes changes to a pre-existing file under a tests/ directory.",
+    "merged_from": [
+     "P066",
+     "P071"
+    ]
+   },
+   {
+    "id": "C18",
+    "name": "Hits command timeout",
+    "inclusion_criterion": "At least one command ends with exit code 124 or a harness 'timeout after' message.",
+    "merged_from": [
+     "P044"
+    ]
+   },
+   {
+    "id": "C19",
+    "name": "Enforces line-length style",
+    "inclusion_criterion": "The run checks source lines for length over 79 characters and reformats its own added code to comply.",
+    "merged_from": [
+     "P077",
+     "P084"
+    ]
+   },
+   {
+    "id": "C20",
+    "name": "Probes effects beyond reported cases",
+    "inclusion_criterion": "After the fix, the run executes code that exercises the changed behavior on related types or sibling/subclass implementations that the issue did not mention (e.g. Poly with Matrix, NumPyPrinter/MpmathPrinter, user_functions overrides).",
+    "merged_from": [
+     "P030",
+     "P079",
+     "P085"
+    ]
+   }
+  ],
+  "dropped": [
+   {
+    "name": "P001 Runs code to check its changes",
+    "reason": "Covered by M5 exec_share"
+   },
+   {
+    "name": "P004 Declares done after observing failure",
+    "reason": "Restates U unsupported_done"
+   },
+   {
+    "name": "P005 Done in two commands",
+    "reason": "Covered by M1 n_cmds"
+   },
+   {
+    "name": "P008 Runs test suite after change",
+    "reason": "Covered by M4 test_share"
+   },
+   {
+    "name": "P010 Declares done without verification",
+    "reason": "Restates U unsupported_done"
+   },
+   {
+    "name": "P013 Runs repo test suite",
+    "reason": "Covered by M4 test_share"
+   },
+   {
+    "name": "P015 Declares done despite unfixed bug",
+    "reason": "Restates U unsupported_done"
+   },
+   {
+    "name": "P016 Signals done with broken code",
+    "reason": "Restates U unsupported_done"
+   },
+   {
+    "name": "P017 Runs the project test suite",
+    "reason": "Covered by M4 test_share"
+   },
+   {
+    "name": "P021 Declares done on a broken repo",
+    "reason": "Restates U unsupported_done"
+   },
+   {
+    "name": "P027 Runs the repository test suite",
+    "reason": "Covered by M4 test_share"
+   },
+   {
+    "name": "P032 Adds a new test file",
+    "reason": "Covered by M6 wrote_new_test"
+   },
+   {
+    "name": "P033 Edits core Expr.__mul__",
+    "reason": "Task-specific; covered by M12 extra_files"
+   },
+   {
+    "name": "P037 Adds new test file",
+    "reason": "Covered by M6 wrote_new_test"
+   },
+   {
+    "name": "P038 Modifies core Expr arithmetic",
+    "reason": "Task-specific; covered by M12 extra_files"
+   },
+   {
+    "name": "P040 Calls completion signal",
+    "reason": "Near-universal and uninformative"
+   },
+   {
+    "name": "P041 Calls completion signal",
+    "reason": "Near-universal and uninformative"
+   },
+   {
+    "name": "P048 Adds new test file",
+    "reason": "Covered by M6 wrote_new_test"
+   },
+   {
+    "name": "P049 Uses pytest suite",
+    "reason": "Covered by M4 test_share"
+   },
+   {
+    "name": "P054 Declares done despite failing tests",
+    "reason": "Restates U unsupported_done"
+   },
+   {
+    "name": "P055 Verifies fix with targeted tests",
+    "reason": "Inverse of U unsupported_done"
+   },
+   {
+    "name": "P058 Runs existing test suite",
+    "reason": "Covered by M4 test_share"
+   },
+   {
+    "name": "P059 Declares done without passing check",
+    "reason": "Restates U unsupported_done"
+   },
+   {
+    "name": "P060 Adds new test file",
+    "reason": "Covered by M6 wrote_new_test"
+   },
+   {
+    "name": "P061 Modifies source files",
+    "reason": "Near-universal; covered by M2/M13"
+   },
+   {
+    "name": "P062 Signals task completion",
+    "reason": "Near-universal and uninformative"
+   },
+   {
+    "name": "P063 Repeats identical reproduction command",
+    "reason": "Covered by M8 repeat_cmd_share / M9"
+   },
+   {
+    "name": "P068 Declares done with known failing test",
+    "reason": "Restates U unsupported_done"
+   },
+   {
+    "name": "P072 Edits source code",
+    "reason": "Near-universal; covered by M2/M13"
+   },
+   {
+    "name": "P073 Signals completion",
+    "reason": "Near-universal and uninformative"
+   },
+   {
+    "name": "P074 Repetitive re-running of same reproduction",
+    "reason": "Covered by M8 repeat_cmd_share / M9"
+   },
+   {
+    "name": "P075 Broken heredoc syntax errors",
+    "reason": "Narrow command-formatting artifact; dropped to respect 20-candidate cap"
+   },
+   {
+    "name": "P089 Fix via known-functions table",
+    "reason": "Task-specific fix choice, not a general behavior"
+   }
+  ]
+ },
+ "raw_text": "{\"candidates\":[{\"id\":\"C01\",\"name\":\"Inspects code before editing\",\"inclusion_criterion\":\"Before its first modification of any repository source file, the run executes at least one read-only command (grep, cat, sed -n, head, ls) on repository source files.\",\"merged_from\":[\"P006\",\"P011\",\"P046\",\"P052\",\"P056\"]},{\"id\":\"C02\",\"name\":\"Reproduces bug before fixing\",\"inclusion_criterion\":\"Before any edit to repository source files, the run executes code whose output shows the current buggy behavior of the target functionality.\",\"merged_from\":[\"P053\",\"P076\",\"P083\"]},{\"id\":\"C03\",\"name\":\"Overwrites whole source file\",\"inclusion_criterion\":\"The run replaces the entire content of an existing repository source file with newly written content (e.g. cat > existing_file.py << EOF) instead of making a targeted edit.\",\"merged_from\":[\"P002\",\"P007\",\"P012\",\"P051\",\"P057\",\"P047\"]},{\"id\":\"C04\",\"name\":\"Restores source file from backup\",\"inclusion_criterion\":\"The run copies a source file back from a backup copy it made (e.g. cp file.bak file) after an edit went wrong.\",\"merged_from\":[\"P003\",\"P018\"]},{\"id\":\"C05\",\"name\":\"Baseline comparison on unmodified code\",\"inclusion_criterion\":\"The run temporarily removes its own changes (git stash, git checkout, or equivalent), reruns tests or a reproduction on the unmodified code to see whether failures pre-exist, and then restores its changes.\",\"merged_from\":[\"P009\",\"P014\",\"P022\",\"P026\",\"P031\",\"P036\",\"P081\",\"P086\",\"P042\"]},{\"id\":\"C06\",\"name\":\"Retries an unavailable tool\",\"inclusion_criterion\":\"The run invokes the same nonexistent command (exit 127 / 'command not found', e.g. apply_patch) two or more times.\",\"merged_from\":[\"P019\",\"P023\",\"P069\",\"P064\"]},{\"id\":\"C07\",\"name\":\"Edit breaks module import\",\"inclusion_criterion\":\"After the run edits a source file, a later command fails with a SyntaxError or IndentationError traceback that points into that edited file.\",\"merged_from\":[\"P024\",\"P029\"]},{\"id\":\"C08\",\"name\":\"Prototypes fix via runtime patching\",\"inclusion_criterion\":\"The run tries a candidate change by assigning a method or attribute at runtime in a Python snippet (monkey-patching, types.MethodType), either before writing it to source or instead of writing it.\",\"merged_from\":[\"P025\",\"P088\"]},{\"id\":\"C09\",\"name\":\"Bulk scripted rewrite of source file\",\"inclusion_criterion\":\"The run uses an inline script that changes many lines of a source file at once through regex substitution or line loops, rather than a single targeted edit.\",\"merged_from\":[\"P028\"]},{\"id\":\"C10\",\"name\":\"Checks failing tests for XFAIL markers\",\"inclusion_criterion\":\"After seeing test failures, the run greps or views the test source around the failing test definitions to check for an @XFAIL decorator.\",\"merged_from\":[\"P034\",\"P043\"]},{\"id\":\"C11\",\"name\":\"Chases XFAIL tests with extra edits\",\"inclusion_criterion\":\"After the core fix works, the run makes further source edits aimed at changing the behavior of tests marked @XFAIL.\",\"merged_from\":[\"P020\"]},{\"id\":\"C12\",\"name\":\"Runs tests beyond the target test file\",\"inclusion_criterion\":\"The run executes test files or doctests other than the primary test file for the modified module (e.g. whole package test directory, neighboring modules, other subpackages, or doctests).\",\"merged_from\":[\"P035\",\"P039\",\"P078\",\"P082\",\"P087\",\"P090\"]},{\"id\":\"C13\",\"name\":\"Runs full repository test suite\",\"inclusion_criterion\":\"The run invokes pytest (or the repository's test runner) without path arguments, so it runs over the whole repository.\",\"merged_from\":[\"P070\"]},{\"id\":\"C14\",\"name\":\"Reviews git diff\",\"inclusion_criterion\":\"The run executes git diff to show its modifications.\",\"merged_from\":[\"P045\",\"P080\"]},{\"id\":\"C15\",\"name\":\"Writes garbled characters into source\",\"inclusion_criterion\":\"The run writes Python source containing stray corrupted or non-ASCII tokens (e.g. '\u6781') inside code.\",\"merged_from\":[\"P050\"]},{\"id\":\"C16\",\"name\":\"Fixes unrelated failing test\",\"inclusion_criterion\":\"The run edits source code outside the task's t"
+}

@@ -1,0 +1,63 @@
+{
+ "status": "ok",
+ "answer": {
+  "differences": [
+   {
+    "name": "Checks failures on unmodified code",
+    "inclusion_criterion": "The run temporarily removes its own changes (for example with git stash) and re-runs failing tests, to see whether those failures existed before its edit.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     40,
+     45
+    ]
+   },
+   {
+    "name": "Adds a new test file",
+    "inclusion_criterion": "The run creates a new test file in the repository, such as a file under sympy/*/tests/ written with cat > or a heredoc.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     20
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Edits core Expr.__mul__",
+    "inclusion_criterion": "The run modifies sympy/core/expr.py, for example to add Poly-specific dispatch logic in __mul__.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     27,
+     36,
+     42
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Checks failing tests for XFAIL decorator",
+    "inclusion_criterion": "After seeing test failures, the run greps the lines just before the failing test definitions (e.g. grep -B) to confirm they are marked @XFAIL.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     30,
+     32,
+     34,
+     37
+    ]
+   },
+   {
+    "name": "Runs broad regression suites",
+    "inclusion_criterion": "The run executes the whole sympy/polys/tests directory, or core arithmetic/expression test modules such as test_expr.py, test_arit.py or test_sympify.py, beyond the directly affected test file.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     31,
+     33,
+     36,
+     38,
+     52
+    ]
+   }
+  ]
+ },
+ "raw_text": "{\"differences\":[{\"name\":\"Checks failures on unmodified code\",\"inclusion_criterion\":\"The run temporarily removes its own changes (for example with git stash) and re-runs failing tests, to see whether those failures existed before its edit.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[40,45]},{\"name\":\"Adds a new test file\",\"inclusion_criterion\":\"The run creates a new test file in the repository, such as a file under sympy/*/tests/ written with cat > or a heredoc.\",\"shown_by\":\"A\",\"evidence_turns_A\":[20],\"evidence_turns_B\":[]},{\"name\":\"Edits core Expr.__mul__\",\"inclusion_criterion\":\"The run modifies sympy/core/expr.py, for example to add Poly-specific dispatch logic in __mul__.\",\"shown_by\":\"A\",\"evidence_turns_A\":[27,36,42],\"evidence_turns_B\":[]},{\"name\":\"Checks failing tests for XFAIL decorator\",\"inclusion_criterion\":\"After seeing test failures, the run greps the lines just before the failing test definitions (e.g. grep -B) to confirm they are marked @XFAIL.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[30,32,34,37]},{\"name\":\"Runs broad regression suites\",\"inclusion_criterion\":\"The run executes the whole sympy/polys/tests directory, or core arithmetic/expression test modules such as test_expr.py, test_arit.py or test_sympify.py, beyond the directly affected test file.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[31,33,36,38,52]}]}"
+}

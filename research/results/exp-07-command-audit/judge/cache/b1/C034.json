@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "search",
+  "reason": "The command greps a repo file for the `_sympifyit` pattern with context lines and writes nothing."
+ },
+ "raw_text": "{\"label\":\"search\",\"reason\":\"The command greps a repo file for the `_sympifyit` pattern with context lines and writes nothing.\"}"
+}

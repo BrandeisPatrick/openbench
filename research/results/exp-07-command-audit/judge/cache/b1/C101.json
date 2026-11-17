@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "test",
+  "reason": "The command invokes pytest on a lambdify test, and its output is piped through tail."
+ },
+ "raw_text": "{\"label\":\"test\",\"reason\":\"The command invokes pytest on a lambdify test, and its output is piped through tail.\"}"
+}

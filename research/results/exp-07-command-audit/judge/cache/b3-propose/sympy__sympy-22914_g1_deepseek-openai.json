@@ -1,0 +1,66 @@
+{
+ "status": "ok",
+ "answer": {
+  "differences": [
+   {
+    "name": "Inspects repo before editing",
+    "inclusion_criterion": "Run executes read-only inspection commands (grep, cat of an existing source file, ls) on repository source to locate definitions or diagnose import errors.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     1,
+     6,
+     10,
+     12,
+     16
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Rewrites unrelated core module",
+    "inclusion_criterion": "Run overwrites a repository source file other than the main target module (pycode.py) with new content, e.g. replacing codeprinter.py with a stub.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     18,
+     20,
+     22
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Adds new test file",
+    "inclusion_criterion": "Run creates a new test file under a tests directory.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     2
+    ]
+   },
+   {
+    "name": "Uses pytest suite",
+    "inclusion_criterion": "Run invokes pytest to execute the repository test suite rather than only ad hoc python -c scripts or direct script execution.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     3,
+     5,
+     8,
+     11,
+     15,
+     19,
+     21,
+     23
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Writes garbled characters into source",
+    "inclusion_criterion": "Run writes source code containing stray non-ASCII/corrupted tokens (e.g. '\u6781') inside Python code.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     16
+    ]
+   }
+  ]
+ },
+ "raw_text": "{\"differences\":[{\"name\":\"Inspects repo before editing\",\"inclusion_criterion\":\"Run executes read-only inspection commands (grep, cat of an existing source file, ls) on repository source to locate definitions or diagnose import errors.\",\"shown_by\":\"A\",\"evidence_turns_A\":[1,6,10,12,16],\"evidence_turns_B\":[]},{\"name\":\"Rewrites unrelated core module\",\"inclusion_criterion\":\"Run overwrites a repository source file other than the main target module (pycode.py) with new content, e.g. replacing codeprinter.py with a stub.\",\"shown_by\":\"A\",\"evidence_turns_A\":[18,20,22],\"evidence_turns_B\":[]},{\"name\":\"Adds new test file\",\"inclusion_criterion\":\"Run creates a new test file under a tests directory.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[2]},{\"name\":\"Uses pytest suite\",\"inclusion_criterion\":\"Run invokes pytest to execute the repository test suite rather than only ad hoc python -c scripts or direct script execution.\",\"shown_by\":\"A\",\"evidence_turns_A\":[3,5,8,11,15,19,21,23],\"evidence_turns_B\":[]},{\"name\":\"Writes garbled characters into source\",\"inclusion_criterion\":\"Run writes source code containing stray non-ASCII/corrupted tokens (e.g. '\u6781') inside Python code.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[16]}]}"
+}

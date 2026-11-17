@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "search",
+  "reason": "The command is a recursive grep for class definitions, piped to head to limit the output, so it is a search."
+ },
+ "raw_text": "{\"label\":\"search\",\"reason\":\"The command is a recursive grep for class definitions, piped to head to limit the output, so it is a search.\"}"
+}

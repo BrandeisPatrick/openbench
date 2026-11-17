@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "The command runs an inline Python snippet with python -c to probe Poly's behavior on bad inputs, without writing any file."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"The command runs an inline Python snippet with python -c to probe Poly's behavior on bad inputs, without writing any file.\"}"
+}

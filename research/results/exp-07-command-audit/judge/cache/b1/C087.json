@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "Runs an inline Python heredoc script to reproduce and inspect the lambdify error without writing any files."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"Runs an inline Python heredoc script to reproduce and inspect the lambdify error without writing any files.\"}"
+}

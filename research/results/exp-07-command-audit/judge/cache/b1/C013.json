@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "A Python heredoc script inspects a function signature and writes no file, so it executes Python outside a test runner."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"A Python heredoc script inspects a function signature and writes no file, so it executes Python outside a test runner.\"}"
+}

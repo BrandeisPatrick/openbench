@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "Executes an inline Python heredoc script that calls parse_expr. It writes no repo file and invokes no test runner."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"Executes an inline Python heredoc script that calls parse_expr. It writes no repo file and invokes no test runner.\"}"
+}

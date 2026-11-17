@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "edit",
+  "reason": "A Python heredoc script rewrites sympy/polys/polytools.py in the repo, swapping the order of decorators."
+ },
+ "raw_text": "{\"label\":\"edit\",\"reason\":\"A Python heredoc script rewrites sympy/polys/polytools.py in the repo, swapping the order of decorators.\"}"
+}

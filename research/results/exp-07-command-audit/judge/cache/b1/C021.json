@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "other",
+  "reason": "It runs a custom bash script in /tmp whose contents are not shown, so it can't be identified as a test runner, Python execution or file write; the tail only filters piped output."
+ },
+ "raw_text": "{\"label\": \"other\", \"reason\": \"It runs a custom bash script in /tmp whose contents are not shown, so it can't be identified as a test runner, Python execution or file write; the tail only filters piped output.\"}"
+}

@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "A Python heredoc script runs to explore printer output and writes no file in the repo."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"A Python heredoc script runs to explore printer output and writes no file in the repo.\"}"
+}

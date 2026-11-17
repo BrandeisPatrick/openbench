@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "Runs an inline python -c script to print NumPy/SciPy printer output; no repo file is written and no test runner is invoked."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"Runs an inline python -c script to print NumPy/SciPy printer output; no repo file is written and no test runner is invoked.\"}"
+}

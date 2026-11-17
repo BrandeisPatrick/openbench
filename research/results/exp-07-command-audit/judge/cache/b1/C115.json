@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "search",
+  "reason": "The command greps a test file for patterns and pipes the matches to head, which is a search with no edits or execution."
+ },
+ "raw_text": "{\"label\":\"search\",\"reason\":\"The command greps a test file for patterns and pipes the matches to head, which is a search with no edits or execution.\"}"
+}

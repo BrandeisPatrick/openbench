@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "search",
+  "reason": "The command is a recursive grep for a string, and it writes nothing and runs no Python or tests."
+ },
+ "raw_text": "{\"label\":\"search\",\"reason\":\"The command is a recursive grep for a string, and it writes nothing and runs no Python or tests.\"}"
+}

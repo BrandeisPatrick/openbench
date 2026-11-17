@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "search",
+  "reason": "Uses find piped to head to locate test files matching a pattern, which is a search operation."
+ },
+ "raw_text": "{\"label\":\"search\",\"reason\":\"Uses find piped to head to locate test files matching a pattern, which is a search operation.\"}"
+}

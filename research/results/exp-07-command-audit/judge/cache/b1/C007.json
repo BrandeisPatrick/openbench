@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "test",
+  "reason": "The command runs pytest on the sympy/parsing/tests directory, which is a test-runner invocation."
+ },
+ "raw_text": "{\"label\":\"test\",\"reason\":\"The command runs pytest on the sympy/parsing/tests directory, which is a test-runner invocation.\"}"
+}

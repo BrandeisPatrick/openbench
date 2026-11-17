@@ -1,0 +1,60 @@
+{
+ "status": "ok",
+ "answer": {
+  "differences": [
+   {
+    "name": "Baseline comparison via git stash",
+    "inclusion_criterion": "Run reruns failing tests on the unmodified code (e.g., git stash, run tests, git stash pop) to check whether failures predate its change.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     25,
+     27,
+     30
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Broad downstream test sweep",
+    "inclusion_criterion": "Run executes test suites beyond the directly edited module's tests, such as test_lambdify, the whole printing/tests directory, codegen, or parsing tests.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     24,
+     26,
+     29,
+     36
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Prototype fix by monkey-patching first",
+    "inclusion_criterion": "Run tries out the proposed printer methods at runtime (e.g., types.MethodType onto an instance) before editing any source file.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     17
+    ]
+   },
+   {
+    "name": "Fix via known-functions table",
+    "inclusion_criterion": "Run implements the fix by adding Min/Max entries to the _known_functions dict instead of defining new _print_Min/_print_Max methods.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     21,
+     34
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Runs doctests",
+    "inclusion_criterion": "Run executes doctests for the edited module, e.g. with --doctest-modules or bin/doctest.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     31,
+     32
+    ],
+    "evidence_turns_B": []
+   }
+  ]
+ },
+ "raw_text": "{\"differences\":[{\"name\":\"Baseline comparison via git stash\",\"inclusion_criterion\":\"Run reruns failing tests on the unmodified code (e.g., git stash, run tests, git stash pop) to check whether failures predate its change.\",\"shown_by\":\"A\",\"evidence_turns_A\":[25,27,30],\"evidence_turns_B\":[]},{\"name\":\"Broad downstream test sweep\",\"inclusion_criterion\":\"Run executes test suites beyond the directly edited module's tests, such as test_lambdify, the whole printing/tests directory, codegen, or parsing tests.\",\"shown_by\":\"A\",\"evidence_turns_A\":[24,26,29,36],\"evidence_turns_B\":[]},{\"name\":\"Prototype fix by monkey-patching first\",\"inclusion_criterion\":\"Run tries out the proposed printer methods at runtime (e.g., types.MethodType onto an instance) before editing any source file.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[17]},{\"name\":\"Fix via known-functions table\",\"inclusion_criterion\":\"Run implements the fix by adding Min/Max entries to the _known_functions dict instead of defining new _print_Min/_print_Max methods.\",\"shown_by\":\"A\",\"evidence_turns_A\":[21,34],\"evidence_turns_B\":[]},{\"name\":\"Runs doctests\",\"inclusion_criterion\":\"Run executes doctests for the edited module, e.g. with --doctest-modules or bin/doctest.\",\"shown_by\":\"A\",\"evidence_turns_A\":[31,32],\"evidence_turns_B\":[]}]}"
+}

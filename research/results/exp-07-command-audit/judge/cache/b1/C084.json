@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "read",
+  "reason": "The command uses cat to print the contents of an existing test file and makes no changes."
+ },
+ "raw_text": "{\"label\":\"read\",\"reason\":\"The command uses cat to print the contents of an existing test file and makes no changes.\"}"
+}

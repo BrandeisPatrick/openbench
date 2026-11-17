@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "The command executes Python inline with python -c to check sympy symbols behavior, and it writes no files."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"The command executes Python inline with python -c to check sympy symbols behavior, and it writes no files.\"}"
+}

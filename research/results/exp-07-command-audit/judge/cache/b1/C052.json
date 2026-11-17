@@ -1,0 +1,8 @@
+{
+ "status": "ok",
+ "answer": {
+  "label": "run",
+  "reason": "The command runs an inline Python script via python -c to reproduce and check the fix, and it writes no files and uses no test runner."
+ },
+ "raw_text": "{\"label\":\"run\",\"reason\":\"The command runs an inline Python script via python -c to reproduce and check the fix, and it writes no files and uses no test runner.\"}"
+}

@@ -1,0 +1,71 @@
+{
+ "status": "ok",
+ "answer": {
+  "differences": [
+   {
+    "name": "Inspects code before editing",
+    "inclusion_criterion": "Run reads or searches the relevant source files (grep/sed/cat/ls) before making any modification to the repository.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     5,
+     6,
+     7,
+     12,
+     13,
+     14,
+     16,
+     17,
+     21,
+     22
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Overwrites whole source file",
+    "inclusion_criterion": "Run replaces an entire existing source file with new content written from scratch (e.g. cat > file << EOF) rather than making a targeted edit.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     1
+    ]
+   },
+   {
+    "name": "Runs test suite after change",
+    "inclusion_criterion": "Run executes pytest or another test runner on repository tests after modifying code.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     26,
+     27,
+     34,
+     38,
+     51
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Checks failures against baseline",
+    "inclusion_criterion": "Run reverts or stashes its own change and reruns the failing tests to see whether those failures already existed before the change.",
+    "shown_by": "A",
+    "evidence_turns_A": [
+     29,
+     31,
+     32,
+     35,
+     39,
+     52
+    ],
+    "evidence_turns_B": []
+   },
+   {
+    "name": "Declares done without verification",
+    "inclusion_criterion": "Run calls echo OPENBENCH_DONE without having run any test or reproduction script after its last code change.",
+    "shown_by": "B",
+    "evidence_turns_A": [],
+    "evidence_turns_B": [
+     2
+    ]
+   }
+  ]
+ },
+ "raw_text": "{\"differences\":[{\"name\":\"Inspects code before editing\",\"inclusion_criterion\":\"Run reads or searches the relevant source files (grep/sed/cat/ls) before making any modification to the repository.\",\"shown_by\":\"A\",\"evidence_turns_A\":[5,6,7,12,13,14,16,17,21,22],\"evidence_turns_B\":[]},{\"name\":\"Overwrites whole source file\",\"inclusion_criterion\":\"Run replaces an entire existing source file with new content written from scratch (e.g. cat > file << EOF) rather than making a targeted edit.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[1]},{\"name\":\"Runs test suite after change\",\"inclusion_criterion\":\"Run executes pytest or another test runner on repository tests after modifying code.\",\"shown_by\":\"A\",\"evidence_turns_A\":[26,27,34,38,51],\"evidence_turns_B\":[]},{\"name\":\"Checks failures against baseline\",\"inclusion_criterion\":\"Run reverts or stashes its own change and reruns the failing tests to see whether those failures already existed before the change.\",\"shown_by\":\"A\",\"evidence_turns_A\":[29,31,32,35,39,52],\"evidence_turns_B\":[]},{\"name\":\"Declares done without verification\",\"inclusion_criterion\":\"Run calls echo OPENBENCH_DONE without having run any test or reproduction script after its last code change.\",\"shown_by\":\"B\",\"evidence_turns_A\":[],\"evidence_turns_B\":[2]}]}"
+}
